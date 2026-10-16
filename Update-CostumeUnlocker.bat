@@ -13,6 +13,11 @@ param([string]$GamePath,[string]$ReleaseDirectory)
 $ErrorActionPreference='Stop'
 $ProgressPreference='SilentlyContinue'
 [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12
+function Get-Sha256([string]$Path) {
+    $stream=[IO.File]::OpenRead($Path);$sha=[Security.Cryptography.SHA256]::Create()
+    try {return [BitConverter]::ToString($sha.ComputeHash($stream)).Replace('-','')}
+    finally {$stream.Dispose();$sha.Dispose()}
+}
 $repo='https://raw.githubusercontent.com/cielthephantom2/CostumeUnlocker/main/'
 if(!$GamePath -or !(Test-Path -LiteralPath (Join-Path $GamePath 'Last Epoch.exe'))) {
     $GamePath=(Read-Host 'Enter the Last Epoch game folder').Trim('"')
@@ -30,7 +35,7 @@ $modsRoot=Join-Path $gameRoot 'Mods'
 $destination=Join-Path $modsRoot $fileName
 $pattern='^CostumeUnlocker(?:-\d+\.\d+\.\d+(?:\.\d+)?)?\.dll$'
 $active=@(Get-ChildItem -LiteralPath $modsRoot -Filter 'CostumeUnlocker*.dll' -File -ErrorAction SilentlyContinue | Where-Object Name -match $pattern)
-if($active.Count -eq 1 -and $active[0].Name -ceq $fileName -and (Get-FileHash -LiteralPath $active[0].FullName -Algorithm SHA256).Hash -eq $manifest.sha256) {
+if($active.Count -eq 1 -and $active[0].Name -ceq $fileName -and (Get-Sha256 $active[0].FullName) -eq $manifest.sha256) {
     Write-Host ('Already up to date: '+$manifest.version+' (SHA-256 verified).') -ForegroundColor Green
     return
 }
@@ -45,7 +50,7 @@ $moved=@();$writing=$false
 try {
     if($ReleaseDirectory) {Copy-Item -LiteralPath (Join-Path $ReleaseDirectory $manifest.path) -Destination $download}
     else {Invoke-WebRequest -UseBasicParsing -Uri ($repo+$manifest.path+'?sha='+$manifest.sha256) -OutFile $download -TimeoutSec 90}
-    if((Get-Item -LiteralPath $download).Length -ne $manifest.size -or (Get-FileHash -LiteralPath $download -Algorithm SHA256).Hash -ne $manifest.sha256) {throw 'Downloaded DLL failed size/SHA-256 verification. Existing mod was not changed.'}
+    if((Get-Item -LiteralPath $download).Length -ne $manifest.size -or (Get-Sha256 $download) -ne $manifest.sha256) {throw 'Downloaded DLL failed size/SHA-256 verification. Existing mod was not changed.'}
     Move-Item -LiteralPath $download -Destination $staged
     $identity=[Reflection.AssemblyName]::GetAssemblyName($staged)
     if($identity.Name -ne 'CostumeUnlocker' -or $identity.Version.ToString(3) -ne $manifest.version) {throw 'DLL identity/version does not match the manifest.'}
@@ -61,14 +66,14 @@ try {
         if(([Reflection.AssemblyName]::GetAssemblyName($old.FullName)).Name -ne 'CostumeUnlocker') {throw ('Unexpected assembly: '+$old.Name)}
     }
     foreach($old in $active) {
-        $hash=(Get-FileHash -LiteralPath $old.FullName -Algorithm SHA256).Hash
+        $hash=Get-Sha256 $old.FullName
         $backup=Join-Path $backupRoot ($old.Name+'.'+$hash+'.bak')
         Move-Item -LiteralPath $old.FullName -Destination $backup -Force
         $moved+=@{Original=$old.FullName;Backup=$backup}
     }
     $writing=$true
     Copy-Item -LiteralPath $staged -Destination $destination
-    if((Get-FileHash -LiteralPath $destination -Algorithm SHA256).Hash -ne $manifest.sha256) {throw 'Installed hash verification failed.'}
+    if((Get-Sha256 $destination) -ne $manifest.sha256) {throw 'Installed hash verification failed.'}
     Write-Host ('Updated to '+$manifest.version+' (SHA-256 verified).') -ForegroundColor Green
     Write-Host ('Installed: '+$destination)
     Write-Host 'Your costumes, room settings and host certificate were kept.'
