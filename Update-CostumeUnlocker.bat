@@ -27,7 +27,14 @@ if(!(Test-Path -LiteralPath (Join-Path $gameRoot 'Last Epoch.exe'))) {throw 'Thi
 if(!(Test-Path -LiteralPath (Join-Path $gameRoot 'MelonLoader\net6\MelonLoader.dll'))) {throw 'Install MelonLoader 0.7.3 x64 first.'}
 Write-Host 'Checking the latest Costume Unlocker release...'
 if($ReleaseDirectory) {$manifest=Get-Content -LiteralPath (Join-Path $ReleaseDirectory 'latest.json') -Raw | ConvertFrom-Json}
-else {$manifest=Invoke-RestMethod -Uri ($repo+'latest.json?cache='+[DateTime]::UtcNow.Ticks) -TimeoutSec 25}
+else {
+    # Read both the manifest and DLL from one immutable commit, avoiding stale
+    # raw/main CDN responses while a release is being published.
+    $head=Invoke-RestMethod -Uri ('https://api.github.com/repos/cielthephantom2/CostumeUnlocker/commits/main?cache='+[DateTime]::UtcNow.Ticks) -Headers @{'User-Agent'='CostumeUnlocker-Updater';Accept='application/vnd.github+json'} -TimeoutSec 25
+    if($head.sha -notmatch '^[a-fA-F0-9]{40}$') {throw 'Invalid release commit.'}
+    $repo='https://raw.githubusercontent.com/cielthephantom2/CostumeUnlocker/'+$head.sha+'/'
+    $manifest=Invoke-RestMethod -Uri ($repo+'latest.json') -TimeoutSec 25
+}
 if($manifest.schema -ne 1 -or $manifest.version -notmatch '^\d+\.\d+\.\d+$' -or $manifest.sha256 -notmatch '^[A-Fa-f0-9]{64}$') {throw 'Invalid release manifest.'}
 $fileName='CostumeUnlocker.dll'
 if($manifest.path -cne ('Mods/'+$fileName) -or $manifest.size -le 0 -or $manifest.size -gt 10485760) {throw 'Invalid release filename or size.'}
