@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "version": "0.4.6",
+  "version": "0.4.7",
   "path": "Mods/CostumeUnlocker.dll",
-  "sha256": "91F0185CBD7480EBB041225899521C36E66F82D17E368D681240583AD53CE0AB",
-  "size": 235008
+  "sha256": "43B6645BBDC5E862F3EAD8759A1850AF4F07A45EFA70A8ED36EF9AA0BBB5F5B6",
+  "size": 230400
 }
