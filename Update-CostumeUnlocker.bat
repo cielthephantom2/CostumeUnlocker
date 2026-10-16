@@ -3,13 +3,16 @@ setlocal
 set "CU_UPDATE_SELF=%~f0"
 set "CU_GAME_PATH=%~1"
 if not defined CU_GAME_PATH set "CU_GAME_PATH=%~dp0"
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$t=[IO.File]::ReadAllText($env:CU_UPDATE_SELF);$m='### POWERSHELL_PAYLOAD ###'; & ([scriptblock]::Create($t.Substring($t.LastIndexOf($m)+$m.Length))) -GamePath $env:CU_GAME_PATH"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$t=[IO.File]::ReadAllText($env:CU_UPDATE_SELF);$m='### POWERSHELL_PAYLOAD ###'; & ([scriptblock]::Create($t.Substring($t.LastIndexOf($m)+$m.Length))) -GamePath $env:CU_GAME_PATH -LaunchGame"
 set "CU_RESULT=%ERRORLEVEL%"
-echo.
-pause
+if not "%CU_RESULT%"=="0" (
+    echo.
+    echo Update or launch failed. See the error above.
+    pause
+)
 exit /b %CU_RESULT%
 ### POWERSHELL_PAYLOAD ###
-param([string]$GamePath,[string]$ReleaseDirectory)
+param([string]$GamePath,[string]$ReleaseDirectory,[switch]$LaunchGame)
 $ErrorActionPreference='Stop'
 $ProgressPreference='SilentlyContinue'
 [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12
@@ -25,6 +28,21 @@ if(!$GamePath -or !(Test-Path -LiteralPath (Join-Path $GamePath 'Last Epoch.exe'
 $gameRoot=(Resolve-Path -LiteralPath $GamePath).Path
 if(!(Test-Path -LiteralPath (Join-Path $gameRoot 'Last Epoch.exe'))) {throw 'This folder does not contain Last Epoch.exe.'}
 if(!(Test-Path -LiteralPath (Join-Path $gameRoot 'MelonLoader\net6\MelonLoader.dll'))) {throw 'Install MelonLoader 0.7.3 x64 first.'}
+function Start-UpdatedGame {
+    if(!$LaunchGame) {return}
+    $exe=Join-Path $gameRoot 'Last Epoch.exe'
+    foreach($game in (Get-Process 'Last Epoch' -ErrorAction SilentlyContinue)) {
+        if(!$game.Path -or $game.Path -eq $exe) {Write-Host 'The game is already running.';return}
+    }
+    Write-Host 'Starting Last Epoch...'
+    $parent=[IO.Directory]::GetParent($gameRoot)
+    $steamManifest=if($parent -and $parent.Parent) {Join-Path $parent.Parent.FullName 'appmanifest_899770.acf'} else {''}
+    if($steamManifest -and (Test-Path -LiteralPath $steamManifest) -and
+        ([IO.File]::ReadAllText($steamManifest) -match '"installdir"\s+"Last Epoch"') -and
+        [IO.Path]::GetFileName($gameRoot) -eq 'Last Epoch' -and $parent.Name -eq 'common') {
+        Start-Process -FilePath 'steam://rungameid/899770'
+    } else {Start-Process -FilePath $exe -WorkingDirectory $gameRoot -WindowStyle Normal}
+}
 Write-Host 'Checking the latest Costume Unlocker release...'
 if($ReleaseDirectory) {$manifest=Get-Content -LiteralPath (Join-Path $ReleaseDirectory 'latest.json') -Raw | ConvertFrom-Json}
 else {
@@ -44,6 +62,7 @@ $pattern='^CostumeUnlocker(?:-\d+\.\d+\.\d+(?:\.\d+)?)?\.dll$'
 $active=@(Get-ChildItem -LiteralPath $modsRoot -Filter 'CostumeUnlocker*.dll' -File -ErrorAction SilentlyContinue | Where-Object Name -match $pattern)
 if($active.Count -eq 1 -and $active[0].Name -ceq $fileName -and (Get-Sha256 $active[0].FullName) -eq $manifest.sha256) {
     Write-Host ('Already up to date: '+$manifest.version+' (SHA-256 verified).') -ForegroundColor Green
+    Start-UpdatedGame
     return
 }
 foreach($game in (Get-Process 'Last Epoch' -ErrorAction SilentlyContinue)) {
@@ -92,4 +111,5 @@ try {
     foreach($temporary in @($download,$staged)) {if(Test-Path -LiteralPath $temporary) {Remove-Item -LiteralPath $temporary -Force}}
     if(Test-Path -LiteralPath $work) {[IO.Directory]::Delete($work,$false)}
 }
+Start-UpdatedGame
 
