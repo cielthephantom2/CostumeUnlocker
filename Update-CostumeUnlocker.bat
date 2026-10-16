@@ -102,7 +102,7 @@ try {
     if((Get-Sha256 $destination) -ne $manifest.sha256) {throw 'Installed hash verification failed.'}
     Write-Host ('Updated to '+$manifest.version+' (SHA-256 verified).') -ForegroundColor Green
     Write-Host ('Installed: '+$destination)
-    Write-Host 'Your costumes, room settings and host certificate were kept.'
+    Write-Host 'Your costumes and room settings were kept.'
 } catch {
     if($writing -and (Test-Path -LiteralPath $destination)) {Remove-Item -LiteralPath $destination -Force}
     foreach($entry in $moved) {Copy-Item -LiteralPath $entry.Backup -Destination $entry.Original -Force}
