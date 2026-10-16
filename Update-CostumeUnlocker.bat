@@ -29,7 +29,7 @@ Write-Host 'Checking the latest Costume Unlocker release...'
 if($ReleaseDirectory) {$manifest=Get-Content -LiteralPath (Join-Path $ReleaseDirectory 'latest.json') -Raw | ConvertFrom-Json}
 else {$manifest=Invoke-RestMethod -Uri ($repo+'latest.json?cache='+[DateTime]::UtcNow.Ticks) -TimeoutSec 25}
 if($manifest.schema -ne 1 -or $manifest.version -notmatch '^\d+\.\d+\.\d+$' -or $manifest.sha256 -notmatch '^[A-Fa-f0-9]{64}$') {throw 'Invalid release manifest.'}
-$fileName='CostumeUnlocker-'+$manifest.version+'.dll'
+$fileName='CostumeUnlocker.dll'
 if($manifest.path -cne ('Mods/'+$fileName) -or $manifest.size -le 0 -or $manifest.size -gt 10485760) {throw 'Invalid release filename or size.'}
 $modsRoot=Join-Path $gameRoot 'Mods'
 $destination=Join-Path $modsRoot $fileName
