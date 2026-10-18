@@ -41,3 +41,15 @@ SkillEffects, CharacterEffects, CosmeticSharing, TransitionHandling và Cosmetic
 Mỗi nhóm có trạng thái hiệu lực ghi trong MelonLoader/Latest.log; nhóm bị tắt cũng liệt kê trên F4. Slider và lựa chọn tiện ích thường vẫn lưu trong CostumeUnlocker.Panel.json.
 
 
+
+## 0.4.25
+
+Tự Host/Join với vai trò cố định. F4 chọn **This PC hosts** trên máy chủ, **This PC joins** trên máy bạn; máy Join nhập IPv4 của host một lần, cùng TCP port 7777. Bật Auto connect rồi **Save & connect now**. Vai trò/IP/port được lưu riêng từng máy. Cài mới mặc định Join; chưa có IP thì chờ cấu hình. Chủ repo được đặt Host trên máy cá nhân, không nhúng IP hay nhận diện PC vào DLL công khai.
+
+Mở game là tự thử kết nối; nếu thất bại thì thử lại mỗi **60 giây**. Kết nối đã hoạt động không bị ngắt để thử lại. Pause/disconnect tạm dừng, Resume bật lại. Phải giữ CosmeticSharing và Cosmetics bật trong Features.json. Host vẫn cần TCP port forwarding nếu kết nối Internet.
+
+Tối ưu: tái sử dụng preset, roster và bộ nhớ quét nhân vật; không tạo lại danh sách member hay áp lại cosmetic chỉ vì heartbeat. Heartbeat từ 2 lên 8 giây, vẫn tương thích giao thức v3. Cache công tắc feature và tham số khởi động thay vì đọc/đổi tên enum mỗi update. Dấu quái minimap chỉ lấy alignment nhân vật một lần mỗi pass, bỏ kiểm tra lặp cho actor đã đăng ký. Giữ ngân sách/tần suất quét minimap cũ. Sửa trạng thái host giả khi bind port thất bại để có thể tự retry.
+
+108 kiểm tra hồi quy qua, gồm TCP nhiều peer, mất host/reconnect, timer 60 giây, không chồng job, cache roster và port bị chiếm. Chưa có số đo FPS thực hoặc kiểm thử Internet giữa hai PC cho bản này.
+
+
