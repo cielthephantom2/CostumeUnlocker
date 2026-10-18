@@ -63,3 +63,13 @@ Sửa panel bị cắt ngay sau dòng Cosmetic sharing: log xác nhận GUILayou
 Giữ tự Host/Join, retry 60 giây và các tối ưu 0.4.25. Build không warning/error; 93 kiểm tra qua, gồm kiểm tra metadata DLL không còn FeatureSwitches/FeatureOptions, chuỗi đường dẫn config feature hoặc lời gọi Toolbar. Native startup đăng ký đủ patch. QA GUI riêng bị timeout và chưa xác nhận trực tiếp panel render/click trong game; không tuyên bố đã qua QA giao diện hay online.
 
 
+
+## 0.4.27
+
+Bổ sung ánh xạ skin Elemental Nova (Shattered/Madness) cho các ability con băng, lửa, sét và channel. Kiểm tra asset PermaLoad và NovaMutator của client cho thấy Nova gốc không có visualSoftRef/alternateVisuals; mutator chọn prefab từ các ability con riêng. Các nhánh này chưa được ánh xạ kế thừa cosmetic từ Nova gốc.
+
+Thêm alias chọn visual cho client local/remote, đọc các prefab/VFX impact của nhánh con khi dựng bảng thay thế, và preload các tham chiếu này. Chỉ thay tham chiếu visual của client; giữ ability ID, gameplay và prefab dùng chung. Các skin khác chưa được khẳng định đã sửa bởi thay đổi này.
+
+Build không warning/error; 93 kiểm tra hồi quy qua. Đã thêm phép thử native Nova tập trung (Test-Native.ps1 -NovaOnly) cho cả hai skin và bốn nhánh con, nhưng chưa chạy được vì game người dùng đang mở. Chưa xác nhận hiệu ứng Nova trong phiên online. Lỗi chấm quái tại vùng chưa khám phá vẫn đang điều tra, không nằm trong bản này.
+
+
