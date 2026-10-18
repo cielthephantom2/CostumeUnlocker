@@ -73,3 +73,10 @@ Thêm alias chọn visual cho client local/remote, đọc các prefab/VFX impact
 Build không warning/error; 93 kiểm tra hồi quy qua. Đã thêm phép thử native Nova tập trung (Test-Native.ps1 -NovaOnly) cho cả hai skin và bốn nhánh con, nhưng chưa chạy được vì game người dùng đang mở. Chưa xác nhận hiệu ứng Nova trong phiên online. Lỗi chấm quái tại vùng chưa khám phá vẫn đang điều tra, không nằm trong bản này.
 
 
+
+## 0.4.28
+
+Sửa lỗi chọn skin báo `No free native skill cosmetic slot`: ô skill đã Clear vẫn có mục rỗng trong preset, nhưng allocator cũ coi mọi mục đã lưu là ô bị chiếm. Bản mới dùng lựa chọn có hiệu lực: giá trị rỗng là ô trống, cùng ability được thay tại ô cũ, cosmetic khác vẫn được giữ. Không xóa preset hoặc baseline cosmetic gốc.
+
+Release build không warning/error; 100 kiểm tra qua, gồm 7 kiểm tra hồi quy cấp phát slot. Chưa kiểm thử trực tiếp online vì game đang mở. Giữ thay đổi Nova của 0.4.27; hiệu ứng Nova online và các lỗi khác không được khẳng định đã sửa bởi bản này.
+
