@@ -53,3 +53,13 @@ Tối ưu: tái sử dụng preset, roster và bộ nhớ quét nhân vật; kh�
 108 kiểm tra hồi quy qua, gồm TCP nhiều peer, mất host/reconnect, timer 60 giây, không chồng job, cache roster và port bị chiếm. Chưa có số đo FPS thực hoặc kiểm thử Internet giữa hai PC cho bản này.
 
 
+
+## 0.4.26
+
+Bỏ hoàn toàn hệ thống file feature true/false. DLL không còn đọc/tạo CostumeUnlocker.Features.json; file cũ dù tồn tại cũng bị bỏ qua. Tất cả 88 lớp native patch được đăng ký mặc định. Các lựa chọn sử dụng thông thường trong F4, preset cosmetic, IP/port và vai trò Host/Join vẫn được giữ.
+
+Sửa panel bị cắt ngay sau dòng Cosmetic sharing: log xác nhận GUILayout.Toolbar ném NotSupportedException: Method unstripping failed. Thay Toolbar bằng hai nút Host/Join sử dụng GUILayout.Button. Không còn dòng Feature config/Disabled trên panel. Có bảo vệ đóng panel nếu xảy ra lỗi vẽ bất ngờ để tránh spam exception mỗi frame; cuộn ngoài được giải phóng qua finally.
+
+Giữ tự Host/Join, retry 60 giây và các tối ưu 0.4.25. Build không warning/error; 93 kiểm tra qua, gồm kiểm tra metadata DLL không còn FeatureSwitches/FeatureOptions, chuỗi đường dẫn config feature hoặc lời gọi Toolbar. Native startup đăng ký đủ patch. QA GUI riêng bị timeout và chưa xác nhận trực tiếp panel render/click trong game; không tuyên bố đã qua QA giao diện hay online.
+
+
