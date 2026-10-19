@@ -1,6 +1,6 @@
-# Offline Co-op 1.0.9-dev.16 / protocol 28
+# Offline Co-op 1.0.9-dev.17 / protocol 28
 
-Update notice: New update available is now red in the F4 panel. Other update statuses retain the normal label color. Release build passed with zero warnings/errors; in-game color verification is pending.
+Update notice: New update available is red and Latest version (up to date) is green in the F4 panel. Other update statuses retain the normal label color. Release build passed with zero warnings/errors; in-game color verification is pending.
 
 This repository now distributes offline Co-op at the owner's request. CostumeUnlocker.dll has been removed. This replaces the online cosmetic-only mod with an offline development candidate.
 
