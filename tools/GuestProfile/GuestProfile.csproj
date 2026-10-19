@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
+    <AssemblyName>LastEpochLAN.GuestProfile</AssemblyName><Version>0.1.0</Version><TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RuntimeRoot Condition="'$(RuntimeRoot)' == ''">../../runtime</RuntimeRoot>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MelonLoader"><HintPath>$(RuntimeRoot)/MelonLoader/net6/MelonLoader.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="0Harmony"><HintPath>$(RuntimeRoot)/MelonLoader/net6/0Harmony.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2CppLE.Core"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/Il2CppLE.Core.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2CppInterop.Runtime"><HintPath>$(RuntimeRoot)/MelonLoader/net6/Il2CppInterop.Runtime.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2Cppmscorlib"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/Il2Cppmscorlib.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

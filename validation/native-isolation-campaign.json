@@ -1,0 +1,24 @@
+{
+  "passed": false,
+  "nativeEncounterIsolation": [
+    {
+      "path": "native-item-rewards",
+      "created": 9,
+      "corrupted": 4
+    },
+    {
+      "path": "native-full-rewards",
+      "created": 10,
+      "corrupted": 4
+    }
+  ],
+  "scope": "Private native Omen drops after removal of legacy encounter hooks; no co-op acceptance",
+  "observationsPassed": true,
+  "runtimeErrors": [
+    "2026-10-19T18:35:02.3075535+00:00\tError\tActor is null",
+    "2026-10-19T18:35:03.2195532+00:00\tException\tPlayFab.PlayFabException: Must be logged in to call this method",
+    "2026-10-19T18:35:03.4715527+00:00\tError\tUserIdentity not yet initialized, returning null. at PlayerActorSync#UserIdentity:74",
+    "2026-10-19T18:35:03.8355007+00:00\tException\tPlayFab.PlayFabException: Must be logged in to call this method",
+    "2026-10-19T18:35:06.6307972+00:00\tError\tEncounterPlacementData is null, it should not be at this point"
+  ]
+}

@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable>
+    <AssemblyName>LastEpochLAN</AssemblyName><Version>1.1.0-encounter-rewrite.1</Version><TreatWarningsAsErrors>true</TreatWarningsAsErrors><LangVersion>12</LangVersion><AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RuntimeRoot Condition="'$(RuntimeRoot)' == ''">../../runtime</RuntimeRoot>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/*.dll"><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.UIModule"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/UnityEngine.UIModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.ImageConversionModule"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/UnityEngine.ImageConversionModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.UI"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/UnityEngine.UI.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Unity.TextMeshPro"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/Unity.TextMeshPro.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2CppSirenix.Serialization"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/Il2CppSirenix.Serialization.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2CppXNode"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/Il2CppXNode.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/UnityEngine.ParticleSystemModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2CppLE.Core"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/Il2CppLE.Core.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2CppUniTask"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/Il2CppUniTask.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2CppCSharp.OperationResult"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/Il2CppCSharp.OperationResult.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2CppSystem"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/Il2CppSystem.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2CppLidgren.Network"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/Il2CppLidgren.Network.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2CppLE.Networking.Core"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/Il2CppLE.Networking.Core.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2CppLE.Addressables"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/Il2CppLE.Addressables.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.AnimationModule"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/UnityEngine.AnimationModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="0Harmony"><HintPath>$(RuntimeRoot)/MelonLoader/net6/0Harmony.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.AIModule"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/UnityEngine.AIModule.dll</HintPath><Private>false</Private></Reference>
+    <ProjectReference Include="../LastEpochLAN.Core/LastEpochLAN.Core.csproj" />
+    <Reference Include="MelonLoader"><HintPath>$(RuntimeRoot)/MelonLoader/net6/MelonLoader.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2CppInterop.Runtime"><HintPath>$(RuntimeRoot)/MelonLoader/net6/Il2CppInterop.Runtime.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2Cppmscorlib"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/Il2Cppmscorlib.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2CppLE"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/Il2CppLE.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.IMGUIModule"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/UnityEngine.IMGUIModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.InputLegacyModule"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/UnityEngine.InputLegacyModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.PhysicsModule"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/UnityEngine.PhysicsModule.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

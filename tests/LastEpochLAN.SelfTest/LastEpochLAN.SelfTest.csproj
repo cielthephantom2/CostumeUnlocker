@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><TreatWarningsAsErrors>true</TreatWarningsAsErrors></PropertyGroup>
+  <ItemGroup><ProjectReference Include="../../src/LastEpochLAN.Core/LastEpochLAN.Core.csproj" /></ItemGroup>
+  <ItemGroup><Compile Include="../../src/LastEpochLAN.Mod/OfflineTools/CharacterSetupGate.cs" Link="CharacterSetupGate.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="../../src/LastEpochLAN.Mod/ReleaseUpdateChecker.cs" Link="ReleaseUpdateChecker.cs" /></ItemGroup>
+</Project>
