@@ -1,4 +1,6 @@
-# Offline Co-op 1.0.9-dev.17 / protocol 28
+# Offline Co-op 1.0.9-dev.18 / protocol 29
+
+Shared ordinary Echo development candidate: Host selects an Echo and Guests receive native run/metadata plus generation context, follow through native load/entry and return through Rest. Host publishes objectives, completion and per-player reward data; participation and durable write-ahead claims guard duplicate grants. Player/world RunId matching gates combat across consecutive same-scene Echoes. Update BOTH DLLs on BOTH PCs: protocol is now 29. Quest Echo/timeline boss progression, Woven/Tombs and Arena/Dungeon/Pinnacle are not supported. 489 managed/network checks, 30 source-linked Monolith adapter checks, 16 animation adapter checks and isolated native bootstrap/inactive-component smoke passed. Native Echo gameplay, actual rewards and two-PC acceptance remain unverified. Host should wait for party loot collection before selecting the next Echo. See [Vietnamese development report](MONOLITH-dev18-VI.md).
 
 Update notice: New update available is red and Latest version (up to date) is green in the F4 panel. Other update statuses retain the normal label color. Release build passed with zero warnings/errors; in-game color verification is pending.
 
