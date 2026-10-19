@@ -50,11 +50,12 @@ internal sealed class NativeAssetProbe : IDisposable
                 var classes = Il2Cpp.CharacterClassList.get();
                 if (classes == null || classes.classes.Count < 5) throw new InvalidOperationException("Native class assets did not initialize.");
                 NativeGiftDataSmoke.Run();
+                var corruptionCalculator = OfflineTools.CorruptionNativeSmoke.Run();
                 bool vfxOnly = Environment.GetCommandLineArgs().Contains("--lelan-vfx-smoke") || Environment.GetCommandLineArgs().Contains("--lelan-gift-smoke");
                 var models = vfxOnly ? null : ClassVisualReplica.Smoke();
                 var animation = vfxOnly ? null : NativeClassAnimator.Smoke();
                 Passed = true;
-                Result = new { passed = true, giftItemStatsRoundTrip = true, classCount = classes.classes.Count, models, animation,
+                Result = new { passed = true, giftItemStatsRoundTrip = true, classCount = classes.classes.Count, models, animation, corruptionCalculator,
                     localActorAbsent = Il2Cpp.PlayerFinder.getPlayerActor() == null,
                     scope = vfxOnly ? "Private native asset bootstrap for feature QA; class model checks not run" :
                         "Native assets, five class visual prefabs and native movement animation drivers in a private save profile; no campaign entry or combat validation" };

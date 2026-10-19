@@ -79,8 +79,7 @@ try {
     if ($NativeEncounters) { $qaArguments += '--lelan-encounter-smoke' }
     if ($NativeStatus) { $qaArguments += '--lelan-status-smoke' }
     if ($OfflineTools) { $qaArguments += '--lelan-offline-tools-smoke' }
-    if ($OmenRewards) { $NativeCampaign = $true }
-if ($NativeVfx) { $qaArguments += '--lelan-vfx-smoke' }
+    if ($NativeVfx) { $qaArguments += '--lelan-vfx-smoke' }
     if ($NativeGift) { $qaArguments += '--lelan-gift-smoke' }
     if ($GiftReload) { $qaArguments += '--lelan-gift-reload' }
     if ($GiftTransfer) { $qaArguments += '--lelan-gift-transfer' }

@@ -1,33 +1,34 @@
-# Encounter rewrite — source-only development branch
+# TM Last Epoch Co-op Mod — 1.1.0-dev.1
 
-This branch removes the legacy co-op encounter implementation and starts a replacement. It is **not a playable encounter release**. There are no downloadable game DLLs, update manifest or updater on this branch. The automatic updater on main still distributes dev.27, which has reported encounter problems.
+Development release, protocol **32**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). Both Host and Client must update. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
 
-Experimental source version: `1.1.0-encounter-rewrite.1`, protocol `32`.
+**Legacy encounter synchronization has been removed. Its replacement is not wired into gameplay yet.** This release is published at the user's request so both PCs can obtain the same cleanup build. Encounter interactions/rewards and generic map interactions are not synchronized. It does not provide shared Nemesis, Omen Window, Blood Crystal, Exiled Mage or Rift Beast gameplay. Native solo encounter behavior needs complete in-game regression testing.
 
-The old Nemesis/Omen/shrine/random encounter adapters, generic interaction callback replay, scene graph/object replay and legacy encounter wire path are removed. Solo encounter callbacks are left to the native game. Offline bonuses remain. NPC movement, animation, VFX, combat and party travel code is retained; doors, quests and map interactions need regression testing because generic replay has been removed.
+Echo of a World / Shade of Orobyss now gives **x5 positive Corruption gain**, including native Gaze and catch-up bonuses. For example, +10 becomes +50. Existing Corruption is not multiplied; the native timeline cap and non-positive outcomes are preserved. Preview and completion use the same patched native calculator. The game still owns progress persistence.
 
-A new room-owned, typed Host state machine is in `src/LastEpochLAN.Core/Encounters/EncounterHost.cs`. It has no Unity/Harmony dependencies and does not grant rewards. Dedicated encounter transport, per-family native adapters, client presentation and durable per-player reward execution are **not implemented yet**. It is not wired into gameplay.
+NPC movement, animation, VFX, minions, combat and party travel code is retained. That is not a two-PC acceptance claim; doors, quests and map interactions need regression after generic replay removal. The new typed Host encounter state machine is a managed foundation only; dedicated transport, per-family native adapters, presentation and durable private rewards remain unfinished.
 
-See [Vietnamese progress, evidence and acceptance gates](ENCOUNTER-REWRITE-VI.md).
+See [Vietnamese release report](RELEASE-1.1.0-dev1-VI.md) and [historical rewrite milestone](ENCOUNTER-REWRITE-VI.md).
 
 ## Validation
 
 - Release build: zero warnings/errors.
-- 500 managed checks pass, including 23 new authority checks using accepted peer state from actual loopback TCP. Encounter commands themselves are not yet transported.
-- Compiled audit: 7 checks pass across 103 Harmony classes; no legacy encounter or generic callback replay hooks remain. The explicitly retained CoF Rank 7 offline quantity bonus is excluded from that prohibition.
-- Private native Omen isolation observations: both item-only and full native reward paths create ground items, including 4 Corrupted items each. This does not test a complete encounter.
-- Full native campaign QA **fails** with five sandbox bootstrap errors; observations are recorded separately. No two-PC acceptance claimed.
+- 505 managed checks pass, including reward delta, component, cap and overflow cases.
+- Compiled audit: 7 checks pass across 104 Harmony classes; no legacy encounter or generic interaction replay hooks. CoF Rank 7's offline quantity bonus is explicitly retained.
+- Native asset/adapter sandbox QA passes on the distributed DLL pair. Actual patched Corruption calculator: 100 → 130; with two Gaze, 100 → 250; capped timeline 49 → 50; repeated preview is stable. This does not validate a boss kill or saved progression.
+- 15 updater fixture checks pass. No production saves or installed DLLs were modified during QA.
+- Earlier full native campaign QA remains failed with five sandbox bootstrap errors; no complete solo encounter or two-PC acceptance is claimed.
 
-No real saves or production log dumps are included. Production game DLLs/saves were not modified.
+Evidence lives in `validation/`. Earlier milestone reports refer to their own builds, not the current DLL hashes.
 
-## Build and check
+## Build
 
-Native game/loader references are not distributed. Supply a matching private runtime directory (the tested build uses Unity 6000.4.8f1 and MelonLoader 0.7.3).
+Native game/loader references are private and not distributed. The tested runtime uses Unity 6000.4.8f1 and MelonLoader 0.7.3.
 
 ```powershell
 dotnet build src/LastEpochLAN.Mod/LastEpochLAN.Mod.csproj -c Release -p:RuntimeRoot="<runtime>"
-dotnet run --project tests/LastEpochLAN.SelfTest -c Release -- validation/managed-rewrite.json
-dotnet run --project tools/EncounterPatchAudit -c Release -p:RuntimeRoot="<runtime>" -- src/LastEpochLAN.Mod/bin/Release/net6.0/LastEpochLAN.dll src/LastEpochLAN.Core/bin/Release/net6.0/LastEpochLAN.Core.dll validation/patch-audit.json "<runtime>"
+dotnet run --project tests/LastEpochLAN.SelfTest -c Release -- validation/managed-release-dev1.json
+dotnet run --project tools/EncounterPatchAudit -c Release -p:RuntimeRoot="<runtime>" -- src/LastEpochLAN.Mod/bin/Release/net6.0/LastEpochLAN.dll src/LastEpochLAN.Core/bin/Release/net6.0/LastEpochLAN.Core.dll validation/patch-audit-release-dev1.json "<runtime>"
 ```
 
-Native QA is optional and requires the game to be closed. It creates a disposable sandbox/character rather than using existing saves. Inspect `Test-NativeAdapter.ps1` and build `tools/GuestProfile` against the same private runtime before the Omen isolation test. `-NativeEncounters` is intentionally rejected because the legacy test was removed. `-OmenRewards` runs the isolation test; any Unity/runtime error makes the whole native QA fail.
+Native QA requires the game closed and an explicitly prepared private runtime/sandbox. Inspect `Test-NativeAdapter.ps1` first. `-NativeEncounters` is intentionally rejected; `-OmenRewards` only tests isolated native reward methods. Full campaign errors remain failures even when individual observations pass. `tests/Test-PublicUpdater.ps1` is the current updater test; `Test-Updater.ps1` is a historical test for the older release installer.

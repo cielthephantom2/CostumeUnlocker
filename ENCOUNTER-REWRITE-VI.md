@@ -1,5 +1,7 @@
 # Viết lại co-op encounter — mốc nền 1, ngày 20/10/2026
 
+> Báo cáo lịch sử cho commit `a22f3fa`, khi nhánh chỉ có source. Sau đó người dùng yêu cầu đưa bản gỡ cơ chế cũ lên main: xem [bản phát hành 1.1.0-dev.1](RELEASE-1.1.0-dev1-VI.md). Nhận định dưới đây về chưa có DLL/updater chỉ áp dụng cho mốc lịch sử này.
+
 Theo yêu cầu bỏ hệ thống encounter co-op hiện tại, công việc chuyển sang nhánh `encounter-rewrite`. Dừng bản vá Omen đang thử; không đưa nhánh mở rộng encounter cũ vào bản cập nhật.
 
 ## Đã thực hiện

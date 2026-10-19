@@ -14,7 +14,8 @@ internal static class OfflineChangelog
         $"• Diện tích ảnh hưởng của kỹ năng (AoE) +{OfflineBonusRules.Area*100:0}%.\n"+
         $"• Hồi mana +{OfflineBonusRules.ManaRegen*100:0}%; hồi máu +{OfflineBonusRules.HealthRegen*100:0}%.\n"+
         "• Unique có thể roll Legendary Potential luôn đạt tối thiểu 1 LP; giữ các kết quả LP cao hơn.\n"+
-        "• Vàng trong Monolith: hệ số = corruption / 40, tối thiểu x1. Ví dụ: 1.000 corruption → x25 vàng.\n\n"+
+        "• Vàng trong Monolith: hệ số = corruption / 40, tối thiểu x1. Ví dụ: 1.000 corruption → x25 vàng.\n"+
+        "• Echo of a World (Shade of Orobyss): Corruption nhận thêm x5, gồm Gaze và bonus bắt kịp. Ví dụ +10 → +50; giữ giới hạn timeline và lượt giảm Corruption.\n\n"+
         "<b>MẬT ĐỘ QUÁI</b>\n"+
         $"• Ngoài Monolith: mật độ sinh quái x{DensityRules.Multiplier(false,0):0}.\n"+
         "• Trong Monolith: hệ số = corruption / 100, tối thiểu x1. Ví dụ: 1.000 corruption → x10.\n"+

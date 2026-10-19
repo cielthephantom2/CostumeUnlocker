@@ -3,3 +3,5 @@
 runtime/
 *.pdb
 *.user
+qa-adapter-runtime/
+research/
