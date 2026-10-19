@@ -1,4 +1,6 @@
-# Offline Co-op 1.0.9-dev.21 / protocol 29
+# Offline Co-op 1.0.9-dev.22 / protocol 30
+
+Co-op hotfix: enable render-frame smoothing for remote player projectile snapshots; generate Nemesis helper loot with the native guest multipliers, independent of encounter visual loading/despawning; replace legacy Monolith serialization with the full native network run codec (including EchoWeb/shared data). Update BOTH DLLs on BOTH PCs; protocol is now 30. Release build clean; 499 managed/network checks and 36 Monolith, 6 Nemesis reward, 16 animation and 22 Fortune source-linked stub checks passed. New native/two-PC gameplay acceptance is pending because the game remains running. See [Vietnamese hotfix report](COOP-HOTFIX-dev22-VI.md).
 
 Mod Settings cleanup: removed the redundant Offline bonuses panel; its information remains in the Vietnamese Changelog. DPS controls now occupy the top of the right column. Gameplay bonuses unchanged. Release build passed with zero warnings/errors; in-game render verification is pending.
 
