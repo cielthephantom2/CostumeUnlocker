@@ -1,4 +1,4 @@
-# Offline Co-op 1.0.9-dev.11 / protocol 28
+# Offline Co-op 1.0.9-dev.12 / protocol 28
 
 This repository now distributes offline Co-op at the owner's request. CostumeUnlocker.dll has been removed. This replaces the online cosmetic-only mod with an offline development candidate.
 
@@ -13,7 +13,9 @@ Update BOTH PCs. Both DLLs are required. Remove CostumeUnlocker.dll from Mods to
 
 Download the current `update.bat` and place it in the game folder, then run it after exiting the game. Alternatively pass the game folder as its first argument. It verifies both DLLs against SHA-256 from a single immutable GitHub commit, backs up replaced/conflicting DLLs, updates the pair and starts the game. It never closes your game or deletes saves/presets. Existing old Costume updater copies are incompatible; download this new batch instead.
 
-Character-loading hotfix: removed the native creation async MoveNext hook. Campaign setup waits until the new player has spawned, loading has ended, and the scene is stable. End of Time travel is issued once and observed; Retry cannot overlap a pending save or travel. 425 managed/network checks passed, including 9 new lifecycle guards; clean Release build. Real new-character creation still needs in-game verification. This update does not fix Guest NPC stutter, Guest DPS or Lightning Blast chain.
+NPC presentation iteration: animation/control/VFX snapshots now share the buffered pose timeline, disabled complex visual drivers advance each render frame, attack replay avoids duplicate starts, and native spawn admission prioritizes nearby Guest enemies. 437 managed/network checks and 9 source-linked adapter checks with recording API stubs passed. Both DLLs changed and must be updated together. Native visuals, real two-PC smoothness and game FPS remain unverified; Guest DPS and Lightning Blast chain are still pending. See [NPC report](NPC-SYNC-dev12-VI.md).
+
+Previous character-loading hotfix: removed the native creation async MoveNext hook. Campaign setup waits until the new player has spawned, loading has ended, and the scene is stable. End of Time travel is issued once and observed; Retry cannot overlap a pending save or travel. 425 managed/network checks passed, including 9 new lifecycle guards; clean Release build. Real new-character creation still needs in-game verification. This update does not fix Guest NPC stutter, Guest DPS or Lightning Blast chain.
 
 Previous UI update: simplified Host status and Mod Settings labels; persistent Show/Hide DPS control; character setup retry tooltip. Release build passed with zero warnings/errors. In-game UI validation is pending.
 
