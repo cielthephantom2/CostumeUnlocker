@@ -1,4 +1,6 @@
-# Offline Co-op 1.0.9-dev.25 / protocol 31
+# Offline Co-op 1.0.9-dev.26 / protocol 31
+
+Remote skill visual lifecycle hotfix: guard destroyed Unity roots/prefab children before terminal/absent cleanup, contain per-visual cleanup/render failures and retry active lost visuals with a bounded delay. Preserve render-frame smoothing, duplicate-sample clocks and healthy NPC burst lifetimes. Update BOTH DLLs on BOTH PCs to dev.26; protocol remains 31. Release clean; 521 managed/network, 22 source-linked VFX lifecycle, 46 Monolith and 16 animation recording-stub checks passed. New native destroyed-wrapper smoke and actual two-PC rendering remain unverified because gameplay is running. See [Vietnamese dev.26 report](COOP-HOTFIX-dev26-VI.md).
 
 Echo objective HUD hotfix: reconstruct native MonolithObjectiveDescription objects instead of the base description that fails the game's formatter cast. Objective display errors now retain the loaded Echo and retry separately; they no longer trigger travel rollback or duplicate completion rewards. Update BOTH DLLs on BOTH PCs to dev.25, restart and create a new room; protocol remains 31. Release clean; 521 managed/network and 46 source-linked Monolith recording-stub/TCP checks passed. Actual native/two-PC Echo acceptance remains unverified while gameplay is running. See [Vietnamese dev.25 report](COOP-HOTFIX-dev25-VI.md).
 
