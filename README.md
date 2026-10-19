@@ -1,4 +1,6 @@
-# Offline Co-op 1.0.9-dev.22 / protocol 30
+# Offline Co-op 1.0.9-dev.23 / protocol 30
+
+Host/Join crash and Omen item reward hotfix: remove native generic out-value dictionary reads from optional cosmetic capture; forward successful Host Omen item/Corrupted reward dispatches to eligible Guests using the native roller, with persistent duplicate protection. The reported crash log was running dev.21. Update BOTH DLLs on BOTH PCs to dev.23, restart the game and create a new room; protocol remains 30. Release clean; 499 managed/network, 11 cosmetic capture stub and 21 Omen adapter stub/TCP checks passed. Native crash resolution and actual two-PC Corrupted drops remain unverified while the game is running. See [Vietnamese dev.23 report](COOP-HOTFIX-dev23-VI.md).
 
 Co-op hotfix: enable render-frame smoothing for remote player projectile snapshots; generate Nemesis helper loot with the native guest multipliers, independent of encounter visual loading/despawning; replace legacy Monolith serialization with the full native network run codec (including EchoWeb/shared data). Update BOTH DLLs on BOTH PCs; protocol is now 30. Release build clean; 499 managed/network checks and 36 Monolith, 6 Nemesis reward, 16 animation and 22 Fortune source-linked stub checks passed. New native/two-PC gameplay acceptance is pending because the game remains running. See [Vietnamese hotfix report](COOP-HOTFIX-dev22-VI.md).
 
