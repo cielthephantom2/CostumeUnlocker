@@ -1,4 +1,6 @@
-# Offline Co-op 1.0.9-dev.19 / protocol 29
+# Offline Co-op 1.0.9-dev.20 / protocol 29
+
+Vietnamese Changelog: F4 now has a Changelog button directly below Mod Settings. It opens a scrollable Vietnamese summary of offline bonuses (movement +25%, AoE +50%, mana/health regeneration +50%, LP, gold and density), CoF/Prophecy changes, optional tools, DPS and current co-op scope. Update status sits below the new button and keeps its red/green colors. Gameplay unchanged; Core unchanged. Release build passed with zero warnings/errors; native UI rendering remains unverified.
 
 Circle of Fortune update: Rank 1 enemy double-drop chance 100%; Rank 3 50% chance for two extra Idols; Rank 5 guaranteed double Echo item rewards; Rank 6 +100% native Exalted chance; Rank 7 total x3 Experimental items from Exiled Mages; Rank 8 native LP roll multiplier x5. The minimum-one-LP policy is retained as requested. All Prophecy base reward counts double (Rare x10 to x20, Unique x2 to x4), including native picker/tooltip quantities; existing charge/lens/rank bonuses remain. Rank descriptions match the new values and preserve unlock lines. Retry character setup button/function removed; automatic new-character setup retained. Release clean; 499 managed/network and 22 source-linked recording-stub Fortune adapter checks passed. Native QA was refused while gameplay was running; native hook, render and loot acceptance remain pending. See [Fortune report](FORTUNE-dev19-VI.md).
 
