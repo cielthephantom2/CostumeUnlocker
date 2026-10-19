@@ -1,4 +1,6 @@
-# Offline Co-op 1.0.9-dev.20 / protocol 29
+# Offline Co-op 1.0.9-dev.21 / protocol 29
+
+Mod Settings cleanup: removed the redundant Offline bonuses panel; its information remains in the Vietnamese Changelog. DPS controls now occupy the top of the right column. Gameplay bonuses unchanged. Release build passed with zero warnings/errors; in-game render verification is pending.
 
 Vietnamese Changelog: F4 now has a Changelog button directly below Mod Settings. It opens a scrollable Vietnamese summary of offline bonuses (movement +25%, AoE +50%, mana/health regeneration +50%, LP, gold and density), CoF/Prophecy changes, optional tools, DPS and current co-op scope. Update status sits below the new button and keeps its red/green colors. Gameplay unchanged; Core unchanged. Release build passed with zero warnings/errors; native UI rendering remains unverified.
 
