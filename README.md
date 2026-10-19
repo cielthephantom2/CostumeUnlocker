@@ -11,7 +11,7 @@ Install MelonLoader 0.7.3 x64 for the supported game build. Copy both files, pre
 
 Update BOTH PCs. Both DLLs are required. Remove CostumeUnlocker.dll from Mods to avoid overlapping hooks. Exit the game before installing. Keep saves and presets. Choose Play Offline; F4 opens the panel. Internet hosting uses TCP 7777 and requires port forwarding/firewall configuration.
 
-The old Costume updater is incompatible with this two-DLL package and has been removed. Install manually using the paths above.
+Download the current `update.bat` and place it in the game folder, then run it after exiting the game. Alternatively pass the game folder as its first argument. It verifies both DLLs against SHA-256 from a single immutable GitHub commit, backs up replaced/conflicting DLLs, updates the pair and starts the game. It never closes your game or deletes saves/presets. Existing old Costume updater copies are incompatible; download this new batch instead.
 
 416 managed regression checks passed. Synthetic managed benchmarks show reduced sparse-world traffic and allocations, not measured two-PC FPS. Selected native observations passed; full isolated campaign QA still reports bootstrap/runtime errors. Real two-PC gameplay validation is pending.
 
