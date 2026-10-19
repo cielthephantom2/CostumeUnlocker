@@ -1,7 +1,18 @@
 {
-    "schema":  1,
-    "version":  "0.4.28",
-    "path":  "Mods/CostumeUnlocker.dll",
-    "sha256":  "62F97FE8784686E7F030AF19E5D8FC3180F5844E21E8EF8F00CE82F0DCB8A22E",
-    "size":  297472
+  "schema": 2,
+  "product": "LastEpochLAN",
+  "version": "1.0.9-dev.9",
+  "protocol": 28,
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "sha256": "182CCACB976B43B4CB71EB39BC374CF59F25FA4C7CABEE71DF9FFFB27CABADA7",
+      "size": 763392
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "sha256": "F7409B84C401A9E7B31479968C6C69B6025809D70E311F1C42B9C35701354484",
+      "size": 262656
+    }
+  ]
 }
