@@ -29,11 +29,37 @@ function Assert-Closed {
 }
 Assert-Closed
 Write-Host 'Checking offline Co-op updates...'
+function Read-ReleaseCommit([string]$advertisement) {
+    # Git's public HTTPS ref advertisement is independent of REST API quotas.
+    # Parse packet boundaries; never accept a SHA scraped from an error page.
+    if(!$advertisement -or $advertisement.Length -gt 1048576) {throw 'Invalid Git release response.'}
+    $offset=0; $service=$false; $commit=$null
+    while($offset -lt $advertisement.Length) {
+        if($offset+4 -gt $advertisement.Length) {throw 'Truncated Git release response.'}
+        $prefix=$advertisement.Substring($offset,4)
+        if($prefix -notmatch '^[0-9a-fA-F]{4}$') {throw 'Invalid Git packet header.'}
+        $length=[Convert]::ToInt32($prefix,16); $offset+=4
+        if($length -eq 0) {continue}
+        if($length -lt 4 -or $offset+$length-4 -gt $advertisement.Length) {throw 'Invalid Git packet length.'}
+        $line=$advertisement.Substring($offset,$length-4); $offset+=$length-4
+        if(!$service) {
+            if($line -cne "# service=git-upload-pack`n") {throw 'Unexpected Git service.'}
+            $service=$true; continue
+        }
+        if($line -cmatch '^([a-f0-9]{40}) refs/heads/main(?:\x00[^\n]*)?\n$') {
+            if($commit) {throw 'Duplicate release branch.'}
+            $commit=$Matches[1]
+        }
+    }
+    if(!$commit) {throw 'Release branch main was not advertised.'}
+    return $commit
+}
 if($ReleaseDirectory) {$manifest=Get-Content -LiteralPath (Join-Path $ReleaseDirectory 'latest.json') -Raw | ConvertFrom-Json}
 else {
-    $head=Invoke-RestMethod -Uri ('https://api.github.com/repos/cielthephantom2/CostumeUnlocker/commits/main?cache='+[DateTime]::UtcNow.Ticks) -Headers @{'User-Agent'='LastEpochLAN-Updater'} -TimeoutSec 25
-    if($head.sha -notmatch '^[a-fA-F0-9]{40}$') {throw 'Invalid release commit.'}
-    $base='https://raw.githubusercontent.com/cielthephantom2/CostumeUnlocker/'+$head.sha+'/'
+    $refs=Invoke-WebRequest -UseBasicParsing -Uri 'https://github.com/cielthephantom2/CostumeUnlocker.git/info/refs?service=git-upload-pack' -Headers @{'User-Agent'='LastEpochLAN-Updater';'Cache-Control'='no-cache'} -TimeoutSec 25
+    $advertisement=if($refs.Content -is [byte[]]) {[Text.Encoding]::ASCII.GetString($refs.Content)} else {[string]$refs.Content}
+    $commit=Read-ReleaseCommit $advertisement
+    $base='https://raw.githubusercontent.com/cielthephantom2/CostumeUnlocker/'+$commit+'/'
     $manifest=Invoke-RestMethod -Uri ($base+'latest.json') -TimeoutSec 25
 }
 $paths=@('Mods/LastEpochLAN.dll','UserLibs/LastEpochLAN.Core.dll')
