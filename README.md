@@ -1,4 +1,6 @@
-# Offline Co-op 1.0.9-dev.24 / protocol 31
+# Offline Co-op 1.0.9-dev.25 / protocol 31
+
+Echo objective HUD hotfix: reconstruct native MonolithObjectiveDescription objects instead of the base description that fails the game's formatter cast. Objective display errors now retain the loaded Echo and retry separately; they no longer trigger travel rollback or duplicate completion rewards. Update BOTH DLLs on BOTH PCs to dev.25, restart and create a new room; protocol remains 31. Release clean; 521 managed/network and 46 source-linked Monolith recording-stub/TCP checks passed. Actual native/two-PC Echo acceptance remains unverified while gameplay is running. See [Vietnamese dev.25 report](COOP-HOTFIX-dev25-VI.md).
 
 Echo faction-context and summon visibility update: bind the imported transient EchoWeb to the real local Actor before native generation to address the reported Weaver null-reference. Add authenticated owner-scoped summon/companion visual snapshots in both directions, buffered motion/animation and visual-only models; up to 64 per owner. Update BOTH DLLs on BOTH PCs, restart and create a new room; protocol is now 31. Release clean; 521 managed/network, 38 Monolith adapter, 13 summon capture, 16 animation, 21 Omen and 11 cosmetic recording-stub checks passed. New native Echo entry and summon asset/rendering acceptance remain unverified because gameplay is running. See [Vietnamese dev.24 report](COOP-HOTFIX-dev24-VI.md).
 
