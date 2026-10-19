@@ -1,4 +1,6 @@
-# Offline Co-op 1.0.9-dev.26 / protocol 31
+# Offline Co-op 1.0.9-dev.27 / protocol 31
+
+Nemesis lifecycle hotfix for offline solo and co-op: consume the actual local boss death once, block repeated completion and native idle visual resets for a consumed location, and stop rebuilding Guest idle offers after completion. Update BOTH DLLs on BOTH PCs to dev.27. Protocol remains 31. Release clean; 624 managed/source-linked checks and basic native smoke passed. Native encounter observations completed, including real death/repeated callback/reset checks; the full campaign QA still FAILED with five sandbox bootstrap errors. Real two-PC acceptance is pending. Other encounter/reward changes remain in development. See [Vietnamese dev.27 report](COOP-HOTFIX-dev27-VI.md).
 
 Remote skill visual lifecycle hotfix: guard destroyed Unity roots/prefab children before terminal/absent cleanup, contain per-visual cleanup/render failures and retry active lost visuals with a bounded delay. Preserve render-frame smoothing, duplicate-sample clocks and healthy NPC burst lifetimes. Update BOTH DLLs on BOTH PCs to dev.26; protocol remains 31. Release clean; 521 managed/network, 22 source-linked VFX lifecycle, 46 Monolith and 16 animation recording-stub checks passed. New native destroyed-wrapper smoke and actual two-PC rendering remain unverified because gameplay is running. See [Vietnamese dev.26 report](COOP-HOTFIX-dev26-VI.md).
 
