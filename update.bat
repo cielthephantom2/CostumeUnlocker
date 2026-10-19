@@ -111,5 +111,5 @@ if(!$NoLaunch) {
     $steamManifest=if($parent -and $parent.Parent) {Join-Path $parent.Parent.FullName 'appmanifest_899770.acf'} else {''}
     if($parent -and $parent.Name -eq 'common' -and [IO.Path]::GetFileName($root) -eq 'Last Epoch' -and $steamManifest -and (Test-Path -LiteralPath $steamManifest)) {
         Start-Process -FilePath 'steam://rungameid/899770'
-    } else {Start-Process -FilePath $exe -WorkingDirectory $root -WindowStyle Hidden}
+    } else {Start-Process -FilePath $exe -WorkingDirectory $root -WindowStyle Normal}
 }
