@@ -1,4 +1,6 @@
-# Offline Co-op 1.0.9-dev.23 / protocol 30
+# Offline Co-op 1.0.9-dev.24 / protocol 31
+
+Echo faction-context and summon visibility update: bind the imported transient EchoWeb to the real local Actor before native generation to address the reported Weaver null-reference. Add authenticated owner-scoped summon/companion visual snapshots in both directions, buffered motion/animation and visual-only models; up to 64 per owner. Update BOTH DLLs on BOTH PCs, restart and create a new room; protocol is now 31. Release clean; 521 managed/network, 38 Monolith adapter, 13 summon capture, 16 animation, 21 Omen and 11 cosmetic recording-stub checks passed. New native Echo entry and summon asset/rendering acceptance remain unverified because gameplay is running. See [Vietnamese dev.24 report](COOP-HOTFIX-dev24-VI.md).
 
 Host/Join crash and Omen item reward hotfix: remove native generic out-value dictionary reads from optional cosmetic capture; forward successful Host Omen item/Corrupted reward dispatches to eligible Guests using the native roller, with persistent duplicate protection. The reported crash log was running dev.21. Update BOTH DLLs on BOTH PCs to dev.23, restart the game and create a new room; protocol remains 30. Release clean; 499 managed/network, 11 cosmetic capture stub and 21 Omen adapter stub/TCP checks passed. Native crash resolution and actual two-PC Corrupted drops remain unverified while the game is running. See [Vietnamese dev.23 report](COOP-HOTFIX-dev23-VI.md).
 
