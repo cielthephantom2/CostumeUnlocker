@@ -17,3 +17,5 @@ Build sạch; 7 audit binary đạt. Native smoke cơ bản đạt trên đúng 
 Full rendered campaign gate vẫn FAIL vì lỗi khởi tạo sandbox, gồm native service bị khởi tạo hai lần; không coi các lỗi thêm là baseline đã được chấp nhận. Giữ nguyên raw failures và phân biệt với observationsPassed. Ảnh chụp vẫn đen nên chưa nghiệm thu đầy đủ bố cục/hover/drag bằng mắt hoặc hai inventory native trên hai máy vật lý. Không sửa hệ thống encounter trong bản này; encounter co-op mới vẫn chưa tích hợp.
 
 Xem validation/native-stash-withdraw-final-*, native-stash-withdraw-assessment.json và native-stash-withdraw-basic-final.json. Các báo cáo cũ thuộc binary cũ.
+
+Kiểm tra sau phát hành: 696 kiểm tra managed và 17 kiểm tra updater fixture/live đạt, gồm tải thật cả hai DLL từ GitHub và xác minh SHA-256. Không khởi chạy game thật.
