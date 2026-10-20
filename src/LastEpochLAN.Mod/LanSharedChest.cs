@@ -29,7 +29,7 @@ internal sealed class LanSharedChest
     internal bool Open;
     internal bool Busy=>savePending || failed || journal?.Records.Any(t=>t.Stage is not ("Done" or "Cancelled"))==true;
     private bool CanOperate=>!identity.Busy && !savePending && !failed && journal!=null && !journal.Records.Any(t=>t.Stage is "Preparing" or "Applying" or "Waiting" or "Held");
-    internal string Status="F2 — Hòm chung (dữ liệu trên Host)";
+    internal string Status="F2 - Shared Stash (stored on Host)";
     private Vector2 inventoryScroll,chestScroll;
     private ItemContainerEntry selected;
     private string dragged="";
@@ -86,7 +86,7 @@ internal sealed class LanSharedChest
                     nextJournal.Put(tx with{Stage=ChestClientJournal.Recover(tx,Count(tx.Item!))});
                 character=identity.Character;group=identity.Group;journal=nextJournal;hostStore=null;view=null;selected=null;previews.Clear();
                 RefreshLocks();
-                if(journal.Records.Any(t=>t.Stage=="Held"))Status="Có giao dịch chưa xác minh; giữ món an toàn, không tự cấp/hoàn lại. Cần kiểm tra nhật ký.";
+                if(journal.Records.Any(t=>t.Stage=="Held"))Status="Unverified transaction held safely. Journal review required; no automatic refund.";
             }
             if(session?.Connected!=true){view=null;nativeView?.Dispose();return;}
             if(room.IsHost)
@@ -102,13 +102,13 @@ internal sealed class LanSharedChest
             if(savePending || failed)return;
             foreach(var tx in journal.Records.Where(t=>t.Stage is "Removed" or "Waiting" or "Added").Take(4))
             {
-                if(view?.HostIdentity!=tx.Host || view.ChestId!=tx.ChestId){Status="Có món đang giữ: hãy kết nối lại đúng Host ban đầu để hoàn tất";continue;}
+                if(view?.HostIdentity!=tx.Host || view.ChestId!=tx.ChestId){Status="Item held: reconnect to the original Host to finish";continue;}
                 if(tx.Kind=="deposit")room.SendChest(new(){Kind="deposit",ChestId=tx.ChestId,Operation=tx.Id,Item=tx.Item,Ticket=tx.Ticket});
                 else if(tx.Stage=="Added")room.SendChest(new(){Kind="ack",ChestId=tx.ChestId,Operation=tx.Id,ItemId=tx.ItemId});
                 else room.SendChest(new(){Kind="withdraw",ChestId=tx.ChestId,Operation=tx.Id,ItemId=tx.ItemId});
             }
         }
-        catch(Exception ex){Status="Hòm đang giữ giao dịch: "+ex.Message;MelonLoader.MelonLogger.Warning(Status);}
+        catch(Exception ex){Status="Stash transaction held: "+ex.Message;MelonLoader.MelonLogger.Warning(Status);}
     }
     private bool Compatible(PlayerState player)=>player!=null && player.Available && player.GiftGroup==identity.Group &&
         Guid.TryParseExact(player.GiftIdentity,"N",out _) && player.CharacterId!="" &&
@@ -128,7 +128,7 @@ internal sealed class LanSharedChest
             var reply=hostStore.Apply(peer.GiftIdentity+":"+peer.CharacterId,request.Command);
             session.ReplyChest(request.SenderId,reply);
         }
-        catch(Exception ex){Status="Host giữ giao dịch: "+ex.Message;}
+        catch(Exception ex){Status="Host transaction held: "+ex.Message;}
     }
     private void Receive(ChestReply reply)
     {
@@ -139,19 +139,19 @@ internal sealed class LanSharedChest
         var tx=journal.Find(reply.Operation);
         if(tx==null || tx.ChestId!=reply.ChestId || tx.Host!=reply.HostIdentity || tx.Stage is "Done" or "Cancelled")return;
         if(reply.Status=="stored" && tx.Kind=="deposit" && tx.Stage=="Removed")
-        {Put(tx with{Stage="Done"});Status="Đã lưu vật phẩm trên Host";return;}
+        {Put(tx with{Stage="Done"});Status="Item stored on Host";return;}
         if(reply.Status=="done" && tx.Kind=="withdraw" && tx.Stage=="Added")
-        {Put(tx with{Stage="Done",CompletedRevision=reply.Revision});Status="Đã nhận và lưu vật phẩm";return;}
+        {Put(tx with{Stage="Done",CompletedRevision=reply.Revision});Status="Item received and saved";return;}
         if(reply.Status=="unavailable" && tx.Kind=="withdraw" && tx.Stage=="Waiting" && tx.Item==null)
-        {Put(tx with{Stage="Cancelled"});Status="Người khác đã lấy món này";return;}
-        if(reply.Status=="full"){Status="Hòm/nhật ký Host đầy; vật phẩm giữ trong escrow, không tự hoàn lại";return;}
+        {Put(tx with{Stage="Cancelled"});Status="Another player already took this item";return;}
+        if(reply.Status=="full"){Status="Host stash/journal full; item held in escrow, no automatic refund";return;}
         if(reply.Status!="reserved" || tx.Kind!="withdraw" || tx.Stage!="Waiting" || savePending || identity.Busy || failed)return;
         if(reply.Grant==null || reply.Grant.Id!=tx.ItemId || tx.Item!=null && tx.Item!=reply.Grant)throw new InvalidDataException("Conflicting chest grant");
         var item=new ItemDataUnpacked(Convert.FromBase64String(reply.Grant.Data));
         if(!Eligible(item) || item.individualID!=reply.Grant.NativeId || Raw(item)!=reply.Grant.Data)throw new InvalidDataException("Invalid native chest item");
         if(tx.Item==null){tx=tx with{Item=reply.Grant,Before=Count(reply.Grant)};Put(tx);}
-        if(Count(tx.Item)!=tx.Before || tx.Before!=0){Put(tx with{Stage="Held"});Status="Trùng vật phẩm với inventory; giao dịch giữ chờ kiểm tra";return;}
-        if(!Manager.inventory.CanReceiveItem(item,1)){Status="Inventory đầy — món được giữ riêng trên Host, sẽ thử lại";return;}
+        if(Count(tx.Item)!=tx.Before || tx.Before!=0){Put(tx with{Stage="Held"});Status="Duplicate item detected in inventory; transaction held for review";return;}
+        if(!Manager.inventory.CanReceiveItem(item,1)){Status="Inventory full - item reserved on Host; retrying";return;}
         tx=tx with{Stage="Applying"};Put(tx);
         nativeScope++;bool added;
         try{added=Manager.inventory.TryAddItem(item,1,Context.GIFTING);}finally{nativeScope--;}
@@ -166,7 +166,7 @@ internal sealed class LanSharedChest
         savePending=true;failed=false;
         try{saving=data.DataStoreCache.SaveDirty(data.UserIdentity).GetAwaiter();}
         catch{failed=true;throw;}
-        Status="Đang lưu nhân vật — vật phẩm bị khóa tạm thời";
+        Status="Saving character - item temporarily locked";
     }
     private void CompleteSave()
     {
@@ -177,7 +177,7 @@ internal sealed class LanSharedChest
             var done=saveTx with{Stage=saveTx.Kind=="deposit"?"Removed":"Added"};
             saveJournal.Put(done);savePending=false;saveTx=null;saveJournal=null;nextPoll=0;RefreshLocks();
         }
-        catch{failed=true;Status="Lỗi lưu nhân vật: giao dịch giữ nguyên, cần khởi động lại game để xác minh";throw;}
+        catch{failed=true;Status="Character save failed: transaction held; restart the game to verify";throw;}
     }
     private void Deposit(ItemContainerEntry entry,bool cursor=false)
     {
@@ -186,23 +186,26 @@ internal sealed class LanSharedChest
         if(data.DataStoreCache==null || data.UserIdentity==null)return;
         entry.data.RebuildID();string raw=Raw(entry.data);
         var item=new ChestItem(Guid.NewGuid().ToString("N"),raw,Fingerprint(entry.data),Name(entry.data),entry.data.individualID);int count=Count(item);
-        if(count!=1){Status="Chỉ nhận trang bị/Idol có ID riêng, một bản duy nhất trên nhân vật";return;}
-        if(view.Items.Length>=96){Status="Hòm đầy";return;}
+        if(count!=1){Status="Only eligible equipment/Idols with a unique ID and one character copy are accepted";return;}
+        if(view.Items.Length>=96){Status="Stash full";return;}
         string id=item.Id;
         string ticket=journal.Records.Where(t=>t.Kind=="withdraw" && t.Stage=="Done" && t.ChestId==view.ChestId && t.Item?.NativeId==item.NativeId).OrderBy(t=>t.CompletedRevision).LastOrDefault()?.Id??"";
         var tx=new ChestLocalTransaction{Id=id,ChestId=view.ChestId,Host=view.HostIdentity,Kind="deposit",ItemId=id,Item=item,Stage="Preparing",Before=count,Ticket=ticket};
         Put(tx);nativeScope++;bool removed;
         try{removed=cursor?Manager.cursor.TryRemoveItem(entry,1,Context.GIFTING):Manager.inventory.TryRemoveItem(entry,1,Context.GIFTING);}finally{nativeScope--;}
-        if(!removed){Put(tx with{Stage="Cancelled"});Status="Không thể lấy vật phẩm khỏi inventory";return;}
+        if(!removed){Put(tx with{Stage="Cancelled"});Status="Could not remove item from inventory";return;}
         selected=null;BeginSave(tx);
     }
     private void Withdraw(ChestItem item)
     {
-        if(!CanOperate || view==null || !Ready || !Compatible(session?.PlayerPositions.FirstOrDefault(p=>p.Id==session.LocalId)))return;
+        if(!CanOperate){Status="A transfer is pending or held; finish it before withdrawing another item";return;}
+        if(view==null || !Ready){Status="Waiting for character / Host stash data";return;}
+        if(!Compatible(session?.PlayerPositions.FirstOrDefault(p=>p.Id==session.LocalId))){Status="Character is not eligible for this party stash";return;}
         var tx=new ChestLocalTransaction{Id=Guid.NewGuid().ToString("N"),ChestId=view.ChestId,Host=view.HostIdentity,Kind="withdraw",ItemId=item.Id,Stage="Waiting"};
-        Put(tx);nextPoll=0;Status="Đang giữ chỗ vật phẩm trên Host";
+        Put(tx);nextPoll=0;Status="Reserving item on Host";
     }
     internal ChestReply QaView=>view;
+    internal int QaWithdrawRequests=>journal?.Records.Count(t=>t.Kind=="withdraw")??0;
     internal void QaPreview(LanSession room,ChestReply projection,ItemContainerEntry[] inventory)
     {
         if(!Environment.GetCommandLineArgs().Contains("--lelan-chest-ui-smoke"))throw new InvalidOperationException("Chest UI QA flag required");
@@ -215,7 +218,7 @@ internal sealed class LanSharedChest
     private static string Name(ItemData item)
     {
         var value=item.TryCast<ItemDataUnpacked>()??new ItemDataUnpacked(item);
-        return (value.FullName??"Vật phẩm").Length>128?value.FullName.Substring(0,128):value.FullName??"Vật phẩm";
+        return (value.FullName??"Item").Length>128?value.FullName.Substring(0,128):value.FullName??"Item";
     }
     private void ReleaseView(){nativeView?.Dispose();skin.Close();foreach(var asset in icons.Values)asset.Dispose();icons.Clear();previews.Clear();}
     internal void Disconnect(){session=null;view=null;Open=false;selected=null;dragged="";ReleaseView();}
@@ -241,27 +244,27 @@ internal sealed class LanSharedChest
         {
             if(nativeView?.Visible!=true)
             {
-                GUI.Box(new Rect(18,Screen.height-105,650,82),"Shared Stash — F2 đóng/mở");
+                GUI.Box(new Rect(18,Screen.height-105,650,82),"Shared Stash - F2 to open/close");
                 GUI.Label(new Rect(30,Screen.height-75,620,48),nativeView?.Error!=""?nativeView?.Error:Status);
             }
             return;
         }
-        try{DrawInternal();}catch(Exception ex){Status="Hòm: "+ex.Message;GUI.enabled=true;}
+        try{DrawInternal();}catch(Exception ex){Status="Stash: "+ex.Message;GUI.enabled=true;}
     }
     private void DrawInternal()
     {
         float width=Mathf.Min(Screen.width-24,1050),height=Mathf.Min(Screen.height-24,760);
         var area=new Rect((Screen.width-width)/2,(Screen.height-height)/2,width,height);
         skin.Draw(area);
-        GUI.Box(area,"HÒM CHUNG — HOST  |  F2 đóng/mở");
+        GUI.Box(area,"SHARED STASH - HOST | F2 to open/close");
         if(GUI.Button(new Rect(area.xMax-40,area.y+5,30,25),"X")){Toggle();return;}
-        GUI.Label(new Rect(area.x+14,area.y+30,width-28,42),session?.Connected==true?"Không cần chung map. Chọn món rồi Gửi/Lấy; có thể kéo món trong danh sách vào ô bên kia.":"Host hoặc Join party để dùng hòm chung.");
+        GUI.Label(new Rect(area.x+14,area.y+30,width-28,42),session?.Connected==true?"Works across maps. Select an item to deposit/withdraw, or drag between lists.":"Host or Join a party to use Shared Stash.");
         GUI.Label(new Rect(area.x+14,area.yMax-65,width-28,55),Status);
-        if((!Ready && qaInventory==null) || session?.Connected!=true || view==null){GUI.Label(new Rect(area.x+16,area.y+82,width-32,50),"Đang chờ nhân vật / dữ liệu Host...");return;}
+        if((!Ready && qaInventory==null) || session?.Connected!=true || view==null){GUI.Label(new Rect(area.x+16,area.y+82,width-32,50),"Waiting for character / Host data...");return;}
         float half=(width-42)/2;
         var left=new Rect(area.x+14,area.y+82,half,height-165);
         var right=new Rect(area.x+28+half,area.y+82,half,height-165);
-        GUI.Box(left,"INVENTORY — trang bị / Idol, mỗi món x1");GUI.Box(right,$"HÒM HOST ({view.Items.Length}/96)");
+        GUI.Box(left,"INVENTORY - equipment / Idols, one per item");GUI.Box(right,$"HOST STASH ({view.Items.Length}/96)");
         var items=qaInventory??Manager.inventory.GetContent().ToArray().Where(e=>e.quantity==1 && Eligible(e.data)).ToArray();
         inventoryScroll=GUI.BeginScrollView(new Rect(left.x+6,left.y+27,left.width-12,left.height-70),inventoryScroll,new Rect(0,0,left.width-32,items.Length*39));
         for(int i=0;i<items.Length;i++)
@@ -274,7 +277,7 @@ internal sealed class LanSharedChest
         }
         GUI.enabled=true;GUI.EndScrollView();
         GUI.enabled=CanOperate && selected!=null;
-        if(GUI.Button(new Rect(left.x+8,left.yMax-36,left.width-16,28),"Gửi món đã chọn →"))Deposit(selected);
+        if(GUI.Button(new Rect(left.x+8,left.yMax-36,left.width-16,28),"Deposit selected item >"))Deposit(selected);
         GUI.enabled=true;
         chestScroll=GUI.BeginScrollView(new Rect(right.x+6,right.y+27,right.width-12,right.height-35),chestScroll,new Rect(0,0,right.width-32,Mathf.Ceil(view.Items.Length/4f)*87));
         for(int i=0;i<view.Items.Length;i++)
@@ -282,7 +285,7 @@ internal sealed class LanSharedChest
             var item=view.Items[i];float cell=(right.width-38)/4;var rect=new Rect(i%4*cell,i/4*87,cell-4,82);
             GUI.enabled=CanOperate;
             if(Event.current.rawType==EventType.MouseDown && rect.Contains(Event.current.mousePosition) && CanOperate)dragged=item.Id;
-            if(GUI.Button(rect,item.Name+"\n[Lấy]"))Withdraw(item);
+            if(GUI.Button(rect,item.Name+"\n[Withdraw]"))Withdraw(item);
             if(!previews.TryGetValue(item.Id,out var preview))previews[item.Id]=preview=new ItemDataUnpacked(Convert.FromBase64String(item.Data));
             Icon(new Rect(rect.x+2,rect.y+2,26,26),item.Hash,preview);
         }
@@ -327,7 +330,7 @@ internal sealed class SharedChestSkin
     {
         if(inputRoot==null)
         {
-            inputRoot=new GameObject("LAN Shared Chest — isolated input",Il2CppInterop.Runtime.Il2CppType.Of<RectTransform>());
+            inputRoot=new GameObject("LAN Shared Chest - isolated input",Il2CppInterop.Runtime.Il2CppType.Of<RectTransform>());
             var canvas=inputRoot.AddComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=32000;
             inputRoot.AddComponent<UnityEngine.UI.GraphicRaycaster>();
             var panel=new GameObject("Chest mouse blocker",Il2CppInterop.Runtime.Il2CppType.Of<RectTransform>());

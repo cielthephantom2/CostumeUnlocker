@@ -1,0 +1,14 @@
+{
+  "physicalTwoPcAccepted": false,
+  "basicSmokePassed": true,
+  "fullRenderedCampaignPassed": false,
+  "compiledAuditPassed": 7,
+  "nativeDoubleClickSingleRequest": true,
+  "runtimeErrors": "Preserved raw; include duplicate native service initialization, not accepted baseline",
+  "nativeRaycastClickWithdrawalPassed": true,
+  "runtimeErrorCount": 76,
+  "githubPublished": false,
+  "renderedLayoutAccepted": false,
+  "finalNativeCopies": 1,
+  "serializedBytesPreserved": true
+}

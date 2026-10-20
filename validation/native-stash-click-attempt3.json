@@ -1,0 +1,6 @@
+{
+  "passed": false,
+  "error": "System.InvalidOperationException: Item click intercepted by Terrain / \r\n   at LastEpochLAN.Mod.NativeSharedStashView.QaClickItem(UInt32 id)\r\n   at LastEpochLAN.Mod.NativeSharedChestProbe.Tick()",
+  "stage": 3,
+  "status": "Drop items to deposit | Click to withdraw | F2 / Esc to close"
+}

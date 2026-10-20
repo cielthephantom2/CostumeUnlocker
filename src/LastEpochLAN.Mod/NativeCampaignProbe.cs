@@ -42,6 +42,7 @@ internal sealed class NativeCampaignProbe
         try
         {
             if (Il2Cpp.PlayerFinder.getPlayerActor() != null) throw new InvalidOperationException("QA campaign requires an empty sandbox.");
+            Application.runInBackground=true;
             initializeServices = ServiceProvider.InitializeServices().GetAwaiter();
             Advance(-1);
         }
@@ -73,7 +74,30 @@ internal sealed class NativeCampaignProbe
                         if (!ServiceProvider.NetworkServiceGroupAvailable) ServiceProvider.InitializeNetworkServiceEtAl();
                         // StartPlay uses the normal character-select scene's player
                         // container and cosmetic services while preparing the actor.
+                        // A rendered sandbox also has the normal shell boot.
+                        // Wait for it instead of racing a second scene transition.
+                        if(!Application.isBatchMode){Advance(8);break;}
                         characterSelect = Il2CppClientAppState.ClientStateManager.ChangeState(Il2CppClientAppState.ClientAppStateType.CharacterSelect).GetAwaiter(); Advance(6);
+                    }
+                    break;
+                case 8:
+                    if(Time.unscaledTime>=nextStateReport)
+                    {
+                        nextStateReport=Time.unscaledTime+2;
+                        File.WriteAllText(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),"UserData","LastEpochLAN.render-shell-state.json"),System.Text.Json.JsonSerializer.Serialize(new{
+                            stage,state=Il2CppClientAppState.ClientStateManager.CurrentClientAppStateType.ToString(),
+                            transitioning=Il2CppClientAppState.ClientStateManager._sceneManager?._isTransitioning}));
+                    }
+                    if(Il2CppClientAppState.ClientStateManager._sceneManager?._isTransitioning==true)break;
+                    if(Il2CppClientAppState.ClientStateManager.CurrentClientAppStateType==Il2CppClientAppState.ClientAppStateType.CharacterSelect)
+                    {service=ServiceProvider.GameplayService.GetAwaiter();Advance(1);}
+                    else if(Il2CppClientAppState.ClientStateManager.CurrentClientAppStateType==Il2CppClientAppState.ClientAppStateType.Login)
+                    {
+                        // Normal shell has finished SystemLoading -> Login.
+                        // Enter private offline character select only now.
+                        ServiceProvider._UserService=user.Cast<IUserService>();
+                        PlayerStore._instance.UserService_CurrentUserChanged(user,user.CurrentUser);
+                        characterSelect=Il2CppClientAppState.ClientStateManager.ChangeState(Il2CppClientAppState.ClientAppStateType.CharacterSelect).GetAwaiter();Advance(6);
                     }
                     break;
                 case 6:
