@@ -8,6 +8,7 @@ internal sealed class NativeDisintegrateProbe
 {
     internal static readonly bool Enabled=Environment.GetCommandLineArgs().Contains("--lelan-disintegrate-smoke");
     internal static bool Running,IgnoreAimFilter;
+    internal static ModifyDamageOnRotation LastRotation;
     private int stage;
     private float until,deadline,nextAim,nextSample;
     private Ability ability;
@@ -19,6 +20,13 @@ internal sealed class NativeDisintegrateProbe
     private readonly List<object> keyboardSamples=new();
     private bool keyboardPassed=true;
     private float releaseDrift;
+    private bool rotationPenaltyRemoved;
+    private float originalRotationPenalty;
+    private ArcaneAscendanceMutator ascendance;
+    private bool ascendanceAccepted,ascendanceRootObserved,ascendanceChannelPreserved;
+    private float ascendanceDrift;
+    private Vector3 ascendanceOrigin;
+    private bool movementResumed;
     private static readonly Vector2[] KeyboardDirections={Vector2.up,Vector2.down,Vector2.left,Vector2.right,new(1,1),new(-1,-1)};
     private readonly List<object> samples=new();
     internal object Tick(Actor actor)
@@ -44,7 +52,7 @@ internal sealed class NativeDisintegrateProbe
             input.movementProcessor??=new MovementProcessor();
             input.movementProcessor.OnPlayerChanged(actor.gameObject);
             Running=true;
-            until=Time.unscaledTime+2;deadline=Time.unscaledTime+55;stage=1;return null;
+            until=Time.unscaledTime+2;deadline=Time.unscaledTime+70;stage=1;return null;
         }
         if(Time.unscaledTime>deadline)return Finish(use,"Timed out");
         if(stage==1)
@@ -57,7 +65,7 @@ internal sealed class NativeDisintegrateProbe
             // movement, then enable the new filter in the same native channel.
             IgnoreAimFilter=true;stage=2;until=Time.unscaledTime+4;
         }
-        if(stage is 2 or 3 or 4 or 5 or 7 or 8 or 9)
+        if(stage is 2 or 3 or 4 or 5 or 7 or 8 or 9 or 10 or 11 or 12)
         {
             channelObserved|=use.channelling;
             if(use.channelling && Time.unscaledTime>=nextAim)
@@ -71,6 +79,11 @@ internal sealed class NativeDisintegrateProbe
         }
         if(stage==2)
         {
+            if(LastRotation!=null)
+            {
+                originalRotationPenalty=OfflineTools.DisintegrateRotationPenaltyPatch.LastOriginalPenalty;
+                rotationPenaltyRemoved=originalRotationPenalty<0 && LastRotation.damageModifierPerDegree==0;
+            }
             baselineDrift=Math.Max(baselineDrift,Vector3.Distance(origin,actor.position()));
             if(Time.unscaledTime<until)return null;
             IgnoreAimFilter=false;
@@ -129,6 +142,43 @@ internal sealed class NativeDisintegrateProbe
             keyboardSamples.Add(new {keyboardIndex,releaseDrift,channel=use.channelling,pass});
             keyboardIndex++;
             if(keyboardIndex<KeyboardDirections.Length){BeginKeyboard(actor);return null;}
+            var aa=AbilityManager.get().playerAbilities.ToArray().FirstOrDefault(a=>a!=null &&
+                string.Equals(a.name,"ArcaneAscendance",StringComparison.OrdinalIgnoreCase));
+            if(aa==null)throw new InvalidOperationException("QA Arcane Ascendance asset missing");
+            use.abilityList.setAbility(aa,3,true,true);
+            // Seed an in-flight destination before activating the real buff.
+            EpochInputManager.instance.movementProcessor.ProcessKeyboardMovement(Vector2.up,true);
+            ascendance=use.mutatorManager.getMutator(aa)?.TryCast<ArcaneAscendanceMutator>();
+            // The disposable Mage has no selected mastery, so the player cast
+            // command rejects this Sorcerer skill. Construct the actual buff
+            // through the native constructor/mutator to test root precedence.
+            var buff=ascendance?.aoc?.constructAbilityObject(aa,actor.position(),aim,UseType.InstantDirect);
+            ascendanceAccepted=buff!=null && ascendance.activeAbilityObject?.Pointer==buff.Pointer;
+            until=Time.unscaledTime+0.4f;stage=10;return null;
+        }
+        if(stage==10)
+        {
+            if(Time.unscaledTime<until)return null;
+            ascendanceRootObserved=ascendance?.activeAbilityObject!=null && actor.stateController.numberOfRoots>0;
+            ascendanceOrigin=actor.position();ascendanceChannelPreserved=use.channelling;
+            until=Time.unscaledTime+1.5f;stage=11;return null;
+        }
+        if(stage==11)
+        {
+            EpochInputManager.instance.movementProcessor.ProcessKeyboardMovement(Vector2.up,true);
+            ascendanceDrift=Math.Max(ascendanceDrift,Vector3.Distance(ascendanceOrigin,actor.position()));
+            ascendanceChannelPreserved&=use.channelling;
+            if(Time.unscaledTime<until)return null;
+            ascendance?.EndAbility();until=Time.unscaledTime+0.4f;stage=12;return null;
+        }
+        if(stage==12)
+        {
+            if(Time.unscaledTime<until)return null;
+            if(actor.stateController.numberOfRoots>0)throw new InvalidOperationException("Ascendance root did not expire");
+            EpochInputManager.instance.movementProcessor.ProcessKeyboardMovement(Vector2.up,true);
+            movementResumed=Vector3.Distance(ascendanceOrigin,actor.position())>0.25f && use.channelling;
+            if(!movementResumed && Time.unscaledTime<until+1.5f)return null;
+            EpochInputManager.instance.movementProcessor.ProcessKeyboardMovement(Vector2.zero,false);
             use.stopUsingAbility(true);until=Time.unscaledTime+0.8f;stage=6;return null;
         }
         if(stage==6 && Time.unscaledTime>=until)return Finish(use,"");
@@ -154,12 +204,15 @@ internal sealed class NativeDisintegrateProbe
     private object Finish(UsingAbilityPlayer use,string error)
     {
         Running=IgnoreAimFilter=false;
+        LastRotation=null;
         return new {passed=error=="" && accepted && channelObserved && baselineDrift>0.5f &&
             stationaryDrift<0.15f && moveAccepted && movedDistance>0.25f && channelDuringMove &&
-            beamAimUpdated && manaAfter<manaBefore && !use.channelling && keyboardPassed && keyboardIndex==KeyboardDirections.Length,
+            beamAimUpdated && manaAfter<manaBefore && !use.channelling && keyboardPassed && keyboardIndex==KeyboardDirections.Length && rotationPenaltyRemoved &&
+            ascendanceAccepted && ascendanceRootObserved && ascendanceChannelPreserved && ascendanceDrift<0.15f && movementResumed,
             error,accepted,channelObserved,baselineDrift,stationaryDrift,moveAccepted,movedDistance,
             channelDuringMove,beamAimUpdated,released=!use.channelling,manaBefore,manaAfter,
-            focused=Application.isFocused,samples,keyboardPassed,keyboardSamples,
+            focused=Application.isFocused,samples,keyboardPassed,keyboardSamples,rotationPenaltyRemoved,originalRotationPenalty,
+            ascendanceAccepted,ascendanceRootObserved,ascendanceChannelPreserved,ascendanceDrift,movementResumed,
             scope="Native disposable Mage A/B: actual channel + native aim updates reproduce dev.18 then filter; native explicit move and stop. No OS mouse automation; hidden-window focus guard bypassed only for private explicit move."};
     }
 }

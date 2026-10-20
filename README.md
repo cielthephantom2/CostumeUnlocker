@@ -1,6 +1,8 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.20
+# TM Last Epoch Co-op Mod — 1.1.0-dev.21
 
 Development release, protocol **35**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). Both Host and Client must update. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
+
+**Dev.21:** removes negative Disintegrate rotation damage/ailment penalties on local offline beam instances and respects Arcane Ascendance roots, including movement destinations received before the root. Native feature observations passed; the full native gate still fails with 76 runtime errors. Physical input, full skill trees, target DPS and multiplayer remain unverified. See [dev.21 changes and limits](RELEASE-1.1.0-dev21-VI.md).
 
 **Dev.20:** native keyboard movement now steers Disintegrate while channeling, follows game bindings, and stops movement on key release while keeping the beam active. Aim updates no longer set movement destinations. Update both DLLs on every PC. Six native keyboard directions and aim/movement checks passed in a sandbox; physical input and multiplayer remain unverified, and the full native gate still fails with 76 runtime errors. See [dev.20 changes and limits](RELEASE-1.1.0-dev20-VI.md).
 

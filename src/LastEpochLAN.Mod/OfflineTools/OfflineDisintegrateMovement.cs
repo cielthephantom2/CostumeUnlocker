@@ -13,7 +13,9 @@ internal static class OfflineDisintegrateMovement
     internal static long InitialDestinations,SuppressedSkillMoves,ExplicitMoves;
     internal static long SuppressedAimDestinations;
     internal static long KeyboardMoves,KeyboardStops;
-    internal static object Diagnostics=>new {InitialDestinations,SuppressedSkillMoves,ExplicitMoves,SuppressedAimDestinations,KeyboardMoves,KeyboardStops};
+    internal static long RootedMovementSteps;
+    internal static object Diagnostics=>new {InitialDestinations,SuppressedSkillMoves,ExplicitMoves,SuppressedAimDestinations,KeyboardMoves,KeyboardStops,
+        RootedMovementSteps,DisintegrateRotationPenaltyPatch.RemovedPenalties,DisintegrateRotationPenaltyPatch.LastOriginalPenalty};
     internal static bool Applies(AbilityMutator mutator)
     {
         var disintegrate=mutator?.TryCast<DisintegrateMutator>();
@@ -48,6 +50,22 @@ internal static class OfflineDisintegrateMovement
             actor==null || actor.isDying(false) || actor.stateController.numberOfRoots>0 ||
             UIMouseListener.WorldActionsDisabled() || checkMouse && UIMouseListener.MouseOverUI())return false;
         return !(PlayerFinder.getItemContainersManager()?.cursor?.GetContent()?.Count>0);
+    }
+}
+
+[HarmonyPatch(typeof(MovementFromAbility),nameof(MovementFromAbility.MovementStep))]
+internal static class DisintegrateRespectsRootsPatch
+{
+    private static void Prefix(MovementFromAbility __instance)
+    {
+        var actor=__instance.actor;
+        if(actor?.stateController?.numberOfRoots<=0 || !__instance.moving || __instance.movementType!=AbilityMovement.Spin ||
+            !OfflineDisintegrateMovement.IsLocalDisintegrate(actor,__instance.currentAbility))return;
+        // Roots can arrive after a destination was accepted (e.g. Ascendance
+        // activated during channel). Clear that destination before each native
+        // step; leave the native channel, mana and release logic running.
+        __instance.UpdateDestination(actor.position());
+        OfflineDisintegrateMovement.RootedMovementSteps++;
     }
 }
 
