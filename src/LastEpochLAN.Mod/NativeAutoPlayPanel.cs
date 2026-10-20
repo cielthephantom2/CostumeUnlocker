@@ -83,9 +83,20 @@ internal sealed partial class AutoPlayRuntime
             var fillRect=fill.GetComponent<RectTransform>();fillRect.anchorMin=Vector2.zero;fillRect.anchorMax=Vector2.one;fillRect.sizeDelta=Vector2.zero;slider.fillRect=fillRect;
             var area=Node("Handle area",go.transform,5,2,w-10,12);
             var handle=Node("Handle",area.transform,0,0,10,0);Paint(handle,accent);
+            handle.GetComponent<RectTransform>().pivot=new(0.5f,0.5f);
             slider.handleRect=handle.GetComponent<RectTransform>();slider.targetGraphic=handle.GetComponent<Image>();
-            slider.direction=UnityEngine.UI.Slider.Direction.LeftToRight;slider.value=get();
-            slider.onValueChanged.AddListener((Action<float>)(v=>{set(v);owner.Changed();}));
+            slider.direction=UnityEngine.UI.Slider.Direction.LeftToRight;slider.SetValueWithoutNotify(get());
+            slider.onValueChanged.AddListener((Action<float>)(_=>
+            {
+                // Read native Slider state directly. Do not trust the float
+                // marshalled through the IL2CPP UnityEvent delegate.
+                set(slider.value);
+                // Rules can round to a step; keep the handle and saved value equal.
+                slider.SetValueWithoutNotify(get());
+                number.text=$"{get():0.##}{unit}";
+                owner.Changed();
+            }));
+            detailUpdates.Add(()=>slider.SetValueWithoutNotify(get()));
         }
         private void Chrome()
         {
@@ -140,8 +151,10 @@ internal sealed partial class AutoPlayRuntime
             var ability=owner.abilities[slot];string key=ability?.Pointer.ToString()??"";
             if(iconKeys[slot]!=key){iconAssets[slot]?.Dispose();iconAssets[slot]=null;iconKeys[slot]=key;}
             if(ability==null)return null;
-            var native=nativeSlots.FirstOrDefault(v=>v!=null && v.abilityNumber==slot && v.ability?.Pointer==ability.Pointer && v.icon?.sprite!=null);
-            native??=nativeSlots.FirstOrDefault(v=>v!=null && v.abilityNumber==slot && v.gameObject.activeInHierarchy && v.icon?.sprite!=null);
+            // HUD abilityNumber is not the UsingAbilityPlayer bar index. Match the
+            // equipped ability itself; a slot-only fallback can display a neighbour.
+            var native=nativeSlots.FirstOrDefault(v=>v!=null && v.gameObject.activeInHierarchy &&
+                v.ability?.Pointer==ability.Pointer && v.icon?.sprite!=null);
             if(native!=null)return native.icon.sprite;
             if(iconAssets[slot]==null && ability.abilitySpriteSoftRef!=null)
                 iconAssets[slot]=SoftRefExtensions.CreateLoadRef<Sprite>(ability.abilitySpriteSoftRef,"LastEpochLAN.AutoPlayIcons",0);
@@ -195,7 +208,7 @@ internal sealed partial class AutoPlayRuntime
             Button(frame.transform,"HelpTab",22,470,52,25,()=>"?",()=>owner.tab=6);
             Box(frame.transform,"Footer divider",104,476,554,1,stroke,false);
             var status=Box(frame.transform,"Status dot",106,497,7,7,muted);
-            Label(frame.transform,122,485,418,20,()=>owner.Armed?"Ready - close F1 / F4 to resume":"Stopped",12);
+            Label(frame.transform,122,485,418,20,()=>owner.Armed?"Master ON - paused while panel is open":"Master OFF - automation stopped",12);
             Label(frame.transform,122,505,414,15,()=>owner.Error!=""?owner.Error:"Settings saved automatically",10,true);
             updates.Add(()=>status.color=owner.Armed?accent:muted);
             startButton=Button(frame.transform,"StartStop",574,486,84,32,()=>owner.Armed?"Stop":"Start",()=>
@@ -224,7 +237,8 @@ internal sealed partial class AutoPlayRuntime
             int i=selected;var r=owner.Settings.Skills[i];
             Artwork(details.transform,0,0,40,()=>SkillSprite(i),detailUpdates);
             Label(details.transform,53,0,355,25,()=>owner.abilities[i]==null?"Empty slot":owner.names[i],17,false,detailUpdates).fontStyle=FontStyles.Bold;
-            Label(details.transform,53,28,355,20,()=>$"{Key(i)}  /  {owner.slotStatus[i]}",12,true,detailUpdates);
+            Label(details.transform,53,28,355,20,()=>Key(i)+"  /  "+
+                (owner.abilities[i]!=null && (r.Ability=="" || r.Ability!=owner.contexts[i].Ability)?"Confirmation required":owner.slotStatus[i]),12,true,detailUpdates);
             if(owner.abilities[i]==null)
             {Label(details.transform,0,104,530,60,()=>"Equip a skill on your action bar to configure this slot.",14,true,detailUpdates).enableWordWrapping=true;return;}
             if(r.Ability!=owner.contexts[i].Ability || r.Ability=="")

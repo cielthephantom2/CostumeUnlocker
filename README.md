@@ -1,8 +1,8 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.12
+# TM Last Epoch Co-op Mod — 1.1.0-dev.13
 
 Development release, protocol **35**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). Both Host and Client must update. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
 
-**F1 Combat Assist:** compact native panel with real skill/potion icons, per-slot conditions, HP/MP thresholds, enemy/rare/boss range, target selection, repeat interval and automatic potion. Settings follow each local character and skill identity. Press Start, then close F1/F4 to resume. Automation pauses for panels, chat, loading, death, travel or focus loss. Named stat-buff guards do not infer every aura/toggle system. See [setup, screenshots and limits](RELEASE-1.1.0-dev12-VI.md).
+**F1 Combat Assist:** compact native panel with real skill/potion icons, per-slot conditions, HP/MP thresholds, enemy/rare/boss range, target selection, repeat interval and automatic potion. Dev.13 fixes mismatched icons and slider value/handle synchronization, and clarifies master and skill confirmation status. Settings follow each local character and skill identity. Press Start, then close F1/F4 to resume. Automation pauses for panels, chat, loading, death, travel or focus loss. Named stat-buff guards do not infer every aura/toggle system. See [dev.13 changes and validation limits](RELEASE-1.1.0-dev13-VI.md) and [setup and historical screenshots](RELEASE-1.1.0-dev12-VI.md).
 
 **Room Loot Filters:** each member shares their selected filter in memory. Edits, selection changes and disabling propagate automatically, polled once per second, including across maps. Keep the local result/style when it shows an item; if it hides the item, a remote filter may show it. Ground labels attribute filters that show the item. Remote filters do not overwrite local files or character bindings. Invalid remote filters are isolated by owner. Native Match uses an ABI-aware pointer bridge instead of Harmony out-Nullable marshalling. See [filter implementation and limits](ROOM-LOOT-FILTERS-2026-10-20-VI.md).
 
@@ -18,18 +18,17 @@ Woven Potential now uses: 1 LP → 2 LP (50%) / 0 LP (50%); 2 LP → 3 LP (50%) 
 
 NPC movement, animation, VFX, minions, combat and party travel code is retained. That is not a two-PC acceptance claim; doors, quests and map interactions need regression after generic replay removal. The new typed Host encounter state machine is a managed foundation only; dedicated transport and private managed Nemesis turns exist, but per-family native adapters, presentation and durable private rewards remain unfinished. Encounter development is paused.
 
-See [Vietnamese release report](RELEASE-1.1.0-dev12-VI.md) and [historical rewrite milestone](ENCOUNTER-REWRITE-VI.md).
+See [Vietnamese release report](RELEASE-1.1.0-dev13-VI.md) and [historical rewrite milestone](ENCOUNTER-REWRITE-VI.md).
 
 ## Validation
 
-- Release build: zero warnings/errors; compiled audit: 7 checks pass.
-- Public updater: 17 fixture/live checks pass, including commit-pinned downloads and SHA-256 verification of both dev.12 DLLs.
-- Core baseline: 752 managed checks from dev.11; dev.12 uses the identical Core DLL. Includes Auto Play rules, scheduling, potion reserve and Shared Stash/Echo readiness checks.
-- Final DLL pair: basic native smoke passes. Native Mage Auto Play observations pass for bar/key/cooldown/HP/MP reads, actual skill/potion, loaded native icons, Start/Stop raycast and input restore. Skill/potion Canvas screenshots were visually reviewed.
+- Dev.13 Release build: zero warnings/errors. Tests were skipped at the user's request; the icon and slider fixes have not been verified in game.
+- Dev.12 historical baseline: 7 compiled audit checks, 17 updater fixture/live checks, basic native smoke and Mage Auto Play feature observations passed. These are not fresh dev.13 results.
+- Core baseline: 752 managed checks from dev.11; dev.13 retains the identical published Core DLL. Includes Auto Play rules, scheduling, potion reserve and Shared Stash/Echo readiness checks.
 - The full rendered campaign gate remains FAIL with 76 runtime errors. Individual feature observations do not convert it into a full pass. Physical two-PC, every class/build/buff and the earlier ActorVisuals exception remain unverified/unresolved.
-- LootFilter dev.9 and Shared Stash dev.10 observations are retained historical evidence, not fresh native acceptance for every feature in dev.12. Encounter development remains paused.
+- LootFilter dev.9 and Shared Stash dev.10 observations are retained historical evidence, not fresh native acceptance for every feature in dev.13. Encounter development remains paused.
 
-Evidence and exact hashes: [dev.12 release report](RELEASE-1.1.0-dev12-VI.md).
+Exact hashes and scope: [dev.13 release report](RELEASE-1.1.0-dev13-VI.md). Historical evidence: [dev.12 release report](RELEASE-1.1.0-dev12-VI.md).
 ## Build
 
 Native game/loader references are private and not distributed. The tested runtime uses Unity 6000.4.8f1 and MelonLoader 0.7.3.
