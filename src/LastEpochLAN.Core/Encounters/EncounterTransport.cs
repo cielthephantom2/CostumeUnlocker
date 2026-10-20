@@ -1,6 +1,6 @@
 namespace LastEpochLAN.Core.Encounters;
 
-public enum EncounterReplyCode { Reserved, Rejected, Busy, NativeAccepted, NativeRejected, Faulted }
+public enum EncounterReplyCode { Reserved, Rejected, Busy, NativeAccepted, NativeRejected, Faulted,RewardAcknowledged }
 
 // The sender is assigned by the receiving connection, never deserialized from a command.
 public sealed record EncounterRequest(string PlayerId, EncounterCommand Command);

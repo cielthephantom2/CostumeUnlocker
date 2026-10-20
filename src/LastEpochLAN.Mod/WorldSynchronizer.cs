@@ -21,6 +21,7 @@ internal sealed class WorldSynchronizer
     }
     internal object EncounterDiagnostics=>new {available=false,implementation="removed; rewrite in development"};
     internal Actor FindEnemy(int id)=>actors.TryGetValue(id,out var actor) ? actor : null;
+    internal int EncounterActorId(Actor actor)=>actor!=null && hostIds.TryGetValue(actor.GetInstanceID(),out var id) && actors.ContainsKey(id)?id:0;
     private readonly double[] costTotals = new double[5], costMax = new double[5];
     private readonly long[] costCounts = new long[5];
     private long Cost(int stage, long start)

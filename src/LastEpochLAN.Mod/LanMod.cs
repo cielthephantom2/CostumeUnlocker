@@ -5,7 +5,7 @@ using MelonLoader;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
-[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.21", "Local research")]
+[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.22", "Local research")]
 [assembly: MelonGame("Eleventh Hour Games", "Last Epoch")]
 
 namespace LastEpochLAN.Mod;
@@ -15,6 +15,7 @@ public sealed class LanMod : MelonMod
     private static readonly string[] StartupArguments=Environment.GetCommandLineArgs();
     private static readonly string ModVersion = (System.Reflection.CustomAttributeExtensions.GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>(typeof(LanMod).Assembly)?.InformationalVersion?.Split('+')[0]) ?? typeof(LanMod).Assembly.GetName().Version?.ToString(3) ?? "unknown";
     private readonly WorldSynchronizer worldSync = new();
+    private readonly NativeEncounterCatalogue encounterCatalogue=new();
     private readonly NativeSummonCapture summonCapture=new();
     private readonly NativeSummonReplicas summonReplicas=new();
     private readonly LatestReportWriter reportWriter=new();
@@ -322,6 +323,7 @@ public sealed class LanMod : MelonMod
             }
             if (!session.Connected) { message = session.Status; StopRoom(); return; }
             bool coopReady=monolithParty.SharedWorldReady && (session.IsHost || partyTravel.Participation.CanShareWorld(false,currentScene,session.PlayerPositions.FirstOrDefault()?.Scene??"",monolithParty.Borrowing,partyTravel.Busy));
+            encounterCatalogue.Tick(session,currentScene,coopReady);
             SkillCapture.Session = coopReady ? session : null;
             long lanStarted = System.Diagnostics.Stopwatch.GetTimestamp();
             long stageStarted = lanStarted;
@@ -643,6 +645,7 @@ public sealed class LanMod : MelonMod
         pendingCancellation?.Dispose();
         pendingCancellation = null;
         worldSync.Reset();
+        encounterCatalogue.Reset();
         guestCombat.Reset();
         HudAuthority.Session = null;
         gift.Disconnect();
@@ -680,7 +683,7 @@ public sealed class LanMod : MelonMod
             fortuneSmoke=OfflineTools.OfflineToolkitSmoke.FortuneObservations,
             characterSetup = OfflineTools.NewCharacterBoost.Diagnostics,
             partyHealthScaling = false,
-            encounterDiagnostics=worldSync.EncounterDiagnostics,sharedStatus=NativePartyStatus.Diagnostics,
+            encounterDiagnostics=worldSync.EncounterDiagnostics,encounterDevelopment=encounterCatalogue.Diagnostics,sharedStatus=NativePartyStatus.Diagnostics,
             sourceOwnedStatus=new {NativeAilmentSynchronization.ReportsSent,NativeAilmentSynchronization.ReportsRejected,
                 NativeAilmentSynchronization.Error,damagePolicy=NativePartyStatus.Enabled?"shared native Host status/DoT; direct hits use source-calculated damage":"source-owned damage; shared visual experiment only"},
             callbackPerformance=new {update=updateTiming.Read(),lateUpdate=lateTiming.Read(),reportWriterError=reportWriter.Error,
@@ -688,7 +691,6 @@ public sealed class LanMod : MelonMod
             cosmeticErrors = equipmentReplicas.Where(pair=>pair.Value.CosmeticError!="").Select(pair=>new {playerId=pair.Key,reason=pair.Value.CosmeticError}).ToArray(),
             nativeGiftMenu = new { NativeLanGiftMenuPatch.Added, NativeLanGiftMenuPatch.Error },
             autoPlay=autoPlay.Diagnostics,
-            disintegrateMovement=OfflineTools.OfflineDisintegrateMovement.Diagnostics,
             lanGift = new { gift.Status, gift.Error, gift.Sent, gift.Received, gift.Pending, gift.Busy },
             sharedChest = sharedChest?.Diagnostics,
             localCharacterReadiness = new { monolithParty.GameplayReady,monolithParty.SharedWorldReady,monolithParty.GuestSession },

@@ -1,8 +1,10 @@
-param([int]$TimeoutSeconds = 90, [string]$ModAssembly = '', [string]$CoreAssembly = '', [switch]$NativeServer, [switch]$NativeSession, [switch]$NativeAssets, [switch]$NativeCampaign, [switch]$NativeEncounters, [switch]$NativeStatus, [switch]$OfflineTools, [switch]$NativeVfx, [switch]$NativeGift, [switch]$GiftReload, [switch]$GiftTransfer, [switch]$GiftTransferReplay, [switch]$GiftMenu, [switch]$PartyTravel, [switch]$PartyBoss, [switch]$HudPolicy, [switch]$RenderUi, [switch]$LootFilters, [switch]$AutoPlay, [switch]$Disintegrate, [switch]$OmenRewards, [switch]$SharedChest, [switch]$ChestUi, [switch]$CaptureChest, [ValidateSet(0,1,2)][int]$StashVersion=0, [string]$RuntimeRoot='', [string]$SandboxRoot='')
+param([int]$TimeoutSeconds = 90, [string]$ModAssembly = '', [string]$CoreAssembly = '', [switch]$NativeServer, [switch]$NativeSession, [switch]$NativeAssets, [switch]$NativeCampaign, [switch]$NativeEncounters, [switch]$NativeStatus, [switch]$OfflineTools, [switch]$NativeVfx, [switch]$NativeGift, [switch]$GiftReload, [switch]$GiftTransfer, [switch]$GiftTransferReplay, [switch]$GiftMenu, [switch]$PartyTravel, [switch]$PartyBoss, [switch]$HudPolicy, [switch]$RenderUi, [switch]$NaturalShell, [switch]$ConcurrentPrivateCopy, [switch]$LootFilters, [switch]$AutoPlay, [switch]$Disintegrate, [switch]$OmenRewards, [switch]$OwnedOmen, [switch]$SharedChest, [switch]$ChestUi, [switch]$CaptureChest, [ValidateSet(0,1,2)][int]$StashVersion=0, [string]$RuntimeRoot='', [string]$SandboxRoot='')
 $ErrorActionPreference = 'Stop'
 if ($Disintegrate) { $NativeCampaign = $true; $RenderUi = $true }
+if ($NaturalShell) { $NativeAssets = $true; $RenderUi = $true }
 if ($CaptureChest -or $StashVersion -gt 0) { $SharedChest = $true }
 if ($OmenRewards -or $SharedChest) { $NativeCampaign = $true }
+if ($OwnedOmen) { $NativeCampaign = $true; $RenderUi = $true }
 if ($SharedChest) { $RenderUi = $true } # Native pointer raycasts require rendered Canvas depth.
 if ($NativeVfx) { $NativeCampaign = $true }
 if ($LootFilters) { $NativeCampaign = $true }
@@ -22,7 +24,16 @@ if ($ChestUi) { $NativeAssets = $true; $RenderUi = $true }
 $sourceRuntime = if ($RuntimeRoot) { $RuntimeRoot } else { Join-Path $PSScriptRoot 'runtime' }
 $qaRuntime = if ($SandboxRoot) { $SandboxRoot } else { Join-Path $PSScriptRoot 'qa-adapter-runtime' }
 $qaExe = Join-Path $qaRuntime 'Last Epoch.exe'
-if (Get-Process 'Last Epoch' -ErrorAction SilentlyContinue) { throw 'Close gameplay before the native adapter test.' }
+$otherGames=@(Get-Process 'Last Epoch' -ErrorAction SilentlyContinue | Select-Object Id,Path,StartTime)
+if($otherGames.Count -gt 0) {
+    if(!$ConcurrentPrivateCopy) { throw 'Close gameplay before the native adapter test, or use a verified separate private copy.' }
+    $requiredRoot=[IO.Path]::GetFullPath((Join-Path $sourceRuntime '..\qa-encounter-private-runtime'))
+    if([IO.Path]::GetFullPath($qaRuntime) -ne $requiredRoot -or !$NativeAssets -or $NativeServer -or $NativeSession) {
+        throw 'Concurrent QA requires the dedicated encounter private copy, GuestProfile and no native network server/session.'
+    }
+    if((Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory -lt 8388608) { throw 'Concurrent native QA requires at least 8 GiB of free RAM.' }
+    if($otherGames | Where-Object {$_.Path -eq $qaExe}) { throw 'Dedicated QA copy is already running.' }
+}
 New-Item -ItemType Directory -Path $qaRuntime -Force | Out-Null
 Get-ChildItem -LiteralPath $sourceRuntime -File | Where-Object { $_.Extension -in '.dll', '.exe' } |
     ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $qaRuntime -Force }
@@ -84,7 +95,9 @@ try {
     if ($LootFilters) { $qaArguments += '--lelan-loot-filter-smoke' }
     if ($AutoPlay) { $qaArguments += '--lelan-autoplay-smoke' }
     if ($Disintegrate) { $qaArguments += '--lelan-disintegrate-smoke' }
+    if ($NaturalShell) { $qaArguments += '--lelan-natural-shell-qa' }
     if ($OmenRewards) { $qaArguments += '--lelan-omen-reward-smoke' }
+    if ($OwnedOmen) { $qaArguments += '--lelan-owned-omen-smoke' }
     if ($SharedChest) { $qaArguments += '--lelan-shared-chest-smoke' }
     if ($CaptureChest) { $qaArguments += '--lelan-render-chest-qa' }
     if ($StashVersion -gt 0) { $qaArguments += ('--lelan-stash-v'+$StashVersion) }
@@ -102,6 +115,7 @@ try {
     if ($PartyBoss) { $qaArguments += '--lelan-party-boss' }
     if ($HudPolicy) { $qaArguments += '--lelan-hud-policy' }
     $qaProcess = Start-Process -FilePath $qaExe -WorkingDirectory $qaRuntime -WindowStyle Hidden -PassThru -ArgumentList $qaArguments
+    if ($ConcurrentPrivateCopy) { $qaProcess.PriorityClass = "BelowNormal" }
     Write-Output "Native adapter QA process: $($qaProcess.Id). Installed gameplay DLLs unchanged."
     $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
     do {
@@ -216,6 +230,11 @@ try {
     throw 'Native adapter QA timed out. Inspect qa-adapter-runtime/MelonLoader/Latest.log.'
 }
 finally {
+    if ($ConcurrentPrivateCopy) {
+        @{ before=$otherGames; after=@(Get-Process 'Last Epoch' -ErrorAction SilentlyContinue | Where-Object {$_.Id -ne $qaProcess.Id} | Select-Object Id,Path,StartTime);
+           scope='Only the dedicated QA PID/path may be terminated; other game processes are not controlled.' } |
+            ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $PSScriptRoot 'validation\encounter-private-copy-processes.json') -Encoding UTF8
+    }
     if ($qaProcess -ne $null) {
         $runningQA = Get-Process -Id $qaProcess.Id -ErrorAction SilentlyContinue
         if ($runningQA -and $runningQA.Path -eq $qaExe) { Stop-Process -Id $qaProcess.Id }

@@ -11,6 +11,8 @@ public interface IEncounterFamilyAdapter
 {
     EncounterKind Kind { get; }
     EncounterNativeDispatch Execute(EncounterExecution execution);
+    void Accepted(EncounterExecution execution){}
+    void EndInstance(EncounterInstance instance){}
 }
 
 /// <summary>
@@ -21,15 +23,23 @@ public sealed class EncounterHostDriver
 {
     private readonly LanSession room;
     private readonly EncounterHost authority;
+    private readonly EncounterRewardAuthority? rewards;
     private readonly Dictionary<EncounterKind, IEncounterFamilyAdapter> adapters = new();
+    private readonly Queue<Observation> observations = new();
+    private readonly Dictionary<Guid,EncounterReservation> executions = new();
+    private sealed record Observation(EncounterInstance Instance,Guid Encounter,EncounterReservation? Execution,bool Success,bool Removed);
     private EncounterInstance? instance;
     private long publishedRevision = -1;
     private long endedEpoch = -1;
     public string LastDispatchError { get; private set; } = "";
+    public EncounterInstance? Instance => instance;
+    public EncounterSnapshot? Snapshot => Active ? authority.Snapshot() : null;
+    public int PendingObservations => observations.Count;
 
-    public EncounterHostDriver(LanSession room)
+    public EncounterHostDriver(LanSession room,EncounterRewardAuthority? rewards=null)
     {
         this.room = room;
+        this.rewards=rewards;
         authority = new(room);
     }
 
@@ -42,9 +52,16 @@ public sealed class EncounterHostDriver
 
     public void Begin(EncounterInstance next)
     {
+        if(next==null || !next.IsValid())throw new ArgumentException("Invalid instance.");
         if (next.Epoch <= endedEpoch) throw new InvalidOperationException("An ended instance cannot be reopened.");
+        if(instance!=null && instance!=next)
+        {
+            if(next.Epoch<=instance.Epoch)throw new InvalidOperationException("Instance epoch must advance.");
+            ReleaseAdapters(instance);
+        }
         authority.Begin(next);
         if (instance == next) return;
+        observations.Clear();executions.Clear();
         instance = next;
         publishedRevision = -1;
         Publish();
@@ -58,13 +75,22 @@ public sealed class EncounterHostDriver
     }
 
     private bool Active => room.Connected && instance != null;
-    public bool Completed(Guid encounter) => Active && authority.NativeCompleted(encounter) != Guid.Empty;
-    public Guid NemesisTurnCompleted(EncounterReservation execution) => Active ? authority.NativeNemesisTurnCompleted(execution) : Guid.Empty;
-    public bool Failed(Guid encounter) => Active && authority.NativeFailed(encounter);
-    public bool Removed(Guid encounter) => Active && authority.NativeRemoved(encounter);
+    // Capture the instance when binding native callbacks, never read the current
+    // instance from an old object's callback after travel. Synchronous callbacks
+    // are deferred until Execute returned and NativeAccepted was confirmed.
+    public bool Observe(EncounterInstance source,Guid encounter,bool success,EncounterReservation? execution=null,bool removed=false)
+    {
+        if(!Active || instance!=source || observations.Count>=1024)return false;
+        observations.Enqueue(new(source,encounter,execution,success,removed));return true;
+    }
+
+    public bool UpdatePosition(Guid encounter,VisualPoint point)=>Active && authority.NativePosition(encounter,point);
+    public bool UpdateArea(Guid encounter,EncounterArea? area)=>Active && authority.NativeArea(encounter,area);
+    public bool UpdateWorld(Guid encounter,EncounterActors? actors,EncounterDestination? destination=null)=>Active && authority.NativeWorld(encounter,actors,destination);
 
     public void EndInstance()
     {
+        if(instance!=null)ReleaseAdapters(instance);
         if (instance != null) endedEpoch = Math.Max(endedEpoch, instance.Epoch);
         if (Active)
         {
@@ -72,7 +98,13 @@ public sealed class EncounterHostDriver
             room.ClearEncounters();
         }
         instance = null;
+        observations.Clear();executions.Clear();
         publishedRevision = -1;
+    }
+    private void ReleaseAdapters(EncounterInstance source)
+    {
+        foreach(var adapter in adapters.Values)
+            try{adapter.EndInstance(source);}catch(Exception ex){LastDispatchError=ex.ToString();}
     }
 
     public void Pump()
@@ -82,6 +114,13 @@ public sealed class EncounterHostDriver
         {
             if (request == null) continue;
             var command = request.Command;
+            if(command.Action==EncounterAction.AcknowledgeReward)
+            {
+                var peer=room.PlayerPositions.FirstOrDefault(p=>p.Id==request.PlayerId);
+                try{Reply(request,rewards!=null && peer!=null && rewards.Acknowledge(peer,command)?EncounterReplyCode.RewardAcknowledged:EncounterReplyCode.Rejected);}
+                catch(Exception ex){LastDispatchError=ex.ToString();Reply(request,EncounterReplyCode.Faulted);}
+                continue;
+            }
             if (instance == null || !authority.TryReserve(request.PlayerId, command, out var reservation))
             {
                 Reply(request, EncounterReplyCode.Rejected);
@@ -116,12 +155,28 @@ public sealed class EncounterHostDriver
                 Reply(request, EncounterReplyCode.NativeRejected);
             }
             else if (dispatched == EncounterNativeDispatch.Started && authority.NativeAccepted(reservation!))
+            {
+                executions[reservation!.Id]=reservation;
+                try{adapter.Accepted(new(instance,view,reservation));}
+                catch(Exception ex)
+                {LastDispatchError=ex.ToString();executions.Remove(reservation.Id);authority.NativeFailed(view.Id);Reply(request,EncounterReplyCode.Faulted);continue;}
                 Reply(request, EncounterReplyCode.NativeAccepted);
+            }
             else
             {
                 authority.NativeFailed(view.Id);
                 Reply(request, EncounterReplyCode.Faulted);
             }
+        }
+        for(int i=0;i<128 && observations.TryDequeue(out var observation);i++)
+        {
+            if(instance!=observation.Instance)continue;
+            if(observation.Execution is { } execution &&
+                (!executions.TryGetValue(execution.Id,out var accepted) || accepted!=execution || execution.Encounter!=observation.Encounter))continue;
+            if(observation.Removed)authority.NativeRemoved(observation.Encounter);
+            else if(!observation.Success)authority.NativeFailed(observation.Encounter);
+            else if(observation.Execution is { } turn && authority.Snapshot().Entries.Any(e=>e.Id==turn.Encounter && e.Kind==EncounterKind.Nemesis))authority.NativeNemesisTurnCompleted(turn);
+            else authority.NativeCompleted(observation.Encounter);
         }
         Publish();
     }
@@ -138,7 +193,10 @@ public sealed class EncounterHostDriver
         if (instance == null) return;
         var snapshot = authority.Snapshot();
         if (snapshot.Revision == publishedRevision) return;
-        room.PublishEncounters(snapshot, authority.PrivateNemesisTurns());
+        var turns=authority.PrivateNemesisTurns();
+        // A delivery cannot advertise a reward before its durable Host record.
+        rewards?.Publish(snapshot,turns);
+        room.PublishEncounters(snapshot,turns);
         publishedRevision = snapshot.Revision;
     }
 }

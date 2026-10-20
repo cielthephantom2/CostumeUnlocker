@@ -90,6 +90,7 @@ public sealed partial class LanSession
             Entries = source.Entries.Select(e => e with
             {
                 Actions = e.Actions.ToArray(),
+                Actors=e.Actors?.Copy(),
                 Recipients = e.Recipients.Where(r => r == key).ToArray()
             }).ToArray()
         };

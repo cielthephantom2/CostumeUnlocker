@@ -38,4 +38,15 @@ Check(!Walk(core.MainModule.Types).Any(t=>oldTypes.Contains(t.Name)),"legacy enc
 Check(core.MainModule.Types.First(t=>t.Name=="WorldState").Properties.All(p=>p.Name!="Encounters"),"NPC world snapshots have no legacy encounter side channel");
 Check(core.MainModule.Types.First(t=>t.Name=="SkillEvent").Properties.All(p=>p.Name!="MapRequest"),"skill visual channel cannot carry legacy interaction or reward acknowledgements");
 Check(types.Any(t=>t.Name=="NativePlayerAnimationReplica") && types.Any(t=>t.Name=="NativeSkillVisualReplica") && types.Any(t=>t.Name=="HostEnemyReplicas"),"NPC animation, remote VFX and enemy replicas remain compiled");
+var catalogue=types.Single(t=>t.Name=="NativeEncounterCatalogue");
+var catalogueCalls=Walk(new[]{catalogue}).SelectMany(t=>t.Methods).Where(m=>m.HasBody)
+ .SelectMany(m=>m.Body.Instructions).Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(!catalogue.CustomAttributes.Any(a=>a.AttributeType.FullName=="HarmonyLib.HarmonyPatch") &&
+ !catalogueCalls.Any(m=>((m.DeclaringType.Namespace=="Il2Cpp" || m.DeclaringType.Namespace.StartsWith("Il2CppLE.")) && !m.Name.StartsWith("get_") &&
+  !(m.DeclaringType.FullName=="Il2Cpp.RageOfMorditasLogic" && m.Name=="GetState")) ||
+  m.DeclaringType.FullName=="UnityEngine.Object" && m.Name is "Destroy" or "Instantiate"),
+ "development encounter catalogue has no Harmony patch or native gameplay mutation calls");
+Check(catalogue.Fields.Any(f=>f.Name=="Enabled" && f.IsStatic && f.IsInitOnly) &&
+ catalogue.Methods.Single(m=>m.Name==".cctor").Body.Instructions.Any(i=>Equals(i.Operand,"--lelan-encounter-development")),
+ "native encounter discovery requires explicit development switch");
 File.WriteAllText(args[2],JsonSerializer.Serialize(new{passed=checks.Count,patchesInspected=patches.Length,scope="compiled metadata and IL audit; not gameplay acceptance",checks},new JsonSerializerOptions{WriteIndented=true}));

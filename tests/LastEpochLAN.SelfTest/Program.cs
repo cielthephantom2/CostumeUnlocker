@@ -4,6 +4,15 @@ using System.Net.Sockets;
 using System.Text.Json;
 using LastEpochLAN.Core;
 
+if(args.Length>0 && args[0]=="--encounter-tests")
+{
+    int encounterCheckCount=0;
+    void Verify(bool ok,string label){if(!ok)throw new Exception("FAIL: "+label);encounterCheckCount++;Console.WriteLine("PASS: "+label);}
+    await EncounterRewriteTests.Run(Verify);
+    await EncounterSimulationTests.Run(Verify);
+    Console.WriteLine($"{encounterCheckCount} encounter checks passed; managed 1 Host + 2 Clients simulation, no game process used.");return;
+}
+
 if (args.Length > 0 && args[0] == "--loot-filter-tests")
 {
     int count = 0;

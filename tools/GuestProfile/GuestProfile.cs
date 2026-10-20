@@ -17,6 +17,10 @@ public sealed class ProfileMod : MelonMod
     public override void OnInitializeMelon()
     {
         Directory.CreateDirectory(Root);
+        // This helper exists only in disposable QA copies. Set the supported
+        // native option before GameClientLauncher.Start reads the cached parser
+        // result; the extra QA/Unity switches can otherwise invalidate parsing.
+        CommandLine.Options.OfflineMode=true;
         LoggerInstance.Msg("Guest platform save/data paths redirected to " + Root);
     }
 
@@ -100,4 +104,13 @@ internal static class TempPathPatch
 {
     private static bool Prefix(ref string __result)
     { __result = Path.Combine(ProfileMod.Root, "Temp"); Directory.CreateDirectory(__result); return false; }
+}
+
+[HarmonyPatch(typeof(CommandLine), "GetCommandLineOptions")]
+internal static class PrivateOfflineOptionsPatch
+{
+    private static void Postfix(CommandLineOptions __result)
+    {
+        if(__result!=null)__result.OfflineMode=true;
+    }
 }

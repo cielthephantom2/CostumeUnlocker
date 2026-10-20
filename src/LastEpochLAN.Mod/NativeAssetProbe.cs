@@ -10,6 +10,8 @@ internal sealed class NativeAssetProbe : IDisposable
 {
     private Il2Cpp.GameLoader loader;
     private UniTask.Awaiter initialization;
+    private readonly bool naturalShell=Environment.GetCommandLineArgs().Contains("--lelan-natural-shell-qa");
+    private bool profileVerified;
     private readonly DateTimeOffset started = DateTimeOffset.UtcNow;
     private readonly float deadline = Time.unscaledTime + 60;
     internal object Result { get; private set; }
@@ -21,7 +23,7 @@ internal sealed class NativeAssetProbe : IDisposable
         if (Finished) return;
         try
         {
-            if (loader == null)
+            if (!profileVerified)
             {
                 string profileReport = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath), "UserData", "LastEpochLAN.guest-profile-report.json");
                 if (!File.Exists(profileReport))
@@ -40,13 +42,20 @@ internal sealed class NativeAssetProbe : IDisposable
                 // service initialization, rather than booting online services and
                 // replacing the user service after they have subscribed.
                 Il2CppLE.Core.CommandLine.Options.OfflineMode = true;
-                loader = new Il2Cpp.GameLoader();
-                initialization = loader.InitializeAsync().GetAwaiter();
+                profileVerified=true;
+                Application.runInBackground=true;Application.targetFrameRate=20;
+                if(!naturalShell)
+                {
+                    loader = new Il2Cpp.GameLoader();
+                    initialization = loader.InitializeAsync().GetAwaiter();
+                }
                 MelonLoader.MelonLogger.Msg("Native asset QA: verified private profile; initializing game assets.");
             }
-            if (initialization.IsCompleted)
+            bool shellReady=naturalShell && Il2CppClientAppState.ClientStateManager._sceneManager?._isTransitioning==false &&
+                Il2CppClientAppState.ClientStateManager.CurrentClientAppStateType is Il2CppClientAppState.ClientAppStateType.Login or Il2CppClientAppState.ClientAppStateType.CharacterSelect;
+            if (naturalShell?shellReady:initialization.IsCompleted)
             {
-                initialization.GetResult();
+                if(!naturalShell)initialization.GetResult();
                 var classes = Il2Cpp.CharacterClassList.get();
                 if (classes == null || classes.classes.Count < 5) throw new InvalidOperationException("Native class assets did not initialize.");
                 NativeGiftDataSmoke.Run();

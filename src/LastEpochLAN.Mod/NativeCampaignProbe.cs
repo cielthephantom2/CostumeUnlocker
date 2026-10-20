@@ -14,7 +14,7 @@ namespace LastEpochLAN.Mod;
 // game's offline service; never selects an existing user character.
 internal sealed class NativeCampaignProbe
 {
-    private readonly OfflineUserService user = new();
+    private OfflineUserService user = new();
     private UniTask<Result<UserIdentity, UserServiceError>>.Awaiter login;
     private UniTask<IGameplayService>.Awaiter service;
     private UniTask<CharacterData>.Awaiter creation;
@@ -32,7 +32,7 @@ internal sealed class NativeCampaignProbe
     private NativeStatusCampaignSmoke statusSmoke;
     private NativeEncounterIsolationSmoke isolation;
     private NativeSharedChestProbe sharedChest;
-    private NativeDisintegrateProbe disintegrate;
+    private NativeOwnedOmenProbe ownedOmen;
     internal void DrawChest()=>sharedChest?.Draw();
     private bool toolkitCharacterQueued;
     internal object Result { get; private set; }
@@ -44,6 +44,7 @@ internal sealed class NativeCampaignProbe
         {
             if (Il2Cpp.PlayerFinder.getPlayerActor() != null) throw new InvalidOperationException("QA campaign requires an empty sandbox.");
             Application.runInBackground=true;
+            if(Environment.GetCommandLineArgs().Contains("--lelan-natural-shell-qa")){Advance(-2);return;}
             initializeServices = ServiceProvider.InitializeServices().GetAwaiter();
             Advance(-1);
         }
@@ -57,6 +58,15 @@ internal sealed class NativeCampaignProbe
         {
             switch (stage)
             {
+                case -2:
+                    if(Il2CppClientAppState.ClientStateManager._sceneManager?._isTransitioning==true)break;
+                    user=ServiceProvider._UserService?.TryCast<OfflineUserService>();
+                    if(user?.CurrentUser==null)break;
+                    if(Il2CppClientAppState.ClientStateManager.CurrentClientAppStateType==Il2CppClientAppState.ClientAppStateType.CharacterSelect)
+                    {service=ServiceProvider.GameplayService.GetAwaiter();Advance(1);}
+                    else if(Il2CppClientAppState.ClientStateManager.CurrentClientAppStateType==Il2CppClientAppState.ClientAppStateType.Login)
+                    {characterSelect=Il2CppClientAppState.ClientStateManager.ChangeState(Il2CppClientAppState.ClientAppStateType.CharacterSelect).GetAwaiter();Advance(6);}
+                    break;
                 case -1:
                     if (initializeServices.IsCompleted)
                     {
@@ -163,10 +173,8 @@ internal sealed class NativeCampaignProbe
                         throw new InvalidOperationException("Campaign QA loaded a different character.");
                     if (actor != null && actor.HasMovedToPlayerSpawn && actor.health != null)
                     {
-                        if(Environment.GetCommandLineArgs().Contains("--lelan-disintegrate-smoke"))
-                        {
-                            disintegrate??=new();Result=disintegrate.Tick(actor);return;
-                        }
+                        if(Environment.GetCommandLineArgs().Contains("--lelan-owned-omen-smoke"))
+                        {ownedOmen??=new();Result=ownedOmen.Tick(actor);return;}
                         if(Environment.GetCommandLineArgs().Contains("--lelan-autoplay-smoke"))
                         {Result=AutoPlayRuntime.Active?.NativeSmoke(actor);return;}
                         if(Environment.GetCommandLineArgs().Contains("--lelan-loot-filter-smoke"))
