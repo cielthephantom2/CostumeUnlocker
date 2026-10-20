@@ -47,9 +47,10 @@ internal sealed class LanMonolithParty
     private enum Step {None,Exit,Unload,Load,Enter,Spawn}
     private Step step;
     private bool abort,returnOnly,taskPending,cleanupPending;
+    private bool entryRequested;
     internal bool Busy=>step!=Step.None;
     internal bool Borrowing=>borrowed!=null;
-    internal string Message="Monolith: Host selects Echo; Client follows";
+    internal string Message="Join party only; use Teleport to enter Host Echo";
     internal string Error="";
     internal long Entries,Restores,RewardGrants;
     internal bool GuestAuthority=>Borrowing && !Il2CppEHG.Multiplayer.GameplayEnvironment.IsOnlinePlay;
@@ -69,7 +70,7 @@ internal sealed class LanMonolithParty
     internal string LocalRun=>session?.IsHost==true ? HostWorldRun(SceneList.GetCurrentSceneDetails()?.Name??"") : GameplayReady ? joinedRun : "";
     internal bool BlockSelection()
     {
-        if(!GuestSession && !Borrowing) return false;
+        if(!Borrowing && !Busy) return false;
         Message="Monolith: wait for Host to choose an Echo";return true;
     }
     internal bool Owns(MonolithRun run)=>GuestAuthority && run?.Pointer==borrowed.Pointer;
@@ -111,7 +112,7 @@ internal sealed class LanMonolithParty
             var current=SceneList.GetCurrentSceneDetails()?.Name??"";
             if(PartyEchoRules.NeedsEntry(state,joinedRun,current))
             {
-                if(state.RunId!=failedRun && Time.unscaledTime>=retryAt) Begin(state,false);
+                if(entryRequested && state.RunId!=failedRun && Time.unscaledTime>=retryAt) {entryRequested=false;Begin(state,false);}
                 return;
             }
             if(Borrowing && (!state.Active || !string.Equals(state.HostScene,state.Scene,StringComparison.OrdinalIgnoreCase)))
@@ -201,12 +202,14 @@ internal sealed class LanMonolithParty
     internal bool RequestHost(string id)
     {
         if(session?.Connected!=true || session.IsHost || session.PlayerPositions.FirstOrDefault()?.Id!=id) return false;
+        if(LanSharedChest.Active?.Busy==true){Message="Wait for shared chest transaction";return true;}
         var state=ReadEcho();
         if(state?.Active!=true || !string.Equals(state.HostScene,state.Scene,StringComparison.OrdinalIgnoreCase))
         {
             var host=session.PlayerPositions.FirstOrDefault();
             if(SceneList.FindSceneDetails(host?.Scene??"")?.sceneType.ToString()!="Monolith") return false;
             Message="Waiting for Host Echo generation context...";
+            entryRequested=true;
             return true;
         }
         if(Time.unscaledTime<retryAt) return true;
@@ -214,7 +217,7 @@ internal sealed class LanMonolithParty
         {
             failedRun="";
             if(PartyEchoRules.NeedsEntry(state,joinedRun,SceneList.GetCurrentSceneDetails()?.Name??""))
-            {try {Begin(state,false);} catch(Exception ex){Fail(ex);}}
+            {try {entryRequested=false;Begin(state,false);} catch(Exception ex){Fail(ex);}}
             else PlaceBeside(id);
         }
         return true;
@@ -378,7 +381,7 @@ internal sealed class LanMonolithParty
     {
         if(session?.IsHost!=true || !reward.IsValid()) return;
         completion=reward;completionEchoId=EchoGame.ActiveMetadata?.EchoId??-1;nextCapture=0;
-        rewardCharacters=session.PlayerPositions.Where(p=>p.Available && !p.Dead && p.EchoRunId==hostRunId && p.Scene==hostState?.Scene && p.CharacterId!="")
+        rewardCharacters=session.PlayerPositions.Where(p=>p.Cooperative && p.Available && !p.Dead && p.EchoRunId==hostRunId && p.Scene==hostState?.Scene && p.CharacterId!="")
             .Select(p=>p.CharacterId).Distinct().Take(4).ToArray();
     }
     private static string Character()=>PlayerFinder.getPlayerActor()?.characterDataTracker?.charData?.Id??"";
@@ -434,7 +437,7 @@ internal sealed class LanMonolithParty
     internal void Disconnect()
     {
         abort=true;if(hostState!=null) hostState=hostState with {Revision=0};
-        receivedEcho=null;receivedSession=null;failedRun="";revision=0;
+        receivedEcho=null;receivedSession=null;failedRun="";revision=0;entryRequested=false;
     }
 }
 

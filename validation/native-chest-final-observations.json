@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "nativeRemovedThenSaved": true,
+  "hostCustodyBetweenSaves": true,
+  "nativeWithdrawAndSave": true,
+  "finalNativeCopies": 1,
+  "serializedBytesPreserved": true,
+  "partyOnlyGuestDifferentMap": true,
+  "nativeMonolithJoinNoTransition": true,
+  "remoteChestQueryDifferentMap": true,
+  "scope": "Private native Host character deposit/save/Host ledger/withdraw/save over loopback room; no physical two-PC native inventories or crash/save-reload acceptance"
+}

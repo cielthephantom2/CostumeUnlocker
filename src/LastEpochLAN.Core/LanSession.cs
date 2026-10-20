@@ -128,6 +128,25 @@ public sealed class LanSession : IDisposable
     private readonly ConcurrentQueue<IncomingDamage> receivedDamage = new();
     private readonly ConcurrentQueue<GiftMessage> outgoingGifts = new();
     private readonly ConcurrentQueue<GiftMessage> receivedGifts = new();
+    private readonly ConcurrentQueue<ChestCommand> outgoingChest=new();
+    private readonly ConcurrentQueue<ChestRequest> receivedChest=new();
+    private readonly ConcurrentQueue<ChestReply> chestReplies=new();
+    public bool TryTakeChestRequest(out ChestRequest? request)=>receivedChest.TryDequeue(out request);
+    public bool TryTakeChestReply(out ChestReply? reply)=>chestReplies.TryDequeue(out reply);
+    public bool SendChest(ChestCommand command)
+    {
+        if(!Connected || !command.Valid())return false;
+        if(IsHost){if(receivedChest.Count>=128)return false;receivedChest.Enqueue(new(LocalId,command));}
+        else {if(outgoingChest.Count>=128)return false;outgoingChest.Enqueue(command);}
+        return true;
+    }
+    public bool ReplyChest(string playerId,ChestReply reply)
+    {
+        if(!IsHost || !Connected || !reply.Valid())return false;
+        if(playerId==LocalId){if(chestReplies.Count>=128)return false;chestReplies.Enqueue(reply);return true;}
+        if(!peers.TryGetValue(playerId,out var target) || target.ChestReplies.Count>=128)return false;
+        target.ChestReplies.Enqueue(reply);return true;
+    }
     public bool TryTakeGift(out GiftMessage? message) => receivedGifts.TryDequeue(out message);
     public bool PublishGift(GiftMessage message)
     {
@@ -401,6 +420,12 @@ public sealed class LanSession : IDisposable
                     deathLedger.Record(peer.Id, receipt);
                 }
                 if (packet.Gifts is { Length: > 8 }) throw new InvalidDataException("Too many gift commands.");
+                if(packet.ChestReplies!=null || packet.ChestCommands is {Length:>8})throw new InvalidDataException("Invalid chest authority/budget");
+                foreach(var command in packet.ChestCommands??Array.Empty<ChestCommand>())
+                {
+                    if(command==null || !command.Valid() || receivedChest.Count>=128)throw new InvalidDataException("Invalid chest command");
+                    receivedChest.Enqueue(new(peer.Id,command));
+                }
                 foreach (var gift in packet.Gifts ?? Array.Empty<GiftMessage>())
                 {
                     if (gift == null || !gift.IsValid()) throw new InvalidDataException("Invalid gift command.");
@@ -515,6 +540,8 @@ public sealed class LanSession : IDisposable
             while (damage.Count < 32 && peer.Damage.TryDequeue(out var hit)) damage.Add(hit);
             var currentWorld = Volatile.Read(ref world);
             var gifts = new List<GiftMessage>();
+            var chest=new List<ChestReply>();
+            while(chest.Count<2 && peer.ChestReplies.TryDequeue(out var chestReply))chest.Add(chestReply);
             while (gifts.Count < 8 && peer.Gifts.TryDequeue(out var gift)) gifts.Add(gift);
             bool changed = !ReferenceEquals(currentWorld, peer.LastWorld);
             var chunks = changed ? peer.WorldWriter.Encode(currentWorld with { RewardEnemyIds = deathLedger.Eligible(peer.Id, currentWorld) },allowDelta:true) : Array.Empty<WorldChunk>();
@@ -530,7 +557,7 @@ public sealed class LanSession : IDisposable
                     currentEcho with {Run=Array.Empty<byte>(),Metadata=Array.Empty<byte>()} : currentEcho;
                 await WritePacketAsync(peer.Client.GetStream(),new Packet {Kind="echo",Echo=transfer},deadline.Token).ConfigureAwait(false);
             }
-            await WritePacketAsync(peer.Client.GetStream(), new Packet { Kind = "snapshot", Players = states, WorldChunk = chunks.FirstOrDefault(), Hud = ReferenceEquals(currentHud, peer.LastHud) ? null : currentHud, Skills = skills.ToArray(), IncomingDamage = damage.ToArray(), Gifts = gifts.ToArray(),StatusCallbacks=callbacks.ToArray() }, deadline.Token).ConfigureAwait(false);
+            await WritePacketAsync(peer.Client.GetStream(), new Packet { Kind = "snapshot", Players = states, WorldChunk = chunks.FirstOrDefault(), Hud = ReferenceEquals(currentHud, peer.LastHud) ? null : currentHud, Skills = skills.ToArray(), IncomingDamage = damage.ToArray(), Gifts = gifts.ToArray(),StatusCallbacks=callbacks.ToArray(),ChestReplies=chest.ToArray() }, deadline.Token).ConfigureAwait(false);
             foreach (var chunk in chunks.Skip(1))
             {
                 // Bound each stalled write, not the total duration of a valid
@@ -604,6 +631,12 @@ public sealed class LanSession : IDisposable
                     Volatile.Write(ref hud, packet.Hud);
                 }
                 if (packet.Gifts is { Length: > 8 }) throw new InvalidDataException("Too many gift events.");
+                if(packet.ChestCommands!=null || packet.ChestReplies is {Length:>2})throw new InvalidDataException("Invalid chest response budget");
+                foreach(var reply in packet.ChestReplies??Array.Empty<ChestReply>())
+                {
+                    if(reply==null || !reply.Valid() || chestReplies.Count>=128)throw new InvalidDataException("Invalid chest response");
+                    chestReplies.Enqueue(reply);
+                }
                 foreach (var gift in packet.Gifts ?? Array.Empty<GiftMessage>())
                 {
                     if (gift == null || !gift.IsValid() || receivedGifts.Count >= 256) throw new InvalidDataException("Invalid gift event.");
@@ -673,10 +706,12 @@ public sealed class LanSession : IDisposable
                 var skills = new List<SkillEvent>();
                 while (skills.Count < 16 && outgoingSkills.TryDequeue(out var skill)) skills.Add(skill);
                 var gifts = new List<GiftMessage>();
+                var chest=new List<ChestCommand>();
+                while(chest.Count<8 && outgoingChest.TryDequeue(out var chestCommand))chest.Add(chestCommand);
                 while (gifts.Count < 8 && outgoingGifts.TryDequeue(out var gift)) gifts.Add(gift);
                 var receipts = new List<DeathReceipt>();
                 while (receipts.Count < 32 && outgoingDeathReceipts.TryDequeue(out var receipt)) receipts.Add(receipt);
-                await WritePacketAsync(upstream!.GetStream(), new Packet { Kind = "state", State = Volatile.Read(ref local), DeathReceipts = receipts.ToArray(), Hits = hits.ToArray(), StatusVisuals=statuses.ToArray(), Skills = skills.ToArray(), Gifts = gifts.ToArray() }, deadline.Token).ConfigureAwait(false);
+                await WritePacketAsync(upstream!.GetStream(), new Packet { Kind = "state", State = Volatile.Read(ref local), DeathReceipts = receipts.ToArray(), Hits = hits.ToArray(), StatusVisuals=statuses.ToArray(), Skills = skills.ToArray(), Gifts = gifts.ToArray(),ChestCommands=chest.ToArray() }, deadline.Token).ConfigureAwait(false);
                 await Task.Delay(50, stop.Token).ConfigureAwait(false);
             }
         }
@@ -714,6 +749,9 @@ public sealed class LanSession : IDisposable
         while (receivedSkills.TryDequeue(out _)) { }
         while (receivedGifts.TryDequeue(out _)) { }
         while (outgoingGifts.TryDequeue(out _)) { }
+        while(outgoingChest.TryDequeue(out _)){}
+        while(receivedChest.TryDequeue(out _)){}
+        while(chestReplies.TryDequeue(out _)){}
         while (outgoingDeathReceipts.TryDequeue(out _)) { }
         claimedRewards.Clear();
         if (status is "Connected" or "Hosting" or "Starting") status = "Stopped";
@@ -729,6 +767,7 @@ public sealed class LanSession : IDisposable
         public readonly ConcurrentQueue<SkillEvent> Skills = new();
         public readonly ConcurrentQueue<IncomingDamage> Damage = new();
         public readonly ConcurrentQueue<GiftMessage> Gifts = new();
+        public readonly ConcurrentQueue<ChestReply> ChestReplies=new();
         public readonly ConcurrentQueue<StatusCallback> StatusCallbacks = new();
         public WorldState? LastWorld;
         public readonly WorldChunkWriter WorldWriter = new();

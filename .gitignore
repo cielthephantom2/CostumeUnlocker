@@ -5,3 +5,5 @@ runtime/
 *.user
 qa-adapter-runtime/
 research/
+
+local-releases/

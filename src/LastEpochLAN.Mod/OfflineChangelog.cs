@@ -49,12 +49,15 @@ internal static class OfflineChangelog
         "• Có nút ẩn/hiện, chỉnh kích thước và đặt lại vị trí.\n"+
         "• F4: có bản cập nhật mới hiện màu đỏ; đang ở bản mới nhất hiện màu xanh lá.\n\n"+
         "<b>CO-OP — THAY ĐỔI GAMEPLAY HIỆN CÓ</b>\n"+
+        "• Join chỉ vào party: giữ map và gameplay solo của Client; chỉ nút Teleport mới yêu cầu load sang gần Host. Mỗi Echo mới cần yêu cầu Teleport, không tự đi theo.\n"+
+        "• F2: hòm chung riêng, dữ liệu lưu trên Host, dùng được khi khác map. Gửi/lấy trang bị hoặc Idol x1 có ID riêng; khóa món đang lưu để tránh thao tác trùng.\n"+
+        "• Giao dịch gửi/lấy có nhật ký; mất mạng hoặc lỗi lưu giữ món trong escrow chờ xác minh, không tự cấp lại/hoàn lại. Hòm không dùng stash cá nhân.\n"+
         "• Đã thêm hiển thị minion/companion của đồng đội: model, di chuyển và animation theo máy chủ nhân, tối đa 64 triệu hồi/người. Cần kiểm nghiệm hai máy.\n"+
         "• Đã gỡ hệ thống co-op encounter cũ. Tương tác/thưởng encounter và tương tác map chung chưa được hỗ trợ trong bản thử nghiệm viết lại.\n"+
         "• Solo dùng encounter và nhận thưởng native; chưa xác nhận toàn bộ encounter trong game thật.\n"+
         "• NPC Client dùng đồng bộ animation và bộ đệm chuyển động theo Host; độ mượt vẫn đang được kiểm nghiệm.\n"+
         "• Teleport đến đồng đội ở map thường, thị trấn và hub.\n"+
-        "• Monolith: Host chọn Echo thường, Client theo đúng lượt; đồng bộ mục tiêu, hoàn thành, đường nhận thưởng và trở về Rest.\n"+
+        "• Monolith: Host chọn Echo thường, Client bấm Teleport để theo đúng lượt; đồng bộ mục tiêu, hoàn thành, đường nhận thưởng và trở về Rest.\n"+
         "• Quest Echo/boss quest, Woven/Tombs và lượt Arena/Dungeon/Pinnacle chưa được hỗ trợ trong luồng đi chung mới.\n"+
         "• Host nên đợi đồng đội nhận thưởng ở Rest trước khi mở Echo tiếp. Co-op Monolith hai máy vẫn cần kiểm nghiệm thực tế.";
 

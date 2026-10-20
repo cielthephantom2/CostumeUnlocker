@@ -255,7 +255,7 @@ internal sealed class WorldSynchronizer
             actors[id] = actor;
         }
         sourceStatusVisuals.BeginEpoch(epoch);
-        var participants=session.PlayerPositions.Where(p=>p.Available && p.Scene==scene).Select(p=>p.Id).ToHashSet();
+        var participants=session.PlayerPositions.Where(p=>p.Available && p.Cooperative && p.Scene==scene).Select(p=>p.Id).ToHashSet();
         sourceStatusVisuals.Retain(actors.ContainsKey,participants);
         while(session.TryTakeStatusVisuals(out var report))
             if(report.Epoch==epoch && participants.Contains(report.Source) && actors.TryGetValue(report.EnemyId,out var target) && target!=null && target.health?.currentHealth>0)

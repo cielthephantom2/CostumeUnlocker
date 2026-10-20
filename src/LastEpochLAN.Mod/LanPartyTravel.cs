@@ -13,6 +13,7 @@ namespace LastEpochLAN.Mod;
 internal sealed class LanPartyTravel
 {
     internal static LanPartyTravel Active;
+    internal readonly PartyParticipation Participation=new();
     private LanSession session;
     private string targetId = "", destinationScene = "";
     private float cooldown, started;
@@ -70,7 +71,8 @@ internal sealed class LanPartyTravel
         try
         {
             if (session?.Connected != true || Il2CppEHG.Multiplayer.GameplayEnvironment.IsOnlinePlay) throw new InvalidOperationException("Connect to the LAN party first.");
-            if(LanMonolithParty.Active?.RequestHost(id)==true) return;
+            if(LanSharedChest.Active?.Busy==true)throw new InvalidOperationException("Wait for shared chest save/transaction.");
+            if(LanMonolithParty.Active?.RequestHost(id)==true) {Participation.TeleportRequested();return;}
             if(LanMonolithParty.Active?.Busy==true) return;
             if (Busy || Time.unscaledTime < cooldown) return;
             if (LanGift.Active?.Busy == true) throw new InvalidOperationException("Wait for the Gift save to finish.");
@@ -84,13 +86,14 @@ internal sealed class LanPartyTravel
             var destination = Il2Cpp.SceneList.FindSceneDetails(target.Scene);
             if (destination == null) throw new InvalidOperationException("Unknown party destination.");
             cooldown = Time.unscaledTime + 3;
-            if (PartyTravelRules.SameScene(current?.Name,target.Scene)) { Place(target); return; }
+            if (PartyTravelRules.SameScene(current?.Name,target.Scene)) { Place(target);Participation.TeleportRequested(); return; }
             if (!PartyTravelRules.CanUseDefaultDestination((int)destination.sceneType,Il2Cpp.SceneList.IsNonCombatZone(destination.Name)))
                 throw new InvalidOperationException("Teleport into an active "+destination.sceneType+" run is not supported yet; its run context must be transferred first.");
             targetId = target.Id; destinationScene = target.Scene; started = Time.unscaledTime;
             Error="";travellingSession=session;awaitingPlacement=false;
             loading = service.Default(user, TransitionFadeType.ToBlack_Short, target.Scene, 0).GetAwaiter();
             Busy = true; Message = "Travelling to " + target.Name;
+            Participation.TeleportRequested();
         }
         catch (Exception ex) { Error = ex.Message; Message = "Party travel: " + Error; MelonLoader.MelonLogger.Warning(Message); }
     }
@@ -114,7 +117,7 @@ internal sealed class LanPartyTravel
     {
         var target=Find(id);if(target!=null) Place(target);
     }
-    internal void Disconnect() { session = null; targetId = "";Busy=false;awaitingPlacement=false;travellingSession=null; }
+    internal void Disconnect() { Participation.Disconnect();session = null; targetId = "";Busy=false;awaitingPlacement=false;travellingSession=null; }
 }
 
 [HarmonyPatch(typeof(Il2CppLE.UI.Party.UnityUI.PartyOverviewPanel), nameof(Il2CppLE.UI.Party.UnityUI.PartyOverviewPanel.RequestPortal))]

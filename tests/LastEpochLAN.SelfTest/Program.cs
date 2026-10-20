@@ -65,6 +65,8 @@ await SummonTests.Run(Check);
 DensityTests.Run(Check);
 OfflineBonusTests.Run(Check);
 WovenPotentialTests.Run(Check);
+SharedChestTests.Run(Check);
+await SharedChestTests.Transport(Check);
 FortuneTests.Run(Check);
 DpsTests.Run(Check);
 CharacterSetupTests.Run(Check);

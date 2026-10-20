@@ -5,7 +5,7 @@ using MelonLoader;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
-[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.3", "Local research")]
+[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.4", "Local research")]
 [assembly: MelonGame("Eleventh Hour Games", "Last Epoch")]
 
 namespace LastEpochLAN.Mod;
@@ -22,6 +22,8 @@ public sealed class LanMod : MelonMod
     private readonly NativePeerHealthBars peerHealthBars = new();
     private readonly NativeGuestCombat guestCombat = new();
     private readonly LanGift gift = new();
+    private LanSharedChest sharedChest;
+    private NativeChestUiProbe chestUiProbe;
     private readonly LanPartyTravel partyTravel = new();
     private readonly LanMonolithParty monolithParty=new();
     private LanSession session;
@@ -93,6 +95,7 @@ public sealed class LanMod : MelonMod
 
     public override void OnInitializeMelon()
     {
+        sharedChest=new LanSharedChest(gift);
         string runtime = Path.GetDirectoryName(Environment.ProcessPath)!;
         string assemblyPath = Path.Combine(runtime, "GameAssembly.dll");
         using var stream = File.OpenRead(assemblyPath);
@@ -299,13 +302,16 @@ public sealed class LanMod : MelonMod
                 pendingCancellation?.Dispose();
                 pendingCancellation = null;
             }
-            if (!Environment.GetCommandLineArgs().Contains("--lelan-gift-smoke")) gift.Tick(session);
+            if (!Environment.GetCommandLineArgs().Contains("--lelan-gift-smoke") && !Environment.GetCommandLineArgs().Contains("--lelan-shared-chest-smoke")) gift.Tick(session);
+            if (!Environment.GetCommandLineArgs().Contains("--lelan-gift-smoke") && !Environment.GetCommandLineArgs().Contains("--lelan-shared-chest-smoke")) sharedChest.Tick(session);
+            if(Input.GetKeyDown(KeyCode.F2))sharedChest.Toggle();
             if (!Environment.GetCommandLineArgs().Contains("--lelan-gift-smoke")) partyTravel.Tick(session);
             if (!Environment.GetCommandLineArgs().Contains("--lelan-gift-smoke")) monolithParty.Tick(session);
-            if (!Environment.GetCommandLineArgs().Contains("--lelan-hud-policy")) HudAuthority.Session = session;
+            if (!Environment.GetCommandLineArgs().Contains("--lelan-hud-policy")) HudAuthority.Session = session?.IsHost==true || partyTravel.Participation.Enabled ? session : null;
             if (session == null) return;
             if (!session.Connected) { message = session.Status; StopRoom(); return; }
-            SkillCapture.Session = monolithParty.GameplayReady ? session : null;
+            bool coopReady=monolithParty.GameplayReady && (session.IsHost || partyTravel.Participation.CanShareWorld(false,currentScene,session.PlayerPositions.FirstOrDefault()?.Scene??"",monolithParty.Borrowing,partyTravel.Busy));
+            SkillCapture.Session = coopReady ? session : null;
             long lanStarted = System.Diagnostics.Stopwatch.GetTimestamp();
             long stageStarted = lanStarted;
             if (Time.unscaledTime >= nextPublish)
@@ -316,11 +322,12 @@ public sealed class LanMod : MelonMod
             worldSync.NativeRewardsEnabled = settings.GuestPrivateRewards;
             stageStarted = CostStage(0, stageStarted);
             // Retire scene targets before world capture invokes native AI range checks.
-            if (settings.ExperimentalGuestCombat && monolithParty.GameplayReady) guestCombat.Tick(session, currentScene);
+            if (settings.ExperimentalGuestCombat && coopReady) guestCombat.Tick(session, currentScene);
             NativePartyScaling.Tick(session, currentScene);
             stageStarted = CostStage(2, stageStarted);
             worldSync.HostOwnedEnemies = settings.HostOwnedEnemies;
-            if(monolithParty.GameplayReady) worldSync.Tick(session, currentScene);
+            if(coopReady) worldSync.Tick(session, currentScene);
+            else {worldSync.Reset();guestCombat.Reset();}
             stageStarted = CostStage(1, stageStarted);
             UpdateMarkers();
             peerHealthBars.Tick(remoteStates, markers);
@@ -331,7 +338,7 @@ public sealed class LanMod : MelonMod
             gameFrameSeconds += Time.unscaledDeltaTime;
             while (session.TryTakeSkill(out var skill))
             {
-                if (skill.Scene != currentScene) continue;
+                if (!coopReady || skill.Scene != currentScene) continue;
                 if (skill.NativeVisual != null) { NativeVisualEvents.Receive(skill); continue; }
                 skillsReceived++; lastRemoteSkill = skill.Ability;
                 bool animated = animationReplicas.TryGetValue(skill.PlayerId, out var replica) && replica.ReplaySkill(skill);
@@ -374,6 +381,7 @@ public sealed class LanMod : MelonMod
         session!.Publish(new PlayerState
         {
             Available = currentScene != "", Dead = actor.isDying(false), Scene = currentScene,
+            Cooperative=session.IsHost || partyTravel.Participation.Enabled,
             EchoRunId=monolithParty.LocalRun,
             Health = actor.health != null ? Mathf.Clamp(actor.health.currentHealth, 0, actor.health.maxHealth) : 0,
             MaxHealth = actor.health?.maxHealth ?? 0,
@@ -403,7 +411,7 @@ public sealed class LanMod : MelonMod
         if (Time.unscaledTime >= nextRemoteRead)
         {
             nextRemoteRead = Time.unscaledTime + 0.05f;
-            remoteStates = session!.Players.Where(s => s.Id != session.LocalId && s.Available && s.Scene == currentScene && currentScene != "").ToArray();
+            remoteStates = session!.Players.Where(s => s.Id != session.LocalId && s.Cooperative && (session.IsHost || partyTravel.Participation.Enabled) && s.Available && s.Scene == currentScene && currentScene != "").ToArray();
         }
         PlayerState[] remote = remoteStates;
         summonReplicas.Apply(remote,currentScene);
@@ -498,11 +506,16 @@ public sealed class LanMod : MelonMod
     public override void OnGUI()
     {
         try { DrawCoopUi(); }
-        finally { OfflineTools.Dps.DpsRuntime.Draw(); }
+        finally
+        {
+            OfflineTools.Dps.DpsRuntime.Draw();sharedChest?.Draw();nativeCampaignProbe?.DrawChest();
+            if(Environment.GetCommandLineArgs().Contains("--lelan-chest-ui-smoke") && nativeAssetProbe?.Passed==true)
+            {chestUiProbe??=new();chestUiProbe.Draw();}
+        }
     }
     private void DrawCoopUi()
     {
-        LanHud.Draw(session, currentScene, worldSync.GuestWorld);
+        if(session?.IsHost==true || partyTravel.Participation.Enabled)LanHud.Draw(session, currentScene, worldSync.GuestWorld);
         if (!panel) return;
         GUI.enabled = true;
         if(OfflineChangelog.Open) {OfflineChangelog.Draw(ModVersion);return;}
@@ -540,13 +553,14 @@ public sealed class LanMod : MelonMod
         GUI.enabled = true;
         if (!supported) GUI.Label(new Rect(30, 225, 420, 22), "Unsupported game version");
         else if (!offline) GUI.Label(new Rect(30, 225, 420, 22), "Choose Play Offline");
-        else GUI.Label(new Rect(30, 225, 420, 22), session == null ? message : session.IsHost ? "Host connected" : "Guest connected — settings controlled by Host");
+        else GUI.Label(new Rect(30, 225, 420, 22), session == null ? message : session.IsHost ? "Host connected — F2 Shared Chest" : partyTravel.Participation.Enabled ? "Co-op enabled — F2 Shared Chest" : "Party only — F2 Chest / Teleport to co-op");
         if (session?.Connected == true)
         {
             int y = 254;
             foreach (var player in session.PlayerPositions)
             {
-                GUI.Label(new Rect(30, y, 420, 20), player.Name + (player.Available ? "" : " (loading)"));
+                GUI.Label(new Rect(30, y, 260, 20), player.Name + (player.Available ? "" : " (loading)"));
+                if(player.Id!=session.LocalId && GUI.Button(new Rect(310,y,120,20),"Teleport"))partyTravel.Request(player.Id);
                 y += 21;
             }
         }
@@ -611,6 +625,7 @@ public sealed class LanMod : MelonMod
         NativePartyScaling.Reset();
         HudAuthority.Session = null;
         gift.Disconnect();
+        sharedChest?.Disconnect();
         partyTravel.Disconnect();
         monolithParty.Disconnect();
         LanDroppedItems.Reset();

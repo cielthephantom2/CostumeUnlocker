@@ -66,6 +66,7 @@ internal sealed class LanGift
                 target = null; panel = null;
                 RecoverPreparing(manager);
             }
+            if(LanSharedChest.Active?.Busy==true)return;
             for (int n = 0; n < 8 && session != null && session.TryTakeGift(out var message); n++) Receive(message);
             if (NativePanel && panel != null && Time.unscaledTime >= nextUi)
             {

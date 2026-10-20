@@ -1,6 +1,6 @@
-param([int]$TimeoutSeconds = 90, [string]$ModAssembly = '', [string]$CoreAssembly = '', [switch]$NativeServer, [switch]$NativeSession, [switch]$NativeAssets, [switch]$NativeCampaign, [switch]$NativeEncounters, [switch]$NativeStatus, [switch]$OfflineTools, [switch]$NativeVfx, [switch]$NativeGift, [switch]$GiftReload, [switch]$GiftTransfer, [switch]$GiftTransferReplay, [switch]$GiftMenu, [switch]$PartyTravel, [switch]$PartyBoss, [switch]$HudPolicy, [switch]$RenderUi, [switch]$OmenRewards)
+param([int]$TimeoutSeconds = 90, [string]$ModAssembly = '', [string]$CoreAssembly = '', [switch]$NativeServer, [switch]$NativeSession, [switch]$NativeAssets, [switch]$NativeCampaign, [switch]$NativeEncounters, [switch]$NativeStatus, [switch]$OfflineTools, [switch]$NativeVfx, [switch]$NativeGift, [switch]$GiftReload, [switch]$GiftTransfer, [switch]$GiftTransferReplay, [switch]$GiftMenu, [switch]$PartyTravel, [switch]$PartyBoss, [switch]$HudPolicy, [switch]$RenderUi, [switch]$OmenRewards, [switch]$SharedChest, [switch]$ChestUi, [string]$RuntimeRoot='', [string]$SandboxRoot='')
 $ErrorActionPreference = 'Stop'
-if ($OmenRewards) { $NativeCampaign = $true }
+if ($OmenRewards -or $SharedChest) { $NativeCampaign = $true }
 if ($NativeVfx) { $NativeCampaign = $true }
 if ($NativeEncounters) { throw 'Legacy encounter smoke was removed. Use -OmenRewards for the native isolation test.' }
 if ($NativeStatus) { $NativeCampaign = $true }
@@ -12,9 +12,10 @@ if ($GiftTransfer) { $GiftReload = $true }
 if ($GiftReload) { $NativeGift = $true }
 if ($NativeGift) { $NativeCampaign = $true }
 if ($NativeCampaign) { $NativeAssets = $true }
+if ($ChestUi) { $NativeAssets = $true; $RenderUi = $true }
 # Dedicated headless sandbox: no campaign entry, character load, or save operations.
-$sourceRuntime = Join-Path $PSScriptRoot 'runtime'
-$qaRuntime = Join-Path $PSScriptRoot 'qa-adapter-runtime'
+$sourceRuntime = if ($RuntimeRoot) { $RuntimeRoot } else { Join-Path $PSScriptRoot 'runtime' }
+$qaRuntime = if ($SandboxRoot) { $SandboxRoot } else { Join-Path $PSScriptRoot 'qa-adapter-runtime' }
 $qaExe = Join-Path $qaRuntime 'Last Epoch.exe'
 if (Get-Process 'Last Epoch' -ErrorAction SilentlyContinue) { throw 'Close gameplay before the native adapter test.' }
 New-Item -ItemType Directory -Path $qaRuntime -Force | Out-Null
@@ -76,6 +77,8 @@ try {
     if ($NativeAssets) { $qaArguments += '--lelan-native-assets-smoke' }
     if ($NativeCampaign) { $qaArguments += '--lelan-private-campaign-smoke' }
     if ($OmenRewards) { $qaArguments += '--lelan-omen-reward-smoke' }
+    if ($SharedChest) { $qaArguments += '--lelan-shared-chest-smoke' }
+    if ($ChestUi) { $qaArguments += '--lelan-chest-ui-smoke' }
     if ($NativeEncounters) { $qaArguments += '--lelan-encounter-smoke' }
     if ($NativeStatus) { $qaArguments += '--lelan-status-smoke' }
     if ($OfflineTools) { $qaArguments += '--lelan-offline-tools-smoke' }
@@ -126,6 +129,12 @@ try {
                         throw 'Nemesis native spawner/private completion/save observations did not finish.'
                     }
                 }
+                if ($ChestUi) {
+                    $uiResultPath = Join-Path $qaRuntime 'UserData\shared-chest-ui-qa.json'
+                    if (!(Test-Path -LiteralPath $uiResultPath) -or (Get-Item -LiteralPath $uiResultPath).LastWriteTimeUtc -lt $startedUtc) { continue }
+                    $uiResult = Get-Content -LiteralPath $uiResultPath -Raw | ConvertFrom-Json
+                    if (!$uiResult.passed) { throw ('Chest UI fixture failed: ' + $uiResult.error) }
+                }
                 # A reported result is not a pass if Unity's native callbacks threw.
                 if ($NativeGift) {
                     $giftReportPath = Join-Path $qaRuntime 'UserData\LastEpochLAN.gift-probe.json'
@@ -135,8 +144,7 @@ try {
                     $giftReport = Get-Content -LiteralPath $giftReportPath -Raw | ConvertFrom-Json
                     if (-not $giftReport.passed) { throw "Native Gift $giftSuffix probe failed. See research/native-gift-$giftSuffix-result.json." }
                 }
-                if ($OmenRewards) { $NativeCampaign = $true }
-if ($NativeVfx) {
+                if ($NativeVfx) {
                     $vfxReportPath = Join-Path $qaRuntime 'UserData\LastEpochLAN.vfx-probe.json'
                     if (-not (Test-Path -LiteralPath $vfxReportPath) -or (Get-Item -LiteralPath $vfxReportPath).LastWriteTimeUtc -lt $startedUtc) { continue }
                     Copy-Item -LiteralPath $vfxReportPath -Destination (Join-Path $PSScriptRoot 'research\native-vfx-probe-result.json') -Force

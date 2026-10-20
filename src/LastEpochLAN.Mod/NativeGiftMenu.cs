@@ -18,7 +18,7 @@ internal static class NativeLanGiftMenuPatch
             // Native SetButtons queries online friend/block state even in an
             // offline campaign. LAN peers need the native Gift row directly.
             __instance.ClearButtons();
-            __instance.AddButton(new Action(() => __instance.GiftItem()), "Gift Item", icons.SendGiftIconSoftRef, true);
+            __instance.AddButton(new Action(() => LanSharedChest.Active?.Show()), "Shared Chest (F2)", icons.SendGiftIconSoftRef, true);
             Added++; Error = "";
         }
         catch (Exception ex) { Error = ex.Message; MelonLoader.MelonLogger.Warning("LAN Gift menu: " + Error); }
@@ -33,7 +33,7 @@ internal static class NativeLanGiftMenuActionPatch
     {
         var player = LanGift.Active?.FindRecipient(__instance.UserIdentity);
         if (player == null) return true;
-        LanGift.Active.SelectRecipient(player); return false;
+        LanSharedChest.Active?.Show(); return false;
     }
 }
 
@@ -44,6 +44,6 @@ internal static class NativeLanGiftSocialActionPatch
     {
         var player = LanGift.Active?.FindRecipient(userIdentity);
         if (player == null) return true;
-        LanGift.Active.SelectRecipient(player); return false;
+        LanSharedChest.Active?.Show(); return false;
     }
 }

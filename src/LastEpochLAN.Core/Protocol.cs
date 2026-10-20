@@ -6,11 +6,12 @@ namespace LastEpochLAN.Core;
 
 public static class LanProtocol
 {
-    public const int Version = 32;
+    public const int Version = 33;
 }
 
 public sealed record PlayerState
 {
+    public bool Cooperative {get;init;}
     public string SummonEpoch {get;init;}="";
     public double SummonSampleTime {get;init;}
     public SummonState[] Summons {get;init;}=Array.Empty<SummonState>();
@@ -256,6 +257,8 @@ internal sealed record Packet
     public SkillEvent[]? Skills { get; init; }
     public IncomingDamage[]? IncomingDamage { get; init; }
     public GiftMessage[]? Gifts { get; init; }
+    public ChestCommand[]? ChestCommands {get;init;}
+    public ChestReply[]? ChestReplies {get;init;}
 }
 
 public sealed record SkillEvent

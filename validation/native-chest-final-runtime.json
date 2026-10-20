@@ -1,0 +1,14 @@
+{
+  "passed": false,
+  "nativeEncounters": false,
+  "errors": [
+    "2026-10-20T05:05:46.5655636+00:00\tError\tActor is null",
+    "2026-10-20T05:05:47.8825647+00:00\tException\tPlayFab.PlayFabException: Must be logged in to call this method",
+    "2026-10-20T05:05:48.1835637+00:00\tError\tUserIdentity not yet initialized, returning null. at PlayerActorSync#UserIdentity:74",
+    "2026-10-20T05:05:48.4251073+00:00\tException\tPlayFab.PlayFabException: Must be logged in to call this method",
+    "2026-10-20T05:05:51.0728346+00:00\tError\tEncounterPlacementData is null, it should not be at this point"
+  ],
+  "coreSha256": "2E1C96B31C14D868AEE71821926C074DBF52C439B3377AC0F6B3A296ABCD997E",
+  "modSha256": "EA7BF35D7F877554E5826D91D03C89DFA1C7141F4B781D4352181825A6681577",
+  "utc": "2026-10-20T05:05:53.8047156Z"
+}

@@ -19,7 +19,7 @@ internal static class NativePartyScaling
             owner=manager; originalOverride=manager.overrideNumberOfPlayers;
             originalCount=manager.overriddenNumberOfPlayers; applied=-1;
         }
-        int count=Math.Clamp(session.PlayerPositions.Count(p=>p.Available && p.Scene==scene),1,4);
+        int count=Math.Clamp(session.PlayerPositions.Count(p=>p.Available && p.Cooperative && p.Scene==scene),1,4);
         if (applied==count && manager.overrideNumberOfPlayers && manager.overriddenNumberOfPlayers==count) return;
         manager.OverrideGroupScale(count);
         // Native curve includes scene level/type and preserves native health modifiers.

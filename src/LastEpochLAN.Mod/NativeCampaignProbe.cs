@@ -31,6 +31,8 @@ internal sealed class NativeCampaignProbe
     private bool spawnAttempted;
     private NativeStatusCampaignSmoke statusSmoke;
     private NativeEncounterIsolationSmoke isolation;
+    private NativeSharedChestProbe sharedChest;
+    internal void DrawChest()=>sharedChest?.Draw();
     private bool toolkitCharacterQueued;
     internal object Result { get; private set; }
     internal bool Finished => Result != null;
@@ -136,6 +138,11 @@ internal sealed class NativeCampaignProbe
                         throw new InvalidOperationException("Campaign QA loaded a different character.");
                     if (actor != null && actor.HasMovedToPlayerSpawn && actor.health != null)
                     {
+                        if(Environment.GetCommandLineArgs().Contains("--lelan-shared-chest-smoke"))
+                        {
+                            sharedChest??=new();sharedChest.Tick();if(!sharedChest.Finished)return;
+                            Result=sharedChest.Result;sharedChest.Dispose();return;
+                        }
                         if(Environment.GetCommandLineArgs().Contains("--lelan-omen-reward-smoke"))
                         {
                             isolation ??= new();isolation.Tick();if(!isolation.Complete)return;
@@ -222,5 +229,5 @@ internal sealed class NativeCampaignProbe
     }
 
     private void Advance(int next) { stage = next; deadline = Time.unscaledTime + 90; MelonLoader.MelonLogger.Msg("Native campaign QA stage " + next); }
-    private void Fail(Exception ex) { statusSmoke?.Dispose();Result = new { passed = false, stage, error = ex.ToString(), scope = "private native campaign bootstrap" }; }
+    private void Fail(Exception ex) { statusSmoke?.Dispose();sharedChest?.Dispose();Result = new { passed = false, stage, error = ex.ToString(), scope = "private native campaign bootstrap" }; }
 }
