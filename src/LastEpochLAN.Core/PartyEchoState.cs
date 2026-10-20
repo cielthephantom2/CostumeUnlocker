@@ -46,6 +46,12 @@ public sealed record EchoObjective(int GameMode,byte Type,int Message,int Data,b
 
 public static class PartyEchoRules
 {
+    // Seeing the Host's Echo does not mean the Guest has borrowed that run.
+    // A party-only Guest must keep advertising its own loaded local character.
+    public static bool LocalGameplayReady(bool guestSession,bool borrowing,bool busy,bool borrowedContextMatches)=>
+        !busy && (!borrowing || guestSession && borrowedContextMatches);
+    public static bool SharedWorldReady(bool localReady,bool guestSession,bool hostEchoActive,bool borrowing)=>
+        localReady && (!guestSession || !hostEchoActive || borrowing);
     public static bool NeedsEntry(PartyEchoState state,string joinedRun,string currentScene)=>
         state.Active && string.Equals(state.HostScene,state.Scene,StringComparison.OrdinalIgnoreCase) &&
         (state.RunId!=joinedRun || !string.Equals(currentScene,state.Scene,StringComparison.OrdinalIgnoreCase));

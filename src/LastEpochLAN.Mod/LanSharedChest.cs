@@ -51,6 +51,17 @@ internal sealed class LanSharedChest
     private bool Ready=>OfflineTools.OfflineToolkit.Ready && Manager?.IsFullyInitializedAndLoaded==true;
     internal bool NativeReady=>Ready && qaInventory==null;
     internal NativeSharedStashView NativeView=>nativeView;
+    internal object Diagnostics
+    {
+        get
+        {
+            try { return new {Open,Status,characterReady=Ready,inventoryReady=Manager?.IsFullyInitializedAndLoaded==true,
+                identityReady=identity.Identity!="" && identity.Character!="",journalReady=journal!=null,
+                connected=session?.Connected==true,viewReceived=view!=null,nativeVisible=nativeView?.Visible==true,
+                nativeError=nativeView?.Error??"",sourcePanel=nativeView?.SourcePanelKind??""}; }
+            catch(Exception ex) { return new {Open,Status,diagnosticError=ex.GetType().Name}; }
+        }
+    }
     internal void NativeDepositCursor(ItemContainerEntry entry)=>Deposit(entry,true);
     internal void NativeDepositInventory(ItemContainerEntry entry)=>Deposit(entry);
     internal void NativeWithdraw(ChestItem item)=>Withdraw(item);
@@ -77,7 +88,11 @@ internal sealed class LanSharedChest
         {
             CompleteSave();
             if(!Open)nativeView?.Dispose();
-            if(!Ready || identity.Identity=="" || identity.Character==""){nativeView?.Dispose();return;}
+            if(!Ready || identity.Identity=="" || identity.Character=="")
+            {
+                if(Open && !Busy)Status=!Ready ? "Waiting for local character and inventory to finish loading" : "Waiting for local character identity";
+                nativeView?.Dispose();return;
+            }
             if(character!=identity.Character || group!=identity.Group)
             {
                 if(savePending || failed)return;
@@ -88,13 +103,20 @@ internal sealed class LanSharedChest
                 RefreshLocks();
                 if(journal.Records.Any(t=>t.Stage=="Held"))Status="Unverified transaction held safely. Journal review required; no automatic refund.";
             }
-            if(session?.Connected!=true){view=null;nativeView?.Dispose();return;}
+            if(session?.Connected!=true){if(Open && !Busy)Status="Join a party before opening Shared Stash";view=null;nativeView?.Dispose();return;}
             if(room.IsHost)
             {
                 hostStore??=new SharedChestStore(Path.Combine(Root,"Host",identity.Identity,Hash(group)+".json"),identity.Identity);
                 for(int n=0;n<8 && room.TryTakeChestRequest(out var request);n++)Handle(request);
             }
             for(int n=0;n<8 && room.TryTakeChestReply(out var reply);n++)Receive(reply);
+            if(Open && view==null && !Busy)
+            {
+                var host=room.PlayerPositions.FirstOrDefault();
+                Status=host?.Available!=true ? "Waiting for Host character to finish loading" :
+                    host.GiftGroup!=identity.Group ? "Shared Stash requires the same cycle and character mode as Host" :
+                    "Waiting for Host stash data...";
+            }
             if(Open && Ready){nativeView??=new(this);nativeView.Tick(view);}
             if(Time.unscaledTime<nextPoll)return;
             nextPoll=Time.unscaledTime+1;
@@ -245,7 +267,7 @@ internal sealed class LanSharedChest
             if(nativeView?.Visible!=true)
             {
                 GUI.Box(new Rect(18,Screen.height-105,650,82),"Shared Stash - F2 to open/close");
-                GUI.Label(new Rect(30,Screen.height-75,620,48),nativeView?.Error!=""?nativeView?.Error:Status);
+                GUI.Label(new Rect(30,Screen.height-75,620,48),!string.IsNullOrWhiteSpace(nativeView?.Error)?nativeView.Error:Status);
             }
             return;
         }

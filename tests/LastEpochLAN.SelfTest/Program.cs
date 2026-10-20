@@ -84,6 +84,7 @@ DpsTests.Run(Check);
 CharacterSetupTests.Run(Check);
 PartyTravelTests.Run(Check);
 await PartyEchoTests.Run(Check);
+AutoPlayTests.Run(Check);
 await EnemyPresentationTests.Run(Check);
 await ReleaseUpdateTests.Run(Check);
 WorldTransferTests.Run(Check);

@@ -162,6 +162,8 @@ internal sealed class NativeCampaignProbe
                         throw new InvalidOperationException("Campaign QA loaded a different character.");
                     if (actor != null && actor.HasMovedToPlayerSpawn && actor.health != null)
                     {
+                        if(Environment.GetCommandLineArgs().Contains("--lelan-autoplay-smoke"))
+                        {Result=AutoPlayRuntime.Active?.NativeSmoke(actor);return;}
                         if(Environment.GetCommandLineArgs().Contains("--lelan-loot-filter-smoke"))
                         { Result=LanLootFilters.NativeSmoke(); return; }
                         if(Environment.GetCommandLineArgs().Contains("--lelan-shared-chest-smoke"))

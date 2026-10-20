@@ -5,7 +5,7 @@ using MelonLoader;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
-[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.9", "Local research")]
+[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.12", "Local research")]
 [assembly: MelonGame("Eleventh Hour Games", "Last Epoch")]
 
 namespace LastEpochLAN.Mod;
@@ -27,6 +27,7 @@ public sealed class LanMod : MelonMod
     private readonly LanPartyTravel partyTravel = new();
     private readonly LanMonolithParty monolithParty=new();
     private readonly LanLootFilters lootFilters = new();
+    private readonly AutoPlayRuntime autoPlay=new();
     private LanSession session;
     private Task<LanSession> pendingJoin;
     private CancellationTokenSource pendingCancellation;
@@ -217,6 +218,7 @@ public sealed class LanMod : MelonMod
             }
             if (!offline || !supported)
             {
+                autoPlay.Suspend();
                 if (session != null || pendingJoin != null) StopRoom();
                 return;
             }
@@ -308,11 +310,17 @@ public sealed class LanMod : MelonMod
             if(Input.GetKeyDown(KeyCode.F2))sharedChest.Toggle();
             if (!Environment.GetCommandLineArgs().Contains("--lelan-gift-smoke")) partyTravel.Tick(session);
             if (!Environment.GetCommandLineArgs().Contains("--lelan-gift-smoke")) monolithParty.Tick(session);
+            if(supported)autoPlay.Tick(panel || sharedChest.Open || OfflineTools.OfflineToolkit.PanelOpen,partyTravel.Busy || monolithParty.Busy);
             if (!Environment.GetCommandLineArgs().Contains("--lelan-hud-policy")) HudAuthority.Session = session?.IsHost==true || partyTravel.Participation.Enabled ? session : null;
             lootFilters.Tick(session);
-            if (session == null) return;
+            if (session == null)
+            {
+                if((autoPlay.Open || autoPlay.Armed) && Time.unscaledTime>=nextRuntimeReport)
+                {nextRuntimeReport=Time.unscaledTime+2;SaveRuntimeReport("local-autoplay-diagnostics",offline);}
+                return;
+            }
             if (!session.Connected) { message = session.Status; StopRoom(); return; }
-            bool coopReady=monolithParty.GameplayReady && (session.IsHost || partyTravel.Participation.CanShareWorld(false,currentScene,session.PlayerPositions.FirstOrDefault()?.Scene??"",monolithParty.Borrowing,partyTravel.Busy));
+            bool coopReady=monolithParty.SharedWorldReady && (session.IsHost || partyTravel.Participation.CanShareWorld(false,currentScene,session.PlayerPositions.FirstOrDefault()?.Scene??"",monolithParty.Borrowing,partyTravel.Busy));
             SkillCapture.Session = coopReady ? session : null;
             long lanStarted = System.Diagnostics.Stopwatch.GetTimestamp();
             long stageStarted = lanStarted;
@@ -383,7 +391,7 @@ public sealed class LanMod : MelonMod
         session!.Publish(new PlayerState
         {
             Available = currentScene != "", Dead = actor.isDying(false), Scene = currentScene,
-            Cooperative=session.IsHost || partyTravel.Participation.Enabled,
+            Cooperative=session.IsHost || partyTravel.Participation.Enabled && monolithParty.SharedWorldReady,
             EchoRunId=monolithParty.LocalRun,
             Health = actor.health != null ? Mathf.Clamp(actor.health.currentHealth, 0, actor.health.maxHealth) : 0,
             MaxHealth = actor.health?.maxHealth ?? 0,
@@ -403,7 +411,7 @@ public sealed class LanMod : MelonMod
         try {NativePartyStatus.LateUpdate();} catch(Exception ex) {NativePartyStatus.Fail(ex.GetBaseException().Message);}
         NativeCosmeticReplica.TickAll();
         summonReplicas.Tick();
-        if (session?.Connected == true && !session.IsHost && monolithParty.GameplayReady) worldSync.RenderGuestPoses();
+        if (session?.Connected == true && !session.IsHost && monolithParty.SharedWorldReady) worldSync.RenderGuestPoses();
         }
         finally {lateTiming.Add(started,allocated);}
     }
@@ -669,7 +677,10 @@ public sealed class LanMod : MelonMod
                 gc0=GC.CollectionCount(0),gc1=GC.CollectionCount(1),gc2=GC.CollectionCount(2)},
             cosmeticErrors = equipmentReplicas.Where(pair=>pair.Value.CosmeticError!="").Select(pair=>new {playerId=pair.Key,reason=pair.Value.CosmeticError}).ToArray(),
             nativeGiftMenu = new { NativeLanGiftMenuPatch.Added, NativeLanGiftMenuPatch.Error },
+            autoPlay=autoPlay.Diagnostics,
             lanGift = new { gift.Status, gift.Error, gift.Sent, gift.Received, gift.Pending, gift.Busy },
+            sharedChest = sharedChest?.Diagnostics,
+            localCharacterReadiness = new { monolithParty.GameplayReady,monolithParty.SharedWorldReady,monolithParty.GuestSession },
             avatarCaptureError = ClassVisualReplica.CaptureError,
             summons=new {local=summonCapture.Count,omitted=summonCapture.Omitted,captureError=summonCapture.Error,remote=summonReplicas.Count,renderError=summonReplicas.Error},
             enemyHostSync = worldSync.Status, fullCoop = false, adapterSmokePassed, worldSmokePassed, guiReported, classSmokeCompleted, classSmokePassed,
@@ -681,6 +692,7 @@ public sealed class LanMod : MelonMod
             localScene = currentScene,
             hostWorld = session == null ? null : new { session.WorldInfo.Scene, session.WorldInfo.Epoch, session.WorldInfo.Revision, enemyCount = session.WorldInfo.EnemyCount },
             participants = session?.Players.Select(player => new { player.Id, player.Name, player.Scene, player.Available,
+                player.Cooperative,player.EchoRunId,player.GiftGroup,hasGiftIdentity=player.GiftIdentity!="",hasCharacter=player.CharacterId!="",
                 animationLayers = player.Avatar?.Animation?.Layers.Length ?? 0, animatorParameters = player.Avatar?.Animation?.Parameters.Length ?? 0,
                 motion = player.Avatar?.Motion, equipmentSlots = player.Avatar?.Equipment.Length ?? 0,
                 equipment = player.Avatar?.Equipment, visuals = player.Avatar?.Visuals.Length ?? 0 }).ToArray(),
@@ -742,7 +754,7 @@ public sealed class LanMod : MelonMod
     }
 
     public override void OnSceneWasLoaded(int buildIndex,string sceneName) => OfflineTools.OfflineToolkit.SceneChanged();
-    public override void OnDeinitializeMelon() { updateChecker.Dispose();OfflineTools.OfflineToolkit.Dispose(); nativeSessionProbe?.Dispose(); nativeAssetProbe?.Dispose(); StopRoom();reportWriter.Dispose(); }
+    public override void OnDeinitializeMelon() { autoPlay.Dispose();updateChecker.Dispose();OfflineTools.OfflineToolkit.Dispose(); nativeSessionProbe?.Dispose(); nativeAssetProbe?.Dispose(); StopRoom();reportWriter.Dispose(); }
 }
 
 public sealed class LanSettings

@@ -9,6 +9,19 @@ internal static class PartyEchoTests
         var state=new PartyEchoState {Revision=1,Active=true,RunId=Guid.NewGuid().ToString("N"),Scene="echo-A",HostScene="echo-A",
             Run=new byte[]{1,2,3},Metadata=new byte[]{4,5},Objectives=new[]{new EchoObjective(0,1,1,2,3,0,false)}};
         check(state.IsValid(),"Host Echo context validates before native import");
+        check(PartyEchoRules.LocalGameplayReady(true,false,false,false),
+            "party-only Guest remains locally ready while Host Echo is active without borrowing or matching its context");
+        check(PartyEchoRules.LocalGameplayReady(false,false,false,false),"ordinary Host/solo local character remains ready");
+        check(!PartyEchoRules.SharedWorldReady(true,true,true,false),
+            "party-only Guest cannot enter active Host Echo world even with sticky participation and identical scene");
+        check(PartyEchoRules.SharedWorldReady(true,true,true,true) && !PartyEchoRules.SharedWorldReady(false,true,true,true),
+            "borrowed Host world requires matching local readiness");
+        check(PartyEchoRules.SharedWorldReady(true,true,false,false) && PartyEchoRules.SharedWorldReady(true,false,true,false),
+            "ordinary shared maps and Host retain world readiness");
+        check(!PartyEchoRules.LocalGameplayReady(true,false,true,false) && !PartyEchoRules.LocalGameplayReady(true,true,true,true),
+            "local availability stays blocked during native Echo transitions");
+        check(!PartyEchoRules.LocalGameplayReady(true,true,false,false) && PartyEchoRules.LocalGameplayReady(true,true,false,true) &&
+            !PartyEchoRules.LocalGameplayReady(false,true,false,true),"borrowed Echo still requires live Guest context parity");
         check(!(state with {Run=Array.Empty<byte>()}).IsValid() && !(state with {Metadata=Array.Empty<byte>()}).IsValid() &&
             !(state with {RunId="scene-name"}).IsValid(),"active Echo requires both native contexts and a generation identity");
         check(!(state with {Run=new byte[262145]}).IsValid() && !(state with {Metadata=new byte[8193]}).IsValid() &&

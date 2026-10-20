@@ -20,6 +20,7 @@ internal static class SkillCapture
     {
         try
         {
+            AutoPlayRuntime.CastObserved(__instance,_ability);
             if (Session == null || _ability == null || Il2CppEHG.Multiplayer.GameplayEnvironment.IsOnlinePlay) return;
             var local = Il2Cpp.PlayerFinder.getPlayerActor();
             if (local == null || local.stateController?.usingAbility == null || local.stateController.usingAbility.Pointer != __instance.Pointer) return;

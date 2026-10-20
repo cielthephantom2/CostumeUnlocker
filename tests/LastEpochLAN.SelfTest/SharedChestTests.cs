@@ -124,12 +124,18 @@ internal static class SharedChestTests
         using var host=LanSession.Host("Host","build","chest-qa",0);
         using var guest=await LanSession.JoinAsync("127.0.0.1",host.Port,"Client","build","chest-qa",CancellationToken.None);
         host.Publish(new(){Available=true,Scene="host-map",GiftIdentity=Id(),CharacterId="H",GiftGroup="mode"});
-        guest.Publish(new(){Available=true,Scene="guest-map",GiftIdentity=Id(),CharacterId="G",GiftGroup="mode"});
+        host.PublishEcho(new(){Revision=1,Active=true,RunId=Id(),Scene="host-map",HostScene="host-map",Run=new byte[]{1},Metadata=new byte[]{2}});
+        var echoDeadline=DateTime.UtcNow.AddSeconds(5);
+        while(guest.Echo?.Active!=true && DateTime.UtcNow<echoDeadline)await Task.Delay(10);
+        check(guest.Echo?.Active==true,"party-only chest regression receives active Host Echo context before querying");
+        guest.Publish(new(){Available=PartyEchoRules.LocalGameplayReady(true,false,false,false),Scene="guest-map",GiftIdentity=Id(),CharacterId="G",GiftGroup="mode"});
         ChestRequest? request=null;
         guest.SendChest(new());
         var deadline=DateTime.UtcNow.AddSeconds(5);
         while(DateTime.UtcNow<deadline && !host.TryTakeChestRequest(out request))await Task.Delay(10);
         check(request!=null && request.SenderId==guest.LocalId && request.Command.Kind=="query","real TCP chest query gets authenticated connection sender while players remain in different maps");
+        check(host.PlayerPositions.Any(p=>p.Id==guest.LocalId && p.Available && p.Scene=="guest-map" && p.GiftGroup=="mode" && p.EchoRunId=="" && !p.Cooperative),
+            "active Host Echo does not erase party-only Client availability, map or stash eligibility identity");
         var reply=new ChestReply{ChestId=Id(),HostIdentity=host.PlayerPositions.First().GiftIdentity};
         host.ReplyChest(guest.LocalId,reply);ChestReply? received=null;deadline=DateTime.UtcNow.AddSeconds(5);
         while(DateTime.UtcNow<deadline && !guest.TryTakeChestReply(out received))await Task.Delay(10);

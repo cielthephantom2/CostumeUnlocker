@@ -59,13 +59,13 @@ internal sealed class LanMonolithParty
     {
         get
         {
-            if(!GuestSession) return !Borrowing && !Busy;
-            var state=ReadEcho();
-            if(!Borrowing && !Busy && state?.Active!=true) return true;
-            return !Busy && Borrowing && PartyEchoRules.Matches(state,joinedRun,SceneList.GetCurrentSceneDetails()?.Name??"") &&
+            bool matches=GuestSession && Borrowing && !Busy &&
+                PartyEchoRules.Matches(ReadEcho(),joinedRun,SceneList.GetCurrentSceneDetails()?.Name??"") &&
                 session.WorldEchoRunId==joinedRun;
+            return PartyEchoRules.LocalGameplayReady(GuestSession,Borrowing,Busy,matches);
         }
     }
+    internal bool SharedWorldReady=>PartyEchoRules.SharedWorldReady(GameplayReady,GuestSession,ReadEcho()?.Active==true,Borrowing);
     internal string HostWorldRun(string scene)=>session?.IsHost==true && hostState?.Active==true && hostState.Scene==scene ? hostState.RunId : "";
     internal string LocalRun=>session?.IsHost==true ? HostWorldRun(SceneList.GetCurrentSceneDetails()?.Name??"") : GameplayReady ? joinedRun : "";
     internal bool BlockSelection()

@@ -23,6 +23,10 @@ internal sealed class NativeSharedChestProbe : IDisposable
     private bool screenshot;
     private float holdUntil;
     private readonly LanMonolithParty partyOnly=new();
+    private LanSharedChest clientChest;
+    private SharedChestStore clientViewHost;
+    private readonly string clientViewHostId=Guid.NewGuid().ToString("N");
+    private int hostInputRaycasters;
     private bool otherMapView;
     private string originalScene;
     private float queryAt;
@@ -39,7 +43,7 @@ internal sealed class NativeSharedChestProbe : IDisposable
     private int Count()=>Manager.inventory.GetContent().ToArray().Count(e=>Convert.ToBase64String(e.data.GetIDAsArray().ToArray())==raw);
     internal void Draw()
     {
-        if(Finished)return;chest.Draw();
+        if(Finished)return;chest.Draw();clientChest?.Draw();
         if(!screenshot && stage==3 && chest.QaView?.Items.Any(i=>i.Hash==key)==true && Event.current.type==EventType.Repaint)
         {ScreenCapture.CaptureScreenshot(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),"UserData","shared-chest-qa.png"));screenshot=true;holdUntil=Time.unscaledTime+2;}
     }
@@ -49,6 +53,7 @@ internal sealed class NativeSharedChestProbe : IDisposable
         try
         {
             var actor=PlayerFinder.getPlayerActor();if(actor?.HasMovedToPlayerSpawn!=true || Manager?.IsFullyInitializedAndLoaded!=true)return;
+            if(stage>=8){TickClientView(actor);return;}
             if(stage==0)
             {
                 if(!Environment.GetCommandLineArgs().Contains("--lelan-shared-chest-smoke"))throw new InvalidOperationException("QA switch required");
@@ -66,7 +71,7 @@ internal sealed class NativeSharedChestProbe : IDisposable
             if(guest==null){if(!joining.IsCompleted)return;guest=joining.GetAwaiter().GetResult();}
             guest.Publish(new(){Available=true,Scene="DifferentMap-DoNotTravel",GiftIdentity=peerIdentity,CharacterId="QA-peer",GiftGroup=identity.Group});
             partyOnly.Tick(guest);
-            if(partyOnly.Busy || partyOnly.Borrowing || partyOnly.Entries!=0 || partyOnly.Error!="" || (SceneList.GetCurrentSceneDetails()?.Name??"")!=originalScene)
+            if(partyOnly.Busy || partyOnly.Borrowing || !partyOnly.GameplayReady || partyOnly.Entries!=0 || partyOnly.Error!="" || (SceneList.GetCurrentSceneDetails()?.Name??"")!=originalScene)
                 throw new InvalidOperationException("Join-only Client attempted native Echo travel without Teleport");
             if(Time.unscaledTime>=queryAt){queryAt=Time.unscaledTime+1;guest.SendChest(new());}
             while(guest.TryTakeChestReply(out var response))if(response.Valid() && response.HostIdentity==identity.Identity)otherMapView=true;
@@ -141,14 +146,38 @@ internal sealed class NativeSharedChestProbe : IDisposable
                 case 7:
                     if(chest.Busy || Count()!=1 || chest.QaView.Items.Any(i=>i.Hash==key))return;
                     if(actor.GetActorSync()?.actorVisuals?.HasBeenInitialized!=true)throw new InvalidOperationException("Native player interrupted during chest transfer");
-                    Result=new{passed=true,nativeRemovedThenSaved=true,hostCustodyBetweenSaves=true,nativeWithdrawAndSave=true,finalNativeCopies=Count(),serializedBytesPreserved=true,
-                        partyOnlyGuestDifferentMap=true,nativeMonolithJoinNoTransition=true,remoteChestQueryDifferentMap=true,nativeProjectionVerified,nativeCursorDepositAndRedeposit=true,nativeStashPanel,legacySingletonMissing,nativeClickReceiver,nativeRaycastWithdrawal=true,
-                        inputRaycasters=chest.NativeView.InputRaycasterCount,nativeDoubleClickSingleRequest=true,
-                        scope="Private native Host character and native Stash clone/container binding/mutation guard/save exclusion over loopback room; mouse drag/tooltip rendering and two-PC acceptance require interactive verification"};
+                    hostInputRaycasters=chest.NativeView.InputRaycasterCount;
+                    chest.Disconnect();
+                    // Reuse only the disposable QA character as a Client. The
+                    // Host below is a separate managed ledger fixture, so native
+                    // identity is unique and no second real save is impersonated.
+                    clientChest=new(identity);
+                    clientViewHost=new SharedChestStore(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),"UserData","SharedChestClientViewQA","host.json"),clientViewHostId);
+                    clientChest.Toggle();deadline=Time.unscaledTime+60;stage=8;
                     return;
             }
         }
         catch(Exception ex){Result=new{passed=false,error=ex.ToString(),stage,status=chest.Status};}
     }
-    public void Dispose(){chest.Disconnect();host?.Dispose();guest?.Dispose();}
+    private void TickClientView(Actor actor)
+    {
+        if(Time.unscaledTime>deadline)throw new TimeoutException("Client native stash view: "+clientChest.Status);
+        host.Publish(new(){Available=true,Cooperative=true,Scene="QA-DoNotEnter",GiftIdentity=clientViewHostId,CharacterId="QA-view-host",GiftGroup=identity.Group});
+        partyOnly.Tick(guest);
+        if(!partyOnly.GameplayReady || partyOnly.SharedWorldReady || partyOnly.Busy || partyOnly.Borrowing)throw new InvalidOperationException("Party-only Client readiness or Host world isolation failed");
+        guest.Publish(new(){Available=partyOnly.GameplayReady,Scene=originalScene,GiftIdentity=identity.Identity,CharacterId=identity.Character,GiftGroup=identity.Group});
+        while(host.TryTakeChestRequest(out var request))
+            if(request.SenderId==guest.LocalId)host.ReplyChest(request.SenderId,clientViewHost.Apply(request.SenderId,request.Command));
+        clientChest.Tick(guest);
+        if(clientChest.QaView?.HostIdentity!=clientViewHostId || clientChest.NativeView?.Visible!=true)return;
+        if((SceneList.GetCurrentSceneDetails()?.Name??"")!=originalScene || partyOnly.Entries!=0 ||
+            Manager.stash.Pointer!=privateStash || Manager.stash.GetContent().Count!=privateStashCount || Count()!=1)
+            throw new InvalidOperationException("Client stash view changed native scene, private stash or inventory custody");
+        Result=new{passed=true,nativeRemovedThenSaved=true,hostCustodyBetweenSaves=true,nativeWithdrawAndSave=true,finalNativeCopies=Count(),serializedBytesPreserved=true,
+            partyOnlyGuestDifferentMap=true,nativeMonolithJoinNoTransition=true,remoteChestQueryDifferentMap=true,nativeProjectionVerified,nativeCursorDepositAndRedeposit=true,nativeStashPanel,legacySingletonMissing,nativeClickReceiver,nativeRaycastWithdrawal=true,
+            inputRaycasters=hostInputRaycasters,nativeDoubleClickSingleRequest=true,clientPartyOnlyGameplayReady=true,
+            nativeClientF2VisibleWithHostEcho=true,nativeClientDifferentMap=true,clientHostWorldIsolated=true,clientSourcePanel=clientChest.NativeView.SourcePanelKind,
+            scope="Private native Host transfer/click/save regression, then native party-only Client view against a separate loopback managed Host ledger while Host Echo is active; not physical two-PC inventories or full visual acceptance"};
+    }
+    public void Dispose(){clientChest?.Disconnect();chest.Disconnect();host?.Dispose();guest?.Dispose();}
 }
