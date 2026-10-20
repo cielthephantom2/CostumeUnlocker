@@ -20,6 +20,9 @@ internal sealed class LanSharedChest
     private string character="",group="";
     private ChestReply view;
     private float nextPoll;
+    private long hostRequests,transferAttempts;
+    private string lastHostBlock="",hostError="";
+    private readonly Dictionary<string,string> hostBlocks=new();
     private UniTask.Awaiter saving;
     private bool savePending,failed;
     private ChestLocalTransaction saveTx;
@@ -48,7 +51,8 @@ internal sealed class LanSharedChest
     internal void Show(){Open=true;nextPoll=0;}
     internal bool Protect(ItemData data)=>nativeScope==0 && locks.Count>0 && data!=null && locks.Contains(data.individualID);
     private static ItemContainersManager Manager=>PlayerFinder.getItemContainersManager();
-    private bool Ready=>OfflineTools.OfflineToolkit.Ready && Manager?.IsFullyInitializedAndLoaded==true;
+    private bool Ready=>OfflineTools.OfflineToolkit.Ready && Manager?.IsFullyInitializedAndLoaded==true &&
+        PlayerFinder.getPlayerActor()?.HasMovedToPlayerSpawn==true && !Il2CppLE.UI.LoadingScreen.IsVisible;
     internal bool NativeReady=>Ready && qaInventory==null;
     internal NativeSharedStashView NativeView=>nativeView;
     internal object Diagnostics
@@ -58,7 +62,10 @@ internal sealed class LanSharedChest
             try { return new {Open,Status,characterReady=Ready,inventoryReady=Manager?.IsFullyInitializedAndLoaded==true,
                 identityReady=identity.Identity!="" && identity.Character!="",journalReady=journal!=null,
                 connected=session?.Connected==true,viewReceived=view!=null,nativeVisible=nativeView?.Visible==true,
-                nativeError=nativeView?.Error??"",sourcePanel=nativeView?.SourcePanelKind??""}; }
+                nativeError=nativeView?.Error??"",sourcePanel=nativeView?.SourcePanelKind??"",
+                hostRequests,transferAttempts,lastHostBlock,savePending,failed,nativeInteractions=nativeView?.Interactions??0,
+                transactionStages=journal?.Records.GroupBy(t=>t.Stage).ToDictionary(g=>g.Key,g=>g.Count()),
+                localAccessBlock=AccessBlock(session?.PlayerPositions.FirstOrDefault(p=>p.Id==session.LocalId))}; }
             catch(Exception ex) { return new {Open,Status,diagnosticError=ex.GetType().Name}; }
         }
     }
@@ -113,7 +120,8 @@ internal sealed class LanSharedChest
             if(Open && view==null && !Busy)
             {
                 var host=room.PlayerPositions.FirstOrDefault();
-                Status=host?.Available!=true ? "Waiting for Host character to finish loading" :
+                Status=hostError!="" ? "Host: "+hostError :
+                    host==null || !(host.StashReady || host.Available) ? "Waiting for Host character to finish loading" :
                     host.GiftGroup!=identity.Group ? "Shared Stash requires the same cycle and character mode as Host" :
                     "Waiting for Host stash data...";
             }
@@ -132,16 +140,59 @@ internal sealed class LanSharedChest
         }
         catch(Exception ex){Status="Stash transaction held: "+ex.Message;MelonLoader.MelonLogger.Warning(Status);}
     }
-    private bool Compatible(PlayerState player)=>player!=null && player.Available && player.GiftGroup==identity.Group &&
-        Guid.TryParseExact(player.GiftIdentity,"N",out _) && player.CharacterId!="" &&
-        session.PlayerPositions.Count(p=>p.GiftIdentity==player.GiftIdentity && p.CharacterId==player.CharacterId)==1 &&
-        !PlayerFinder.getPlayerActor().characterDataTracker.charData.SoloChallenge && !PlayerFinder.getPlayerActor().characterDataTracker.charData.SoloCharacterChallenge;
+    private string AccessBlock(PlayerState player)
+    {
+        if(player==null)return "Waiting for party character state";
+        if(!(player.StashReady || player.Available))return "Inventory not ready; finish loading and update all PCs";
+        if(player.GiftGroup!=identity.Group)return "Shared Stash requires the same cycle and character mode";
+        if(!Guid.TryParseExact(player.GiftIdentity,"N",out _) || player.CharacterId=="")return "Waiting for character identity; update all PCs";
+        if(session.PlayerPositions.Count(p=>p.GiftIdentity==player.GiftIdentity && p.CharacterId==player.CharacterId)!=1)
+            return "Duplicate character identity in party; transfer blocked";
+        var data=PlayerFinder.getPlayerActor()?.characterDataTracker?.charData;
+        if(data==null)return "Waiting for local character";
+        if(data.SoloChallenge || data.SoloCharacterChallenge)return "Solo character mode cannot use Shared Stash";
+        return "";
+    }
+    private bool BeginTransfer()
+    {
+        transferAttempts++;
+        string reason=!Ready?"Waiting for local character and inventory":
+            session?.Connected!=true?"Join a party before transferring":
+            failed?"Character save failed; transfer held for review":
+            savePending || identity.Busy?"Waiting for character save":
+            journal==null?"Waiting for transaction journal":
+            !CanOperate?"A transfer is pending or held; finish it before starting another":
+            view==null?"Waiting for Host stash data":
+            AccessBlock(session.PlayerPositions.FirstOrDefault(p=>p.Id==session.LocalId));
+        if(reason=="")
+        {
+            var host=session.PlayerPositions.FirstOrDefault();
+            reason=AccessBlock(host);
+            if(reason=="" && view.HostIdentity!=host.GiftIdentity)reason="Waiting for current Host stash data";
+        }
+        if(reason=="")return true;
+        Status=reason;return false;
+    }
     private void Handle(ChestRequest request)
     {
         try
         {
+            hostRequests++;
             var peer=session.PlayerPositions.SingleOrDefault(p=>p.Id==request.SenderId);
-            if(!Compatible(peer))return;
+            string block=AccessBlock(peer);
+            if(block!="")
+            {
+                lastHostBlock=block;
+                if(!hostBlocks.TryGetValue(request.SenderId,out var previous) || previous!=block)
+                    MelonLoader.MelonLogger.Warning("Shared Stash request blocked: "+block);
+                if(hostBlocks.Count>=4)hostBlocks.Clear();
+                hostBlocks[request.SenderId]=block;
+                // Report the denial without exposing a different cycle's items.
+                session.ReplyChest(request.SenderId,hostStore.View() with
+                    {Operation=request.Command.Operation,Error=block,Items=Array.Empty<ChestItem>()});
+                return;
+            }
+            hostBlocks.Remove(request.SenderId);
             if(request.Command.Kind=="deposit")
             {
                 var data=new ItemDataUnpacked(Convert.FromBase64String(request.Command.Item.Data));
@@ -150,12 +201,14 @@ internal sealed class LanSharedChest
             var reply=hostStore.Apply(peer.GiftIdentity+":"+peer.CharacterId,request.Command);
             session.ReplyChest(request.SenderId,reply);
         }
-        catch(Exception ex){Status="Host transaction held: "+ex.Message;}
+        catch(Exception ex){Status=lastHostBlock="Host transaction held: "+ex.Message;MelonLoader.MelonLogger.Warning(Status);}
     }
     private void Receive(ChestReply reply)
     {
         var host=session.PlayerPositions.FirstOrDefault();
         if(host==null || reply.HostIdentity!=host.GiftIdentity)return;
+        if(reply.Error!=""){hostError=reply.Error;Status="Host: "+hostError;return;}
+        hostError="";
         if(view==null || view.ChestId!=reply.ChestId || reply.Revision>=view.Revision)view=reply;
         if(reply.Operation=="" || journal==null)return;
         var tx=journal.Find(reply.Operation);
@@ -203,9 +256,11 @@ internal sealed class LanSharedChest
     }
     private void Deposit(ItemContainerEntry entry,bool cursor=false)
     {
-        if(!CanOperate || !Ready || !Compatible(session?.PlayerPositions.FirstOrDefault(p=>p.Id==session.LocalId)) || view==null || entry?.quantity!=1 || !Eligible(entry.data))return;
+        if(!BeginTransfer())return;
+        if(entry?.quantity!=1 || !Eligible(entry.data))
+        {Status="Only tradable equipment / Idols with a unique ID and quantity 1 can be stored";return;}
         var data=PlayerFinder.getPlayerActor().characterDataTracker.charData;
-        if(data.DataStoreCache==null || data.UserIdentity==null)return;
+        if(data.DataStoreCache==null || data.UserIdentity==null){Status="Native character save service is not ready";return;}
         entry.data.RebuildID();string raw=Raw(entry.data);
         var item=new ChestItem(Guid.NewGuid().ToString("N"),raw,Fingerprint(entry.data),Name(entry.data),entry.data.individualID);int count=Count(item);
         if(count!=1){Status="Only eligible equipment/Idols with a unique ID and one character copy are accepted";return;}
@@ -220,9 +275,7 @@ internal sealed class LanSharedChest
     }
     private void Withdraw(ChestItem item)
     {
-        if(!CanOperate){Status="A transfer is pending or held; finish it before withdrawing another item";return;}
-        if(view==null || !Ready){Status="Waiting for character / Host stash data";return;}
-        if(!Compatible(session?.PlayerPositions.FirstOrDefault(p=>p.Id==session.LocalId))){Status="Character is not eligible for this party stash";return;}
+        if(!BeginTransfer())return;
         var tx=new ChestLocalTransaction{Id=Guid.NewGuid().ToString("N"),ChestId=view.ChestId,Host=view.HostIdentity,Kind="withdraw",ItemId=item.Id,Stage="Waiting"};
         Put(tx);nextPoll=0;Status="Reserving item on Host";
     }
@@ -243,7 +296,7 @@ internal sealed class LanSharedChest
         return (value.FullName??"Item").Length>128?value.FullName.Substring(0,128):value.FullName??"Item";
     }
     private void ReleaseView(){nativeView?.Dispose();skin.Close();foreach(var asset in icons.Values)asset.Dispose();icons.Clear();previews.Clear();}
-    internal void Disconnect(){session=null;view=null;Open=false;selected=null;dragged="";ReleaseView();}
+    internal void Disconnect(){session=null;view=null;Open=false;selected=null;dragged="";hostBlocks.Clear();hostError="";ReleaseView();}
     private void Icon(Rect rect,string key,ItemData item)
     {
         if(!icons.TryGetValue(key,out var asset))

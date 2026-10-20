@@ -18,12 +18,13 @@ internal sealed class NativeSharedStashView : IDisposable
 {
     internal static NativeSharedStashView Active;
     private readonly LanSharedChest owner;
-    private GameObject parking,root;
+    private GameObject parking,root,statusRoot;
     private ItemContainerUI grid;
     private readonly List<ItemContainer> pages=new();
     private readonly Dictionary<uint,ChestItem> displayed=new();
     private readonly Dictionary<IntPtr,uint> itemButtons=new();
     internal int ItemButtonCount=>itemButtons.Count;
+    internal long Interactions {get;private set;}
     internal int InputRaycasterCount=>root==null?0:root.GetComponentsInChildren<GraphicRaycaster>(true).Length;
     private ItemContainersManager manager;
     private string chestId="";
@@ -215,7 +216,9 @@ internal sealed class NativeSharedStashView : IDisposable
     }
     private void WithdrawById(uint id)
     {
-        if(!Visible || !displayed.TryGetValue(id,out var item) || !pages[page].GetContent().ToArray().Any(e=>e.data.individualID==id))return;
+        Interactions++;
+        if(!Visible || !displayed.TryGetValue(id,out var item) || !pages[page].GetContent().ToArray().Any(e=>e.data.individualID==id))
+        {owner.Status="Stash view changed; reopen F2 to refresh";return;}
         if(manager.cursor.GetContent()?.Count>0){owner.Status="Put the held item into inventory before withdrawing";return;}
         owner.NativeWithdraw(item);
     }
@@ -268,11 +271,28 @@ internal sealed class NativeSharedStashView : IDisposable
         Button("Shared previous",new(0,0),new(12,5),new(40,32),"<",()=>Flip(-1));
         Button("Shared next",new(1,0),new(-12,5),new(40,32),">",()=>Flip(1));
         pageLabel=Label("Shared page",new(0.5f,0),new(0,8),new(380,28),"");
-        statusLabel=Label("Shared status",new(0.5f,0),new(0,40),new(470,46),owner.Status);
+        // The cloned Stash has different layouts/canvas bounds in V1 and V2.
+        // Give transfer feedback a screen-space canvas so it cannot be clipped
+        // or covered by the native inventory or Stash frame.
+        statusRoot=new GameObject("Shared Stash transfer status",Il2CppType.Of<RectTransform>());
+        var statusCanvas=statusRoot.AddComponent<Canvas>();
+        statusCanvas.renderMode=RenderMode.ScreenSpaceOverlay;statusCanvas.sortingOrder=32600;
+        var strip=new GameObject("Status background",Il2CppType.Of<RectTransform>());
+        strip.transform.SetParent(statusRoot.transform,false);
+        float width=Mathf.Min(620,Screen.width-24);
+        var stripRect=strip.GetComponent<RectTransform>();
+        stripRect.anchorMin=stripRect.anchorMax=stripRect.pivot=new(0.5f,1);
+        stripRect.anchoredPosition=new(0,-12);stripRect.sizeDelta=new(width,60);
+        var background=strip.AddComponent<Image>();
+        background.color=new Color(0.04f,0.055f,0.075f,0.97f);background.raycastTarget=false;
+        statusLabel=Label("Shared status",new(0.5f,0.5f),Vector2.zero,new(width-24,52),owner.Status);
+        statusLabel.transform.SetParent(strip.transform,false);
         statusLabel.fontSize=14;statusLabel.alignment=TextAlignmentOptions.Center;
+        statusLabel.enableWordWrapping=true;
     }
     internal void Click(ItemContainerUI ui,PointerEventData data)
     {
+        Interactions++;
         if(!Visible)return;
         var cursor=manager.cursor.GetContent();
         if(Owns(ui))
@@ -290,6 +310,7 @@ internal sealed class NativeSharedStashView : IDisposable
     }
     public void Dispose()
     {
+        if(statusRoot!=null){statusRoot.SetActive(false);UnityEngine.Object.Destroy(statusRoot);statusRoot=null;}
         if(root!=null)root.SetActive(false);
         if(grid!=null){try{grid.ResetInternal(true,true);}catch{}}
         if(root!=null)UnityEngine.Object.Destroy(root);if(parking!=null)UnityEngine.Object.Destroy(parking);

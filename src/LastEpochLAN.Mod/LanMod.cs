@@ -5,7 +5,7 @@ using MelonLoader;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
-[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.13", "Local research")]
+[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.14", "Local research")]
 [assembly: MelonGame("Eleventh Hour Games", "Last Epoch")]
 
 namespace LastEpochLAN.Mod;
@@ -378,10 +378,21 @@ public sealed class LanMod : MelonMod
     private void PublishPlayer()
     {
         var actor = Il2Cpp.PlayerFinder.getPlayerActor();
-        if (actor == null || !actor.gameObject.activeInHierarchy || !actor.HasMovedToPlayerSpawn || !monolithParty.GameplayReady)
+        if (actor == null || !actor.gameObject.activeInHierarchy || !actor.HasMovedToPlayerSpawn)
         {
             currentScene = "";
             session!.Publish(new PlayerState());
+            return;
+        }
+        bool stashReady=sharedChest.NativeReady && !Il2CppLE.UI.LoadingScreen.IsVisible &&
+            !partyTravel.Busy && !monolithParty.Busy && gift.Character==actor.characterDataTracker?.charData?.Id;
+        if(!monolithParty.GameplayReady)
+        {
+            // Keep world/combat unavailable, but retain the loaded inventory's
+            // identity so F2 does not depend on the borrowed Echo matching.
+            currentScene="";
+            session!.Publish(new PlayerState {StashReady=stashReady,
+                GiftIdentity=stashReady?gift.Identity:"",CharacterId=stashReady?gift.Character:"",GiftGroup=stashReady?gift.Group:""});
             return;
         }
         Vector3 position = actor.position();
@@ -390,7 +401,7 @@ public sealed class LanMod : MelonMod
         var summons=summonCapture.Capture(session,actor,currentScene);
         session!.Publish(new PlayerState
         {
-            Available = currentScene != "", Dead = actor.isDying(false), Scene = currentScene,
+            StashReady=stashReady, Available = currentScene != "", Dead = actor.isDying(false), Scene = currentScene,
             Cooperative=session.IsHost || partyTravel.Participation.Enabled && monolithParty.SharedWorldReady,
             EchoRunId=monolithParty.LocalRun,
             Health = actor.health != null ? Mathf.Clamp(actor.health.currentHealth, 0, actor.health.maxHealth) : 0,
@@ -691,7 +702,7 @@ public sealed class LanMod : MelonMod
             network=session?.NetworkStats,
             localScene = currentScene,
             hostWorld = session == null ? null : new { session.WorldInfo.Scene, session.WorldInfo.Epoch, session.WorldInfo.Revision, enemyCount = session.WorldInfo.EnemyCount },
-            participants = session?.Players.Select(player => new { player.Id, player.Name, player.Scene, player.Available,
+            participants = session?.Players.Select(player => new { player.Id, player.Name, player.Scene, player.Available,player.StashReady,
                 player.Cooperative,player.EchoRunId,player.GiftGroup,hasGiftIdentity=player.GiftIdentity!="",hasCharacter=player.CharacterId!="",
                 animationLayers = player.Avatar?.Animation?.Layers.Length ?? 0, animatorParameters = player.Avatar?.Animation?.Parameters.Length ?? 0,
                 motion = player.Avatar?.Motion, equipmentSlots = player.Avatar?.Equipment.Length ?? 0,

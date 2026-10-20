@@ -27,6 +27,7 @@ public sealed record ChestCommand
 }
 public sealed record ChestReply
 {
+    public string Error {get;init;}="";
     public string ChestId {get;init;}="";
     public string HostIdentity {get;init;}="";
     public long Revision {get;init;}
@@ -34,7 +35,8 @@ public sealed record ChestReply
     public string Status {get;init;}="view";
     public ChestItem? Grant {get;init;}
     public ChestItem[] Items {get;init;}=Array.Empty<ChestItem>();
-    public bool Valid()=>Guid.TryParseExact(ChestId,"N",out _) && Guid.TryParseExact(HostIdentity,"N",out _) && Revision>=0 &&
+    public bool Valid()=>Error is {Length:<=256} && (Error=="" || Status=="view" && Grant==null && Items is {Length:0}) &&
+        Guid.TryParseExact(ChestId,"N",out _) && Guid.TryParseExact(HostIdentity,"N",out _) && Revision>=0 &&
         (Operation=="" || Guid.TryParseExact(Operation,"N",out _)) && Status is "view" or "stored" or "reserved" or "done" or "unavailable" or "full" &&
         (Grant==null || Grant.Valid()) && Items is {Length:<=96} && Items.All(i=>i!=null && i.Valid()) && Items.Select(i=>i.Id).Distinct().Count()==Items.Length;
 }

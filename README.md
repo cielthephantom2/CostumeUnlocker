@@ -1,6 +1,8 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.13
+# TM Last Epoch Co-op Mod — 1.1.0-dev.14
 
 Development release, protocol **35**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). Both Host and Client must update. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
+
+**Dev.14 Shared Stash update:** inventory readiness is advertised independently of borrowed Echo world readiness. Transfers now show explicit local/Host rejection reasons, with a separate status overlay and additional diagnostics. Update both DLLs on the Host and every Client. The reported case where only one of two Clients can transfer has not been reproduced or confirmed resolved. See [changes and limits](RELEASE-1.1.0-dev14-VI.md).
 
 **F1 Combat Assist:** compact native panel with real skill/potion icons, per-slot conditions, HP/MP thresholds, enemy/rare/boss range, target selection, repeat interval and automatic potion. Dev.13 fixes mismatched icons and slider value/handle synchronization, and clarifies master and skill confirmation status. Settings follow each local character and skill identity. Press Start, then close F1/F4 to resume. Automation pauses for panels, chat, loading, death, travel or focus loss. Named stat-buff guards do not infer every aura/toggle system. See [dev.13 changes and validation limits](RELEASE-1.1.0-dev13-VI.md) and [setup and historical screenshots](RELEASE-1.1.0-dev12-VI.md).
 
@@ -18,17 +20,18 @@ Woven Potential now uses: 1 LP → 2 LP (50%) / 0 LP (50%); 2 LP → 3 LP (50%) 
 
 NPC movement, animation, VFX, minions, combat and party travel code is retained. That is not a two-PC acceptance claim; doors, quests and map interactions need regression after generic replay removal. The new typed Host encounter state machine is a managed foundation only; dedicated transport and private managed Nemesis turns exist, but per-family native adapters, presentation and durable private rewards remain unfinished. Encounter development is paused.
 
-See [Vietnamese release report](RELEASE-1.1.0-dev13-VI.md) and [historical rewrite milestone](ENCOUNTER-REWRITE-VI.md).
+See [Vietnamese release report](RELEASE-1.1.0-dev14-VI.md) and [historical rewrite milestone](ENCOUNTER-REWRITE-VI.md).
 
 ## Validation
 
-- Dev.13 Release build: zero warnings/errors. Tests were skipped at the user's request; the icon and slider fixes have not been verified in game.
-- Dev.12 historical baseline: 7 compiled audit checks, 17 updater fixture/live checks, basic native smoke and Mage Auto Play feature observations passed. These are not fresh dev.13 results.
-- Core baseline: 752 managed checks from dev.11; dev.13 retains the identical published Core DLL. Includes Auto Play rules, scheduling, potion reserve and Shared Stash/Echo readiness checks.
+- Dev.14 Release build: zero warnings/errors. No managed/native/visual or physical multiplayer tests were run for this release; the reported Client transfer failure is not confirmed resolved.
+- Dev.13 icon and slider fixes are retained and remain unverified in game.
+- Dev.12 historical baseline: 7 compiled audit checks, 17 updater fixture/live checks, basic native smoke and Mage Auto Play feature observations passed. These are not fresh dev.14 results.
+- Core changed in dev.14 to add StashReady and bounded rejection feedback. The 752 managed checks from dev.11 are historical evidence, not validation of the new Core binary.
 - The full rendered campaign gate remains FAIL with 76 runtime errors. Individual feature observations do not convert it into a full pass. Physical two-PC, every class/build/buff and the earlier ActorVisuals exception remain unverified/unresolved.
-- LootFilter dev.9 and Shared Stash dev.10 observations are retained historical evidence, not fresh native acceptance for every feature in dev.13. Encounter development remains paused.
+- LootFilter dev.9 and Shared Stash dev.10 observations are retained historical evidence, not fresh native acceptance for every feature in dev.14. Encounter development remains paused.
 
-Exact hashes and scope: [dev.13 release report](RELEASE-1.1.0-dev13-VI.md). Historical evidence: [dev.12 release report](RELEASE-1.1.0-dev12-VI.md).
+Exact hashes and scope: [dev.14 release report](RELEASE-1.1.0-dev14-VI.md). Historical evidence: [dev.12 release report](RELEASE-1.1.0-dev12-VI.md).
 ## Build
 
 Native game/loader references are private and not distributed. The tested runtime uses Unity 6000.4.8f1 and MelonLoader 0.7.3.

@@ -12,6 +12,9 @@ public static class LanProtocol
 
 public sealed record PlayerState
 {
+    // Inventory transactions can remain ready while a borrowed Echo context is
+    // waiting for world synchronization. This does not grant combat authority.
+    public bool StashReady {get;init;}
     public bool Cooperative {get;init;}
     public string SummonEpoch {get;init;}="";
     public double SummonSampleTime {get;init;}
