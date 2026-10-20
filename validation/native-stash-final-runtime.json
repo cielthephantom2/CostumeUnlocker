@@ -1,0 +1,15 @@
+{
+  "coreSha256": "F35EEAB7FE4EF21AF68095A429FF7BD67A241C537455984088562702192D74B9",
+  "errors": [
+    "2026-10-20T05:28:23.4968199+00:00\tError\tActor is null",
+    "2026-10-20T05:28:24.4719677+00:00\tException\tPlayFab.PlayFabException: Must be logged in to call this method",
+    "2026-10-20T05:28:24.7239707+00:00\tError\tUserIdentity not yet initialized, returning null. at PlayerActorSync#UserIdentity:74",
+    "2026-10-20T05:28:24.9790031+00:00\tException\tPlayFab.PlayFabException: Must be logged in to call this method",
+    "2026-10-20T05:28:26.5749516+00:00\tException\tSystem.NullReferenceException: Object reference not set to an instance of an object.",
+    "2026-10-20T05:28:27.3819771+00:00\tError\tEncounterPlacementData is null, it should not be at this point"
+  ],
+  "utc": "2026-10-20T05:28:29.8056329Z",
+  "passed": false,
+  "modSha256": "937105ED70CFB3807BA3AE0DD8F886D90162099F681A560D67D5C2F23C6FC57B",
+  "nativeEncounters": false
+}

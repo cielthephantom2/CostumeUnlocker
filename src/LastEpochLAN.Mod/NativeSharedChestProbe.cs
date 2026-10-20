@@ -26,6 +26,9 @@ internal sealed class NativeSharedChestProbe : IDisposable
     private bool otherMapView;
     private string originalScene;
     private float queryAt;
+    private IntPtr privateStash;
+    private int privateStashCount;
+    private bool nativeProjectionVerified;
     internal object Result {get;private set;}
     internal bool Finished=>Result!=null;
     internal NativeSharedChestProbe(){chest=new(identity);}
@@ -50,6 +53,7 @@ internal sealed class NativeSharedChestProbe : IDisposable
                 joining=LanSession.JoinAsync("127.0.0.1",host.Port,"Other map client","private-chest","private-chest");
                 deadline=Time.unscaledTime+90;stage=1;
                 originalScene=SceneList.GetCurrentSceneDetails()?.Name??"";
+                privateStash=Manager.stash.Pointer;privateStashCount=Manager.stash.GetContent().Count;
                 host.PublishEcho(new(){Revision=1,Active=true,RunId=Guid.NewGuid().ToString("N"),Scene="QA-DoNotEnter",HostScene="QA-DoNotEnter",Run=new byte[]{1},Metadata=new byte[]{1}});
             }
             if(Time.unscaledTime>deadline)throw new TimeoutException("Native chest stage "+stage+": "+chest.Status);
@@ -88,14 +92,45 @@ internal sealed class NativeSharedChestProbe : IDisposable
                     stage=3;return;
                 case 3:
                     if(chest.Busy || chest.QaView?.Items.Any(i=>i.Hash==key)!=true)return;
-                    if(Environment.GetCommandLineArgs().Contains("--lelan-render-chest-qa") && (!screenshot || Time.unscaledTime<holdUntil))return;
+                    var nativeView=chest.NativeView;
+                    if(nativeView?.Visible!=true || nativeView.NativeItemUis<1)return;
+                    if(nativeView.BoundToPrivateStash || Manager.stash.Pointer!=privateStash || Manager.stash.GetContent().Count!=privateStashCount)
+                        throw new InvalidOperationException("Native shared projection touched personal stash");
+                    var projected=nativeView.Container.GetContent();
+                    if(projected.Count!=1 || projected[0].data.individualID!=item.individualID)throw new InvalidOperationException("Native item UI bound to incorrect item");
+                    var projection=nativeView.Container.Cast<ItemContainer>();
+                    projection.TryRemoveItem(projected[0],1,Context.GIFTING);
+                    projection.TryAddItem(item,1,Context.GIFTING);
+                    projection.MoveItemTo(projected[0],Manager.inventory.Cast<IItemContainer>(),new Il2CppSystem.Nullable<Vector2Int>(new Vector2Int(0,0)),Context.GIFTING);
+                    if(projection.GetContent().Count!=1)throw new InvalidOperationException("Native projection mutation was not blocked");
+                    var characterData=actor.characterDataTracker.charData;characterData.SaveItems(Manager);
+                    if(characterData.SavedItems.ToArray().Any(s=>s.Data!=null && new ItemDataUnpacked(s.Data).individualID==item.individualID))
+                        throw new InvalidOperationException("Projection leaked into native character save");
+                    nativeProjectionVerified=true;
+                    if(Environment.GetCommandLineArgs().Contains("--lelan-render-chest-qa"))
+                    {
+                        if(!screenshot){ScreenCapture.CaptureScreenshot(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),"UserData","shared-chest-qa.png"));screenshot=true;holdUntil=Time.unscaledTime+3;}
+                        if(Time.unscaledTime<holdUntil)return;
+                    }
                     if(Count()!=0)throw new InvalidOperationException("Item remained in native inventory after Host deposit");
                     chest.QaWithdraw(chest.QaView.Items.Single(i=>i.Hash==key));stage=4;return;
                 case 4:
                     if(chest.Busy || Count()!=1 || chest.QaView.Items.Any(i=>i.Hash==key) || !otherMapView)return;
+                    var cursorSource=Manager.inventory.GetContent().ToArray().Single(e=>e.data.individualID==item.individualID);
+                    Manager.inventory.MoveItemTo(cursorSource,Manager.cursor.Cast<IItemContainer>(),new Il2CppSystem.Nullable<Vector2Int>(new Vector2Int(0,0)),Context.GIFTING);
+                    if(Manager.cursor.GetContent().Count!=1)throw new InvalidOperationException("Native item could not move to cursor for deposit QA");
+                    chest.NativeView.QaDropCursor();
+                    if(!chest.Busy || Manager.cursor.GetContent().Count!=0)throw new InvalidOperationException("Native cursor deposit did not enter escrow");
+                    stage=6;return;
+                case 6:
+                    if(chest.Busy || chest.QaView.Items.Any(i=>i.Hash==key)!=true)return;
+                    chest.QaWithdraw(chest.QaView.Items.Single(i=>i.Hash==key));stage=7;return;
+                case 7:
+                    if(chest.Busy || Count()!=1 || chest.QaView.Items.Any(i=>i.Hash==key))return;
                     if(actor.GetActorSync()?.actorVisuals?.HasBeenInitialized!=true)throw new InvalidOperationException("Native player interrupted during chest transfer");
                     Result=new{passed=true,nativeRemovedThenSaved=true,hostCustodyBetweenSaves=true,nativeWithdrawAndSave=true,finalNativeCopies=Count(),serializedBytesPreserved=true,
-                        partyOnlyGuestDifferentMap=true,nativeMonolithJoinNoTransition=true,remoteChestQueryDifferentMap=true,scope="Private native Host character deposit/save/Host ledger/withdraw/save over loopback room; no physical two-PC native inventories or crash/save-reload acceptance"};
+                        partyOnlyGuestDifferentMap=true,nativeMonolithJoinNoTransition=true,remoteChestQueryDifferentMap=true,nativeProjectionVerified,nativeCursorDepositAndRedeposit=true,
+                        scope="Private native Host character and native Stash clone/container binding/mutation guard/save exclusion over loopback room; mouse drag/tooltip rendering and two-PC acceptance require interactive verification"};
                     return;
             }
         }

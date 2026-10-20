@@ -1,0 +1,23 @@
+{
+  "passed": false,
+  "nativeRemovedThenSaved": true,
+  "hostCustodyBetweenSaves": true,
+  "nativeWithdrawAndSave": true,
+  "finalNativeCopies": 1,
+  "serializedBytesPreserved": true,
+  "partyOnlyGuestDifferentMap": true,
+  "nativeMonolithJoinNoTransition": true,
+  "remoteChestQueryDifferentMap": true,
+  "nativeProjectionVerified": true,
+  "nativeCursorDepositAndRedeposit": true,
+  "scope": "Private native Host character and native Stash clone/container binding/mutation guard/save exclusion over loopback room; mouse drag/tooltip rendering and two-PC acceptance require interactive verification",
+  "observationsPassed": true,
+  "runtimeErrors": [
+    "2026-10-20T05:28:23.4968199+00:00\tError\tActor is null",
+    "2026-10-20T05:28:24.4719677+00:00\tException\tPlayFab.PlayFabException: Must be logged in to call this method",
+    "2026-10-20T05:28:24.7239707+00:00\tError\tUserIdentity not yet initialized, returning null. at PlayerActorSync#UserIdentity:74",
+    "2026-10-20T05:28:24.9790031+00:00\tException\tPlayFab.PlayFabException: Must be logged in to call this method",
+    "2026-10-20T05:28:26.5749516+00:00\tException\tSystem.NullReferenceException: Object reference not set to an instance of an object.",
+    "2026-10-20T05:28:27.3819771+00:00\tError\tEncounterPlacementData is null, it should not be at this point"
+  ]
+}

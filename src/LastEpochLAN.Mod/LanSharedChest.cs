@@ -35,6 +35,7 @@ internal sealed class LanSharedChest
     private string dragged="";
     private readonly Dictionary<string,ItemDataUnpacked> previews=new();
     private readonly SharedChestSkin skin=new();
+    private NativeSharedStashView nativeView;
     private readonly Dictionary<string,LoadRef<Sprite>> icons=new();
     private ItemContainerEntry[] qaInventory;
     internal LanSharedChest(LanGift gift){identity=gift;}
@@ -48,6 +49,11 @@ internal sealed class LanSharedChest
     internal bool Protect(ItemData data)=>nativeScope==0 && locks.Count>0 && data!=null && locks.Contains(data.individualID);
     private static ItemContainersManager Manager=>PlayerFinder.getItemContainersManager();
     private bool Ready=>OfflineTools.OfflineToolkit.Ready && Manager?.IsFullyInitializedAndLoaded==true;
+    internal bool NativeReady=>Ready && qaInventory==null;
+    internal NativeSharedStashView NativeView=>nativeView;
+    internal void NativeDepositCursor(ItemContainerEntry entry)=>Deposit(entry,true);
+    internal void NativeDepositInventory(ItemContainerEntry entry)=>Deposit(entry);
+    internal void NativeWithdraw(ChestItem item)=>Withdraw(item);
     private static int Count(ChestItem item)
     {
         var actor=PlayerFinder.getPlayerActor();var data=actor?.characterDataTracker?.charData;
@@ -70,7 +76,8 @@ internal sealed class LanSharedChest
         try
         {
             CompleteSave();
-            if(!Ready || identity.Identity=="" || identity.Character=="")return;
+            if(!Open)nativeView?.Dispose();
+            if(!Ready || identity.Identity=="" || identity.Character==""){nativeView?.Dispose();return;}
             if(character!=identity.Character || group!=identity.Group)
             {
                 if(savePending || failed)return;
@@ -81,13 +88,14 @@ internal sealed class LanSharedChest
                 RefreshLocks();
                 if(journal.Records.Any(t=>t.Stage=="Held"))Status="Có giao dịch chưa xác minh; giữ món an toàn, không tự cấp/hoàn lại. Cần kiểm tra nhật ký.";
             }
-            if(session?.Connected!=true){view=null;return;}
+            if(session?.Connected!=true){view=null;nativeView?.Dispose();return;}
             if(room.IsHost)
             {
                 hostStore??=new SharedChestStore(Path.Combine(Root,"Host",identity.Identity,Hash(group)+".json"),identity.Identity);
                 for(int n=0;n<8 && room.TryTakeChestRequest(out var request);n++)Handle(request);
             }
             for(int n=0;n<8 && room.TryTakeChestReply(out var reply);n++)Receive(reply);
+            if(Open && Ready){nativeView??=new(this);nativeView.Tick(view);}
             if(Time.unscaledTime<nextPoll)return;
             nextPoll=Time.unscaledTime+1;
             if(Open || Busy)room.SendChest(new());
@@ -209,7 +217,7 @@ internal sealed class LanSharedChest
         var value=item.TryCast<ItemDataUnpacked>()??new ItemDataUnpacked(item);
         return (value.FullName??"Vật phẩm").Length>128?value.FullName.Substring(0,128):value.FullName??"Vật phẩm";
     }
-    private void ReleaseView(){skin.Close();foreach(var asset in icons.Values)asset.Dispose();icons.Clear();previews.Clear();}
+    private void ReleaseView(){nativeView?.Dispose();skin.Close();foreach(var asset in icons.Values)asset.Dispose();icons.Clear();previews.Clear();}
     internal void Disconnect(){session=null;view=null;Open=false;selected=null;dragged="";ReleaseView();}
     private void Icon(Rect rect,string key,ItemData item)
     {
@@ -229,6 +237,15 @@ internal sealed class LanSharedChest
     internal void Draw()
     {
         if(!Open)return;
+        if(qaInventory==null)
+        {
+            if(nativeView?.Visible!=true)
+            {
+                GUI.Box(new Rect(18,Screen.height-105,650,82),"Shared Stash — F2 đóng/mở");
+                GUI.Label(new Rect(30,Screen.height-75,620,48),nativeView?.Error!=""?nativeView?.Error:Status);
+            }
+            return;
+        }
         try{DrawInternal();}catch(Exception ex){Status="Hòm: "+ex.Message;GUI.enabled=true;}
     }
     private void DrawInternal()

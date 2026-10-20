@@ -1,5 +1,6 @@
-param([int]$TimeoutSeconds = 90, [string]$ModAssembly = '', [string]$CoreAssembly = '', [switch]$NativeServer, [switch]$NativeSession, [switch]$NativeAssets, [switch]$NativeCampaign, [switch]$NativeEncounters, [switch]$NativeStatus, [switch]$OfflineTools, [switch]$NativeVfx, [switch]$NativeGift, [switch]$GiftReload, [switch]$GiftTransfer, [switch]$GiftTransferReplay, [switch]$GiftMenu, [switch]$PartyTravel, [switch]$PartyBoss, [switch]$HudPolicy, [switch]$RenderUi, [switch]$OmenRewards, [switch]$SharedChest, [switch]$ChestUi, [string]$RuntimeRoot='', [string]$SandboxRoot='')
+param([int]$TimeoutSeconds = 90, [string]$ModAssembly = '', [string]$CoreAssembly = '', [switch]$NativeServer, [switch]$NativeSession, [switch]$NativeAssets, [switch]$NativeCampaign, [switch]$NativeEncounters, [switch]$NativeStatus, [switch]$OfflineTools, [switch]$NativeVfx, [switch]$NativeGift, [switch]$GiftReload, [switch]$GiftTransfer, [switch]$GiftTransferReplay, [switch]$GiftMenu, [switch]$PartyTravel, [switch]$PartyBoss, [switch]$HudPolicy, [switch]$RenderUi, [switch]$OmenRewards, [switch]$SharedChest, [switch]$ChestUi, [switch]$CaptureChest, [string]$RuntimeRoot='', [string]$SandboxRoot='')
 $ErrorActionPreference = 'Stop'
+if ($CaptureChest) { $SharedChest = $true }
 if ($OmenRewards -or $SharedChest) { $NativeCampaign = $true }
 if ($NativeVfx) { $NativeCampaign = $true }
 if ($NativeEncounters) { throw 'Legacy encounter smoke was removed. Use -OmenRewards for the native isolation test.' }
@@ -78,6 +79,7 @@ try {
     if ($NativeCampaign) { $qaArguments += '--lelan-private-campaign-smoke' }
     if ($OmenRewards) { $qaArguments += '--lelan-omen-reward-smoke' }
     if ($SharedChest) { $qaArguments += '--lelan-shared-chest-smoke' }
+    if ($CaptureChest) { $qaArguments += '--lelan-render-chest-qa' }
     if ($ChestUi) { $qaArguments += '--lelan-chest-ui-smoke' }
     if ($NativeEncounters) { $qaArguments += '--lelan-encounter-smoke' }
     if ($NativeStatus) { $qaArguments += '--lelan-status-smoke' }
