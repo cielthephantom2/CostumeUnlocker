@@ -54,7 +54,6 @@ SHA256 Mod: `A0A36F6F1F6264AB3EB723E136F1F0EB49AF0FBB58167E8B59EF54D479DD7E07`
 SHA256 Core: `6547E098776B12DBDD58DB7CF097D8A75972FE361726087A61135ADDD9B3D59F`
 
 Evidence: validation/native-ui-release-dev12.json, native-basic-dev12.json,
-audit-dev12-ui.json và managed-dev12-core-baseline.json. Public updater fixture
-và kiểm tra tải thật sau push được ghi riêng khi hoàn tất phát hành.
-
-Public updater: 15 fixture checks trước push và 17 checks gồm tải thật hai DLL từ GitHub sau push đạt. Evidence: validation/public-updater-dev12.json.
+audit-dev12-ui.json và managed-dev12-core-baseline.json. Public updater đạt 15
+fixture checks trước push và 17 checks gồm tải thật hai DLL từ GitHub sau push;
+xem validation/public-updater-dev12.json.
