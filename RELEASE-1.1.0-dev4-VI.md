@@ -32,3 +32,5 @@ Dữ liệu: `Steam game/UserData/LastEpochLAN/SharedChest/Host` và `Client`. K
 - Không sửa toàn bộ hệ thống encounter trong đợt này; encounter co-op mới vẫn chưa tích hợp.
 
 Gói cập nhật gồm Mods/LastEpochLAN.dll và UserLibs/LastEpochLAN.Core.dll, ghim SHA-256/size trong latest.json. Đóng game trên cả hai máy rồi chạy update.bat; updater sao lưu cặp cũ trước khi thay. Không khởi chạy game hoặc sửa save thật trong kiểm thử phát hành.
+
+Kiểm tra updater sau phát hành: 17 bài fixture/live đạt, gồm tải thật cả hai DLL từ main và kiểm SHA-256. Không khởi chạy game thật.
