@@ -1,5 +1,6 @@
-param([int]$TimeoutSeconds = 90, [string]$ModAssembly = '', [string]$CoreAssembly = '', [switch]$NativeServer, [switch]$NativeSession, [switch]$NativeAssets, [switch]$NativeCampaign, [switch]$NativeEncounters, [switch]$NativeStatus, [switch]$OfflineTools, [switch]$NativeVfx, [switch]$NativeGift, [switch]$GiftReload, [switch]$GiftTransfer, [switch]$GiftTransferReplay, [switch]$GiftMenu, [switch]$PartyTravel, [switch]$PartyBoss, [switch]$HudPolicy, [switch]$RenderUi, [switch]$LootFilters, [switch]$AutoPlay, [switch]$OmenRewards, [switch]$SharedChest, [switch]$ChestUi, [switch]$CaptureChest, [ValidateSet(0,1,2)][int]$StashVersion=0, [string]$RuntimeRoot='', [string]$SandboxRoot='')
+param([int]$TimeoutSeconds = 90, [string]$ModAssembly = '', [string]$CoreAssembly = '', [switch]$NativeServer, [switch]$NativeSession, [switch]$NativeAssets, [switch]$NativeCampaign, [switch]$NativeEncounters, [switch]$NativeStatus, [switch]$OfflineTools, [switch]$NativeVfx, [switch]$NativeGift, [switch]$GiftReload, [switch]$GiftTransfer, [switch]$GiftTransferReplay, [switch]$GiftMenu, [switch]$PartyTravel, [switch]$PartyBoss, [switch]$HudPolicy, [switch]$RenderUi, [switch]$LootFilters, [switch]$AutoPlay, [switch]$Disintegrate, [switch]$OmenRewards, [switch]$SharedChest, [switch]$ChestUi, [switch]$CaptureChest, [ValidateSet(0,1,2)][int]$StashVersion=0, [string]$RuntimeRoot='', [string]$SandboxRoot='')
 $ErrorActionPreference = 'Stop'
+if ($Disintegrate) { $NativeCampaign = $true; $RenderUi = $true }
 if ($CaptureChest -or $StashVersion -gt 0) { $SharedChest = $true }
 if ($OmenRewards -or $SharedChest) { $NativeCampaign = $true }
 if ($SharedChest) { $RenderUi = $true } # Native pointer raycasts require rendered Canvas depth.
@@ -82,6 +83,7 @@ try {
     if ($NativeCampaign) { $qaArguments += '--lelan-private-campaign-smoke' }
     if ($LootFilters) { $qaArguments += '--lelan-loot-filter-smoke' }
     if ($AutoPlay) { $qaArguments += '--lelan-autoplay-smoke' }
+    if ($Disintegrate) { $qaArguments += '--lelan-disintegrate-smoke' }
     if ($OmenRewards) { $qaArguments += '--lelan-omen-reward-smoke' }
     if ($SharedChest) { $qaArguments += '--lelan-shared-chest-smoke' }
     if ($CaptureChest) { $qaArguments += '--lelan-render-chest-qa' }

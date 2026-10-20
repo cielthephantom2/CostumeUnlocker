@@ -1,8 +1,10 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.16
+# TM Last Epoch Co-op Mod — 1.1.0-dev.20
 
 Development release, protocol **35**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). Both Host and Client must update. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
 
-**Dev.16:** adds native channel movement hooks for the local offline Disintegrate skill, intended to allow movement while channeling. Gameplay, steering, release, collision and multiplayer behavior remain unverified. Core remains dev.14. See [dev.16 changes and limits](RELEASE-1.1.0-dev16-VI.md).
+**Dev.20:** native keyboard movement now steers Disintegrate while channeling, follows game bindings, and stops movement on key release while keeping the beam active. Aim updates no longer set movement destinations. Update both DLLs on every PC. Six native keyboard directions and aim/movement checks passed in a sandbox; physical input and multiplayer remain unverified, and the full native gate still fails with 76 runtime errors. See [dev.20 changes and limits](RELEASE-1.1.0-dev20-VI.md).
+
+**Dev.16 (historical):** adds native channel movement hooks for the local offline Disintegrate skill, intended to allow movement while channeling. Gameplay, steering, release, collision and multiplayer behavior remain unverified. Core remains dev.14. See [dev.16 changes and limits](RELEASE-1.1.0-dev16-VI.md).
 
 **Dev.15:** removed party HP scaling, kept monster density, and reduced idle Auto Play, hidden/paused DPS, solo stash and AI/HP hook work. Restart after updating. Core remains dev.14. FPS gains and native/multiplayer regression have not been measured. See [dev.15 changes and limits](RELEASE-1.1.0-dev15-VI.md).
 

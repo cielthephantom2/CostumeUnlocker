@@ -32,6 +32,7 @@ internal sealed class NativeCampaignProbe
     private NativeStatusCampaignSmoke statusSmoke;
     private NativeEncounterIsolationSmoke isolation;
     private NativeSharedChestProbe sharedChest;
+    private NativeDisintegrateProbe disintegrate;
     internal void DrawChest()=>sharedChest?.Draw();
     private bool toolkitCharacterQueued;
     internal object Result { get; private set; }
@@ -162,6 +163,10 @@ internal sealed class NativeCampaignProbe
                         throw new InvalidOperationException("Campaign QA loaded a different character.");
                     if (actor != null && actor.HasMovedToPlayerSpawn && actor.health != null)
                     {
+                        if(Environment.GetCommandLineArgs().Contains("--lelan-disintegrate-smoke"))
+                        {
+                            disintegrate??=new();Result=disintegrate.Tick(actor);return;
+                        }
                         if(Environment.GetCommandLineArgs().Contains("--lelan-autoplay-smoke"))
                         {Result=AutoPlayRuntime.Active?.NativeSmoke(actor);return;}
                         if(Environment.GetCommandLineArgs().Contains("--lelan-loot-filter-smoke"))
