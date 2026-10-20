@@ -19,7 +19,7 @@ Kết quả 1 → 0 LP được giữ đúng, không bị bonus tối thiểu 1 
 - 7 compiled audit checks đạt, khảo sát 105 lớp Harmony; không đưa lại cơ chế encounter replay cũ.
 - Native asset/adapter QA đạt trên đúng cặp DLL phát hành. Sáu trường hợp biên đi qua detour native thật: 1→2, 1→0, 2→3, 2→1, 3→4, 3→1. Đọc lại serialization cho đúng LP; các byte vật phẩm còn lại khớp bản đối chiếu chỉ đổi LP, ID cá nhân giữ nguyên.
 - Lượt native đầu tiên vẫn lưu kết quả FAIL do Steam không chạy. Sau khi khởi động Steam, lượt chạy lại đạt toàn bộ QA này. Không lọc bỏ lỗi từ lượt đầu.
-- 15 kiểm tra updater fixture đạt trước khi phát hành. Cặp DLL được ghim SHA-256 và size trong `latest.json`.
+- 15 kiểm tra updater fixture đạt trước khi phát hành. Cặp DLL được ghim SHA-256 và size trong `latest.json`. Sau khi phát hành, kiểm thử tải thật từ GitHub và kiểm SHA cả hai DLL đạt: tổng 17 bài updater fixture/live.
 
 Chưa kiểm thử trọn luồng bảng Woven trong map thật, tiêu hao lượt hay lưu inventory của nhân vật thật. Không thay DLL đang cài hoặc save thật để kiểm thử. Các kiểm thử trên không chứng minh encounter co-op đã hoạt động; hạn chế encounter và full campaign QA từ bản trước vẫn còn.
 
