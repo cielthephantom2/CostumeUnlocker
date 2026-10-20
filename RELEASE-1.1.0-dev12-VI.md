@@ -56,3 +56,5 @@ SHA256 Core: `6547E098776B12DBDD58DB7CF097D8A75972FE361726087A61135ADDD9B3D59F`
 Evidence: validation/native-ui-release-dev12.json, native-basic-dev12.json,
 audit-dev12-ui.json và managed-dev12-core-baseline.json. Public updater fixture
 và kiểm tra tải thật sau push được ghi riêng khi hoàn tất phát hành.
+
+Public updater: 15 fixture checks trước push và 17 checks gồm tải thật hai DLL từ GitHub sau push đạt. Evidence: validation/public-updater-dev12.json.

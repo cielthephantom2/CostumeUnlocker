@@ -23,6 +23,7 @@ See [Vietnamese release report](RELEASE-1.1.0-dev12-VI.md) and [historical rewri
 ## Validation
 
 - Release build: zero warnings/errors; compiled audit: 7 checks pass.
+- Public updater: 17 fixture/live checks pass, including commit-pinned downloads and SHA-256 verification of both dev.12 DLLs.
 - Core baseline: 752 managed checks from dev.11; dev.12 uses the identical Core DLL. Includes Auto Play rules, scheduling, potion reserve and Shared Stash/Echo readiness checks.
 - Final DLL pair: basic native smoke passes. Native Mage Auto Play observations pass for bar/key/cooldown/HP/MP reads, actual skill/potion, loaded native icons, Start/Stop raycast and input restore. Skill/potion Canvas screenshots were visually reviewed.
 - The full rendered campaign gate remains FAIL with 76 runtime errors. Individual feature observations do not convert it into a full pass. Physical two-PC, every class/build/buff and the earlier ActorVisuals exception remain unverified/unresolved.
