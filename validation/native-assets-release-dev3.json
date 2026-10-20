@@ -1,0 +1,191 @@
+{
+  "passed": true,
+  "giftItemStatsRoundTrip": true,
+  "classCount": 5,
+  "models": [
+    {
+      "classId": 0,
+      "renderers": 3,
+      "animators": 2,
+      "gameplayScripts": 0,
+      "enabledColliders": 0
+    },
+    {
+      "classId": 1,
+      "renderers": 3,
+      "animators": 2,
+      "gameplayScripts": 0,
+      "enabledColliders": 0
+    },
+    {
+      "classId": 2,
+      "renderers": 6,
+      "animators": 1,
+      "gameplayScripts": 0,
+      "enabledColliders": 0
+    },
+    {
+      "classId": 3,
+      "renderers": 20,
+      "animators": 1,
+      "gameplayScripts": 0,
+      "enabledColliders": 0
+    },
+    {
+      "classId": 4,
+      "renderers": 3,
+      "animators": 2,
+      "gameplayScripts": 0,
+      "enabledColliders": 0
+    }
+  ],
+  "animation": [
+    {
+      "classId": 0,
+      "controller": "PlayerPrimalist (EXIT) (2025)_stripped",
+      "nativeDriver": "PlayerAnimationManager",
+      "idleState": 1100741149,
+      "movingState": -1585397449,
+      "idleClip": "ANIM_Primalist_Idle_Shield",
+      "movingClip": "Primalist_Jog_Shield_01",
+      "attackingClip": "Primalist_Cast_FWD_Shield",
+      "movingTime": 1.206264,
+      "movementParameterCleared": true,
+      "attackStateCleared": true,
+      "gameplayReplicaClip": "Primalist_Jog_Shield_01",
+      "gameplaySnapshotParameters": 57
+    },
+    {
+      "classId": 1,
+      "controller": "PlayerMage (EXIT) (2023)_stripped",
+      "nativeDriver": "PlayerAnimationManager",
+      "idleState": -2118424570,
+      "movingState": 581157998,
+      "idleClip": "Mage_Idle_Shield_01",
+      "movingClip": "Mage_Jog_Shield",
+      "attackingClip": "Mage_DCS_Shield_01",
+      "movingTime": 0.12656246,
+      "movementParameterCleared": true,
+      "attackStateCleared": true,
+      "gameplayReplicaClip": "Mage_Jog_Shield",
+      "gameplaySnapshotParameters": 41
+    },
+    {
+      "classId": 2,
+      "controller": "PlayerSentinel (EXIT) (2023_02)_stripped",
+      "nativeDriver": "PlayerAnimationManager",
+      "idleState": -2118424570,
+      "movingState": 581157998,
+      "idleClip": "Sentinel_Idle_Shield_Var_01",
+      "movingClip": "Sentinel_Jog_Shield_01",
+      "attackingClip": "Sentinel_NDCS_Shield_03",
+      "movingTime": 0.1437884,
+      "movementParameterCleared": true,
+      "attackStateCleared": true,
+      "gameplayReplicaClip": "Sentinel_Jog_Shield_01",
+      "gameplaySnapshotParameters": 46
+    },
+    {
+      "classId": 3,
+      "controller": "PlayerAcolyte (EXIT) (2026)",
+      "nativeDriver": "PlayerAnimationManager",
+      "idleState": -1565791351,
+      "movingState": -555649377,
+      "idleClip": "Acolyte_Combat Idle_Shield",
+      "movingClip": "Acolyte_Locomotion_Shield",
+      "attackingClip": "Acolyte_DCS_Shield_03",
+      "movingTime": 1.0241381,
+      "movementParameterCleared": true,
+      "attackStateCleared": true,
+      "gameplayReplicaClip": "Acolyte_Locomotion_Shield",
+      "gameplaySnapshotParameters": 30
+    },
+    {
+      "classId": 4,
+      "controller": "PlayerRogue (EXIT) (2025)_stripped",
+      "nativeDriver": "PlayerAnimationManager",
+      "idleState": 1823759805,
+      "movingState": -1585397449,
+      "idleClip": "Rogue_TNS_Combat_Neutral_Shield_01",
+      "movingClip": "Rogue_Movement_Shield_01",
+      "attackingClip": "Rogue_ExplosiveVolley_Shield",
+      "movingTime": 1.2857144,
+      "movementParameterCleared": true,
+      "attackStateCleared": true,
+      "gameplayReplicaClip": "Rogue_Movement_Shield_01",
+      "gameplaySnapshotParameters": 58
+    }
+  ],
+  "corruptionCalculator": {
+    "passed": true,
+    "observations": [
+      {
+        "timeline": "UndeadAbom",
+        "difficulty": 0,
+        "current": 49,
+        "total": 50,
+        "cap": 50
+      },
+      {
+        "timeline": "UndeadAbom",
+        "difficulty": 1,
+        "current": 100,
+        "total": 130,
+        "withGaze": 250,
+        "gaze2": 120,
+        "repeatedPreview": 130
+      }
+    ],
+    "scope": "Patched native calculator only; no boss kill or saved progression tested"
+  },
+  "wovenPotential": {
+    "passed": true,
+    "observations": [
+      {
+        "from": 1,
+        "percentile": 49,
+        "to": 2,
+        "serializedLp": 2,
+        "otherItemDataPreserved": true
+      },
+      {
+        "from": 1,
+        "percentile": 50,
+        "to": 0,
+        "serializedLp": 0,
+        "otherItemDataPreserved": true
+      },
+      {
+        "from": 2,
+        "percentile": 49,
+        "to": 3,
+        "serializedLp": 3,
+        "otherItemDataPreserved": true
+      },
+      {
+        "from": 2,
+        "percentile": 50,
+        "to": 1,
+        "serializedLp": 1,
+        "otherItemDataPreserved": true
+      },
+      {
+        "from": 3,
+        "percentile": 24,
+        "to": 4,
+        "serializedLp": 4,
+        "otherItemDataPreserved": true
+      },
+      {
+        "from": 3,
+        "percentile": 25,
+        "to": 1,
+        "serializedLp": 1,
+        "otherItemDataPreserved": true
+      }
+    ],
+    "scope": "Actual item detour and native serialization; no live reward panel, crafting-use consumption or inventory save tested"
+  },
+  "localActorAbsent": true,
+  "scope": "Native assets, five class visual prefabs and native movement animation drivers in a private save profile; no campaign entry or combat validation"
+}

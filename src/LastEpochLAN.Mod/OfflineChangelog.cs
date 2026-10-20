@@ -17,7 +17,7 @@ internal static class OfflineChangelog
         "• Vàng trong Monolith: hệ số = corruption / 40, tối thiểu x1. Ví dụ: 1.000 corruption → x25 vàng.\n"+
         "• Echo of a World (Shade of Orobyss): Corruption nhận thêm x5, gồm Gaze và bonus bắt kịp. Ví dụ +10 → +50; giữ giới hạn timeline và lượt giảm Corruption.\n\n"+
         "<b>WOVEN POTENTIAL — REROLL LP</b>\n"+
-        "• Từ 1 LP: 75% lên 2 LP; 25% xuống 0 LP.\n"+
+        "• Từ 1 LP: 50% lên 2 LP; 50% xuống 0 LP.\n"+
         "• Từ 2 LP: 50% lên 3 LP; 50% xuống 1 LP.\n"+
         "• Từ 3 LP: 25% lên 4 LP; 75% về 1 LP.\n"+
         "• Giữ tiêu hao lượt và điều kiện dùng native. Mức tối thiểu 1 LP cho đồ rơi không chặn kết quả Woven về 0 LP.\n\n"+
