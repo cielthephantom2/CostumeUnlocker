@@ -1,0 +1,11 @@
+{
+  "modSha256": "A668B58533C47AE563324F8C1973A885E77D0730A734D15498EE5356E28D4697",
+  "errors": [
+    "2026-10-19T23:04:31.4017501+00:00\tError\tGameLoader : Failed step <>c__DisplayClass1_0.<InitializeAsync>b__0 after 00:00:01.4825239 -- an exception was thrown.",
+    "2026-10-19T23:04:31.4027534+00:00\tException\tSystem.Exception: SteamApi_Init returned false. Steam isn't running, couldn't find Steam, AppId is ureleased, Don't own AppId."
+  ],
+  "passed": false,
+  "utc": "2026-10-19T23:04:45.3595643Z",
+  "nativeEncounters": false,
+  "coreSha256": "6F18A2C0428503286790A96A6C6A3A2F2CC880E6587CB4F8C5048829BBC8E6F3"
+}

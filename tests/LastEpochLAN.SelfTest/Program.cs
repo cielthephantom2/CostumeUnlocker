@@ -64,6 +64,7 @@ MotionTests.Run(Check);
 await SummonTests.Run(Check);
 DensityTests.Run(Check);
 OfflineBonusTests.Run(Check);
+WovenPotentialTests.Run(Check);
 FortuneTests.Run(Check);
 DpsTests.Run(Check);
 CharacterSetupTests.Run(Check);
