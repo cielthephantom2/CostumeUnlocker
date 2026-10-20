@@ -1,6 +1,8 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.14
+# TM Last Epoch Co-op Mod — 1.1.0-dev.15
 
 Development release, protocol **35**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). Both Host and Client must update. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
+
+**Dev.15:** removed party HP scaling, kept monster density, and reduced idle Auto Play, hidden/paused DPS, solo stash and AI/HP hook work. Restart after updating. Core remains dev.14. FPS gains and native/multiplayer regression have not been measured. See [dev.15 changes and limits](RELEASE-1.1.0-dev15-VI.md).
 
 **Dev.14 Shared Stash update:** inventory readiness is advertised independently of borrowed Echo world readiness. Transfers now show explicit local/Host rejection reasons, with a separate status overlay and additional diagnostics. Update both DLLs on the Host and every Client. The reported case where only one of two Clients can transfer has not been reproduced or confirmed resolved. See [changes and limits](RELEASE-1.1.0-dev14-VI.md).
 
@@ -8,7 +10,7 @@ Development release, protocol **35**. Close the game and run `update.bat` from t
 
 **Room Loot Filters:** each member shares their selected filter in memory. Edits, selection changes and disabling propagate automatically, polled once per second, including across maps. Keep the local result/style when it shows an item; if it hides the item, a remote filter may show it. Ground labels attribute filters that show the item. Remote filters do not overwrite local files or character bindings. Invalid remote filters are isolated by owner. Native Match uses an ABI-aware pointer bridge instead of Harmony out-Nullable marshalling. See [filter implementation and limits](ROOM-LOOT-FILTERS-2026-10-20-VI.md).
 
-Joining only creates party membership: the Client stays in its own map and solo gameplay until it explicitly selects Teleport. Each new Host Echo requires another Teleport request. Party-only clients do not take over the Host world or count toward Host NPC scaling.
+Joining only creates party membership: the Client stays in its own map and solo gameplay until it explicitly selects Teleport. Each new Host Echo requires another Teleport request. Party-only clients do not take over the Host world. Party HP scaling is removed in dev.15.
 
 **F2 opens the independent Shared Chest**, persisted on the Host and usable across maps in the same character cycle/mode. It currently accepts eligible Gift equipment/Idols, one item per entry, with a native individual ID. It has 96 logical slots. The frontend now clones native Stash graphics and uses a new native item grid for icons and hover/tooltips. Its detached Host projection never binds personal Stash data; original controllers are stripped before activation. Cursor drop or inventory right/shift-click deposits; clicking a chest item receives it into inventory after Host/save confirmation. Pagination follows native item sizes. Shared Stash labels/help/status use English. Stash loading resolves the actual legacy/V2 panel with a bounded timeout. Item canvases have independent raycasters and native buttons keyed to Host item identity, fixing clicks passing through the chest into the world. Deposit/withdraw use durable client journals, Host reservations, save acknowledgments, operation deduplication and custody tickets. Uncertain operations stay held rather than being automatically refunded or regranted. Legacy encounter synchronization remains unsupported.
 

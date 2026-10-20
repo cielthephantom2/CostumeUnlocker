@@ -22,6 +22,7 @@ internal static class OfflineDamageHooks
     private static int localFrame = -1;
     private static bool warned;
     private static readonly bool privateQa=Environment.GetCommandLineArgs().Contains("--lelan-offline-tools-smoke");
+    internal static bool CaptureEnabled=>privateQa || OfflineToolkit.Settings.DpsVisible && !DamageMeterOverlay.IsPaused;
     internal static string DotDiagnostic="not entered";
     internal static Actor Local
     {
@@ -37,7 +38,7 @@ internal static class OfflineDamageHooks
     }
     internal static Scope Begin(DamageStatsHolder holder, Actor target)
     {
-        if (!OfflineToolkit.Enabled || holder == null || target == null || target.isPlayerActor || target.summoned?.playerMinion == true) return null;
+        if (!CaptureEnabled || !OfflineToolkit.Enabled || holder == null || target == null || target.isPlayerActor || target.summoned?.playerMinion == true) return null;
         try
         {
             var health = target.GetComponent<UnitHealth>();
@@ -72,7 +73,7 @@ internal static class OfflineDamageHooks
     internal static Scope BeginDot(AilmentReceiver receiver, Il2CppSystem.Collections.Generic.List<AilmentReceiver.ActiveAilment> ailments)
     {
         if(privateQa) DotDiagnostic=$"begin actor={receiver?.actor!=null}, entries={ailments?.Count}";
-        if(!OfflineToolkit.Enabled || receiver?.actor==null || receiver.actor.isPlayerActor || ailments==null || ailments.Count==0) return null;
+        if(!CaptureEnabled || !OfflineToolkit.Enabled || receiver?.actor==null || receiver.actor.isPlayerActor || ailments==null || ailments.Count==0) return null;
         try
         {
             var health=receiver.actor.GetComponent<UnitHealth>();
@@ -130,7 +131,7 @@ internal static class DpsActorDamagePatch
 internal static class DpsProtectionDamagePatch
 {
     private static void Prefix(DamageStatsHolder __instance, ProtectionClass __0, out OfflineDamageHooks.Scope __state) =>
-        __state = OfflineDamageHooks.Begin(__instance, __0 == null ? null : __0.GetComponent<Actor>());
+        __state = !OfflineDamageHooks.CaptureEnabled?null:OfflineDamageHooks.Begin(__instance, __0 == null ? null : __0.GetComponent<Actor>());
     private static Exception Finalizer(OfflineDamageHooks.Scope __state, Exception __exception) { OfflineDamageHooks.End(__state); return __exception; }
 }
 
@@ -149,6 +150,6 @@ internal static class DpsAilmentDamagePatch
 internal static class DpsContinuousAilmentPatch
 {
     private static void Prefix(AilmentReceiver __instance,out OfflineDamageHooks.Scope __state) =>
-        __state=OfflineDamageHooks.BeginDot(__instance,__instance.ailments);
+        __state=!OfflineDamageHooks.CaptureEnabled?null:OfflineDamageHooks.BeginDot(__instance,__instance.ailments);
     private static Exception Finalizer(OfflineDamageHooks.Scope __state,Exception __exception) {OfflineDamageHooks.End(__state);return __exception;}
 }

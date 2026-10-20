@@ -519,6 +519,7 @@ internal sealed class WorldSynchronizer
         Status = $"Host sync: {mapped}/{world.Enemies.Length}; missing {MissingAlive} alive/{MissingDead} dead; epoch {epoch}; rev {world.Revision}";
     }
 
+    internal bool GuestPresentationActive=>session?.Connected==true && !session.IsHost;
     internal bool IsReplica(Actor actor) => session != null && !session.IsHost && actor is not null && replicaPointers.Contains(actor.Pointer);
 
     internal bool ShouldSuppressAi(Actor actor) => IsReplica(actor) ||
@@ -833,7 +834,13 @@ internal static class HostEnemyInstantAttackPatch
 [HarmonyPatch(typeof(Il2Cpp.StateController), nameof(Il2Cpp.StateController.update))]
 internal static class ReplicaAiPatch
 {
-    private static bool Prefix(Il2Cpp.StateController __instance) => WorldSynchronizer.Active?.ShouldSuppressAi(__instance.actor) != true || WorldSynchronizer.Active.IsNativeCorpse(__instance.actor);
+    private static bool Prefix(Il2Cpp.StateController __instance)
+    {
+        var world=WorldSynchronizer.Active;
+        if(world?.GuestPresentationActive!=true)return true;
+        var actor=__instance.actor;
+        return !world.ShouldSuppressAi(actor) || world.IsNativeCorpse(actor);
+    }
 }
 
 // A native offline replica also generates local idle/move animation events.
@@ -883,5 +890,9 @@ internal static class ReplicaCullPatch
 [HarmonyPatch(typeof(Il2Cpp.BaseHealth), nameof(Il2Cpp.BaseHealth.OnUpdateTick))]
 internal static class ReplicaHealthTickPatch
 {
-    private static bool Prefix(Il2Cpp.BaseHealth __instance) => WorldSynchronizer.Active?.IsReplica(__instance.actor) != true;
+    private static bool Prefix(Il2Cpp.BaseHealth __instance)
+    {
+        var world=WorldSynchronizer.Active;
+        return world?.GuestPresentationActive!=true || !world.IsReplica(__instance.actor);
+    }
 }

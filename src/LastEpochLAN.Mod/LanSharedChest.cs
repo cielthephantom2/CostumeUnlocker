@@ -41,7 +41,7 @@ internal sealed class LanSharedChest
     private NativeSharedStashView nativeView;
     private readonly Dictionary<string,LoadRef<Sprite>> icons=new();
     private ItemContainerEntry[] qaInventory;
-    internal LanSharedChest(LanGift gift){identity=gift;}
+    internal LanSharedChest(LanGift gift){identity=gift;Active=this;}
     private static string Root=>Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),"UserData","LastEpochLAN","SharedChest");
     private static string Hash(string text)=>Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(text)));
     private static string Raw(ItemData data)=>Convert.ToBase64String(data.GetIDAsArray().ToArray());
@@ -95,6 +95,11 @@ internal sealed class LanSharedChest
         {
             CompleteSave();
             if(!Open)nativeView?.Dispose();
+            if(session?.Connected!=true && !Busy)
+            {
+                if(Open)Status="Join a party before opening Shared Stash";
+                view=null;nativeView?.Dispose();return;
+            }
             if(!Ready || identity.Identity=="" || identity.Character=="")
             {
                 if(Open && !Busy)Status=!Ready ? "Waiting for local character and inventory to finish loading" : "Waiting for local character identity";

@@ -50,8 +50,10 @@ internal static class NativeEnemyControlPatch
         .Select(name => AccessTools.Method(typeof(Il2Cpp.Stunned), name));
     private static bool Prefix(Il2Cpp.Stunned __instance, float duration, System.Reflection.MethodBase __originalMethod, object[] __args)
     {
+        var world=WorldSynchronizer.Active;
+        if(world?.GuestPresentationActive!=true)return true;
         var actor = __instance.getActor();
         int type = __originalMethod.Name switch { "stun"=>0, "freeze"=>1, "timeLock"=>2, _=>3 };
-        return WorldSynchronizer.Active?.ForwardControl(actor, type, duration, type == 1 ? (float)__args[1] : 0) != true;
+        return world.ForwardControl(actor, type, duration, type == 1 ? (float)__args[1] : 0) != true;
     }
 }

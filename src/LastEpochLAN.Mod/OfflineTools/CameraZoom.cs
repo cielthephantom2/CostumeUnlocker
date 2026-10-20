@@ -14,14 +14,14 @@ internal static class CameraZoom
 
     internal static void InputTick(bool editingPanel)
     {
+        int direction=(Input.GetKeyDown(KeyCode.Period)?1:0)-(Input.GetKeyDown(KeyCode.Comma)?1:0);
+        if(direction==0) return;
         if(editingPanel || !OfflineToolkit.Ready) return;
         if(Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) ||
            Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) return;
         var selected=UnityEngine.EventSystems.EventSystem.current?.currentSelectedGameObject;
         if(selected!=null && (selected.GetComponentInParent<UnityEngine.UI.InputField>()!=null ||
                              selected.GetComponentInParent<Il2CppTMPro.TMP_InputField>()!=null)) return;
-        int direction=(Input.GetKeyDown(KeyCode.Period)?1:0)-(Input.GetKeyDown(KeyCode.Comma)?1:0);
-        if(direction==0) return;
         var settings=OfflineToolkit.Settings;
         settings.CustomZoom=true;
         settings.ZoomDistance=Clamp(MathF.Round((settings.ZoomDistance+direction*0.1f)*100f)/100f);

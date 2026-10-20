@@ -10,6 +10,7 @@ namespace LastEpochLAN.Mod;
 internal sealed partial class AutoPlayRuntime
 {
     internal static AutoPlayRuntime Active;
+    private static readonly bool privateNativeQa=Environment.GetCommandLineArgs().Contains("--lelan-autoplay-smoke");
     internal AutoPlaySettings Settings=new();
     internal bool Open,Armed;
     internal string Status="Stopped - F1 to configure",Error="";
@@ -92,6 +93,13 @@ internal sealed partial class AutoPlayRuntime
             if(Input.GetKeyDown(KeyCode.F1) && input?.IsInputFieldActive!=true)Open=!Open;
             if(Open && Input.GetKeyDown(KeyCode.Escape)){Open=false;Changed();}
             if(saveAt>=0 && Time.unscaledTime>=saveAt)Save();
+            if(!Open && !Armed && !privateNativeQa)
+            {
+                InputBlock(null,false);localReady=false;
+                enemies.Clear();nearest=rareBoss=null;
+                Status="Stopped - F1 to configure";
+                return;
+            }
             var actor=PlayerFinder.getPlayerActor();
             bool offline=!Il2CppEHG.Multiplayer.GameplayEnvironment.IsOnlinePlay;
             localReady=offline && actor!=null && actor.gameObject.activeInHierarchy && actor.HasMovedToPlayerSpawn &&

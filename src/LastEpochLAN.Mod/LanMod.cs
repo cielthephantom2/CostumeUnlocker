@@ -5,13 +5,14 @@ using MelonLoader;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
-[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.14", "Local research")]
+[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.15", "Local research")]
 [assembly: MelonGame("Eleventh Hour Games", "Last Epoch")]
 
 namespace LastEpochLAN.Mod;
 
 public sealed class LanMod : MelonMod
 {
+    private static readonly string[] StartupArguments=Environment.GetCommandLineArgs();
     private static readonly string ModVersion = (System.Reflection.CustomAttributeExtensions.GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>(typeof(LanMod).Assembly)?.InformationalVersion?.Split('+')[0]) ?? typeof(LanMod).Assembly.GetName().Version?.ToString(3) ?? "unknown";
     private readonly WorldSynchronizer worldSync = new();
     private readonly NativeSummonCapture summonCapture=new();
@@ -106,9 +107,9 @@ public sealed class LanMod : MelonMod
         // Pinned to the actual client inspected here; refuse incompatible adapters.
         supported = fingerprint == "D5F9FB458F0E9878E697A92B590A586A52FD77E645F8BF87BB4F2B74C6C56567";
         roomCode = Convert.ToHexString(RandomNumberGenerator.GetBytes(4));
-        adapterSmokeRequested = Environment.GetCommandLineArgs().Contains("--lelan-adapter-smoke");
-        classSmokeRequested = Environment.GetCommandLineArgs().Contains("--lelan-class-visual-smoke");
-        worldAuditRequested = Environment.GetCommandLineArgs().Contains("--lelan-world-audit");
+        adapterSmokeRequested = StartupArguments.Contains("--lelan-adapter-smoke");
+        classSmokeRequested = StartupArguments.Contains("--lelan-class-visual-smoke");
+        worldAuditRequested = StartupArguments.Contains("--lelan-world-audit");
         reportFile = Path.Combine(runtime, "UserData", "LastEpochLAN.runtime-report.json");
         Directory.CreateDirectory(Path.GetDirectoryName(reportFile)!);
         configPath = Path.Combine(runtime, "UserData", "LastEpochLAN.config.json");
@@ -141,7 +142,7 @@ public sealed class LanMod : MelonMod
         try
         {
             OfflineTools.OfflineToolkit.Tick(panel);
-            if (Environment.GetCommandLineArgs().Contains("--lelan-gift-smoke") && !giftProbeReported && nativeAssetProbe?.Passed == true)
+            if (StartupArguments.Contains("--lelan-gift-smoke") && !giftProbeReported && nativeAssetProbe?.Passed == true)
             {
                 giftProbe ??= new NativeGiftProbe(); giftProbe.Tick();
                 if (giftProbe.Finished)
@@ -151,7 +152,7 @@ public sealed class LanMod : MelonMod
                         JsonSerializer.Serialize(giftProbe.Result, new JsonSerializerOptions { WriteIndented = true }));
                 }
             }
-            if (Environment.GetCommandLineArgs().Contains("--lelan-vfx-smoke") && !vfxProbeReported && nativeAssetProbe?.Passed == true)
+            if (StartupArguments.Contains("--lelan-vfx-smoke") && !vfxProbeReported && nativeAssetProbe?.Passed == true)
             {
                 vfxProbe ??= new NativeVfxProbe(); vfxProbe.Tick();
                 if (vfxProbe.Finished)
@@ -161,7 +162,7 @@ public sealed class LanMod : MelonMod
                         JsonSerializer.Serialize(vfxProbe.Result, new JsonSerializerOptions { WriteIndented = true }));
                 }
             }
-            if (!nativeCampaignReported && Environment.GetCommandLineArgs().Contains("--lelan-private-campaign-smoke") && nativeAssetProbe?.Passed == true)
+            if (!nativeCampaignReported && StartupArguments.Contains("--lelan-private-campaign-smoke") && nativeAssetProbe?.Passed == true)
             {
                 nativeCampaignProbe ??= new NativeCampaignProbe();
                 nativeCampaignProbe.Tick();
@@ -172,7 +173,7 @@ public sealed class LanMod : MelonMod
                         JsonSerializer.Serialize(nativeCampaignProbe.Result, new JsonSerializerOptions { WriteIndented = true }));
                 }
             }
-            if (!nativeAssetsReported && Environment.GetCommandLineArgs().Contains("--lelan-native-assets-smoke"))
+            if (!nativeAssetsReported && StartupArguments.Contains("--lelan-native-assets-smoke"))
             {
                 nativeAssetProbe ??= new NativeAssetProbe();
                 nativeAssetProbe.Tick();
@@ -183,8 +184,8 @@ public sealed class LanMod : MelonMod
                         JsonSerializer.Serialize(nativeAssetProbe.Result, new JsonSerializerOptions { WriteIndented = true }));
                 }
             }
-            if (!nativeSessionReported && Environment.GetCommandLineArgs().Contains("--lelan-native-session-smoke") &&
-                (!Environment.GetCommandLineArgs().Contains("--lelan-native-assets-smoke") || nativeAssetProbe?.Passed == true))
+            if (!nativeSessionReported && StartupArguments.Contains("--lelan-native-session-smoke") &&
+                (!StartupArguments.Contains("--lelan-native-assets-smoke") || nativeAssetProbe?.Passed == true))
             {
                 nativeSessionProbe ??= new NativeSessionProbe(nativeAssetProbe?.Passed == true);
                 nativeSessionProbe.Tick();
@@ -195,7 +196,7 @@ public sealed class LanMod : MelonMod
                         JsonSerializer.Serialize(nativeSessionProbe.Result, new JsonSerializerOptions { WriteIndented = true }));
                 }
             }
-            if (!nativeServerProbeCompleted && Environment.GetCommandLineArgs().Contains("--lelan-native-server-smoke"))
+            if (!nativeServerProbeCompleted && StartupArguments.Contains("--lelan-native-server-smoke"))
             {
                 nativeServerProbeCompleted = true;
                 object result;
@@ -305,13 +306,13 @@ public sealed class LanMod : MelonMod
                 pendingCancellation?.Dispose();
                 pendingCancellation = null;
             }
-            if (!Environment.GetCommandLineArgs().Contains("--lelan-gift-smoke") && !Environment.GetCommandLineArgs().Contains("--lelan-shared-chest-smoke")) gift.Tick(session);
-            if (!Environment.GetCommandLineArgs().Contains("--lelan-gift-smoke") && !Environment.GetCommandLineArgs().Contains("--lelan-shared-chest-smoke")) sharedChest.Tick(session);
+            if ((session!=null || gift.Busy) && !StartupArguments.Contains("--lelan-gift-smoke") && !StartupArguments.Contains("--lelan-shared-chest-smoke")) gift.Tick(session);
+            if ((session!=null || sharedChest.Open || sharedChest.Busy) && !StartupArguments.Contains("--lelan-gift-smoke") && !StartupArguments.Contains("--lelan-shared-chest-smoke")) sharedChest.Tick(session);
             if(Input.GetKeyDown(KeyCode.F2))sharedChest.Toggle();
-            if (!Environment.GetCommandLineArgs().Contains("--lelan-gift-smoke")) partyTravel.Tick(session);
-            if (!Environment.GetCommandLineArgs().Contains("--lelan-gift-smoke")) monolithParty.Tick(session);
+            if (!StartupArguments.Contains("--lelan-gift-smoke")) partyTravel.Tick(session);
+            if (!StartupArguments.Contains("--lelan-gift-smoke")) monolithParty.Tick(session);
             if(supported)autoPlay.Tick(panel || sharedChest.Open || OfflineTools.OfflineToolkit.PanelOpen,partyTravel.Busy || monolithParty.Busy);
-            if (!Environment.GetCommandLineArgs().Contains("--lelan-hud-policy")) HudAuthority.Session = session?.IsHost==true || partyTravel.Participation.Enabled ? session : null;
+            if (!StartupArguments.Contains("--lelan-hud-policy")) HudAuthority.Session = session?.IsHost==true || partyTravel.Participation.Enabled ? session : null;
             lootFilters.Tick(session);
             if (session == null)
             {
@@ -333,7 +334,6 @@ public sealed class LanMod : MelonMod
             stageStarted = CostStage(0, stageStarted);
             // Retire scene targets before world capture invokes native AI range checks.
             if (settings.ExperimentalGuestCombat && coopReady) guestCombat.Tick(session, currentScene);
-            NativePartyScaling.Tick(session, currentScene);
             stageStarted = CostStage(2, stageStarted);
             worldSync.HostOwnedEnemies = settings.HostOwnedEnemies;
             if(coopReady) worldSync.Tick(session, currentScene);
@@ -530,7 +530,7 @@ public sealed class LanMod : MelonMod
         finally
         {
             OfflineTools.Dps.DpsRuntime.Draw();sharedChest?.Draw();nativeCampaignProbe?.DrawChest();
-            if(Environment.GetCommandLineArgs().Contains("--lelan-chest-ui-smoke") && nativeAssetProbe?.Passed==true)
+            if(StartupArguments.Contains("--lelan-chest-ui-smoke") && nativeAssetProbe?.Passed==true)
             {chestUiProbe??=new();chestUiProbe.Draw();}
         }
     }
@@ -644,7 +644,6 @@ public sealed class LanMod : MelonMod
         pendingCancellation = null;
         worldSync.Reset();
         guestCombat.Reset();
-        NativePartyScaling.Reset();
         HudAuthority.Session = null;
         gift.Disconnect();
         sharedChest?.Disconnect();
@@ -680,7 +679,7 @@ public sealed class LanMod : MelonMod
             monolithParty=new {monolithParty.Entries,monolithParty.Restores,monolithParty.RewardGrants,monolithParty.Busy,monolithParty.Borrowing,monolithParty.Message,monolithParty.Error,monolithParty.ObjectiveError},
             fortuneSmoke=OfflineTools.OfflineToolkitSmoke.FortuneObservations,
             characterSetup = OfflineTools.NewCharacterBoost.Diagnostics,
-            partyScalingError = NativePartyScaling.Error,
+            partyHealthScaling = false,
             encounterDiagnostics=worldSync.EncounterDiagnostics,sharedStatus=NativePartyStatus.Diagnostics,
             sourceOwnedStatus=new {NativeAilmentSynchronization.ReportsSent,NativeAilmentSynchronization.ReportsRejected,
                 NativeAilmentSynchronization.Error,damagePolicy=NativePartyStatus.Enabled?"shared native Host status/DoT; direct hits use source-calculated damage":"source-owned damage; shared visual experiment only"},

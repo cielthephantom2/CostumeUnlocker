@@ -270,6 +270,7 @@ internal static class DamageMeterOverlay
         if (!IsShown)
 		{
             HidePresentation();
+			return;
 		}
 		HandleHotkeys();
 		if (!s_isPaused && (DpsSettings.damageMeterShowWhenIdle || s_hitsCaptured > 0 || s_recentHits.Count != 0))
