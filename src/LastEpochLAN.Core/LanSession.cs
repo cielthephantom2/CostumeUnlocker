@@ -3,11 +3,12 @@ using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+using LastEpochLAN.Core.Encounters;
 
 namespace LastEpochLAN.Core;
 
 /// <summary>LAN transport with host-owned world snapshots and authenticated guest hit requests.</summary>
-public sealed class LanSession : IDisposable
+public sealed partial class LanSession : IDisposable
 {
     private readonly CancellationTokenSource stop = new();
     private readonly ConcurrentDictionary<string, Peer> peers = new();
@@ -409,6 +410,16 @@ public sealed class LanSession : IDisposable
                 Packet packet = await ReadPacketAsync(client.GetStream(), stop.Token).ConfigureAwait(false);
                 if (Environment.TickCount64 - rateWindow >= 1000) { rateWindow = Environment.TickCount64; rateCount = 0; }
                 if (++rateCount > 80) throw new InvalidDataException("Rate limit exceeded.");
+                if (packet.Protocol == LanProtocol.Version && packet.Kind == "loot-filters")
+                {
+                    if (!LootFilterOnly(packet) || packet.LootFilters is not { Length: 1 } ||
+                        packet.LootFilters[0] == null || !packet.LootFilters[0].IsValid())
+                        throw new InvalidDataException("Invalid guest loot filter.");
+                    // Ownership always comes from the authenticated connection.
+                    Volatile.Write(ref peer.LootFilter, packet.LootFilters[0] with { OwnerId = peer.Id });
+                    continue;
+                }
+                if (packet.LootFilters != null) throw new InvalidDataException("Filter requires its own frame.");
                 if (packet.Protocol != LanProtocol.Version || packet.Kind != "state" || packet.State == null || !packet.State.IsValid()) throw new InvalidDataException("Invalid state.");
                 if (packet.State.Sequence < lastSequence) throw new InvalidDataException("Out-of-order state.");
                 lastSequence = packet.State.Sequence;
@@ -485,6 +496,9 @@ public sealed class LanSession : IDisposable
                         incomingStatusVisuals[key]=report with {Source=peer.Id};
                     }
                 }
+                // Expose encounter actions only after the complete state frame
+                // has passed direction, budget and payload validation.
+                ReceiveEncounterCommands(peer, packet);
             }
         }
         catch (Exception ex) when (IsConnectionError(ex)) { }
@@ -534,6 +548,12 @@ public sealed class LanSession : IDisposable
         {
             using var deadline = CancellationTokenSource.CreateLinkedTokenSource(stop.Token);
             deadline.CancelAfter(TimeSpan.FromSeconds(5));
+            var filters = CreateLootFilterRoster();
+            if (peer.LastLootFilters == null || !filters.SequenceEqual(peer.LastLootFilters))
+            {
+                await WritePacketAsync(peer.Client.GetStream(), new Packet { Kind = "loot-filters", LootFilters = filters }, deadline.Token).ConfigureAwait(false);
+                peer.LastLootFilters = filters;
+            }
             var skills = new List<SkillEvent>();
             while (skills.Count < 16 && peer.Skills.TryDequeue(out var skill)) skills.Add(skill);
             var damage = new List<IncomingDamage>();
@@ -549,6 +569,19 @@ public sealed class LanSession : IDisposable
             var currentEcho=Volatile.Read(ref echo);
             var callbacks=new List<StatusCallback>();
             while(callbacks.Count<64 && peer.StatusCallbacks.TryDequeue(out var callback)) callbacks.Add(callback);
+            var encounterAcks = new List<EncounterReply>();
+            while (encounterAcks.Count < 8 && peer.EncounterReplies.TryDequeue(out var encounterAck)) encounterAcks.Add(encounterAck);
+            var publication = Volatile.Read(ref encounterPublication);
+            var encounterPlayer = Volatile.Read(ref peer.State);
+            var visibility = (encounterPlayer.Cooperative, encounterPlayer.Available, encounterPlayer.Scene,
+                encounterPlayer.EchoRunId, encounterPlayer.GiftIdentity, encounterPlayer.CharacterId);
+            if (publication != null && (!ReferenceEquals(publication, peer.LastEncounters) || visibility != peer.LastEncounterVisibility))
+            {
+                var delivery = CreateEncounterDelivery(publication, encounterPlayer, ++peer.EncounterRevision);
+                await WritePacketAsync(peer.Client.GetStream(), new Packet { Kind = "encounters", Encounters = delivery }, deadline.Token).ConfigureAwait(false);
+                peer.LastEncounters = publication;
+                peer.LastEncounterVisibility = visibility;
+            }
             // Echo context travels separately from world chunks so late joins
             // receive it even while their player is still in another map.
             if(!ReferenceEquals(currentEcho,peer.LastEcho) && currentEcho!=null)
@@ -557,7 +590,7 @@ public sealed class LanSession : IDisposable
                     currentEcho with {Run=Array.Empty<byte>(),Metadata=Array.Empty<byte>()} : currentEcho;
                 await WritePacketAsync(peer.Client.GetStream(),new Packet {Kind="echo",Echo=transfer},deadline.Token).ConfigureAwait(false);
             }
-            await WritePacketAsync(peer.Client.GetStream(), new Packet { Kind = "snapshot", Players = states, WorldChunk = chunks.FirstOrDefault(), Hud = ReferenceEquals(currentHud, peer.LastHud) ? null : currentHud, Skills = skills.ToArray(), IncomingDamage = damage.ToArray(), Gifts = gifts.ToArray(),StatusCallbacks=callbacks.ToArray(),ChestReplies=chest.ToArray() }, deadline.Token).ConfigureAwait(false);
+            await WritePacketAsync(peer.Client.GetStream(), new Packet { Kind = "snapshot", Players = states, WorldChunk = chunks.FirstOrDefault(), Hud = ReferenceEquals(currentHud, peer.LastHud) ? null : currentHud, Skills = skills.ToArray(), IncomingDamage = damage.ToArray(), Gifts = gifts.ToArray(),StatusCallbacks=callbacks.ToArray(),ChestReplies=chest.ToArray(),EncounterReplies=encounterAcks.ToArray() }, deadline.Token).ConfigureAwait(false);
             foreach (var chunk in chunks.Skip(1))
             {
                 // Bound each stalled write, not the total duration of a valid
@@ -593,6 +626,27 @@ public sealed class LanSession : IDisposable
             while (!stop.IsCancellationRequested)
             {
                 Packet packet = await ReadPacketAsync(upstream!.GetStream(), stop.Token).ConfigureAwait(false);
+                if (packet.Protocol == LanProtocol.Version && packet.Kind == "loot-filters")
+                {
+                    if (worldReader.Pending || !LootFilterOnly(packet) || packet.LootFilters is not { Length: <= 4 } ||
+                        packet.LootFilters.Any(f => f == null || !f.IsValid()) ||
+                        packet.LootFilters.Select(f => f.OwnerId).Distinct().Count() != packet.LootFilters.Length)
+                        throw new InvalidDataException("Invalid Host loot filter roster.");
+                    Volatile.Write(ref receivedLootFilters, packet.LootFilters.ToArray());
+                    continue;
+                }
+                if (packet.LootFilters != null) throw new InvalidDataException("Filter requires its own frame.");
+                if (packet.Protocol == LanProtocol.Version && packet.Kind == "encounters")
+                {
+                    if (worldReader.Pending || !IsEncounterOnlyFrame(packet) || packet.Encounters == null ||
+                        !packet.Encounters.IsValid() || packet.Encounters.Revision <= (Volatile.Read(ref encounterDelivery)?.Revision ?? 0))
+                        throw new InvalidDataException("Invalid Host encounter frame.");
+                    Volatile.Write(ref encounterDelivery, packet.Encounters.Copy());
+                    continue;
+                }
+                if (packet.Encounters != null || packet.EncounterCommands != null ||
+                    packet.Kind != "snapshot" && packet.EncounterReplies != null)
+                    throw new InvalidDataException("Invalid encounter frame direction.");
                 if(packet.Protocol==LanProtocol.Version && packet.Kind=="echo")
                 {
                     if(worldReader.Pending || packet.Echo==null || !packet.Echo.IsValid(requireContext:false) ||
@@ -625,6 +679,7 @@ public sealed class LanSession : IDisposable
                     packet.Players.Select(s => s.Id).Distinct().Count() != packet.Players.Length)
                     throw new InvalidDataException("Invalid snapshot.");
                 Volatile.Write(ref snapshot, packet.Players);
+                ReceiveEncounterReplies(packet);
                 if (packet.Hud != null)
                 {
                     if (!packet.Hud.IsValid() || packet.Hud.Revision <= (Volatile.Read(ref hud)?.Revision ?? 0)) throw new InvalidDataException("Invalid or stale host HUD configuration.");
@@ -711,7 +766,15 @@ public sealed class LanSession : IDisposable
                 while (gifts.Count < 8 && outgoingGifts.TryDequeue(out var gift)) gifts.Add(gift);
                 var receipts = new List<DeathReceipt>();
                 while (receipts.Count < 32 && outgoingDeathReceipts.TryDequeue(out var receipt)) receipts.Add(receipt);
-                await WritePacketAsync(upstream!.GetStream(), new Packet { Kind = "state", State = Volatile.Read(ref local), DeathReceipts = receipts.ToArray(), Hits = hits.ToArray(), StatusVisuals=statuses.ToArray(), Skills = skills.ToArray(), Gifts = gifts.ToArray(),ChestCommands=chest.ToArray() }, deadline.Token).ConfigureAwait(false);
+                var encounters = new List<EncounterCommand>();
+                while (encounters.Count < 8 && outgoingEncounters.TryDequeue(out var command)) encounters.Add(command);
+                var filter = Volatile.Read(ref localLootFilter);
+                if (filter != null && !ReferenceEquals(filter, sentLootFilter))
+                {
+                    await WritePacketAsync(upstream!.GetStream(), new Packet { Kind = "loot-filters", LootFilters = new[] { filter } }, deadline.Token).ConfigureAwait(false);
+                    sentLootFilter = filter;
+                }
+                await WritePacketAsync(upstream!.GetStream(), new Packet { Kind = "state", State = Volatile.Read(ref local), DeathReceipts = receipts.ToArray(), Hits = hits.ToArray(), StatusVisuals=statuses.ToArray(), Skills = skills.ToArray(), Gifts = gifts.ToArray(),ChestCommands=chest.ToArray(),EncounterCommands=encounters.ToArray() }, deadline.Token).ConfigureAwait(false);
                 await Task.Delay(50, stop.Token).ConfigureAwait(false);
             }
         }
@@ -740,6 +803,7 @@ public sealed class LanSession : IDisposable
         Volatile.Write(ref snapshot, Array.Empty<PlayerState>());
         Volatile.Write(ref world, new WorldState());
         Volatile.Write(ref echo,null);
+        ResetEncounterTransport();
         while (incomingCombat.TryDequeue(out _)) { }
         while (outgoingHits.TryDequeue(out _)) { }
         while(statusCallbacks.TryDequeue(out _)) { }
@@ -768,6 +832,12 @@ public sealed class LanSession : IDisposable
         public readonly ConcurrentQueue<IncomingDamage> Damage = new();
         public readonly ConcurrentQueue<GiftMessage> Gifts = new();
         public readonly ConcurrentQueue<ChestReply> ChestReplies=new();
+        public RoomLootFilter? LootFilter;
+        public RoomLootFilter[]? LastLootFilters;
+        public readonly ConcurrentQueue<EncounterReply> EncounterReplies = new();
+        public EncounterPublication? LastEncounters;
+        public long EncounterRevision;
+        public (bool Cooperative, bool Available, string Scene, string Run, string Identity, string Character) LastEncounterVisibility;
         public readonly ConcurrentQueue<StatusCallback> StatusCallbacks = new();
         public WorldState? LastWorld;
         public readonly WorldChunkWriter WorldWriter = new();

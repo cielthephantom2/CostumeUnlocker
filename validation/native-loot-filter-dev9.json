@@ -1,0 +1,28 @@
+{
+  "version": "1.1.0-dev.9",
+  "protocol": 35,
+  "passed": false,
+  "observationsPassed": true,
+  "nativeChecks": [
+    "native colored/emphasized SHOW and nullable guard bytes before detour: Verdict { Outcome = SHOW, HasColor = True, Color = 2, HasEmphasis = True, Emphasis = True, Sound = 0, MapIcon = 0, BeamOverride = False, BeamSize = NONE, BeamColor = RGBA(1.000, 1.000, 1.000, 1.000) }; int=NullableLayout { Size = 8, HasValue = 0, Value = 4 }; bool=NullableLayout { Size = 2, HasValue = 0, Value = 1 }; ruleMatches=True",
+    "native raw-pointer Match detour installs after layout validation",
+    "no-room native verdict/style preserved through detour with intact canaries",
+    "native local HIDE plus remote SHOW returns complete remote style with intact canaries",
+    "manual disable bypasses room override",
+    "live remote filter edit from SHOW to HIDE updates native union",
+    "invalid native XML isolates one owner while valid remote and local publication remain active",
+    "corrected remote XML rejoins without reconnect",
+    "leaving room restores native HIDE with intact canaries",
+    "native detour recorded no dispatch exception"
+  ],
+  "runtimeErrorCount": 76,
+  "fullCampaignGate": "FAIL: raw initialization/runtime errors retained; includes duplicate services and AnimationLoader.SetOverrideController null reference; not filtered into a full pass",
+  "scope": "Private native Match ABI, TCP filter updates and per-owner error isolation; not rendered labels or two-PC acceptance",
+  "modSha256": "5C093CF3D6F8829598E1265B385D39A90E0C56AED90194B278F2E6D9424B85F6",
+  "coreSha256": "4C9C7B185A54556279B51E0516F3B00D7D67843BE84BF8499A23E2B89378B3E4",
+  "limitations": [
+    "No rendered label layout/pooling/hover acceptance",
+    "No physical two-PC gameplay acceptance",
+    "No class/level parity acceptance across different characters"
+  ]
+}

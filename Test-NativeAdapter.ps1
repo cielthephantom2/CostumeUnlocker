@@ -1,9 +1,10 @@
-param([int]$TimeoutSeconds = 90, [string]$ModAssembly = '', [string]$CoreAssembly = '', [switch]$NativeServer, [switch]$NativeSession, [switch]$NativeAssets, [switch]$NativeCampaign, [switch]$NativeEncounters, [switch]$NativeStatus, [switch]$OfflineTools, [switch]$NativeVfx, [switch]$NativeGift, [switch]$GiftReload, [switch]$GiftTransfer, [switch]$GiftTransferReplay, [switch]$GiftMenu, [switch]$PartyTravel, [switch]$PartyBoss, [switch]$HudPolicy, [switch]$RenderUi, [switch]$OmenRewards, [switch]$SharedChest, [switch]$ChestUi, [switch]$CaptureChest, [ValidateSet(0,1,2)][int]$StashVersion=0, [string]$RuntimeRoot='', [string]$SandboxRoot='')
+param([int]$TimeoutSeconds = 90, [string]$ModAssembly = '', [string]$CoreAssembly = '', [switch]$NativeServer, [switch]$NativeSession, [switch]$NativeAssets, [switch]$NativeCampaign, [switch]$NativeEncounters, [switch]$NativeStatus, [switch]$OfflineTools, [switch]$NativeVfx, [switch]$NativeGift, [switch]$GiftReload, [switch]$GiftTransfer, [switch]$GiftTransferReplay, [switch]$GiftMenu, [switch]$PartyTravel, [switch]$PartyBoss, [switch]$HudPolicy, [switch]$RenderUi, [switch]$LootFilters, [switch]$OmenRewards, [switch]$SharedChest, [switch]$ChestUi, [switch]$CaptureChest, [ValidateSet(0,1,2)][int]$StashVersion=0, [string]$RuntimeRoot='', [string]$SandboxRoot='')
 $ErrorActionPreference = 'Stop'
 if ($CaptureChest -or $StashVersion -gt 0) { $SharedChest = $true }
 if ($OmenRewards -or $SharedChest) { $NativeCampaign = $true }
 if ($SharedChest) { $RenderUi = $true } # Native pointer raycasts require rendered Canvas depth.
 if ($NativeVfx) { $NativeCampaign = $true }
+if ($LootFilters) { $NativeCampaign = $true }
 if ($NativeEncounters) { throw 'Legacy encounter smoke was removed. Use -OmenRewards for the native isolation test.' }
 if ($NativeStatus) { $NativeCampaign = $true }
 if ($OfflineTools) { $NativeCampaign = $true }
@@ -78,6 +79,7 @@ try {
     if ($NativeSession) { $qaArguments += '--lelan-native-session-smoke' }
     if ($NativeAssets) { $qaArguments += '--lelan-native-assets-smoke' }
     if ($NativeCampaign) { $qaArguments += '--lelan-private-campaign-smoke' }
+    if ($LootFilters) { $qaArguments += '--lelan-loot-filter-smoke' }
     if ($OmenRewards) { $qaArguments += '--lelan-omen-reward-smoke' }
     if ($SharedChest) { $qaArguments += '--lelan-shared-chest-smoke' }
     if ($CaptureChest) { $qaArguments += '--lelan-render-chest-qa' }
@@ -118,6 +120,9 @@ try {
                     Copy-Item -LiteralPath $campaignReportPath -Destination (Join-Path $PSScriptRoot 'research\native-campaign-probe-result.json') -Force
                     $campaignReport = Get-Content -LiteralPath $campaignReportPath -Raw | ConvertFrom-Json
                     if (-not $campaignReport.passed) { throw "Native campaign probe failed: $($campaignReport.error)" }
+                    if ($LootFilters -and @($campaignReport.nativeLootFilters).Count -ne 10) {
+                        throw 'Native LootFilter probe did not complete all ten observations.'
+                    }
                     if ($OmenRewards -and (@($campaignReport.nativeEncounterIsolation).Count -ne 2 -or
                         @($campaignReport.nativeEncounterIsolation | Where-Object { $_.created -lt 1 -or $_.corrupted -lt 1 }).Count -gt 0)) {
                         throw 'Native isolation did not prove Corrupted ground drops in both Omen reward paths.'

@@ -5,7 +5,7 @@ using MelonLoader;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
-[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.8", "Local research")]
+[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.9", "Local research")]
 [assembly: MelonGame("Eleventh Hour Games", "Last Epoch")]
 
 namespace LastEpochLAN.Mod;
@@ -26,6 +26,7 @@ public sealed class LanMod : MelonMod
     private NativeChestUiProbe chestUiProbe;
     private readonly LanPartyTravel partyTravel = new();
     private readonly LanMonolithParty monolithParty=new();
+    private readonly LanLootFilters lootFilters = new();
     private LanSession session;
     private Task<LanSession> pendingJoin;
     private CancellationTokenSource pendingCancellation;
@@ -308,6 +309,7 @@ public sealed class LanMod : MelonMod
             if (!Environment.GetCommandLineArgs().Contains("--lelan-gift-smoke")) partyTravel.Tick(session);
             if (!Environment.GetCommandLineArgs().Contains("--lelan-gift-smoke")) monolithParty.Tick(session);
             if (!Environment.GetCommandLineArgs().Contains("--lelan-hud-policy")) HudAuthority.Session = session?.IsHost==true || partyTravel.Participation.Enabled ? session : null;
+            lootFilters.Tick(session);
             if (session == null) return;
             if (!session.Connected) { message = session.Status; StopRoom(); return; }
             bool coopReady=monolithParty.GameplayReady && (session.IsHost || partyTravel.Participation.CanShareWorld(false,currentScene,session.PlayerPositions.FirstOrDefault()?.Scene??"",monolithParty.Borrowing,partyTravel.Busy));
@@ -520,10 +522,10 @@ public sealed class LanMod : MelonMod
         GUI.enabled = true;
         if(OfflineChangelog.Open) {OfflineChangelog.Draw(ModVersion);return;}
         if(OfflineTools.OfflineToolkit.PanelOpen) {OfflineTools.OfflineToolkit.Draw();return;}
-        GUI.Box(new Rect(16, 16, 460, 488), "TM Last Epoch Co-op Mod v" + ModVersion + " (F4)");
-        GUI.Label(new Rect(30,462,420,24),"Encounter co-op: chưa hỗ trợ trong bản thử nghiệm này.");
-        if(GUI.Button(new Rect(30,365,420,27),"Mod Settings")) OfflineTools.OfflineToolkit.PanelOpen=true;
-        if(GUI.Button(new Rect(30,400,420,27),"Changelog")) OfflineChangelog.Show();
+        GUI.Box(new Rect(16, 16, 460, 518), "TM Last Epoch Co-op Mod v" + ModVersion + " (F4)");
+        GUI.Label(new Rect(30,492,420,24),"Encounter co-op: chưa hỗ trợ trong bản thử nghiệm này.");
+        if(GUI.Button(new Rect(30,395,420,27),"Mod Settings")) OfflineTools.OfflineToolkit.PanelOpen=true;
+        if(GUI.Button(new Rect(30,430,420,27),"Changelog")) OfflineChangelog.Show();
         updateChecker.Check(ModVersion);
         var updateStatus=updateChecker.Status;
         var updateStyle=new GUIStyle(GUI.skin.label);
@@ -531,7 +533,7 @@ public sealed class LanMod : MelonMod
             updateStyle.normal.textColor=Color.red;
         else if(updateStatus.StartsWith("Latest version:",StringComparison.Ordinal))
             updateStyle.normal.textColor=Color.green;
-        GUI.Label(new Rect(30,434,420,24),updateStatus,updateStyle);
+        GUI.Label(new Rect(30,464,420,24),updateStatus,updateStyle);
         GUI.Label(new Rect(30, 52, 100, 22), "Name");
         displayName = GUI.TextField(new Rect(140, 52, 310, 23), displayName, 32);
         GUI.Label(new Rect(30, 84, 100, 22), "Host IPv4");
@@ -564,6 +566,7 @@ public sealed class LanMod : MelonMod
                 y += 21;
             }
         }
+        GUI.Label(new Rect(30, 360, 420, 22), lootFilters.Status);
         if (HudAuthority.Error != "") GUI.Label(new Rect(30, 335, 420, 22), "HUD sync: " + HudAuthority.Error);
         else if(session?.Connected==true && !session.IsHost || monolithParty.Borrowing)
             GUI.Label(new Rect(30,335,420,22),monolithParty.Message);
@@ -635,6 +638,7 @@ public sealed class LanMod : MelonMod
         NativeVisualEvents.Reset();
         session?.Dispose();
         session = null;
+        lootFilters.Tick(null);
         remoteStates = Array.Empty<PlayerState>(); nextRemoteRead = 0; appliedVisualSequence.Clear();
         foreach (var marker in markers.Values) if (marker != null) UObject.Destroy(marker);
         markers.Clear();

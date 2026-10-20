@@ -4,6 +4,18 @@ using System.Net.Sockets;
 using System.Text.Json;
 using LastEpochLAN.Core;
 
+if (args.Length > 0 && args[0] == "--loot-filter-tests")
+{
+    int count = 0;
+    await LootFilterTests.Run((passed, label) =>
+    {
+        if (!passed) throw new Exception("FAIL: " + label);
+        count++; Console.WriteLine("PASS: " + label);
+    });
+    Console.WriteLine($"{count} loot filter managed checks passed; no game process used.");
+    return;
+}
+
 if(args.Length>0 && args[0]=="--check-release")
 {
     using var checker=new LastEpochLAN.Mod.ReleaseUpdateChecker();

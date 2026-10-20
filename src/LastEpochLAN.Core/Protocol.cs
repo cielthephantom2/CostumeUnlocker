@@ -1,12 +1,13 @@
 using System.Buffers.Binary;
 using System.Net;
 using System.Text.Json;
+using LastEpochLAN.Core.Encounters;
 
 namespace LastEpochLAN.Core;
 
 public static class LanProtocol
 {
-    public const int Version = 33;
+    public const int Version = 35;
 }
 
 public sealed record PlayerState
@@ -235,6 +236,7 @@ public sealed record AnimationParameter
 
 internal sealed record Packet
 {
+    public RoomLootFilter[]? LootFilters { get; init; }
     [System.Text.Json.Serialization.JsonIgnore]
     public int ReceivedBytes { get; init; }
     public HudConfiguration? Hud { get; init; }
@@ -259,6 +261,9 @@ internal sealed record Packet
     public GiftMessage[]? Gifts { get; init; }
     public ChestCommand[]? ChestCommands {get;init;}
     public ChestReply[]? ChestReplies {get;init;}
+    public EncounterCommand[]? EncounterCommands {get;init;}
+    public EncounterReply[]? EncounterReplies {get;init;}
+    public EncounterDelivery? Encounters {get;init;}
 }
 
 public sealed record SkillEvent

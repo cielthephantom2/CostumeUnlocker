@@ -12,15 +12,33 @@ public sealed record EncounterView(Guid Id,EncounterKind Kind,long Revision,Visu
  EncounterAction[] Actions,Guid Completion,string[] Recipients)
 {
  public EncounterView Copy()=>this with {Actions=Actions.ToArray(),Recipients=Recipients.ToArray()};
+ public bool IsValid()=>Id!=Guid.Empty && Enum.IsDefined(typeof(EncounterKind),Kind) && Revision>0 &&
+  Position!=null && Position.IsValid() && Enum.IsDefined(typeof(EncounterPhase),Phase) &&
+  Actions is {Length:<=5} && Actions.All(a=>Enum.IsDefined(typeof(EncounterAction),a)) && Actions.Distinct().Count()==Actions.Length &&
+  Recipients is {Length:<=4} && Recipients.All(r=>r is {Length:>0 and <=161}) && Recipients.Distinct(StringComparer.Ordinal).Count()==Recipients.Length &&
+  (Phase==EncounterPhase.Completed ? Completion!=Guid.Empty : Completion==Guid.Empty);
 }
-public sealed record EncounterCommand(Guid Instance,long Epoch,Guid Encounter,long Revision,long Sequence,EncounterAction Action);
-public sealed record EncounterReservation(Guid Id,Guid Encounter,string PlayerId,EncounterAction Action);
-public sealed record EncounterSnapshot(EncounterInstance Instance,long Revision,EncounterView[] Entries);
+public sealed record EncounterCommand(Guid Instance,long Epoch,Guid Encounter,long Revision,long Sequence,EncounterAction Action)
+{
+ public long TurnRevision {get;init;}
+ public bool IsValid()=>Instance!=Guid.Empty && Epoch>=0 && Encounter!=Guid.Empty && Revision>0 && Sequence>0 &&
+  TurnRevision>=0 && Enum.IsDefined(typeof(EncounterAction),Action);
+}
+public sealed record EncounterReservation(Guid Id,Guid Encounter,string PlayerId,EncounterAction Action)
+{
+ public string CharacterKey {get;init;}="";
+}
+public sealed record EncounterSnapshot(EncounterInstance Instance,long Revision,EncounterView[] Entries)
+{
+ public bool IsValid()=>Instance!=null && Instance.IsValid() && Revision>=0 && Entries is {Length:<=EncounterHost.MaximumEntities} &&
+  Entries.All(e=>e!=null && e.IsValid() && e.Revision<=Revision) && Entries.Select(e=>e.Id).Distinct().Count()==Entries.Length;
+ public EncounterSnapshot Copy()=>this with {Entries=Entries.Select(e=>e.Copy()).ToArray()};
+}
 
 // A room-owned managed state machine. It has no Unity/Harmony dependencies and
-// grants no loot. Native family adapters and dedicated transport are separate
-// work; this core cannot silently replace any native solo callback.
-public sealed class EncounterHost
+// grants no loot. LanSession provides dedicated transport; native family
+// adapters remain separate work and cannot silently replace solo callbacks.
+public sealed partial class EncounterHost
 {
  public const int MaximumEntities=256;
  private readonly LanSession room;
@@ -40,12 +58,12 @@ public sealed class EncounterHost
   RequireLive();if(!next.IsValid())throw new ArgumentException("Invalid encounter scene instance.");
   if(instance==next)return;
   if(instance!=null && next.Epoch<=instance.Epoch)throw new InvalidOperationException("Scene instance must advance its epoch.");
-  instance=next;entities.Clear();reservations.Clear();peerSequences.Clear();revision=0;
+  instance=next;entities.Clear();reservations.Clear();peerSequences.Clear();nemesisTurns.Clear();nemesisExecutions.Clear();revision=0;
  }
  private static EncounterAction[] Allowed(EncounterKind kind)=>kind switch
  {
   EncounterKind.Nemesis=>new[]{EncounterAction.Challenge,EncounterAction.Empower,EncounterAction.Banish},
-  EncounterKind.OmenWindow or EncounterKind.RoamingOmen or EncounterKind.Champion=>Array.Empty<EncounterAction>(),
+  EncounterKind.RoamingOmen or EncounterKind.Champion=>Array.Empty<EncounterAction>(),
   _=>new[]{EncounterAction.Activate}
  };
  public Guid Register(EncounterKind kind,VisualPoint position)
@@ -57,31 +75,48 @@ public sealed class EncounterHost
  public bool TryReserve(string authenticatedPeerId,EncounterCommand command,out EncounterReservation? result)
  {
   result=null;RequireLive();
-  // The future transport supplies its connection's peer ID. All gameplay
+  // Transport supplies its connection's peer ID. All gameplay
   // fields come from that room's accepted state, never from command payloads.
   var authenticated=room.PlayerPositions.FirstOrDefault(p=>p.Id==authenticatedPeerId);
-  if(instance==null || command==null || authenticated==null || !authenticated.IsValid() || authenticated.Id=="" || !authenticated.Available || authenticated.Dead ||
+  if(instance==null || command==null || !command.IsValid() || authenticated==null || !authenticated.IsValid() || authenticated.Id=="" || !authenticated.Cooperative || !authenticated.Available || authenticated.Dead ||
    !instance.Contains(authenticated) || command.Instance!=instance.Id || command.Epoch!=instance.Epoch || command.Sequence<=0)return false;
   if(command.Sequence<=peerSequences.GetValueOrDefault(authenticated.Id))return false;
   var currentPeers=room.PlayerPositions.Select(p=>p.Id).ToHashSet(StringComparer.Ordinal);
   foreach(var oldPeer in peerSequences.Keys.Where(id=>!currentPeers.Contains(id)).ToArray())peerSequences.Remove(oldPeer);
   if(peerSequences.Count>=4 && !peerSequences.ContainsKey(authenticated.Id))return false;
   peerSequences[authenticated.Id]=command.Sequence;
-  if(!entities.TryGetValue(command.Encounter,out var entry) || entry.Revision!=command.Revision || entry.Phase!=EncounterPhase.Available || !entry.Actions.Contains(command.Action))return false;
+  if(!entities.TryGetValue(command.Encounter,out var entry) || !entry.Actions.Contains(command.Action))return false;
   double distance=Math.Pow(authenticated.X-entry.Position.X,2)+Math.Pow(authenticated.Y-entry.Position.Y,2)+Math.Pow(authenticated.Z-entry.Position.Z,2);
   if(distance>64)return false;
-  result=new(Guid.NewGuid(),entry.Id,authenticated.Id,command.Action);reservations.Add(result.Id,result);
+  if(entry.Kind==EncounterKind.Nemesis)return TryReserveNemesis(authenticated,command,entry,out result);
+  if(entry.Revision!=command.Revision || entry.Phase!=EncounterPhase.Available || command.TurnRevision!=0)return false;
+  result=new(Guid.NewGuid(),entry.Id,authenticated.Id,command.Action){CharacterKey=CharacterKey(authenticated)};reservations.Add(result.Id,result);
   entities[entry.Id]=entry with {Phase=EncounterPhase.Reserved,Revision=++revision};return true;
  }
  public bool NativeAccepted(EncounterReservation reservation)
  {
-  RequireLive();if(!reservations.TryGetValue(reservation.Id,out var held) || held!=reservation || !entities.TryGetValue(held.Encounter,out var entry) || entry.Phase!=EncounterPhase.Reserved)return false;
+  RequireLive();if(!reservations.TryGetValue(reservation.Id,out var held) || held!=reservation || !entities.TryGetValue(held.Encounter,out var entry))return false;
+  if(entry.Kind==EncounterKind.Nemesis)return AcceptNemesis(held,entry);
+  if(entry.Phase!=EncounterPhase.Reserved)return false;
   reservations.Remove(reservation.Id);
   entities[entry.Id]=entry with {Phase=EncounterPhase.Active,Revision=++revision};return true;
  }
+ public bool CanExecute(EncounterReservation reservation)
+ {
+  RequireLive();
+  if(instance==null || !reservations.TryGetValue(reservation.Id,out var held) || held!=reservation ||
+   !entities.TryGetValue(held.Encounter,out var entry))return false;
+  var peer=room.PlayerPositions.FirstOrDefault(p=>p.Id==held.PlayerId);
+  if(peer==null || !peer.IsValid() || !peer.Cooperative || !peer.Available || peer.Dead ||
+   !instance.Contains(peer) || CharacterKey(peer)!=held.CharacterKey)return false;
+  if(held.CharacterKey!="" && room.PlayerPositions.Count(p=>CharacterKey(p)==held.CharacterKey)!=1)return false;
+  return Math.Pow(peer.X-entry.Position.X,2)+Math.Pow(peer.Y-entry.Position.Y,2)+Math.Pow(peer.Z-entry.Position.Z,2)<=64;
+ }
  public bool NativeRejectedBeforeExecution(EncounterReservation reservation)
  {
-  RequireLive();if(!reservations.TryGetValue(reservation.Id,out var held) || held!=reservation || !entities.TryGetValue(held.Encounter,out var entry) || entry.Phase!=EncounterPhase.Reserved)return false;
+  RequireLive();if(!reservations.TryGetValue(reservation.Id,out var held) || held!=reservation || !entities.TryGetValue(held.Encounter,out var entry))return false;
+  if(entry.Kind==EncounterKind.Nemesis)return RejectNemesis(held);
+  if(entry.Phase!=EncounterPhase.Reserved)return false;
   reservations.Remove(reservation.Id);
   entities[entry.Id]=entry with {Phase=EncounterPhase.Available,Revision=++revision};return true;
  }
@@ -93,9 +128,10 @@ public sealed class EncounterHost
  public Guid NativeCompleted(Guid id)
  {
   RequireLive();if(instance==null || !entities.TryGetValue(id,out var entry))return Guid.Empty;
+  if(entry.Kind==EncounterKind.Nemesis)return Guid.Empty; // A common completion must never complete everybody's private turn.
   if(entry.Phase==EncounterPhase.Completed)return entry.Completion;
   if(entry.Phase!=EncounterPhase.Active)return Guid.Empty;
-  var recipients=room.PlayerPositions.Where(p=>p!=null && p.IsValid() && p.Available && !p.Dead && instance.Contains(p) && p.GiftIdentity!="" && p.CharacterId!="")
+  var recipients=room.PlayerPositions.Where(p=>p!=null && p.IsValid() && p.Cooperative && p.Available && !p.Dead && instance.Contains(p) && p.GiftIdentity!="" && p.CharacterId!="")
    .Select(p=>p.GiftIdentity+":"+p.CharacterId).Distinct(StringComparer.Ordinal).Take(4).ToArray();
   var completion=Guid.NewGuid();entities[id]=entry with {Phase=EncounterPhase.Completed,Revision=++revision,Completion=completion,Recipients=recipients};return completion;
  }
@@ -103,13 +139,15 @@ public sealed class EncounterHost
  {
   RequireLive();if(!entities.TryGetValue(id,out var entry) || entry.Phase is EncounterPhase.Completed or EncounterPhase.Removed or EncounterPhase.Faulted)return false;
   foreach(var token in reservations.Where(r=>r.Value.Encounter==id).Select(r=>r.Key).ToArray())reservations.Remove(token);
+  FaultNemesisTurns(id);
   entities[id]=entry with {Phase=EncounterPhase.Faulted,Revision=++revision};return true;
  }
  public bool NativeRemoved(Guid id)
  {
   RequireLive();if(!entities.TryGetValue(id,out var entry) || entry.Phase==EncounterPhase.Removed)return false;
   foreach(var token in reservations.Where(r=>r.Value.Encounter==id).Select(r=>r.Key).ToArray())reservations.Remove(token);
-  entities[id]=entry with {Phase=EncounterPhase.Removed,Revision=++revision};return true;
+  FaultNemesisTurns(id);
+  entities[id]=entry with {Phase=EncounterPhase.Removed,Revision=++revision,Completion=Guid.Empty};return true;
  }
  public EncounterSnapshot Snapshot()
  {RequireLive();return new(instance??throw new InvalidOperationException("No encounter scene instance."),revision,entities.Values.Select(e=>e.Copy()).ToArray());}

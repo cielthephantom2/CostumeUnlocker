@@ -1,0 +1,11 @@
+{
+  "nativeAssets": false,
+  "scope": "Opt-in native QA gates only; two-PC campaign co-op is unverified",
+  "modSha256": "5C093CF3D6F8829598E1265B385D39A90E0C56AED90194B278F2E6D9424B85F6",
+  "nativeEncounters": false,
+  "nativeCampaign": false,
+  "nativeSession": false,
+  "coreSha256": "4C9C7B185A54556279B51E0516F3B00D7D67843BE84BF8499A23E2B89378B3E4",
+  "passed": true,
+  "utc": "2026-10-20T09:44:25.2694054Z"
+}
