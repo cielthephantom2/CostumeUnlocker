@@ -23,3 +23,5 @@ Không xóa `UserData/LastEpochLAN/SharedChest/Host` hoặc `Client`. Dữ liệ
 - Native sandbox bản cuối quan sát đạt: clone Stash tạo ô vật phẩm, đúng native item ID, không bind personal stash, chặn thay đổi/chuyển trực tiếp và không đưa bản chiếu vào SavedItems. Hai vòng gửi/lấy gồm gửi từ inventory, gửi lại từ cursor qua `TryDropFromCursor` native giữ đúng một bản và nguyên serialized bytes; peer khác map vẫn query được và không tự vào Echo.
 - QA render riêng lỗi bootstrap `CharacterSelect` đang transition; ảnh batch mode đen. Chưa xác nhận bố cục, tooltip và kéo/thả bằng chuột trên màn hình thật hoặc hai máy vật lý. Không coi smoke có container/item UI là nghiệm thu hình ảnh.
 - Raw full campaign QA giữ nguyên trạng thái FAIL: 5 lỗi bootstrap đã biết và thêm `AnimationLoader.SetOverrideController` null trước khi bắt đầu kiểm thử hòm. Không xác nhận lỗi animation này là baseline 5 lỗi mà người dùng đã chấp nhận; giữ nguyên log để kiểm tra riêng. Kết quả cuối và SHA được ghi riêng trong `validation/native-stash-final-*`.
+
+Kiểm tra updater sau phát hành: 17 bài fixture/live đạt, gồm tải thật cả hai DLL từ GitHub và đối chiếu SHA-256; không khởi chạy game thật.

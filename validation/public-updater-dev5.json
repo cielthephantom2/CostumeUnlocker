@@ -1,0 +1,26 @@
+{
+  "version": "1.1.0-dev.5",
+  "publishedBinaryCommit": "3a309ac51becc1b3dca8468a1e45dea57d293fd4",
+  "passed": 17,
+  "live": true,
+  "checks": [
+    "verified paired install: Mods/LastEpochLAN.dll",
+    "verified paired install: UserLibs/LastEpochLAN.Core.dll",
+    "release lookup uses no GitHub REST API",
+    "manifest and both DLLs use exactly one pinned commit",
+    "already-current install accepts text advertisement and skips both DLL downloads",
+    "malformed, truncated, missing or duplicate branch advertisement rejected",
+    "malformed, truncated, missing or duplicate branch advertisement rejected",
+    "malformed, truncated, missing or duplicate branch advertisement rejected",
+    "malformed, truncated, missing or duplicate branch advertisement rejected",
+    "malformed, truncated, missing or duplicate branch advertisement rejected",
+    "corrupt downloaded DLL rejected",
+    "download failure preserves installed files",
+    "running game rejected before network or writes",
+    "running-game guard performs no network requests",
+    "live GitHub download verified: Mods/LastEpochLAN.dll",
+    "live GitHub download verified: UserLibs/LastEpochLAN.Core.dll",
+    "only inactive fixture paths were used; no game launched"
+  ],
+  "scope": "Inactive fixture only; real GitHub manifest and both DLLs downloaded and SHA-256 verified; no game launched"
+}
