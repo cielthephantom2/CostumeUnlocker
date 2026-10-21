@@ -1,3 +1,5 @@
+> Đã phát hành dev.34/protocol41: https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.34 . Chưa cài Steam, chưa nghiệm thu native UI/gameplay.
+
 # dev.34 candidate — Weaver Imprint x2
 
 **Cập nhật: dev.34 đã được bổ sung Shared Stash nhiều ngăn, Sort/Configure/+ và nâng protocol lên41. Gói Weaver-only/protocol40 bên dưới là bản ứng viên cũ; dùng gói shared-tabs mới. Xem [báo cáo kết hợp](SHARED-STASH-TABS-dev34-VI.md).**

@@ -1,0 +1,44 @@
+{
+  "release": {
+    "assets": [
+      {
+        "apiUrl": "https://api.github.com/repos/cielthephantom2/CostumeUnlocker/releases/assets/663192743",
+        "contentType": "application/zip",
+        "createdAt": "2026-10-21T16:57:18Z",
+        "digest": "sha256:6ef123def0d9c1ca7a6ae5cf6cdb1358a7ce75aa01bbd28640f22417dcb2322d",
+        "downloadCount": 0,
+        "id": "RA_kwDOVLyC0c4nh4Sn",
+        "label": "",
+        "name": "TM-Coop-1.1.0-dev.34.zip",
+        "size": 564693,
+        "state": "uploaded",
+        "updatedAt": "2026-10-21T16:57:18Z",
+        "url": "https://github.com/cielthephantom2/CostumeUnlocker/releases/download/v1.1.0-dev.34/TM-Coop-1.1.0-dev.34.zip"
+      }
+    ],
+    "isDraft": false,
+    "isPrerelease": true,
+    "publishedAt": "2026-10-21T16:57:19Z",
+    "tagName": "v1.1.0-dev.34",
+    "targetCommitish": "7ced72d1d9e233218fabebce16e61b41b1899d1f",
+    "url": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.34"
+  },
+  "zipSha256": "6EF123DEF0D9C1CA7A6AE5CF6CDB1358A7CE75AA01BBD28640F22417DCB2322D",
+  "dllPairVerified": true,
+  "downloadDirectory": "C:\\Users\\cielt\\AppData\\Local\\Temp\\le-dev34-released-31028ab827364b4caff5eea179f44c7d",
+  "sourceCommit": "7ced72d1d9e233218fabebce16e61b41b1899d1f",
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1028608,
+      "sha256": "85C995FE82E4968E498304362230FE8B36DCE0E5A63E9E04FFAFAD8EC92AE914"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 406528,
+      "sha256": "B6893904116FDE16E644ED40C3533D8502414D9A7B96EB854480DD62B32A0D06"
+    }
+  ],
+  "gameLaunched": false,
+  "steamInstalled": false
+}

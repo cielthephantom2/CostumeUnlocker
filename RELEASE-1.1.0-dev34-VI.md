@@ -31,3 +31,7 @@ Build Release **0 warnings/errors**; **969 managed/TCP**, **53 compiled audit**,
 Giữ Assist/DPS, Bloodrage và Corruption hiện có. Báo cáo client100→400 dù hiển thị+60 đang chờ người dùng tự test; bản này **không sửa và không tuyên bố đã giải quyết** trường hợp đó. Không tự chỉnh save. Encounter/shared-world vẫn disabled; phòng Internet giữ F2 và Loot Filters.
 
 Không cài Steam, không mở hoặc đóng game trong lượt phát hành. Khi thuận tiện, thoát game rồi chạy `update.bat` hoặc chép cả `Mods/LastEpochLAN.dll` và `UserLibs/LastEpochLAN.Core.dll` từ ZIP vào thư mục game trên mọi máy.
+
+## Phát hành đã xác minh
+
+GitHub prerelease: https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.34 . Đã tải lại ZIP và xác minh SHA256 của ZIP/cặp DLL. Updater fixture15/live17 checks PASS. Code commit7ced72d; bằng chứng validation/release-dev34-github-download.json và release-dev34-updater-live.json.

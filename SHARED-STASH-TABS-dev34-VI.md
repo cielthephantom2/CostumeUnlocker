@@ -1,3 +1,5 @@
+> Đã phát hành dev.34/protocol41: https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.34 . Chưa cài Steam, chưa nghiệm thu native UI/gameplay.
+
 # Shared Stash nhiều ngăn + native controls — dev.34 candidate / protocol41
 
 Bản kết hợp dev.34/protocol41 được chuẩn bị phát hành theo yêu cầu người dùng. Root DLL pair và latest.json đã cập nhật dev.34; xem RELEASE-1.1.0-dev34-VI.md và validation/release-dev34-* cho trạng thái phát hành và bằng chứng. Bao gồm Weaver Imprint x2. Chưa cài Steam, chưa nghiệm thu native UI/gameplay.
