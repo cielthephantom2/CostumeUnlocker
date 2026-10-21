@@ -19,7 +19,7 @@ internal static class WovenPotentialNativeSmoke
         var observations=new List<object>();
         try
         {
-            foreach (int lp in new[]{1,2,3})
+            foreach (int lp in new[]{1,2,3,4})
             foreach (int target in new[]{WovenPotentialRules.UpgradePercent(lp)-1,WovenPotentialRules.UpgradePercent(lp)})
             {
                 int seed;

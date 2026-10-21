@@ -10,7 +10,7 @@ internal static class OfflineChangelog
     private static GUIStyle bodyStyle;
     private static readonly string content=
         "<b>BONUS OFFLINE</b>\n"+
-        "• Dev.32: sửa Assist bị pause sau bật/tắt DPS rồi đóng F4; Bloodrage UI hiển thị2/10 đến10/10.\n"+
+        "• Dev.33: cập nhật tỷ lệ Woven Potential cho1–4 LP; đồ0 LP không được phép đưa vào máy.\n"+
         "• Bloodrage (Rage of Morditas): mỗi nấc nhận2 charge, tổng2/4/6/8/10; giữ mốc kill và tiêu hao native.\n"+
         "• Glyph of Hope: 33% không tốn Forging Potential.\n"+
         "• Glyph of Despair: T1 100%, T2 70%, T3 50%, T4 33%; cùng tỷ lệ cho Rare và Exalted có T6/T7. Không mở seal T5 trở lên.\n"+
@@ -24,8 +24,9 @@ internal static class OfflineChangelog
         "• Echo of a World (Shade of Orobyss): thưởng gốc và Gaze x5. Catch-up chỉ bắt kịp timeline cao nhất, không nhân x5 để tránh Corruption tăng vọt. Giữ giới hạn timeline và lượt giảm Corruption.\n\n"+
         "<b>WOVEN POTENTIAL — REROLL LP</b>\n"+
         "• Từ 1 LP: 50% lên 2 LP; 50% xuống 0 LP.\n"+
-        "• Từ 2 LP: 50% lên 3 LP; 50% xuống 1 LP.\n"+
-        "• Từ 3 LP: 25% lên 4 LP; 75% về 1 LP.\n"+
+        "• Từ 2 LP: 25% lên 3 LP; 75% xuống 1 LP.\n"+
+        "• Từ 3 LP: 25% lên 4 LP; 75% về 2 LP.\n"+
+        "• Từ 4 LP: 25% giữ 4 LP; 75% xuống 3 LP. Đồ 0 LP không được nhận.\n"+
         "• Giữ tiêu hao lượt và điều kiện dùng native. Mức tối thiểu 1 LP cho đồ rơi không chặn kết quả Woven về 0 LP.\n\n"+
         "<b>MẬT ĐỘ QUÁI</b>\n"+
         $"• Ngoài Monolith: mật độ sinh quái x{DensityRules.Multiplier(false,0):0}.\n"+

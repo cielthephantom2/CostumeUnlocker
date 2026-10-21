@@ -216,6 +216,22 @@ Check(!modUpdate.Body.Instructions.Any(i=>i.Operand is FieldReference f && f.Dec
  modUpdate.Body.Instructions.Any(i=>i.Operand is FieldReference f && f.DeclaringType.Name=="LanMod" && f.Name=="panel") &&
  modUpdate.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="AutoPlayRuntime" && m.Name=="Tick"),
  "DPS Settings -> close F4 regression: Assist reads visible root panel, never stale hidden Settings page flag");
+var woven=installed.Single(t=>t.Name=="OfflineWovenPotentialPatch");
+var wovenPrefix=woven.Methods.Single(m=>m.Name=="Prefix");
+Check(wovenPrefix.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="OfflineToolkit" && m.Name=="get_Enabled") &&
+ wovenPrefix.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="WovenPotentialRules" && m.Name=="AppliesTo") &&
+ wovenPrefix.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="WovenPotentialRules" && m.Name=="Roll") &&
+ wovenPrefix.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="RebuildID") &&
+ wovenPrefix.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="setValuesFromSerialisation"),
+ "Woven reroll remains offline-only, guarded by Core LP range, and rebuilds native item serialization");
+Check(!installed.SelectMany(t=>t.CustomAttributes.Where(a=>a.AttributeType.Name=="HarmonyPatch"))
+ .SelectMany(a=>a.ConstructorArguments).Any(a=>a.Value is string target &&
+ (target.Contains("CanRandomizeLegendaryPotential") || target=="CraftRandomizeLegendaryPotential")),
+ "Woven native machine eligibility and craft caller are unpatched; 0 LP remains rejected, use consumption stays native");
+Check(!installed.SelectMany(t=>t.CustomAttributes.Where(a=>a.AttributeType.Name=="HarmonyPatch"))
+ .SelectMany(a=>a.ConstructorArguments).Any(a=>a.Value is TypeReference target &&
+ target.Name is "RandomizeLegendaryPotentialItemContainer" or "RandomizeLegendaryPotentialCraftingUI" or "ZoneRestrictedCraftingManager"),
+ "Woven input container, crafting UI and zone/use gate remain entirely native");
 File.WriteAllText(args[2],JsonSerializer.Serialize(new{passed=checks.Count,patchesInspected=patches.Length,
  installedPatches=installed.Select(t=>t.FullName),skippedPatches=skipped.Select(t=>t.FullName),
  scope="compiled metadata and IL audit; not gameplay acceptance",checks},new JsonSerializerOptions{WriteIndented=true}));

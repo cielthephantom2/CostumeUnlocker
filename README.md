@@ -1,6 +1,8 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.32
+# TM Last Epoch Co-op Mod — 1.1.0-dev.33
 
 Development release, protocol **40**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). Both Host and Client must update. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
+
+**Dev.33:** Woven Potential rerolls: 1 LP → 2/0 (50%/50%); 2 LP → 3/1 (25%/75%); 3 LP → 4/2 (25%/75%); 4 LP → 4/3 (25%/75%). **0 LP items remain ineligible.** Update both DLLs. See [dev.33 changes and validation](RELEASE-1.1.0-dev33-VI.md).
 
 **Dev.32:** fixes Combat Assist remaining paused after toggling DPS in Mod Settings and closing F4: a hidden Settings page no longer counts as a visible panel. Adds bounded recovery for transient native reads/loading, corrects stale repeat timers after interval edits, and shows last-run/pause diagnostics in F1. Fixes Bloodrage counters **10/5 -> 10/10** in hunt notifications and quest UI. Update both DLLs; protocol40 and Internet F2 + Loot Filters policy remain unchanged. See [dev.32 changes and validation](RELEASE-1.1.0-dev32-VI.md).
 
@@ -38,7 +40,7 @@ Joining creates room membership for F2 and Loot Filters only. Each player stays 
 
 Echo of a World / Shade of Orobyss now gives **x5 positive Corruption gain**, including native Gaze and catch-up bonuses. For example, +10 becomes +50. Existing Corruption is not multiplied; the native timeline cap and non-positive outcomes are preserved. Preview and completion use the same patched native calculator. The game still owns progress persistence.
 
-Woven Potential now uses: 1 LP → 2 LP (50%) / 0 LP (50%); 2 LP → 3 LP (50%) / 1 LP (50%); 3 LP → 4 LP (25%) / 1 LP (75%). The dropped-item minimum of 1 LP does not clamp Woven failures to 0 LP. Other input LP values keep their native behavior. Crafting eligibility and use consumption remain in the native caller.
+Woven Potential uses: 1 LP → 2 LP (50%) / 0 LP (50%); 2 LP → 3 LP (25%) / 1 LP (75%); 3 LP → 4 LP (25%) / 2 LP (75%); 4 LP → 4 LP (25%) / 3 LP (75%). Items with 0 LP cannot enter the machine. The dropped-item minimum of 1 LP does not clamp Woven failures to 0 LP. Crafting eligibility and use consumption remain in the native caller.
 
 NPC movement, animation, VFX, minions, combat and party travel code is retained for future work but its native hooks and regular update paths are disabled in this release. Shared-world settings left over from older config files cannot enable it. Encounter development remains paused and its unfinished branch is excluded.
 

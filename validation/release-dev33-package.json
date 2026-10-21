@@ -1,0 +1,28 @@
+{
+  "version": "1.1.0-dev.33",
+  "protocol": 40,
+  "build": {
+    "warnings": 0,
+    "errors": 0
+  },
+  "managedChecks": 894,
+  "compiledAuditChecks": 41,
+  "selectedPatchClasses": 65,
+  "skippedPatchClasses": 67,
+  "updaterFixtureChecks": 15,
+  "nativeGameplayVerified": false,
+  "scope": "Woven Potential 1-4 LP reroll rates; zero-LP input remains rejected; native crafting gates and consumption retained",
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1005568,
+      "sha256": "70B7D747C4501ED6CD630713B0506649AF823ED9610E78AB131DD681AF381DAC"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 393216,
+      "sha256": "9251BA9614CB9AE24C3A155EF849EBCCCCFFA2CC470876C0FA704F99B9306C5C"
+    }
+  ],
+  "releaseZipSha256": "E528BB68883A4E5A2A57358A9E56AB225C978B18FD4DEC5550CC503ED04A5021"
+}
