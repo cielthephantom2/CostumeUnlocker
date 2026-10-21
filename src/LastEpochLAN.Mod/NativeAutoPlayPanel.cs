@@ -1,4 +1,5 @@
 using Il2CppInterop.Runtime;
+using LastEpochLAN.Core;
 using Il2CppTMPro;
 using Il2CppLE.AssetBundles;
 using UnityEngine;
@@ -137,7 +138,7 @@ internal sealed partial class AutoPlayRuntime
                 radiusRing.startColor=radiusRing.endColor=accent;radiusRing.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
                 radiusRing.receiveShadows=false;
             }
-            radiusRing.gameObject.SetActive(true);var center=actor.position()+Vector3.up*0.12f;float radius=owner.Settings.Skills[selected].Radius;
+            radiusRing.gameObject.SetActive(true);var center=actor.position()+Vector3.up*0.12f;float radius=AutoPlayRules.DetectionRadius(owner.Settings.Skills[selected].Radius);
             for(int i=0;i<96;i++){float a=i*Mathf.PI*2/96;radiusRing.SetPosition(i,center+new Vector3(Mathf.Cos(a)*radius,0,Mathf.Sin(a)*radius));}
         }
         private void Chrome()
@@ -304,7 +305,7 @@ internal sealed partial class AutoPlayRuntime
             Slider(278,191,258,"Ward threshold",()=>r.WardThreshold,v=>r.WardThreshold=v,0,100000,true,"");
             Slider(0,232,258,"HP threshold",()=>r.HealthPercent,v=>r.HealthPercent=v,1,100,true);
             Slider(278,232,258,"MP threshold",()=>r.ManaPercent,v=>r.ManaPercent=v,1,100,true);
-            Slider(0,276,258,"Detection radius",()=>r.Radius,v=>r.Radius=v,1,60,true," m",previewRadius:true);
+            Slider(0,276,258,"Detection radius",()=>r.Radius,v=>r.Radius=v,1,AutoPlayRules.MaximumDetectionRadius,true," m",previewRadius:true);
             Slider(278,276,258,"MP before cast",()=>r.MinimumManaPercent,v=>r.MinimumManaPercent=v,0,100,true);
             Slider(0,320,258,"Repeat interval",()=>r.Interval,v=>r.Interval=(float)Math.Round(v*4)/4,0,120,false," s");
             Toggle(278,317,258,"Only when buff missing",()=>r.BuffMissing,v=>r.BuffMissing=v);

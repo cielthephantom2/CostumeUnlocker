@@ -110,6 +110,31 @@ Check(!Reachable(lan.Methods.Single(m=>m.Name=="OnLateUpdate")).Any(i=>i.Operand
 var presenceCalls=lan.Methods.Single(m=>m.Name=="PublishInventoryPresence").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
 Check(!presenceCalls.Any(m=>m.DeclaringType.Name is "ClassVisualReplica" or "NativeSummonCapture" or "LanDroppedItems" or "NativeSkillVisualCapture"),
  "inventory presence does not capture avatar, summons, ground items or VFX");
+var glyphNames=new[]{"OfflineHopeForgeScopePatch","OfflineDespairChancePatch","OfflineGlyphDescriptionPatch"};
+Check(glyphNames.All(name=>installed.Any(t=>t.Name==name)),"local glyph Forge/seal/description hooks are selected by inventory-only release policy");
+var hopeForge=types.Single(t=>t.Name=="OfflineHopeForgeScopePatch");
+var hopePrefixCalls=hopeForge.Methods.Single(m=>m.Name=="Prefix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(hopePrefixCalls.Any(m=>m.DeclaringType.Name=="OfflineToolkit" && m.Name=="get_Enabled") &&
+ hopePrefixCalls.Any(m=>m.DeclaringType.Name=="PlayerFinder" && m.Name=="getPlayerActor") &&
+ hopePrefixCalls.Any(m=>m.Name=="getItem") && hopePrefixCalls.Any(m=>m.DeclaringType.Name=="HopeForgeState" && m.Name==".ctor") &&
+ hopeForge.Methods.Single(m=>m.Name=="Finalizer").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="Dispose"),
+ "Hope Forge hook checks offline local actor/slotted glyph and cleans up its scoped override in a finalizer");
+var hopeRollType=types.Single(t=>t.Name=="OfflineHopeRollHook");
+var hopeRoll=hopeRollType.Methods.Single(m=>m.Name=="Prefix");
+Check(hopeRoll.ReturnType.FullName=="System.Void" && hopeRoll.Parameters.Any(p=>p.Name=="__0" && p.ParameterType.FullName=="System.Single&") &&
+ hopeRoll.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="CraftingHopeScope" && m.Name=="Adjust") &&
+ !hopeRoll.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="Roll"),
+ "Hope edits only the scoped float probability, preserving native random roll and original craft execution");
+Check(!patches.Contains(hopeRollType) && hopeRollType.Methods.Single(m=>m.Name=="Release").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="UnpatchSelf") &&
+ types.Single(t=>t.Name=="HopeForgeState").Methods.Single(m=>m.Name=="Dispose").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="OfflineHopeRollHook" && m.Name=="Release"),
+ "Hope RNG hook is installed only for Forge leases and removed by finalization, with no permanent native Roll hook while mapping");
+var seal=types.Single(t=>t.Name=="OfflineDespairChancePatch");
+Check(seal.CustomAttributes.Any(a=>a.ConstructorArguments.Any(v=>Equals(v.Value,"getChanceToSealAffix"))) &&
+ seal.Methods.Single(m=>m.Name=="Postfix").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="GlyphCraftingRules" && m.Name=="DespairChance") &&
+ !seal.Methods.SelectMany(m=>m.HasBody?m.Body.Instructions:Enumerable.Empty<Mono.Cecil.Cil.Instruction>()).Any(i=>i.Operand is MethodReference m && m.Name is "SealAffix" or "AddAffixTier" or "RebuildID"),
+ "Despair patches its native chance getter rather than executing a separate seal/upgrade or changing item identity");
+Check(core.MainModule.Types.Single(t=>t.Name=="CraftingHopeScope").Fields.Single(f=>f.Name=="Current").CustomAttributes.Any(a=>a.AttributeType.Name=="ThreadStaticAttribute"),
+ "compiled Hope override uses thread-local crafting scope instead of a process-wide RNG replacement");
 File.WriteAllText(args[2],JsonSerializer.Serialize(new{passed=checks.Count,patchesInspected=patches.Length,
  installedPatches=installed.Select(t=>t.FullName),skippedPatches=skipped.Select(t=>t.FullName),
  scope="compiled metadata and IL audit; not gameplay acceptance",checks},new JsonSerializerOptions{WriteIndented=true}));

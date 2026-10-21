@@ -1,0 +1,28 @@
+{
+  "version": "1.1.0-dev.30",
+  "protocol": 40,
+  "build": {
+    "warnings": 0,
+    "errors": 0
+  },
+  "managedChecks": 831,
+  "compiledAuditChecks": 26,
+  "selectedPatchClasses": 50,
+  "skippedPatchClasses": 67,
+  "updaterFixtureChecks": 15,
+  "nativeGameplayVerified": false,
+  "fpsMeasured": false,
+  "scope": "Hope33% scoped local Forge; Despair T1-4 100/70/50/33%; radius30 Assist; Internet F2+Loot Filters; Encounter paused",
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 990720,
+      "sha256": "9F684629599FFDCB29A08465E5C4D5FEF66CE38F82DE388A6CD9DA42CAE49791"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 390656,
+      "sha256": "643B424B5052AD294FCB7DBC290FE8BD33F7A1C52EEC71CCD6967DD11A0E59F6"
+    }
+  ]
+}

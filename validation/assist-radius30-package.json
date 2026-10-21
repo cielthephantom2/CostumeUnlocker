@@ -1,0 +1,19 @@
+{
+  "scope": "Local radius30 candidate based on dev29/protocol40; not released or installed; no native FPS measurement",
+  "buildWarnings": 0,
+  "buildErrors": 0,
+  "managedChecks": 815,
+  "auditChecks": 20,
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "sha256": "60AE08C9A411FC9F80AE9E549FA84E221E17F8ED685847ECD780FE963036F994",
+      "size": 988160
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "sha256": "2F2B7C98C2BCD505B481FBACF93173D6424BD4C17E6304E09212713F847C9FBE",
+      "size": 389632
+    }
+  ]
+}

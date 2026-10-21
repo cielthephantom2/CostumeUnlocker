@@ -26,6 +26,8 @@ internal sealed partial class AutoPlayRuntime
     private readonly List<ActorVisuals> enemies=new();
     private readonly List<string> buffNames=new();
     private ActorVisuals nearest,rareBoss;
+    private float targetScanRadius;
+    private int targetCandidates,targetInRange;
     private float nextRead,nextScan,nextBindings,nextTargets,nextBuffs,saveAt=-1,enemyDistance=float.PositiveInfinity,rareDistance=float.PositiveInfinity;
     private double nextPotion;
     private string character="",profilePath="",potionKey="1",scene="";
@@ -53,6 +55,7 @@ internal sealed partial class AutoPlayRuntime
         {blockedInput=input;previousDisableInput=input.forceDisableInput;input.forceDisableInput=true;}
     }
     internal object Diagnostics=>new {Open,Armed,Status,Error,Requests,ConfirmedCasts,PotionsUsed,hp,mp,potionCharges,potionMax,
+        targetScanRadius,targetCandidates,targetInRange,
         slots=Enumerable.Range(0,5).Select(i=>new {slot=i,key=keys[i],name=names[i],cooldown=cooldowns[i],charges=charges[i],status=slotStatus[i]}).ToArray()};
     private static string Root=>Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),"UserData","LastEpochLAN","AutoPlay");
     private static int ActionId(int i)=>i switch {0=>(int)EpochInputManager.InputActions.Ability1,1=>(int)EpochInputManager.InputActions.Ability2,
@@ -138,7 +141,7 @@ internal sealed partial class AutoPlayRuntime
             bool needTargets=AutoPlayRules.RequiresTargetScan(Settings,Open,Armed,paused);
             if(needTargets && Time.unscaledTime>=nextScan){Scan();nextScan=Time.unscaledTime+0.15f;}
             if(!needTargets)
-            {enemies.Clear();nearest=rareBoss=null;enemyDistance=rareDistance=float.PositiveInfinity;nextScan=nextTargets=0;}
+            {enemies.Clear();nearest=rareBoss=null;enemyDistance=rareDistance=float.PositiveInfinity;nextScan=nextTargets=0;targetScanRadius=0;targetCandidates=targetInRange=0;}
             Read(actor,input,needTargets);
             if(!Armed){Status="Stopped - configure skills, then Start";return;}
             if(paused){Status="Paused - panel/chat/focus";return;}
@@ -243,14 +246,28 @@ internal sealed partial class AutoPlayRuntime
             using var performance = RuntimePerformance.Measure(PerformanceArea.AutoTargets);
             nextTargets=Time.unscaledTime+0.05f;nearest=rareBoss=null;enemyDistance=rareDistance=float.PositiveInfinity;
             var local=actor.GetActorSync()?.actorVisuals?.alignment;var origin=actor.position();var actorScene=actor.gameObject.scene;
+            targetScanRadius=AutoPlayRules.TargetScanRadius(Settings);
+            targetCandidates=targetInRange=0;
+            float nearestSquared=float.PositiveInfinity,rareSquared=float.PositiveInfinity;
             foreach(var v in enemies)
             {
+                if(v==null)continue;
+                targetCandidates++;
+                float squared=(v.transform.position-origin).sqrMagnitude;
+                // Reject distant visuals before native health/alignment/scene
+                // and rarity reads. Keep the full registry cache so enemies
+                // entering range are noticed on the existing 50 ms cadence.
+                if(!AutoPlayRules.WithinTargetRadiusSquared(squared,targetScanRadius))continue;
+                targetInRange++;
                 if(!EnemyAlive(v,local) || v.gameObject.scene!=actorScene)continue;
-                float d=Vector3.Distance(origin,v.transform.position);
-                if(d<enemyDistance){enemyDistance=d;nearest=v;}
-                var kind=v.BaseDisplayInformation?.actorClass;
-                if((kind==DisplayActorClass.Rare || kind==DisplayActorClass.Boss) && d<rareDistance){rareDistance=d;rareBoss=v;}
+                if(squared<nearestSquared){nearestSquared=squared;nearest=v;}
+                if(squared<rareSquared)
+                {
+                    var kind=v.BaseDisplayInformation?.actorClass;
+                    if(kind==DisplayActorClass.Rare || kind==DisplayActorClass.Boss){rareSquared=squared;rareBoss=v;}
+                }
             }
+            enemyDistance=Mathf.Sqrt(nearestSquared);rareDistance=Mathf.Sqrt(rareSquared);
         }
         var buffs=actor.statBuffs?.buffs;
         if(Time.unscaledTime>=nextBuffs)

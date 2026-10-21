@@ -1,6 +1,8 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.29
+# TM Last Epoch Co-op Mod — 1.1.0-dev.30
 
 Development release, protocol **40**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). Both Host and Client must update. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
+
+**Dev.30:** Glyph of Hope has a **33%** chance to remove Forging Potential cost. Glyph of Despair seal rolls are **T1 100% / T2 70% / T3 50% / T4 33%**, identical for Rare and Exalted items with T6/T7 affixes. This does not allow sealing T5–T7. Native crafting eligibility, costs, critical mechanics and saving remain in control; glyph descriptions show the custom rates. Combat Assist now uses the largest enabled target-dependent radius, capped at **30**, and rejects distant candidates before expensive native checks. The F1 slider/input/ring share that cap. Public-IP Internet rooms still keep F2 + Loot Filters only. See [dev.30 changes and validation](RELEASE-1.1.0-dev30-VI.md).
 
 **Dev.29 — Internet inventory-only rooms:** Host/Join through a public IPv4 address and port remains supported. Rooms keep **F2 Shared Stash and shared Loot Filters**. World/enemy/combat/status/reward synchronization, remote characters/pets/VFX, Teleport, shared Monolith and Encounter are temporarily disabled. Unused native hooks are skipped entirely, and presence sends only inventory readiness/identity every 250 ms. Each player keeps their own map and native gameplay. F1 Combat Assist, DPS Tracker, density and all personal Mod Settings remain enabled. Includes the Assist/DPS performance cleanup and per-feature diagnostics. See [dev.29 changes and validation](RELEASE-1.1.0-dev29-VI.md). Dev.28 is reserved for the unfinished Encounter branch and is not included here.
 
@@ -40,6 +42,7 @@ See [Vietnamese release report](RELEASE-1.1.0-dev14-VI.md) and [historical rewri
 
 ## Validation
 
+- Dev.30: Release build zero warnings/errors, **831 managed/TCP checks / 26 compiled checks**. **50 selected / 67 skipped** Harmony classes; Hope's RNG hook is attached only during local Hope Forge and removed in finalization. Native craft execution and thread-local probability handling remain scoped. Includes radius30 regression coverage. Native crafting/UI and FPS observations have not been run for this release. Updater proofs are in `validation/release-dev30-*`.
 - Dev.29: Release build zero warnings/errors, **806 managed/TCP checks**, **20 compiled checks**. Of 114 compiled Harmony patch classes, **47 selected / 67 skipped**. Audits confirm the shared-world paths are unreachable under release policy and F2/filter/local-tool hooks remain selected. **15 updater fixture checks / 17 live GitHub updater checks** pass with exact DLL hashes. Native FPS improvement and two-PC Internet gameplay have not been measured for this release. No running game is modified or closed by the build/publish workflow.
 - The following older validation entries are historical and do not replace the dev.29 report.
 - Dev.14 Release build: zero warnings/errors. No managed/native/visual or physical multiplayer tests were run for this release; the reported Client transfer failure is not confirmed resolved.

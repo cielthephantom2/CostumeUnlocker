@@ -1,0 +1,832 @@
+PASS: buffer interpolates position and shortest yaw arc
+PASS: duplicate backwards and invalid motion times rejected
+PASS: late-stream extrapolation is bounded to 80ms
+PASS: teleport clears obsolete interpolation samples
+PASS: jittered presentation never moves backwards
+PASS: 10Hz snapshots with 20–85ms arrival jitter render continuously at 60fps
+PASS: presentation clock rejects stale host time
+PASS: non-finite host sample timestamp rejected
+PASS: NPC presentation delay expands to bounded 250ms under a large arrival gap
+PASS: adaptive NPC clock slews forward without a backwards seek or clock freeze when delay increases
+PASS: stable packet cadence gradually reduces extra NPC jitter buffering
+PASS: new instance resets adaptive NPC clock and jitter history
+PASS: summon owner packet validates prefab and animation data
+PASS: summon packet requires an instance and finite sample time
+PASS: duplicate summon IDs and empty prefab keys are rejected
+PASS: summon transforms have finite bounded scale and position
+PASS: summon animation arrays are detached by player snapshot copy
+PASS: summon presentation accepts initial ownership generation
+PASS: new summon has an immediate visual baseline
+PASS: summon motion and attack share a source timestamp
+PASS: summon pose interpolates while a future attack waits for the same cursor
+PASS: summon attack state advances with its buffered pose
+PASS: repeated or stale summon packets cannot rewind presentation or resurrect an old instance
+PASS: summon teleport clears obsolete motion instead of interpolating across the map
+PASS: desummon removes its presentation and buffered attacks
+PASS: new map generation replaces old summon identities
+PASS: summon TCP state arrives before timeout
+PASS: Host and Guest summon rosters travel in both directions over authenticated TCP
+PASS: summon TCP state arrives before timeout
+PASS: late join receives existing summons with the correct owner generation
+PASS: summon TCP state arrives before timeout
+PASS: removing summons preserves the connected player
+PASS: four maximum summon rosters with eight animation layers and 24 parameters fit the framed transport
+PASS: summon roster rejects counts above the explicit resource budget
+PASS: outside density x5 does not inherit a previous Monolith corruption
+PASS: Monolith never loses native density at low or absent corruption
+PASS: Monolith scales linearly with corruption, without the outside x5 multiplier
+PASS: density supports solo and Host; Guest and online do not generate extra populations
+PASS: density preserves native room modifier -1 including disabled spawns
+PASS: density preserves native room modifier -0.5 including disabled spawns
+PASS: density preserves native room modifier 0 including disabled spawns
+PASS: density preserves native room modifier 0.5 including disabled spawns
+PASS: density preserves native room modifier 2 including disabled spawns
+PASS: repeated native room rolls cannot compound density x5 to x25
+PASS: Shade corruption scales only the positive reward delta x5, not existing corruption
+PASS: Shade corruption includes native catchup and Gaze rewards exactly once with matching preview components
+PASS: Shade corruption preserves native losses and zero gain
+PASS: Shade corruption respects native timeline cap and limits the displayed reward breakdown
+PASS: Shade corruption uses wide arithmetic and saturates instead of overflowing saved corruption
+PASS: minimum LP upgrades only zero; keeps native higher LP rolls
+PASS: gold scaling leaves outside maps and low corruption at native amount
+PASS: Monolith gold follows corruption/40 independently of density
+PASS: scaled gold floors fractional currency, preserves zero and prevents integer overflow
+PASS: regen increases use 0.5 for 50 percent, not flat 50 or 50x
+PASS: fixed speed and area bonuses use the HUD percentage units
+PASS: Woven 1 LP: exact 50% to 2 LP and 50% to 0 LP over all percentile buckets
+PASS: Woven 1 LP threshold boundaries have no overlap or missing outcomes
+PASS: Woven 2 LP: exact 50% to 3 LP and 50% to 1 LP over all percentile buckets
+PASS: Woven 2 LP threshold boundaries have no overlap or missing outcomes
+PASS: Woven 3 LP: exact 25% to 4 LP and 75% to 1 LP over all percentile buckets
+PASS: Woven 3 LP threshold boundaries have no overlap or missing outcomes
+PASS: Woven override excludes 0/4 LP, leaving their native behavior untouched
+PASS: Woven rejects invalid percentile -1
+PASS: Woven rejects invalid percentile 100
+PASS: Woven rejects invalid percentile 2147483647
+PASS: Despair T1 uses requested fixed rate independently of native rarity/Exalted chance
+PASS: Despair T2 uses requested fixed rate independently of native rarity/Exalted chance
+PASS: Despair T3 uses requested fixed rate independently of native rarity/Exalted chance
+PASS: Despair T4 uses requested fixed rate independently of native rarity/Exalted chance
+PASS: Despair never opens sealing for T5/T6/T7 or invalid tiers
+PASS: glyph descriptions match custom rates without changing other glyph text
+PASS: Hope cannot change another RNG even during a Forge
+PASS: Hope leaves native critical success and unrelated rolls unchanged
+PASS: non-Hope or nonlocal nested Forge masks an outer Hope scope
+PASS: nested Forge restores the caller's pending Hope roll
+PASS: native local Hope probability becomes exactly 33 percent
+PASS: Hope replacement is consumed exactly once per Forge
+PASS: Forge finalization releases Hope scope
+PASS: exception cleanup cannot leave a Hope override active after crafting
+PASS: Hope scope does not leak to another thread
+PASS: missing crafting RNG cannot enable a broad Hope override
+PASS: chest deposit durably enters Host custody
+PASS: 100 duplicate deposit packets and Host restart preserve exactly one stored item
+PASS: different character cannot reuse a deposit operation ID
+PASS: same operation cannot substitute another serialized item
+PASS: stale/different Host chest cannot accept a pending transaction
+PASS: two concurrent users withdrawing same slot produce one reservation and one rejection
+PASS: disconnect/restart never releases a withdrawal reservation; same owner recovers exact payload
+PASS: duplicate grant retry retains one reservation #0
+PASS: duplicate grant retry retains one reservation #1
+PASS: duplicate grant retry retains one reservation #2
+PASS: duplicate grant retry retains one reservation #3
+PASS: duplicate grant retry retains one reservation #4
+PASS: duplicate grant retry retains one reservation #5
+PASS: duplicate grant retry retains one reservation #6
+PASS: duplicate grant retry retains one reservation #7
+PASS: duplicate grant retry retains one reservation #8
+PASS: duplicate grant retry retains one reservation #9
+PASS: duplicate grant retry retains one reservation #10
+PASS: duplicate grant retry retains one reservation #11
+PASS: duplicate grant retry retains one reservation #12
+PASS: duplicate grant retry retains one reservation #13
+PASS: duplicate grant retry retains one reservation #14
+PASS: duplicate grant retry retains one reservation #15
+PASS: duplicate grant retry retains one reservation #16
+PASS: duplicate grant retry retains one reservation #17
+PASS: duplicate grant retry retains one reservation #18
+PASS: duplicate grant retry retains one reservation #19
+PASS: duplicate grant retry retains one reservation #20
+PASS: duplicate grant retry retains one reservation #21
+PASS: duplicate grant retry retains one reservation #22
+PASS: duplicate grant retry retains one reservation #23
+PASS: duplicate grant retry retains one reservation #24
+PASS: duplicate grant retry retains one reservation #25
+PASS: duplicate grant retry retains one reservation #26
+PASS: duplicate grant retry retains one reservation #27
+PASS: duplicate grant retry retains one reservation #28
+PASS: duplicate grant retry retains one reservation #29
+PASS: duplicate grant retry retains one reservation #30
+PASS: duplicate grant retry retains one reservation #31
+PASS: duplicate grant retry retains one reservation #32
+PASS: duplicate grant retry retains one reservation #33
+PASS: duplicate grant retry retains one reservation #34
+PASS: duplicate grant retry retains one reservation #35
+PASS: duplicate grant retry retains one reservation #36
+PASS: duplicate grant retry retains one reservation #37
+PASS: duplicate grant retry retains one reservation #38
+PASS: duplicate grant retry retains one reservation #39
+PASS: duplicate grant retry retains one reservation #40
+PASS: duplicate grant retry retains one reservation #41
+PASS: duplicate grant retry retains one reservation #42
+PASS: duplicate grant retry retains one reservation #43
+PASS: duplicate grant retry retains one reservation #44
+PASS: duplicate grant retry retains one reservation #45
+PASS: duplicate grant retry retains one reservation #46
+PASS: duplicate grant retry retains one reservation #47
+PASS: duplicate grant retry retains one reservation #48
+PASS: duplicate grant retry retains one reservation #49
+PASS: duplicate grant retry retains one reservation #50
+PASS: duplicate grant retry retains one reservation #51
+PASS: duplicate grant retry retains one reservation #52
+PASS: duplicate grant retry retains one reservation #53
+PASS: duplicate grant retry retains one reservation #54
+PASS: duplicate grant retry retains one reservation #55
+PASS: duplicate grant retry retains one reservation #56
+PASS: duplicate grant retry retains one reservation #57
+PASS: duplicate grant retry retains one reservation #58
+PASS: duplicate grant retry retains one reservation #59
+PASS: duplicate grant retry retains one reservation #60
+PASS: duplicate grant retry retains one reservation #61
+PASS: duplicate grant retry retains one reservation #62
+PASS: duplicate grant retry retains one reservation #63
+PASS: duplicate grant retry retains one reservation #64
+PASS: duplicate grant retry retains one reservation #65
+PASS: duplicate grant retry retains one reservation #66
+PASS: duplicate grant retry retains one reservation #67
+PASS: duplicate grant retry retains one reservation #68
+PASS: duplicate grant retry retains one reservation #69
+PASS: duplicate grant retry retains one reservation #70
+PASS: duplicate grant retry retains one reservation #71
+PASS: duplicate grant retry retains one reservation #72
+PASS: duplicate grant retry retains one reservation #73
+PASS: duplicate grant retry retains one reservation #74
+PASS: duplicate grant retry retains one reservation #75
+PASS: duplicate grant retry retains one reservation #76
+PASS: duplicate grant retry retains one reservation #77
+PASS: duplicate grant retry retains one reservation #78
+PASS: duplicate grant retry retains one reservation #79
+PASS: duplicate grant retry retains one reservation #80
+PASS: duplicate grant retry retains one reservation #81
+PASS: duplicate grant retry retains one reservation #82
+PASS: duplicate grant retry retains one reservation #83
+PASS: duplicate grant retry retains one reservation #84
+PASS: duplicate grant retry retains one reservation #85
+PASS: duplicate grant retry retains one reservation #86
+PASS: duplicate grant retry retains one reservation #87
+PASS: duplicate grant retry retains one reservation #88
+PASS: duplicate grant retry retains one reservation #89
+PASS: duplicate grant retry retains one reservation #90
+PASS: duplicate grant retry retains one reservation #91
+PASS: duplicate grant retry retains one reservation #92
+PASS: duplicate grant retry retains one reservation #93
+PASS: duplicate grant retry retains one reservation #94
+PASS: duplicate grant retry retains one reservation #95
+PASS: duplicate grant retry retains one reservation #96
+PASS: duplicate grant retry retains one reservation #97
+PASS: duplicate grant retry retains one reservation #98
+PASS: duplicate grant retry retains one reservation #99
+PASS: another character cannot acknowledge or steal reserved withdrawal
+PASS: receiver native-save acknowledgment finalizes reservation
+PASS: lost ACK and old withdrawal replay after restart cannot regrant a completed item
+PASS: old deposit retry after withdrawal does not resurrect chest item
+PASS: new operation ID cannot replay an old deposit generation after item has already been withdrawn
+PASS: current saved recipient may redeposit using its completed withdrawal custody ticket
+PASS: independent Host store instances reread custody under OS file lock; stale process cannot grant same item
+PASS: mutating a UI snapshot cannot change Host ledger
+PASS: client persists payload and applying intent before native inventory add
+PASS: crash before/after incoming native save retries only absent item, acknowledges present item, holds ambiguous count
+PASS: crash before/after outgoing native save cancels or resumes escrow from exact durable inventory count
+PASS: terminal client receipt cannot reopen into another native item add
+PASS: pending client escrow cannot silently migrate to another Host
+PASS: corrupt Host ledger fails closed rather than rebuilding an empty chest
+PASS: failed Host disk write never publishes or acknowledges an in-memory item absent from durable ledger
+PASS: full chest rejects new transfer without deleting any stored item
+PASS: in-flight reserved item still consumes capacity, preventing overflow on ambiguous recovery
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: simulated receiver crash before save resumes only absent item
+PASS: 150 disconnect/restart/replay/crash simulations conserve exactly one item per transfer
+PASS: Join alone cannot take over local world, even in same map as Host
+PASS: explicit Teleport enables shared world only in matching map
+PASS: disconnect clears explicit co-op participation
+PASS: party-only chest regression receives active Host Echo context before querying
+PASS: real TCP chest query gets authenticated connection sender while players remain in different maps
+PASS: active Host Echo does not erase party-only Client availability, map or stash eligibility identity
+PASS: Host chest projection crosses framed TCP independently of world scene
+PASS: Guest cannot send authoritative chest projection
+PASS: CoF Rank 1 and Rank 5 use guaranteed native item duplication
+PASS: CoF Rank 3 rolls 50 percent for two extra Idols
+PASS: CoF Rank 6 uses plus 100 percent and Rank 8 uses total x5 native LP chance
+PASS: CoF Rank 7 replaces existing native x2 with x3 before stochastic rounding, preserving other quantity modifiers
+PASS: ineligible mage recipients and zero-count loot retain native quantity
+PASS: all Prophecy base counts double including Rare, Unique and single-item rewards
+PASS: Prophecy scaling preserves invalid/zero count and prevents integer overflow
+PASS: changed CoF rank descriptions match configured gameplay amounts
+PASS: unrequested rank descriptions retain native text
+PASS: requested CoF LP multiplier retains the confirmed minimum-one-LP policy
+PASS: DPS HUD is hidden before the first damage event
+PASS: DPS HUD appears on damage and hides at fifteen seconds without new damage
+PASS: DPS HUD no longer hides at the old five-second timeout
+PASS: new damage immediately reveals an idle-hidden DPS HUD
+PASS: new damage extends HUD visibility while invalid clock values cannot show it
+PASS: DPS HUD remains available until an active drag or resize finishes
+PASS: DPS records actual HP loss and excludes overkill
+PASS: DPS ignores immunity, healing and hits on dead targets
+PASS: invalid native health cannot poison DPS totals
+PASS: DPS scale normalizes invalid settings and stays within 0.5 to 2
+PASS: creation intent excludes existing save IDs even with matching name and class
+PASS: creation intent cannot boost a different character or class
+PASS: creation intent is consumed once without requeueing the same native creation
+PASS: expired creation intent does not change a later character
+PASS: loading or unspawned character never starts campaign setup
+PASS: campaign setup waits for two seconds of stable playable state
+PASS: a loading screen or active transition resets readiness before further quest work
+PASS: scene and character changes each require a fresh stable readiness interval
+PASS: scene callback invalidates readiness even for a reused scene name
+PASS: party teleport accepts campaign and town destinations regardless of the origin map category
+PASS: party teleport accepts non-combat hubs even when native scene category belongs to special content
+PASS: active special-run destinations require run context instead of silently creating a divergent instance
+PASS: party teleport cannot enter non-gameplay scenes
+PASS: party placement compares actual scene identity without case-only mismatches
+PASS: party placement waits for the destination spawn, visuals and loading screen before moving the actor
+PASS: Host Echo context validates before native import
+PASS: party-only Guest remains locally ready while Host Echo is active without borrowing or matching its context
+PASS: ordinary Host/solo local character remains ready
+PASS: party-only Guest cannot enter active Host Echo world even with sticky participation and identical scene
+PASS: borrowed Host world requires matching local readiness
+PASS: ordinary shared maps and Host retain world readiness
+PASS: local availability stays blocked during native Echo transitions
+PASS: borrowed Echo still requires live Guest context parity
+PASS: active Echo requires both native contexts and a generation identity
+PASS: Echo transfer rejects oversized contexts, excessive objectives and invalid portal destination
+PASS: same-scene first entry and respawn require the Host generation; matching joined generation stays put
+PASS: Guest does not enter before Host spawn or after Echo retirement
+PASS: old Echo generation cannot pass same-map instance matching
+PASS: world codec and change detection retain Echo generation independently from scene name
+PASS: Echo context copies isolate mutable native serialization buffers
+PASS: real Host TCP delivers native run and metadata to a Guest still outside the map
+PASS: network Echo reads cannot mutate the stored context
+PASS: Guest cannot publish an authoritative Echo
+PASS: Host cannot publish stale Echo revision
+PASS: Host objective progress and completion travel independently from enemy world revisions
+PASS: late join receives full current Echo and completion baseline
+PASS: consecutive Host Echoes using one scene trigger a new Guest entry over real TCP
+PASS: Host leaving retires the shared Echo for every Guest
+PASS: disconnect clears the network Echo baseline before reconnect
+PASS: late arrival after completion cannot claim an Echo without recorded participation
+PASS: participating character claims a native completion grant at most once
+PASS: write-ahead Echo claim survives a new ledger instance and restart
+PASS: one character cannot reuse another character's Echo participation
+PASS: non-finite native reward payload cannot reach a Guest grant
+PASS: new Echo transfers its full bounded native context on the actual wire
+PASS: objective/reward progress omits unchanged native run blobs from shared TCP traffic
+PASS: Guest reconstructs progress from its matching full context baseline
+PASS: server disconnects a raw Guest attempting to forge authoritative Echo context
+PASS: same-scene Guest from the previous Echo cannot damage the Host's new generation
+PASS: matching Echo generation enables authenticated Guest combat again
+PASS: autoplay starts with five disabled slots and potion disabled
+PASS: target scan uses largest enabled target-dependent radius, ignoring disabled skills and unconditional self buffs
+PASS: rare/boss proximity buffs participate in shared scan radius
+PASS: old oversized profile cannot expand target scan beyond 30
+PASS: profile normalization migrates previous 60-unit radius to 30
+PASS: squared range includes exact radius boundary and rejects enemies just outside each configured range
+PASS: invalid positions and inactive scan radius never admit a target
+PASS: shared scan radius cannot expand an individual skill target range
+PASS: cast guard also enforces maximum 30 before an oversized rule is normalized
+PASS: potion-only profile has no target scan radius
+PASS: ready self skill without triggers repeats on readiness
+PASS: autoplay never bypasses native cooldown/charges
+PASS: swapping a skill never inherits an enabled slot rule
+PASS: dead or invalid HP cannot cast
+PASS: enemy trigger uses configured radius
+PASS: normal nearby mobs do not satisfy rare/boss trigger
+PASS: ANY allows emergency HP without nearby boss
+PASS: ALL requires HP and nearby boss together
+PASS: low MP trigger requires readable native MP
+PASS: minimum mana reserve overrides low MP trigger
+PASS: targeted skill requires actual enemy in range
+PASS: rare/boss target cannot fall back to nearby normal enemy
+PASS: named active buff prevents wasteful refresh
+PASS: unreadable buff state cannot be assumed missing
+PASS: empty buff name cannot enable a missing-buff loop
+PASS: potion triggers at HP threshold with real available charges
+PASS: potion does not drink above threshold or on dead character
+PASS: potion respects reserve and empty slot
+PASS: potion interval and readiness block repeated/menu use
+PASS: invalid health and potion charge cost are rejected
+PASS: multi-charge potions preserve configured remaining charges
+PASS: autoplay selects first ready slot
+PASS: global dispatch spacing prevents same-frame overlapping casts
+PASS: round robin allows next ready buff instead of starving it
+PASS: rejected native requests back off before retrying
+PASS: per-skill repeat interval survives no-cooldown abilities
+PASS: new character/session clears previous scheduling timestamps
+PASS: zero interval resumes after 25ms dispatch guard without a 200ms pause
+PASS: native confirmation does not add a global gap to zero interval
+PASS: confirming one skill does not delay another ready skill
+PASS: positive interval still starts at confirmed native cast
+PASS: numeric slider input accepts zero hold interval
+PASS: numeric slider accepts decimal dot and comma consistently
+PASS: typed slider values clamp to the actual control bounds
+PASS: invalid numeric edits never overwrite a setting
+PASS: whole-number controls round typed decimals
+PASS: profile normalization bounds invalid values and restores five slots
+PASS: low ward includes exact absolute threshold and excludes higher ward
+PASS: unknown or invalid ward never satisfies low ward
+PASS: ALL applies to ward and HP together
+PASS: ANY allows low ward with healthy HP
+PASS: held channel ignores only its already-consumed charge cooldown
+PASS: hold releases when conditions fail or equipped skill changes
+PASS: positive repeat interval cannot sustain a hold
+PASS: hold respects minimum current MP
+PASS: zero hold interval and ward settings survive profile serialization
+PASS: saved settings roundtrip without persisting START state
+PASS: newly admitted NPC receives a baseline without waiting in an uninitialized animation
+PASS: NPC attack waits for the same host-time cursor as its moving pose
+PASS: NPC pose and attack transition share their snapshot boundary
+PASS: render frames and repeated Apply retries do not restart the same NPC attack
+PASS: stale and invalid presentation times cannot rewind the NPC state
+PASS: long render hitch retains bounded visual work and coalesces obsolete attack states once
+PASS: 60Hz presentation consumes 10Hz action states on the delayed pose timeline instead of packet arrival
+PASS: new scene presentation starts from a fresh baseline without replaying old actor actions
+PASS: 2400-NPC admission selects the nearest two while retaining every host identity
+PASS: NPC admission follows the actual Guest location at the opposite end of the map
+PASS: equally distant NPC admission prefers the boss with stable identity tie breaking
+PASS: actual TCP baseline and delta retain NPC action and pose for aligned render consumption
+PASS: update versions compare numeric development builds and stable releases correctly
+PASS: update checker rejects malformed and unsupported release labels
+PASS: F4 update status reports the installed published version as current
+PASS: repeated F4 draws cannot repeatedly download the release manifest
+PASS: F4 update status detects a newer published build
+PASS: local development build is not misreported as an available downgrade
+PASS: foreign manifest cannot produce a false update notification
+PASS: oversized release manifest is rejected without blocking the UI
+PASS: network failure leaves an explicit update status instead of failing game callbacks
+PASS: shutting down the mod cancels an in-flight release check
+PASS: 2400 live enemies use bounded chunks instead of a 512-instance cutoff
+PASS: 2400 skeletons share one type definition while retaining distinct enemy IDs
+PASS: typed wire record omits the redundant template string field rather than transmitting an empty placeholder
+PASS: partial world remains invisible to gameplay 0
+PASS: partial world remains invisible to gameplay 1
+PASS: partial world remains invisible to gameplay 2
+PASS: partial world remains invisible to gameplay 3
+PASS: partial world remains invisible to gameplay 4
+PASS: partial world remains invisible to gameplay 5
+PASS: partial world remains invisible to gameplay 6
+PASS: partial world remains invisible to gameplay 7
+PASS: partial world remains invisible to gameplay 8
+PASS: partial world remains invisible to gameplay 9
+PASS: partial world remains invisible to gameplay 10
+PASS: partial world remains invisible to gameplay 11
+PASS: partial world remains invisible to gameplay 12
+PASS: partial world remains invisible to gameplay 13
+PASS: partial world remains invisible to gameplay 14
+PASS: partial world remains invisible to gameplay 15
+PASS: partial world remains invisible to gameplay 16
+PASS: partial world remains invisible to gameplay 17
+PASS: partial world remains invisible to gameplay 18
+PASS: partial world remains invisible to gameplay 19
+PASS: partial world remains invisible to gameplay 20
+PASS: partial world remains invisible to gameplay 21
+PASS: partial world remains invisible to gameplay 22
+PASS: partial world remains invisible to gameplay 23
+PASS: partial world remains invisible to gameplay 24
+PASS: partial world remains invisible to gameplay 25
+PASS: partial world remains invisible to gameplay 26
+PASS: partial world remains invisible to gameplay 27
+PASS: partial world remains invisible to gameplay 28
+PASS: partial world remains invisible to gameplay 29
+PASS: partial world remains invisible to gameplay 30
+PASS: partial world remains invisible to gameplay 31
+PASS: partial world remains invisible to gameplay 32
+PASS: partial world remains invisible to gameplay 33
+PASS: partial world remains invisible to gameplay 34
+PASS: partial world remains invisible to gameplay 35
+PASS: partial world remains invisible to gameplay 36
+PASS: partial world remains invisible to gameplay 37
+PASS: partial world remains invisible to gameplay 38
+PASS: chunk assembly restores all identities and native template names atomically
+PASS: unchanged enemy types are cached across world revisions
+PASS: cached type references decode in a subsequent snapshot
+PASS: new instance rebuilds the per-connection type catalogue
+PASS: new instance baseline replaces old world after complete assembly
+PASS: one changed enemy in a 2400-monster instance sends one record
+PASS: sparse world update materially reduces serialized payload instead of resending the full crowd
+PASS: delta merge preserves unchanged monsters while applying new HP atomically
+PASS: delta handles removal and a new native template together
+PASS: metadata-only heartbeat preserves the committed world without retransmitting idle actors
+PASS: delta cannot be applied by a late join without its authoritative baseline
+PASS: delta naming a stale base revision is rejected before gameplay state changes
+PASS: reliable connection keeps idle world deltas beyond 20 snapshots without periodic full-crowd burst
+PASS: instance change discards delta baseline and rebuilds native type definitions
+PASS: missing or out-of-order chunks are rejected without exposing a partial map
+PASS: unknown enemy type reference is rejected
+PASS: dead transition retains a separate slot even when more than 512 enemies remain alive
+PASS: death ledger waits for present recipients and excludes retrospective late-join rewards
+PASS: one guest completion cannot retire another guest's pending reward
+PASS: partial native failure is retained without duplicate automatic retries or forged outcome replacement
+PASS: disconnected recipient does not retain a corpse indefinitely
+PASS: completed delivery details are removed rather than rescanned on every future capture
+PASS: compact retired identity cannot reopen a completed reward from an old corpse snapshot
+PASS: instance change rejects stale receipts and releases deaths without eligible guests
+PASS: rewrite fixture has authenticated peer state from real TCP
+PASS: Guest cannot construct a Host encounter authority
+PASS: unknown peer cannot activate an encounter
+PASS: null command cannot reach a native adapter
+PASS: stale scene epoch rejected
+PASS: foreign scene instance rejected
+PASS: typed family action whitelist rejects arbitrary reward selection
+PASS: command based on a stale view cannot reserve a changed entity
+PASS: range uses the peer's actual accepted TCP position
+PASS: authenticated nearby Guest reserves one native action
+PASS: replayed command cannot execute twice
+PASS: forged reservation cannot consume the legitimate native acceptance token
+PASS: native acceptance token is single use
+PASS: native completion snapshots only actual room participants
+PASS: duplicate native completion returns the existing event without another grant
+PASS: caller cannot mutate authoritative recipient storage
+PASS: typed snapshot preserves completion identity through JSON
+PASS: Omen exposes explicit interaction instead of bypassing activation authorization
+PASS: Guest Omen activation uses authenticated reservation and native confirmation
+PASS: partially failed native encounter cannot automatically generate a reward
+PASS: removed encounter retains a stable tombstone
+PASS: Nemesis Guest reserves its own Challenge turn
+PASS: Nemesis Host independently chooses Empower using its own unchanged turn revision
+PASS: shared Nemesis completion cannot finish or reward all private turns
+PASS: Guest Nemesis outcome does not complete the Host turn
+PASS: Nemesis native outcome cannot be redirected to another character
+PASS: private Nemesis outcomes have distinct stable IDs and duplicate callbacks are idempotent
+PASS: completed private Nemesis choice cannot be replayed as a fresh turn
+PASS: real TCP encounter frame contains only the receiving character's Nemesis turn
+PASS: private encounter delivery excludes another character's reward recipients
+PASS: encounter commands enter a dedicated outgoing queue
+PASS: real TCP encounter command binds its sender to the authenticated connection
+PASS: only Host sends encounter acknowledgments
+PASS: dedicated encounter acknowledgment returns through real TCP
+PASS: party-only transition clears encounter presentation and private turns without requiring another Host publication
+PASS: returning participant receives current private baseline
+PASS: Host scene clear reaches Client over the encounter channel
+PASS: map travel clears entities and rejects old native callback tokens
+PASS: old scene instance cannot be reopened
+PASS: disconnect invalidates the managed authority before any native adapter can act
+PASS: resolved DoT applications preserve separate source potency, stacks and durations
+PASS: resolved ailment queues isolate damage arrays from caller mutation
+PASS: one request cannot apply both an ailment and an ordinary HP/control result
+PASS: nonfinite or malformed native ailment payloads are rejected
+PASS: shared status presentation has one aggregate count per native ID
+PASS: native status counts and delegation capability survive the actual baseline chunk codec
+PASS: status count changes invalidate the authoritative world delta comparison
+PASS: status changes replace counts over deltas rather than incrementing on replay
+PASS: cleanse/expiry clears stale mirrored native status counts through deltas
+PASS: shared status payload accepts resolved native data, negative debuffs, source stats and expiration token
+PASS: native on-hit interaction is distinct from a new status application or another HP subtraction
+PASS: source revision mismatch and unaddressable expiration callback rejected
+PASS: ambiguous native fields and odd tracker maps are rejected
+PASS: queued native status data deep-copies nested arrays and creator profiles
+PASS: native ailment modifier identity flags survive actual world baseline codec
+PASS: curse, brand, movement and negative ailment counters survive late-join baseline codec
+PASS: debuff potency changes invalidate shared world even when stack counts stay the same
+PASS: debuff potency updates travel over world deltas
+PASS: cleanse clears both shared modifiers and counts over deltas
+PASS: Guest queues resolved status only after Host advertises native authority
+PASS: authenticated TCP delivers source-resolved status separately from HP damage
+PASS: Host queues source expiration notification
+PASS: expiration token returns through real Host-to-Guest transport
+PASS: Guest cannot forge Host status callbacks
+PASS: status requests from a stale instance cannot reach native receiver
+PASS: real transport preserves damage, status application and on-hit processing in one authoritative command order
+PASS: already-created effects can finish applying after their source player dies
+PASS: potion-only assist does not scan enemy registry
+PASS: unconditional self buff does not scan enemies
+PASS: offensive assist retains target scans while running and suspends them behind chat or menus
+PASS: configuration panel retains enabled target condition previews
+PASS: self buffs conditioned on rare or boss proximity still scan targets
+PASS: self buffs conditioned on nearby enemies scan only when assist runs
+PASS: performance hooks aggregate all hits within a frame and include empty frames rather than averaging per hit
+PASS: frame profiling bounds idle catch-up and rejects invalid readings
+PASS: per-frame feature profiling records without allocating managed objects
+PASS: fixed timing window reports rolling p95/p99 and managed allocations rather than lifetime averages
+PASS: idle enemy validation does not create temporary PlayerState records or empty distinct/hash sets
+PASS: allocation-free coordinate checks retain finite and world-bound validation
+PASS: background report writer coalesces a burst and commits the newest complete JSON atomically
+PASS: pooled framed JSON survives buffer growth, roundtrip and pool reuse without exposing borrowed bytes
+PASS: pooled frame writer retains the original maximum payload limit
+PASS: slow-peer load fixture authenticates a real socket before withholding reads
+PASS: healthy peer receives complete baseline while another authenticated receiver stops reading
+PASS: backpressured peer does not stall healthy player snapshots in the shared broadcast loop
+PASS: combat reads current scalar player location without cloning avatar payloads
+PASS: transport reports actual framed byte and packet counters
+PASS: combat receive queue remains bounded under a real socket burst
+PASS: full combat queue backpressures and later delivers every valid damage command in order without silent loss
+PASS: release shared-world policy remains disabled independently of persisted settings
+PASS: inventory presence keeps F2 identity/readiness without world, health, avatar, summons or ground-item data
+PASS: loading presence clears previous character identity instead of permitting stale inventory transfers
+PASS: inventory-only release retains SharedChestItemLockPatch
+PASS: inventory-only release retains SharedChestManagerLockPatch
+PASS: inventory-only release retains SharedStashNativeBindingPatch
+PASS: inventory-only release retains SharedStashNativeInputPatch
+PASS: inventory-only release retains SharedStashProjectionMutationPatch
+PASS: inventory-only release retains LanGiftApplyingLockPatch
+PASS: inventory-only release retains AutoPlayCastObservationPatch
+PASS: room filter label hooks and local DPS hooks remain enabled
+PASS: inventory-only release omits SkillCapture
+PASS: inventory-only release omits HostDeathPatch
+PASS: inventory-only release omits ReplicaAiPatch
+PASS: inventory-only release omits NativeGlobalVisualCapturePatch
+PASS: inventory-only release omits SharedEchoCompletionPatch
+PASS: inventory-only release omits NativeLanPartyPortalPatch
+PASS: inventory-only release omits LanAilmentResolvedPatch
+PASS: inventory-only release omits LanInventoryDropCapturePatch
+PASS: inventory-only release retains direct public IPv4 transport
+PASS: authenticated room carries both inventory identities while neither peer publishes a shared world
+PASS: inventory-only guest can request F2 without map availability or co-op participation
+PASS: F2 request still binds to authenticated guest identity
+PASS: inventory-only room still publishes selected loot filter
+PASS: filter reaches Host while world synchronization remains disabled
+PASS: independent fire and poison sources accepted
+PASS: host local effect and both guest effect colours coexist
+PASS: repeated snapshot is not additive and cannot extend its original deadline
+PASS: fire expires without removing longer poison
+PASS: empty source snapshot cleanses its own effects
+PASS: same ailment sums visual stacks from distinct creators and deadlines
+PASS: one stack group expires without deleting the same-source or other-source groups
+PASS: source-specific cleanse leaves the other player's stacks
+PASS: lost reporting expires by bounded lease instead of leaving permanent visual effects
+PASS: disconnect or different map removes that player's visual contribution
+PASS: despawn/death removes target presentation state
+PASS: same-ID monster in new instance cannot inherit previous map status
+PASS: invalid counts or durations rejected
+PASS: queued visual report isolates caller-owned arrays
+PASS: refresh replaces the deadline without multiplying stack count
+PASS: reordered report cannot resurrect cleared or replaced contribution
+PASS: late join receives combined presentation without a second damage application
+PASS: source PC queues fire and poison presentation without DoT delegation capability
+PASS: actual TCP binds visual source to authenticated connection
+PASS: status visual transport cannot generate an HP hit or a native ailment application
+PASS: source-calculated damage travels independently and once
+PASS: stale instance visual report is rejected on real transport
+PASS: malformed native visual report cannot enter network queue
+PASS: coalesced independent targets and explicit cleanse survive their own sequence streams
+PASS: dead creator cannot issue ordinary attacks
+PASS: native DoT which survives creator death still subtracts its source-calculated HP result once
+PASS: DoT flag cannot authorize CC requests from a dead creator
+PASS: different-map actor cannot change target visuals
+PASS: status validation failures do not break healthy room
+PASS: 2000 pending death transitions are retained until acknowledgement without competing with live identity capacity
+PASS: acknowledged deaths release full snapshot records while pending deliveries remain
+PASS: evicted terminal enemy cannot resurrect from a stale live sample
+PASS: old-spawn boss death retained until acknowledgement rather than displaced by newer spawn IDs
+PASS: unknown freeze material rejected
+PASS: cosmetic asset identities survive avatar wire/copy validation
+PASS: projectile termination forces a world update even when its position did not change
+PASS: projectile terminal state survives wire serialization and snapshot copy
+PASS: 512 NPC snapshots with bounded native animation parameters fit the transport frame without VFX
+PASS: private LAN address validation
+PASS: Internet and VPN endpoints are accepted without matching any installed adapter subnet
+PASS: direct Internet mode preserves local host/guest and loopback QA connections
+PASS: unspecified, broadcast, multicast and IPv6-only peer endpoints remain invalid
+PASS: VPN 26 peer on configured subnet accepted
+PASS: VPN peer requires matching adapter subnet
+PASS: unrelated public destination rejected
+PASS: zero and discontinuous subnet masks rejected
+PASS: non-finite and oversized state rejection
+PASS: invalid native party health rejected
+PASS: enemy HP bar remains hidden before damage
+PASS: enemy HP bar becomes visible after health loss
+PASS: duplicate snapshots do not keep damaged HP bar permanently visible
+PASS: new map instance does not inherit HP bar damage history
+PASS: invalid native class and animation payload rejection
+PASS: invalid native relay animation state and speed rejected
+PASS: invalid native VFX identity, age and duplicate IDs rejected
+PASS: non-finite native beam geometry rejected
+PASS: invalid and duplicate equipment slots rejected
+PASS: invalid animation parameter types, non-finite values and duplicate hashes rejected
+PASS: invalid speed, layer weight and excessive animation layers rejected
+PASS: alive despawn does not become a death
+PASS: destroyed host corpse remains in authoritative snapshot
+PASS: stale live sample cannot resurrect terminal enemy identity
+PASS: new instance clears corpse history
+PASS: death dispatch survives native corpse destruction between samples
+PASS: alive baseline grants no local rewards
+PASS: host alive-to-dead transition dispatched once
+PASS: duplicate and stale deaths cannot replay rewards
+PASS: zone entry ignores existing corpses
+PASS: late join ignores historical kills
+PASS: old instance cannot reset death filter
+PASS: reused dead identity cannot grant again
+PASS: old PC 2 protocol receives actionable update error
+PASS: reject mismatched game build
+PASS: reject incorrect room code
+PASS: HUD configuration only accepts bounded unique scalar values
+PASS: host HUD configuration reaches every guest over TCP
+PASS: HUD publication is isolated from caller mutation
+PASS: guest HUD diagnostics cannot mutate received authority
+PASS: guest cannot publish host HUD settings
+PASS: stale host HUD revisions are rejected
+PASS: malformed serialized drops and duplicate drop identities rejected
+PASS: guest state reaches host
+PASS: native party current and maximum health reach host through actual transport
+PASS: inventory drop identity, serialized data and position survive caller mutation
+PASS: inventory drops relay to the other guest
+PASS: remote dropped-item location survives actual transport
+PASS: native skill prefab identity and beam endpoints survive wire and caller mutation
+PASS: actual prefab GUID, subasset path and casting VFX key survive framed transport
+PASS: native connected VFX stretch origin survives actual TCP transport
+PASS: non-finite connected VFX endpoint rejected
+PASS: native visual child pose survives TCP transport
+PASS: emitter count, shape, size, speed and lifetime survive TCP and caller mutation
+PASS: emitter state relays to the other guest
+PASS: native effect root and child render layers survive transport
+PASS: malformed emitter lifetimes, positions and counts rejected
+PASS: emitter count and render layer bounds enforced
+PASS: aggregate player particle payload capped at 128 particles
+PASS: invalid visual hierarchy indices rejected
+PASS: invalid beam width and excessive prefab subasset path rejected
+PASS: native VFX diagnostics cannot mutate authoritative nested beam geometry
+PASS: native temporary idle and evade timing survive transport
+PASS: native relay animation command survives guest to host transport
+PASS: native equipment identifiers and back cosmetic survive wire and caller mutation
+PASS: equipment diagnostics cannot mutate authoritative appearance
+PASS: native class and animation state reaches host unchanged
+PASS: all animation layers reach host and publish isolates caller arrays
+PASS: bool/float/int Animator parameters survive wire transfer and caller mutation
+PASS: player diagnostics cannot mutate animation state in transport
+PASS: player diagnostics cannot mutate authoritative animation parameter arrays
+PASS: host relays state to another guest
+PASS: host relays actual native beam endpoint to another guest
+PASS: host relays remote cosmetic variation to other guest
+PASS: host state reaches guest
+PASS: scene identities preserved
+PASS: guest publishes bounded skill event
+PASS: guest skill reaches host
+PASS: native ability bar slot survives framed transport
+PASS: native skill cast animation survives framed transport
+PASS: skill identity assigned by host
+PASS: host relays skill to another guest
+PASS: skill is not echoed to its source
+PASS: host publishes skill event
+PASS: host skill reaches guest
+PASS: host skill retains identity
+PASS: invalid skill payload rejected
+PASS: invalid native ability slots rejected before enqueue
+PASS: native zone ability has its own explicit command identity
+PASS: guest queues native visual command
+PASS: native spawn command reaches host through reliable transport
+PASS: native asset identity and publication copy survive transport
+PASS: native visual endpoint mutation toggle and lifecycle arguments survive transport
+PASS: host relays native VFX command to another guest
+PASS: native VFX command is not echoed to its source
+PASS: host queues native stretch effect command
+PASS: host native stretch command reaches guest
+PASS: native stretch mode retains host identity
+PASS: invalid native visual assets endpoints modes and mutations are rejected
+PASS: invalid native visual command rejected before enqueue
+PASS: dead peer state reaches authority
+PASS: dead character cannot enqueue an ordinary combat skill
+PASS: alive peer state restored
+PASS: invalid map trigger kinds and sequence rejected
+PASS: invalid graph layouts, duplicate graph paths and enemy attack sequence rejected
+PASS: boss HUD cannot reference a missing or non-boss actor
+PASS: party and boss ward values reject invalid health data
+PASS: map tombstones reject active destroyed objects and duplicate paths
+PASS: network revision alone does not change authoritative content
+PASS: clock advance alone does not resend unchanged worlds
+PASS: host timestamp and monotonic local arrival survive actual framed TCP
+PASS: damage and attack events force world delivery immediately
+PASS: zone transitions and despawns force world delivery
+PASS: map activation/destruction and boss ward changes force delivery
+PASS: host enemy world reaches guest
+PASS: boss HUD selection ward and summoner tombstone survive real TCP framing
+PASS: diagnostics cannot mutate authoritative summoner tombstones
+PASS: unchanged world is omitted from subsequent TCP snapshots
+PASS: guest retains authoritative baseline when subsequent packet omits world payload
+PASS: lightweight proximity snapshot retains identity and health without copying nested rendering payloads
+PASS: world metadata read preserves revision without copying enemy arrays
+PASS: guest cannot authorize damage to another guest
+PASS: host attacks reject wrong zone and stale world epoch
+PASS: malformed native damage vector rejected
+PASS: host authorizes native attack to selected guest
+PASS: host native attack reaches recipient
+PASS: native attack types are isolated from source mutation
+PASS: native attack is not delivered to other party members
+PASS: host map trigger activation and source position survive framed transport and caller mutation
+PASS: guest cannot publish authoritative world
+PASS: world arrays cannot mutate session state
+PASS: host enemy animation layers reach guest
+PASS: host enemy attack animation and sequence reach guest
+PASS: host scene events and enemy beam geometry survive transport and caller mutation
+PASS: guest diagnostics cannot mutate event state or enemy VFX
+PASS: world diagnostics cannot mutate nested enemy animation arrays
+PASS: guest hit reaches host command queue
+PASS: host binds hit to authenticated player
+PASS: guest can submit bounded freeze request
+PASS: freeze request reaches authoritative host over TCP
+PASS: control request retains native parameters and authenticated sender without fabricating damage
+PASS: invalid control type and excessive duration rejected
+PASS: wrong scene and stale epoch hits ignored
+PASS: host health correction reaches guest
+PASS: host death state reaches guest
+PASS: death reward eligibility is limited to guests present in the host instance at death
+PASS: session reward claim prevents duplicate dispatch after local scene recreation and rejects ineligible guests
+PASS: host retains dead record until the eligible guest reports reward completion
+PASS: wrong-zone guest can send a receipt but cannot authorize retirement
+PASS: authenticated receipt from ineligible guest is ignored
+PASS: guest queues native reward completion receipt
+PASS: native reward completion acknowledgement reaches host over real TCP
+PASS: host rejects backwards world epoch
+PASS: disconnect removes stale peer
+PASS: late join receives existing peers
+PASS: late join receives current host death state
+PASS: late join cannot claim retrospective rewards from existing corpses
+PASS: late join receives the current full HUD configuration
+PASS: reconnected peer can leave cleanly
+PASS: fragmented TCP frame handshake
+PASS: host assigns peer identity and ignores forged identity
+PASS: out-of-order state disconnects only offending peer
+PASS: normal peer remains after invalid peer disconnect
+PASS: forged guest HUD configuration rejected without changing authority
+PASS: later host slider changes update the guest configuration
+PASS: late join receives the latest changed configuration rather than defaults
+PASS: zone epoch clears old enemies
+PASS: bounded full snapshot supports 512 enemies
+PASS: 512 enemies with eight animation layers fit the actual framed transport
+PASS: 512 enemies, 64 beam effects and 128 scene events fit combined framed transport
+PASS: maximum map object snapshot fits alongside 512 enemies 64 effects and 128 scene graphs
+PASS: 2400 live identities arrive intact through actual chunked TCP transport
+PASS: sparse damage/removal delta commits through actual loopback TCP
+PASS: real transport preserves unchanged enemies while applying HP and removal from the matching baseline
+PASS: raw damage command delivered
+PASS: forged hit identity replaced and duplicate damage ignored
+PASS: out-of-range guest damage ignored
+PASS: non-finite and zero hit rejected
+PASS: oversized frame rejected before allocating payload
+PASS: late join receives a complete baseline after existing peers have consumed deltas
+PASS: host supports three LAN guests
+PASS: fifth player rejected
+PASS: host shutdown clears guest state
+PASS: gift includes exact bytes and verified fingerprint
+PASS: gift rejects tampered bytes, invalid quantity and path IDs
+PASS: sender intent survives journal reopening without becoming a delivered gift
+PASS: completed sender receipt is durable
+PASS: terminal gift cannot be reopened by delayed state
+PASS: same transfer ID cannot substitute another quantity
+PASS: duplicate delivery persists a single inbox record
+PASS: gift inbox is isolated by character
+PASS: receiver completion survives journal reopening
+PASS: host routes Gift to authenticated online recipient
+PASS: native item bytes and character identities survive framed TCP
+PASS: guest sends receipt through host
+PASS: receipt sender identity is replaced with actual authenticated peer identity
+PASS: host cannot route Gift to a different loaded character
+PASS: offline recipient cannot be mistaken for acknowledged delivery
+PASS: persisted Gift can be resent after new connection GUID
+PASS: reconnect preserves transfer ID for recipient deduplication
+All 831 checks passed.

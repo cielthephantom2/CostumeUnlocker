@@ -1,0 +1,20 @@
+PASS: legacy encounter adapters and global Nemesis/Omen/shrine classes absent from binary
+PASS: generic callback/state-graph/object-state replay engines absent
+PASS: remaining Harmony patches do not target encounter or generic interaction types:
+PASS: legacy encounter payloads and skill-RPC model absent from Core
+PASS: NPC world snapshots have no legacy encounter side channel
+PASS: skill visual channel cannot carry legacy interaction or reward acknowledgements
+PASS: NPC animation, remote VFX and enemy replicas remain compiled
+PASS: development encounter catalogue has no Harmony patch or native gameplay mutation calls
+PASS: native encounter discovery requires explicit development switch
+PASS: Disintegrate movement, animation, root overrides and related Core helpers are absent from binary
+PASS: compiled mod has no direct references to Disintegrate/Ascendance or rotation-penalty override APIs
+PASS: Melon automatic PatchAll is disabled; release installs only selected inventory/local hooks
+PASS: compiled release shared-world policy is false with no configuration or command-line override
+PASS: selected compiled hooks retain F2 custody/projection, Loot Filter labels, local Assist and DPS
+PASS: network VFX, skill capture, enemy AI and shared Monolith hooks are not selected for installation
+PASS: runtime patch installation uses the release allowlist without a PatchAll bypass
+PASS: compiled OnUpdate cannot reach shared-world/combat/map/encounter/remote rendering updates under release policy
+PASS: compiled OnUpdate still processes inventory presence, F2 and room filters
+PASS: compiled OnLateUpdate returns before native party status, cosmetics, summon and enemy pose work
+PASS: inventory presence does not capture avatar, summons, ground items or VFX

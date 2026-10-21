@@ -7,6 +7,34 @@ internal static class AutoPlayTests
     {
         var settings=new AutoPlaySettings();
         check(settings.Skills.Length==5 && settings.Skills.All(r=>!r.Enabled) && !settings.Potion.Enabled,"autoplay starts with five disabled slots and potion disabled");
+        var scanSettings=new AutoPlaySettings();
+        scanSettings.Skills[0]=new(){Enabled=true,SelfTarget=false,Radius=10};
+        scanSettings.Skills[1]=new(){Enabled=true,SelfTarget=true,EnemyNear=true,Radius=20};
+        scanSettings.Skills[2]=new(){Enabled=false,SelfTarget=false,Radius=30};
+        scanSettings.Skills[3]=new(){Enabled=true,SelfTarget=true,Radius=30};
+        check(AutoPlayRules.TargetScanRadius(scanSettings)==20,"target scan uses largest enabled target-dependent radius, ignoring disabled skills and unconditional self buffs");
+        scanSettings.Skills[1].EnemyNear=false;scanSettings.Skills[1].RareBossNear=true;
+        check(AutoPlayRules.TargetScanRadius(scanSettings)==20,"rare/boss proximity buffs participate in shared scan radius");
+        scanSettings.Skills[0].Radius=60;
+        check(AutoPlayRules.TargetScanRadius(scanSettings)==30,"old oversized profile cannot expand target scan beyond 30");
+        scanSettings.Normalize();
+        check(scanSettings.Skills[0].Radius==30,"profile normalization migrates previous 60-unit radius to 30");
+        check(AutoPlayRules.WithinTargetRadiusSquared(900,30) && !AutoPlayRules.WithinTargetRadiusSquared(900.1f,30) &&
+            AutoPlayRules.WithinTargetRadiusSquared(100,10) && !AutoPlayRules.WithinTargetRadiusSquared(100.1f,10),
+            "squared range includes exact radius boundary and rejects enemies just outside each configured range");
+        check(!AutoPlayRules.WithinTargetRadiusSquared(float.NaN,30) && !AutoPlayRules.WithinTargetRadiusSquared(float.PositiveInfinity,30) &&
+            !AutoPlayRules.WithinTargetRadiusSquared(-1,30) && !AutoPlayRules.WithinTargetRadiusSquared(0,0),
+            "invalid positions and inactive scan radius never admit a target");
+        var limitedRule=new AutoSkillRule {Enabled=true,Ability="attack",SelfTarget=false,Radius=10};
+        var limitedContext=new AutoSkillContext("attack",100,100,true,15,15,true,true,false);
+        check(AutoPlayRules.Blocked(limitedRule,limitedContext)!="" && AutoPlayRules.Blocked(limitedRule,limitedContext with {EnemyDistance=10})=="",
+            "shared scan radius cannot expand an individual skill target range");
+        limitedRule.Radius=60;
+        check(AutoPlayRules.Blocked(limitedRule,limitedContext with {EnemyDistance=31})!="",
+            "cast guard also enforces maximum 30 before an oversized rule is normalized");
+        foreach(var rule in scanSettings.Skills)rule.Enabled=false;
+        scanSettings.Potion.Enabled=true;
+        check(AutoPlayRules.TargetScanRadius(scanSettings)==0,"potion-only profile has no target scan radius");
         var r=new AutoSkillRule {Enabled=true,Ability="buff"};
         var c=new AutoSkillContext("buff",80,80,true,15,30,true,true,false);
         check(AutoPlayRules.Blocked(r,c)=="","ready self skill without triggers repeats on readiness");

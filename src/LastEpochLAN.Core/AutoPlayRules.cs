@@ -36,7 +36,7 @@ public sealed class AutoSkillRule
     {
         Ability=Trim(Ability);BuffName=Trim(BuffName);
         HealthPercent=Clamp(HealthPercent,1,100,50);ManaPercent=Clamp(ManaPercent,1,100,30);
-        MinimumManaPercent=Clamp(MinimumManaPercent,0,100,0);Radius=Clamp(Radius,1,60,20);Interval=Clamp(Interval,0,120,1);
+        MinimumManaPercent=Clamp(MinimumManaPercent,0,100,0);Radius=AutoPlayRules.DetectionRadius(Radius);Interval=Clamp(Interval,0,120,1);
         WardThreshold=Clamp(WardThreshold,0,100000,500);
     }
     internal static string Trim(string? s)=>(s??"").Length>160?(s??"")[..160]:(s??"");
@@ -62,12 +62,23 @@ public readonly record struct AutoSkillContext(string Ability,float HealthPercen
 
 public static class AutoPlayRules
 {
+    public const float MaximumDetectionRadius=30;
+    public static float DetectionRadius(float radius)=>AutoSkillRule.Clamp(radius,1,MaximumDetectionRadius,20);
+    public static float TargetScanRadius(AutoPlaySettings settings)
+    {
+        float radius=0;
+        foreach(var rule in settings.Skills)
+            if(rule.Enabled && (!rule.SelfTarget || rule.EnemyNear || rule.RareBossNear))
+                radius=Math.Max(radius,DetectionRadius(rule.Radius));
+        return radius;
+    }
+    public static bool WithinTargetRadiusSquared(float distanceSquared,float radius)=>
+        float.IsFinite(distanceSquared) && distanceSquared>=0 && float.IsFinite(radius) && radius>0 &&
+        distanceSquared<=Math.Min(radius,MaximumDetectionRadius)*Math.Min(radius,MaximumDetectionRadius);
     public static bool RequiresTargetScan(AutoPlaySettings settings,bool open,bool armed,bool paused)
     {
         if(!open && (!armed || paused)) return false;
-        foreach(var rule in settings.Skills)
-            if(rule.Enabled && (!rule.SelfTarget || rule.EnemyNear || rule.RareBossNear)) return true;
-        return false;
+        return TargetScanRadius(settings)>0;
     }
     public static bool TrySliderValue(string text,float min,float max,bool whole,out float value)
     {
@@ -88,13 +99,14 @@ public static class AutoPlayRules
         if(!c.CooldownReady)return "Cooldown / no charges";
         if(!float.IsFinite(c.HealthPercent) || c.HealthPercent<=0)return "Character unavailable";
         if(r.MinimumManaPercent>0 && (!c.ManaKnown || !float.IsFinite(c.ManaPercent) || c.ManaPercent<r.MinimumManaPercent))return "Mana reserve";
-        if(!r.SelfTarget && !((r.TargetRareBoss?c.RareBossDistance:c.EnemyDistance)<=r.Radius))return "No target in range";
+        float radius=DetectionRadius(r.Radius);
+        if(!r.SelfTarget && !((r.TargetRareBoss?c.RareBossDistance:c.EnemyDistance)<=radius))return "No target in range";
         if(r.BuffMissing && (string.IsNullOrWhiteSpace(r.BuffName) || !c.BuffKnown))return "Select a readable buff name";
         if(r.BuffMissing && c.BuffActive)return "Buff already active";
         int count=0,matched=0;
         void Condition(bool enabled,bool match){if(enabled){count++;if(match)matched++;}}
-        Condition(r.EnemyNear,c.EnemyDistance<=r.Radius);
-        Condition(r.RareBossNear,c.RareBossDistance<=r.Radius);
+        Condition(r.EnemyNear,c.EnemyDistance<=radius);
+        Condition(r.RareBossNear,c.RareBossDistance<=radius);
         Condition(r.LowHealth,c.HealthPercent<=r.HealthPercent);
         Condition(r.LowMana,c.ManaKnown && float.IsFinite(c.ManaPercent) && c.ManaPercent<=r.ManaPercent);
         Condition(r.LowWard,c.WardKnown && float.IsFinite(c.Ward) && c.Ward>=0 && c.Ward<=r.WardThreshold);
