@@ -85,6 +85,8 @@ MotionTests.Run(Check);
 await SummonTests.Run(Check);
 DensityTests.Run(Check);
 OfflineBonusTests.Run(Check);
+LinearCorruptionTests.Run(Check);
+BloodrageChargeTests.Run(Check);
 WovenPotentialTests.Run(Check);
 GlyphCraftingTests.Run(Check);
 SharedChestTests.Run(Check);

@@ -4,19 +4,36 @@ internal static class OfflineBonusTests
 {
     internal static void Run(Action<bool,string> check)
     {
-        check(OfflineBonusRules.ShadeCorruption(100,110,0,0,int.MaxValue)==new OfflineBonusRules.CorruptionReward(150,0,0),
+        check(OfflineBonusRules.ShadeCorruption(100,110,0,0,int.MaxValue,100)==new OfflineBonusRules.CorruptionReward(150,0,0),
             "Shade corruption scales only the positive reward delta x5, not existing corruption");
-        check(OfflineBonusRules.ShadeCorruption(100,130,10,12,int.MaxValue)==new OfflineBonusRules.CorruptionReward(250,50,60),
-            "Shade corruption includes native catchup and Gaze rewards exactly once with matching preview components");
-        check(OfflineBonusRules.ShadeCorruption(100,90,0,0,int.MaxValue).Total==90 &&
-            OfflineBonusRules.ShadeCorruption(100,100,0,0,int.MaxValue).Total==100,
+        check(OfflineBonusRules.ShadeCorruption(100,130,10,12,int.MaxValue,100)==new OfflineBonusRules.CorruptionReward(200,0,60),
+            "Shade scales base/Gaze only; catchup stops once boosted earned rewards already pass its target");
+        check(OfflineBonusRules.ShadeCorruption(100,90,0,0,int.MaxValue,100).Total==90 &&
+            OfflineBonusRules.ShadeCorruption(100,100,0,0,int.MaxValue,100).Total==100,
             "Shade corruption preserves native losses and zero gain");
-        var capped=OfflineBonusRules.ShadeCorruption(40,49,3,0,50);
+        var capped=OfflineBonusRules.ShadeCorruption(40,49,3,0,50,40);
         check(capped.Total==50 && capped.Catchup==0 && capped.Gaze==0 &&
-            OfflineBonusRules.ShadeCorruption(50,50,0,0,50).Total==50,
+            OfflineBonusRules.ShadeCorruption(50,50,0,0,50,50).Total==50,
             "Shade corruption respects native timeline cap and limits the displayed reward breakdown");
-        check(OfflineBonusRules.ShadeCorruption(int.MaxValue-2,int.MaxValue,0,0,int.MaxValue).Total==int.MaxValue,
+        check(OfflineBonusRules.ShadeCorruption(int.MaxValue-2,int.MaxValue,0,0,int.MaxValue,int.MaxValue-2).Total==int.MaxValue,
             "Shade corruption uses wide arithmetic and saturates instead of overflowing saved corruption");
+        var runaway=OfflineBonusRules.ShadeCorruption(100,14255,14149,0,int.MaxValue,15000);
+        check(100+(14255-100)*5==70875 && runaway.Total<=15000 && runaway.Total<15000 && runaway.Gaze==0,
+            "regression: 100->~71k from x5 catchup is reproduced; fix converges below the 15000 target");
+        check(runaway.Total==130+runaway.Catchup && runaway.Catchup<=14149,
+            "runaway regression retains base +30 and recomputes smaller catchup after that gain");
+        bool stable=true;
+        int highest=15000;
+        foreach(int current in new[]{100,300,500,1000,5000,10000})
+        {
+            int nativeCatchup=(int)MathF.Round((highest-current-6)*.95f);
+            var reward=OfflineBonusRules.ShadeCorruption(current,current+6+nativeCatchup,nativeCatchup,0,int.MaxValue,highest);
+            stable &= reward.Total<=highest && reward.Total>=current && reward.Total-current==30+reward.Catchup;
+        }
+        check(stable,"catchup across multiple low timelines never raises the highest target through x5 feedback");
+        var overflow=OfflineBonusRules.ShadeCorruption(100,2000000000,1999999894,0,int.MaxValue,int.MaxValue);
+        check(overflow.Total>=130 && overflow.Total<=int.MaxValue && overflow.Catchup>=0,
+            "large native catchup stays bounded without integer overflow or negative breakdown");
         check(OfflineBonusRules.MinimumPotential(0)==1 && OfflineBonusRules.MinimumPotential(1)==1 &&
             OfflineBonusRules.MinimumPotential(2)==2 && OfflineBonusRules.MinimumPotential(4)==4,
             "minimum LP upgrades only zero; keeps native higher LP rolls");

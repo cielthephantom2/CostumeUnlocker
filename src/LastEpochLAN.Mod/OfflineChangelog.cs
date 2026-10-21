@@ -10,14 +10,17 @@ internal static class OfflineChangelog
     private static GUIStyle bodyStyle;
     private static readonly string content=
         "<b>BONUS OFFLINE</b>\n"+
+        "• Bloodrage (Rage of Morditas): mỗi nấc nhận2 charge, tổng2/4/6/8/10; giữ mốc kill và tiêu hao native.\n"+
         "• Glyph of Hope: 33% không tốn Forging Potential.\n"+
         "• Glyph of Despair: T1 100%, T2 70%, T3 50%, T4 33%; cùng tỷ lệ cho Rare và Exalted có T6/T7. Không mở seal T5 trở lên.\n"+
         $"• Tốc độ di chuyển +{OfflineBonusRules.MoveSpeed*100:0}%.\n"+
         $"• Diện tích ảnh hưởng của kỹ năng (AoE) +{OfflineBonusRules.Area*100:0}%.\n"+
         $"• Hồi mana +{OfflineBonusRules.ManaRegen*100:0}%; hồi máu +{OfflineBonusRules.HealthRegen*100:0}%.\n"+
         "• Unique có thể roll Legendary Potential luôn đạt tối thiểu 1 LP; giữ các kết quả LP cao hơn.\n"+
-        "• Vàng trong Monolith: hệ số = corruption / 40, tối thiểu x1. Ví dụ: 1.000 corruption → x25 vàng.\n"+
-        "• Echo of a World (Shade of Orobyss): Corruption nhận thêm x5, gồm Gaze và bonus bắt kịp. Ví dụ +10 → +50; giữ giới hạn timeline và lượt giảm Corruption.\n\n"+
+        "• Bỏ diminishing returns: EXP +1%/Corruption; LP roll bonus +0,07209%/Corruption; WW promotion roll bonus +0,08686%/Corruption; Echo Reward Rarity +0,89656%/Corruption.\n"+
+        "• Vàng gốc tăng tuyến tính +0,12%/Corruption và giữ nguyên bonus mod corruption/40 (tối thiểu x1). 1.000 Corruption: x2,2 × x25 = x55 vàng quái. Tổng hai hệ số nhân chồng không phải đường thẳng.\n"+
+        "• Amber standard drop: giữ hệ số trước 500 cho cả phần Corruption trên 500. LP tối đa4, WW tối đa28; xác suất roll không vượt100%.\n"+
+        "• Echo of a World (Shade of Orobyss): thưởng gốc và Gaze x5. Catch-up chỉ bắt kịp timeline cao nhất, không nhân x5 để tránh Corruption tăng vọt. Giữ giới hạn timeline và lượt giảm Corruption.\n\n"+
         "<b>WOVEN POTENTIAL — REROLL LP</b>\n"+
         "• Từ 1 LP: 50% lên 2 LP; 50% xuống 0 LP.\n"+
         "• Từ 2 LP: 50% lên 3 LP; 50% xuống 1 LP.\n"+
@@ -57,7 +60,7 @@ internal static class OfflineChangelog
         "• Loot Filter vẫn chia sẻ trong phòng; chỉnh/switch/tắt filter được cập nhật cho các máy khác.\n"+
         "• Tạm tắt đồng bộ quái/combat/HP/status/thưởng, nhân vật/pet/VFX, Teleport/Monolith và Encounter để giảm tải.\n"+
         "• Combat Assist, DPS và toàn bộ tiện ích cá nhân trong Mod Settings tiếp tục hoạt động.\n"+
-        "• Nên cập nhật cả Host và Client lên dev.30/protocol40. Bản dev.27/protocol36 không kết nối chung.";
+        "• Dev.31 giữ protocol40; phòng Internet vẫn chỉ F2 + Loot Filters. Bản dev.27/protocol36 không kết nối chung.";
 
     internal static void Show(){scroll=Vector2.zero;Open=true;}
     internal static void Draw(string version)

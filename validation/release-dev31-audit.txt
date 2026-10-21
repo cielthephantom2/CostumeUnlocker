@@ -1,0 +1,34 @@
+PASS: legacy encounter adapters and global Nemesis/Omen/shrine classes absent from binary
+PASS: generic callback/state-graph/object-state replay engines absent
+PASS: remaining Harmony patches exclude encounter interaction/replay except explicitly authorized local Bloodrage charge boundaries:
+PASS: legacy encounter payloads and skill-RPC model absent from Core
+PASS: NPC world snapshots have no legacy encounter side channel
+PASS: skill visual channel cannot carry legacy interaction or reward acknowledgements
+PASS: NPC animation, remote VFX and enemy replicas remain compiled
+PASS: development encounter catalogue has no Harmony patch or native gameplay mutation calls
+PASS: native encounter discovery requires explicit development switch
+PASS: Disintegrate movement, animation, root overrides and related Core helpers are absent from binary
+PASS: compiled mod has no direct references to Disintegrate/Ascendance or rotation-penalty override APIs
+PASS: Melon automatic PatchAll is disabled; release installs only selected inventory/local hooks
+PASS: compiled release shared-world policy is false with no configuration or command-line override
+PASS: selected compiled hooks retain F2 custody/projection, Loot Filter labels, local Assist and DPS
+PASS: network VFX, skill capture, enemy AI and shared Monolith hooks are not selected for installation
+PASS: runtime patch installation uses the release allowlist without a PatchAll bypass
+PASS: compiled OnUpdate cannot reach shared-world/combat/map/encounter/remote rendering updates under release policy
+PASS: compiled OnUpdate still processes inventory presence, F2 and room filters
+PASS: compiled OnLateUpdate returns before native party status, cosmetics, summon and enemy pose work
+PASS: inventory presence does not capture avatar, summons, ground items or VFX
+PASS: local glyph Forge/seal/description hooks are selected by inventory-only release policy
+PASS: Hope Forge hook checks offline local actor/slotted glyph and cleans up its scoped override in a finalizer
+PASS: Hope edits only the scoped float probability, preserving native random roll and original craft execution
+PASS: Hope RNG hook is installed only for Forge leases and removed by finalization, with no permanent native Roll hook while mapping
+PASS: Despair patches its native chance getter rather than executing a separate seal/upgrade or changing item identity
+PASS: compiled Hope override uses thread-local crafting scope instead of a process-wide RNG replacement
+PASS: linear Corruption installs real inlined EXP/rarity/LP consumers in addition to public preview helpers
+PASS: linear Corruption does not install global RNG/combat hooks or change monster power
+PASS: LP linearization changes Corruption/non-CoF inputs only; native RNG, CoF attribution and max4 remain native
+PASS: Amber hook only reads serialized asset values; no encounter state writes or additional drop execution
+PASS: Shade calculator supplies native highest-C input so catchup converges instead of x5 overshoot
+PASS: Shade completion trace reads progress only and never changes corruption/save state
+PASS: Bloodrage doubles only offline earned/display/initial-currency boundaries, without native counter writes or extra reward execution
+PASS: Bloodrage native threshold progression, per-charge spending and timer stay unpatched

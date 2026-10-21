@@ -18,21 +18,37 @@ Check(!types.Any(t=>legacy.IsMatch(t.FullName)),"legacy encounter adapters and g
 Check(!types.Any(t=>t.Name is "LanMapTriggers" or "NativeSceneEvents" or "NativeMapObjectReplica"),"generic callback/state-graph/object-state replay engines absent");
 var patches=types.Where(t=>t.CustomAttributes.Any(a=>a.AttributeType.FullName=="HarmonyLib.HarmonyPatch")).ToArray();
 var violations=new List<string>();
+var bloodrageTargets=new Dictionary<string,(string Type,string Method)>
+{
+ ["OfflineBloodrageChargeAnnouncementPatch"]=("Il2Cpp.RageOfMorditasSync","SendMorditasChargeGainedMessage"),
+ ["OfflineBloodrageChargeCountPatch"]=("Il2Cpp.RageOfMorditasSync","GetBloodrageChargeCount"),
+ ["OfflineBloodrageInitialRewardsPatch"]=("Il2Cpp.RageOfMorditasRewardLogic","Initialize")
+};
 foreach(var patch in patches)
 {
  // CoF Rank7 offline quantity bonus is an explicitly retained gameplay bonus.
  if(patch.FullName=="LastEpochLAN.Mod.OfflineTools.FortuneMageLootPatch")continue;
  foreach(var attribute in patch.CustomAttributes.Where(a=>a.AttributeType.FullName=="HarmonyLib.HarmonyPatch"))
  foreach(var value in attribute.ConstructorArguments)
-  if(value.Value is TypeReference type && banned.IsMatch(type.FullName))violations.Add(patch.FullName+" -> "+type.FullName);
+  if(value.Value is TypeReference type && banned.IsMatch(type.FullName))
+  {
+   bool authorizedCharge=patch.Namespace=="LastEpochLAN.Mod.OfflineTools" && bloodrageTargets.TryGetValue(patch.Name,out var charge) &&
+    type.FullName==charge.Type && attribute.ConstructorArguments.Any(v=>Equals(v.Value,charge.Method));
+   if(!authorizedCharge)violations.Add(patch.FullName+" -> "+type.FullName);
+  }
  foreach(var owner in Walk(new[]{patch}))foreach(var method in owner.Methods.Where(m=>m.HasBody))
  foreach(var instruction in method.Body.Instructions)
  {
   var target=instruction.Operand switch {MethodReference m=>m.DeclaringType.FullName,TypeReference t=>t.FullName,_=>""};
+  // Amber scaling reads its serialized base/slopes from the encounter data
+  // asset. This exact read is allowed; interaction/reward execution stays banned.
+  if(patch.Name=="LinearCorruptionAmberPatch" && instruction.Operand is MethodReference amberRead &&
+     amberRead.DeclaringType.FullName=="Il2Cpp.RandomEncounterData" &&
+     amberRead.Name is "get" or "get_silkenCocoonData")continue;
   if(banned.IsMatch(target))violations.Add(patch.FullName+" -> "+target);
  }
 }
-Check(violations.Count==0,"remaining Harmony patches do not target encounter or generic interaction types: "+string.Join(",",violations.Distinct()));
+Check(violations.Count==0,"remaining Harmony patches exclude encounter interaction/replay except explicitly authorized local Bloodrage charge boundaries: "+string.Join(",",violations.Distinct()));
 var oldTypes=new[]{"EncounterState","EncounterAuthority","EncounterVisualPayload","NemesisRounds","NemesisCommand","OmenItemReward","WorldInteractionRequest"};
 Check(!Walk(core.MainModule.Types).Any(t=>oldTypes.Contains(t.Name)),"legacy encounter payloads and skill-RPC model absent from Core");
 Check(core.MainModule.Types.First(t=>t.Name=="WorldState").Properties.All(p=>p.Name!="Encounters"),"NPC world snapshots have no legacy encounter side channel");
@@ -135,6 +151,40 @@ Check(seal.CustomAttributes.Any(a=>a.ConstructorArguments.Any(v=>Equals(v.Value,
  "Despair patches its native chance getter rather than executing a separate seal/upgrade or changing item identity");
 Check(core.MainModule.Types.Single(t=>t.Name=="CraftingHopeScope").Fields.Single(f=>f.Name=="Current").CustomAttributes.Any(a=>a.AttributeType.Name=="ThreadStaticAttribute"),
  "compiled Hope override uses thread-local crafting scope instead of a process-wide RNG replacement");
+var linear=installed.Where(t=>t.Name.StartsWith("LinearCorruption",StringComparison.Ordinal)).ToArray();
+Check(linear.Length==9 && linear.Any(t=>t.Name=="LinearCorruptionRunExperiencePatch") &&
+ linear.Any(t=>t.Name=="LinearCorruptionEchoRarityPatch") && linear.Any(t=>t.Name=="LinearCorruptionPotentialRollPatch"),
+ "linear Corruption installs real inlined EXP/rarity/LP consumers in addition to public preview helpers");
+var linearTargets=linear.SelectMany(t=>t.CustomAttributes.Where(a=>a.AttributeType.Name=="HarmonyPatch"))
+ .SelectMany(a=>a.ConstructorArguments).Where(a=>a.Value is TypeReference).Select(a=>((TypeReference)a.Value).FullName).ToArray();
+Check(!linearTargets.Any(t=>t.Contains("RngElement") || t.Contains("Actor") || t.Contains("Monster")),
+ "linear Corruption does not install global RNG/combat hooks or change monster power");
+var lpLinear=types.Single(t=>t.Name=="LinearCorruptionPotentialRollPatch").Methods.Single(m=>m.Name=="Prefix");
+Check(lpLinear.Parameters.Select(p=>p.Name).SequenceEqual(new[]{"__3","__6"}) &&
+ !lpLinear.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name.Contains("Roll")),
+ "LP linearization changes Corruption/non-CoF inputs only; native RNG, CoF attribution and max4 remain native");
+var amberLinear=types.Single(t=>t.Name=="LinearCorruptionAmberPatch");
+Check(amberLinear.Methods.Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Select(i=>i.Operand).OfType<MethodReference>()
+ .Where(m=>m.DeclaringType.Name=="SilkenCocoonData" || m.DeclaringType.Name=="RandomEncounterData")
+ .All(m=>m.Name=="get" || m.Name.StartsWith("get_",StringComparison.Ordinal)),
+ "Amber hook only reads serialized asset values; no encounter state writes or additional drop execution");
+var shadePatch=installed.Single(t=>t.Name=="OfflineShadeCorruptionPatch").Methods.Single(m=>m.Name=="Postfix");
+Check(shadePatch.Parameters.Any(p=>p.Name=="__5" && p.ParameterType.FullName=="System.Int32") &&
+ shadePatch.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="ShadeCorruption" && m.Parameters.Count==6),
+ "Shade calculator supplies native highest-C input so catchup converges instead of x5 overshoot");
+var shadeTrace=installed.Single(t=>t.Name=="OfflineShadeCorruptionCompletionTracePatch");
+Check(!shadeTrace.Methods.Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Select(i=>i.Operand).OfType<MethodReference>()
+ .Any(m=>m.Name.StartsWith("set_",StringComparison.Ordinal)),
+ "Shade completion trace reads progress only and never changes corruption/save state");
+var chargePatches=installed.Where(t=>bloodrageTargets.ContainsKey(t.Name)).ToArray();
+Check(chargePatches.Length==3 && chargePatches.SelectMany(t=>t.Methods).Where(m=>m.HasBody).All(m=>
+ m.Body.Instructions.Any(i=>i.Operand is MethodReference call && call.DeclaringType.Name=="OfflineToolkit" && call.Name=="get_Enabled") &&
+ m.Body.Instructions.Any(i=>i.Operand is MethodReference call && call.DeclaringType.Name=="BloodrageChargeRules") &&
+ !m.Body.Instructions.Any(i=>i.Operand is MethodReference call && (call.DeclaringType.Name.Contains("RageOfMorditas") || call.Name.StartsWith("set_")))),
+ "Bloodrage doubles only offline earned/display/initial-currency boundaries, without native counter writes or extra reward execution");
+Check(!chargePatches.SelectMany(t=>t.CustomAttributes).SelectMany(a=>a.ConstructorArguments).Any(a=>
+ Equals(a.Value,"ConsumeReward") || Equals(a.Value,"FixedUpdate_Hunt") || Equals(a.Value,"GrantBloodrageCharge")),
+ "Bloodrage native threshold progression, per-charge spending and timer stay unpatched");
 File.WriteAllText(args[2],JsonSerializer.Serialize(new{passed=checks.Count,patchesInspected=patches.Length,
  installedPatches=installed.Select(t=>t.FullName),skippedPatches=skipped.Select(t=>t.FullName),
  scope="compiled metadata and IL audit; not gameplay acceptance",checks},new JsonSerializerOptions{WriteIndented=true}));

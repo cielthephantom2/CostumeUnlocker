@@ -26,6 +26,11 @@ internal static class CorruptionNativeSmoke
                     if (total != current+30 || again != total || catchup != 0 || gaze != 0 ||
                         withGaze != current+150 || catchup2 != 0 || gaze2 != 120)
                         throw new InvalidOperationException("Native Shade x5 calculator or Gaze breakdown mismatch.");
+                    int highest=15000;
+                    int caughtUp=EchoWeb.NewCorruptionForShadeEchoOfTier(timeline.timelineID,index,1,current,0,highest,0,out int convergence,out int caughtGaze);
+                    if(caughtUp>highest || caughtUp!=current+30+convergence || convergence<=0 || caughtGaze!=0)
+                        throw new InvalidOperationException("Native Shade catchup overshot highest corruption or multiplied convergence.");
+                    observations.Add(new{current,highest,caughtUp,convergence,scope="catchup regression, read-only calculator"});
                     observations.Add(new { timeline=timeline.timelineID.ToString(),difficulty=index,current,total,withGaze,gaze2,repeatedPreview=again });
                     uncapped = true;
                 }

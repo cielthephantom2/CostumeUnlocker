@@ -1,6 +1,8 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.30
+# TM Last Epoch Co-op Mod — 1.1.0-dev.31
 
 Development release, protocol **40**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). Both Host and Client must update. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
+
+**Dev.31:** removes Corruption diminishing returns from the audited EXP, native monster-gold, standard Memory Amber, LP roll, WW promotion-roll and Echo Reward Rarity paths. Existing gold /40 bonus remains, so combined gold grows faster than a straight line. Bloodrage's five earned tiers now award **2/4/6/8/10** actual initial reward charges with matching hunt displays. Fixes **x5 Shade catch-up overshoot**: only earned base/Gaze are multiplied; convergence to the native highest-C target is recalculated. Already-saved excessive Corruption is **not repaired automatically**. No native gameplay acceptance claimed; Internet rooms remain F2 + Loot Filters only. See [dev.31 changes, rates and limits](RELEASE-1.1.0-dev31-VI.md).
 
 **Dev.30:** Glyph of Hope has a **33%** chance to remove Forging Potential cost. Glyph of Despair seal rolls are **T1 100% / T2 70% / T3 50% / T4 33%**, identical for Rare and Exalted items with T6/T7 affixes. This does not allow sealing T5–T7. Native crafting eligibility, costs, critical mechanics and saving remain in control; glyph descriptions show the custom rates. Combat Assist now uses the largest enabled target-dependent radius, capped at **30**, and rejects distant candidates before expensive native checks. The F1 slider/input/ring share that cap. Public-IP Internet rooms still keep F2 + Loot Filters only. See [dev.30 changes and validation](RELEASE-1.1.0-dev30-VI.md).
 
