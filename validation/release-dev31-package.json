@@ -25,5 +25,9 @@
       "sha256": "6B4E678801FC6B870ACBE444DFDB6F828145A563B90B68A13E44F676BA3BDA82"
     }
   ],
-  "releaseZipSha256": "785E482220D1CF7FF51BC8E14BD9D40B4FD65FC9E8F2C221B9DCB765B0C907A4"
+  "releaseZipSha256": "785E482220D1CF7FF51BC8E14BD9D40B4FD65FC9E8F2C221B9DCB765B0C907A4",
+  "updaterLiveChecks": 17,
+  "releaseZipDownloadVerified": true,
+  "releaseUrl": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.31",
+  "codeCommit": "616dc217fe72ec8c1e9a00db818284e4d43891b5"
 }
