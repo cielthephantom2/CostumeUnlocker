@@ -27,3 +27,7 @@ Log sau sửa interop đã ghi nhận mod35 nạp được, support module nạp
 Giữ Corruption hiện tại; không sửa save hay tuyên bố đã giải quyết trường hợp client100+60→400. Encounter/shared-world vẫn disabled, Internet giữ F2+Loot Filters. Lượt build/publish không mở/đóng game hoặc thay DLL đang cài Steam.
 
 Thoát game khi thuận tiện rồi chạy `update.bat`, hoặc chép cả `Mods/LastEpochLAN.dll` và `UserLibs/LastEpochLAN.Core.dll` từ ZIP vào thư mục game trên mỗi máy.
+
+## Phát hành đã xác minh
+
+GitHub prerelease: https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.35 . Đã tải lại ZIP và xác minh SHA256 cả ZIP/cặp DLL. Updater fixture15/live17 checks PASS. Code commit ef0272c; release chỉ có một asset TM-Coop-1.1.0-dev.35.zip, không kèm sửa interop.

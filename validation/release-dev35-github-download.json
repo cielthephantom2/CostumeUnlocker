@@ -1,0 +1,43 @@
+{
+  "release": {
+    "assets": [
+      {
+        "apiUrl": "https://api.github.com/repos/cielthephantom2/CostumeUnlocker/releases/assets/663324560",
+        "contentType": "application/zip",
+        "createdAt": "2026-10-21T17:49:37Z",
+        "digest": "sha256:dc878291de8f02cb7c813ee8d30b401875a578ea87b29659b58b6612d3bc8254",
+        "downloadCount": 0,
+        "id": "RA_kwDOVLyC0c4niYeQ",
+        "label": "",
+        "name": "TM-Coop-1.1.0-dev.35.zip",
+        "size": 564662,
+        "state": "uploaded",
+        "updatedAt": "2026-10-21T17:49:38Z",
+        "url": "https://github.com/cielthephantom2/CostumeUnlocker/releases/download/v1.1.0-dev.35/TM-Coop-1.1.0-dev.35.zip"
+      }
+    ],
+    "isDraft": false,
+    "isPrerelease": true,
+    "publishedAt": "2026-10-21T17:49:39Z",
+    "tagName": "v1.1.0-dev.35",
+    "targetCommitish": "ef0272c170a2803623cfb214be75d2c5bc670e8a",
+    "url": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.35"
+  },
+  "sourceCommit": "ef0272c170a2803623cfb214be75d2c5bc670e8a",
+  "zipSha256": "DC878291DE8F02CB7C813EE8D30B401875A578EA87B29659B58B6612D3BC8254",
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1035264,
+      "sha256": "F23878A0ABC5C052A43E515BEEFB7413240D83BAC8067C70ADEB76FD160A07A0"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 406528,
+      "sha256": "B6893904116FDE16E644ED40C3533D8502414D9A7B96EB854480DD62B32A0D06"
+    }
+  ],
+  "downloadVerified": true,
+  "interopRepairIncluded": false,
+  "downloadDirectory": "C:\\Users\\cielt\\AppData\\Local\\Temp\\le-dev35-github-af90fce29b7741b399dcad333f67d694"
+}
