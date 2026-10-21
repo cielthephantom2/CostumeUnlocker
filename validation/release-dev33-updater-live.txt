@@ -1,0 +1,33 @@
+Checking offline Co-op updates...
+Updated to 1.1.0-dev.33. Backups: D:\New folder\CostumeUnlocker-Publish\research\public-updater-fixture-1882c403ed8647cfa54affea275cf286\UserData\LastEpochLAN\backups\update-5c2961ab6c534cf1b1f167a6a21b6d20
+Use Play Offline. Update both PCs before connecting.
+PASS: verified paired install: Mods/LastEpochLAN.dll
+PASS: verified paired install: UserLibs/LastEpochLAN.Core.dll
+PASS: release lookup uses no GitHub REST API
+PASS: manifest and both DLLs use exactly one pinned commit
+Checking offline Co-op updates...
+Already current: 1.1.0-dev.33 (both SHA-256 hashes verified).
+Use Play Offline. Update both PCs before connecting.
+PASS: already-current install accepts text advertisement and skips both DLL downloads
+Checking offline Co-op updates...
+PASS: malformed, truncated, missing or duplicate branch advertisement rejected
+Checking offline Co-op updates...
+PASS: malformed, truncated, missing or duplicate branch advertisement rejected
+Checking offline Co-op updates...
+PASS: malformed, truncated, missing or duplicate branch advertisement rejected
+Checking offline Co-op updates...
+PASS: malformed, truncated, missing or duplicate branch advertisement rejected
+Checking offline Co-op updates...
+PASS: malformed, truncated, missing or duplicate branch advertisement rejected
+Checking offline Co-op updates...
+PASS: corrupt downloaded DLL rejected
+PASS: download failure preserves installed files
+PASS: running game rejected before network or writes
+PASS: running-game guard performs no network requests
+Checking offline Co-op updates...
+Updated to 1.1.0-dev.33. Backups: D:\New folder\CostumeUnlocker-Publish\research\public-updater-fixture-1882c403ed8647cfa54affea275cf286\UserData\LastEpochLAN\backups\update-7b59c6a131064607b9bf2fabf31a1ba6
+Use Play Offline. Update both PCs before connecting.
+PASS: live GitHub download verified: Mods/LastEpochLAN.dll
+PASS: live GitHub download verified: UserLibs/LastEpochLAN.Core.dll
+PASS: only inactive fixture paths were used; no game launched
+All 17 public updater checks passed.
