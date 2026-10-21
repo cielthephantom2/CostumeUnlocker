@@ -31,7 +31,7 @@ Bảng giống nhau cho Rare và Exalted có T6/T7, không phụ thuộc rarity/
 - Release build **0 warnings / 0 errors**.
 - **831 managed/TCP checks PASS**: tier mapping, unsupported-tier guard, glyph descriptions, Hope33%, đúng RNG, một lần/Forge, nested/exception/thread isolation, radius30, F2 custody/filter transport và các regression trước.
 - **26 compiled audit checks PASS**, 117 lớp Harmony tự chọn: **50 chọn / 67 bỏ**. Xác minh glyph hooks được chọn, Forge local/offline + finalizer, RNG chỉ sửa float probability và gỡ hook sau lease cuối, Despair chỉ sửa getter thay vì tự seal/upgrade, scope thread-local; shared world/combat/VFX/map/Encounter vẫn bị chặn, Disintegrate/Arcane overrides vẫn vắng mặt.
-- Updater xác minh SHA256 cặp DLL, backup và từ chối ghi khi game chạy. Proof release tại `validation/release-dev30-*`.
+- **15 updater fixture / 17 live GitHub updater checks PASS**: tải đúng SHA256 cặp DLL từ commit đã push, backup và từ chối ghi khi game chạy. Chỉ cài vào thư mục giả lập không chạy game. Proof release tại `validation/release-dev30-*`.
 - Chưa chạy native gameplay/UI hoặc đo FPS cho bản này; managed/audit không thay thế nghiệm thu craft trong game. Không khởi chạy engine QA thứ hai, không đóng game hoặc cài Steam trong lượt build/upload.
 
 Để cập nhật, thoát game khi thuận tiện rồi chạy `update.bat` trong thư mục game. Cặp bắt buộc: `Mods/LastEpochLAN.dll` và `UserLibs/LastEpochLAN.Core.dll` từ cùng manifest.
