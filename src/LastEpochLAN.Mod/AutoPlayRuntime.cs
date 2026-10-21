@@ -16,6 +16,9 @@ internal sealed partial class AutoPlayRuntime
     internal string Status="Stopped - F1 to configure",Error="";
     internal long Requests,ConfirmedCasts,PotionsUsed;
     private readonly AutoPlaySchedule schedule=new();
+    private readonly AutoPlayRecovery recovery=new();
+    internal string LastRunStatus="Stopped - F1 to configure";
+    private string pauseReason="";
     private readonly Ability[] abilities=new Ability[5];
     private readonly string[] keys=Enumerable.Repeat("?",5).ToArray();
     private readonly string[] names=Enumerable.Repeat("No skill",5).ToArray();
@@ -54,9 +57,10 @@ internal sealed partial class AutoPlayRuntime
         if(block && input!=null && blockedInput==null)
         {blockedInput=input;previousDisableInput=input.forceDisableInput;input.forceDisableInput=true;}
     }
-    internal object Diagnostics=>new {Open,Armed,Status,Error,Requests,ConfirmedCasts,PotionsUsed,hp,mp,potionCharges,potionMax,
+    internal object Diagnostics=>new {Open,Armed,Status,LastRunStatus,pauseReason,Error,Requests,ConfirmedCasts,PotionsUsed,hp,mp,potionCharges,potionMax,
+        recovery.ReadFailures,recovery.RetryAt,
         targetScanRadius,targetCandidates,targetInRange,
-        slots=Enumerable.Range(0,5).Select(i=>new {slot=i,key=keys[i],name=names[i],cooldown=cooldowns[i],charges=charges[i],status=slotStatus[i]}).ToArray()};
+        slots=Enumerable.Range(0,5).Select(i=>new {slot=i,key=keys[i],name=names[i],cooldown=cooldowns[i],charges=charges[i],status=slotStatus[i],repeatWait=schedule.WaitSeconds(i,Time.unscaledTime)}).ToArray()};
     private static string Root=>Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),"UserData","LastEpochLAN","AutoPlay");
     private static int ActionId(int i)=>i switch {0=>(int)EpochInputManager.InputActions.Ability1,1=>(int)EpochInputManager.InputActions.Ability2,
         2=>(int)EpochInputManager.InputActions.Ability3,3=>(int)EpochInputManager.InputActions.Ability4,_=>(int)EpochInputManager.InputActions.Ability5};
@@ -73,7 +77,7 @@ internal sealed partial class AutoPlayRuntime
     private void Profile(string id)
     {
         if(character==id)return;
-        ReleaseHeld();Save();character=id;Armed=false;schedule.Reset();nextPotion=0;
+        ReleaseHeld();Save();character=id;Armed=false;schedule.Reset();recovery.Reset();nextPotion=0;
         profilePath=Path.Combine(Root,Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(id)))+".json");
         Settings=new();
         try
@@ -100,6 +104,7 @@ internal sealed partial class AutoPlayRuntime
     internal void Tick(bool otherPanel,bool transition)
     {
         Active=this;
+        bool actionAttempted=false;
         try
         {
             var input=EpochInputManager.instance;
@@ -121,21 +126,26 @@ internal sealed partial class AutoPlayRuntime
             InputBlock(input,Open && localReady);
             if(!localReady)
             {
-                if(actor==null || !offline){Armed=false;}
+                // Actors/identity disappear briefly during scene loading. Keep
+                // the user's armed intent; Profile still stops on a new character.
+                if(!offline){Armed=false;}
                 enemies.Clear();nearest=rareBoss=null;Status="Paused - character/loading/transition";return;
             }
             string id=actor.characterDataTracker?.charData?.Id??"";
-            if(id==""){Armed=false;Status="Waiting for character identity";return;}
+            if(id==""){Status="Waiting for character identity";return;}
             Profile(id);
             string nowScene=SceneList.GetCurrentSceneDetails()?.Name??"";
             if(actorPointer!=actor.Pointer || scene!=nowScene)
             {ReleaseHeld();actorPointer=actor.Pointer;scene=nowScene;enemies.Clear();nearest=rareBoss=null;nextScan=nextRead=nextTargets=nextBuffs=0;schedule.Reset();}
+            if(Time.unscaledTime<recovery.RetryAt){Status="Paused - refreshing native character data";return;}
             if(Time.unscaledTime<nextRead)return;
             nextRead=Time.unscaledTime+(Open?0.1f:0.025f);
             var ui=UIBase.instance;
-            bool paused=Open || otherPanel || !Application.isFocused || Time.timeScale<=0 || input==null ||
-                input.forceDisableInput || input.cinematicActive || input.IsInputFieldActive || input.ButtonPressBlocked ||
-                ui==null || ui.menuOpen || ui.IsChatInputFocused || ui.AnyPanelOpened();
+            pauseReason=Open?"F1 open":otherPanel?"Mod panel / Shared Stash open":!Application.isFocused?"Game unfocused":Time.timeScale<=0?"Game time paused":
+                input==null?"Input unavailable":input.forceDisableInput?"Game input disabled":input.cinematicActive?"Cinematic":
+                input.IsInputFieldActive?"Text input focused":input.ButtonPressBlocked?"Game buttons blocked":ui==null?"Game UI unavailable":
+                ui.menuOpen?"Game menu open":ui.IsChatInputFocused?"Chat focused":ui.AnyPanelOpened()?"Game panel open":"";
+            bool paused=pauseReason!="";
             // The panel shows target conditions while configuring. Closed and
             // paused automation needs neither a scene walk nor target reads.
             bool needTargets=AutoPlayRules.RequiresTargetScan(Settings,Open,Armed,paused);
@@ -143,12 +153,14 @@ internal sealed partial class AutoPlayRuntime
             if(!needTargets)
             {enemies.Clear();nearest=rareBoss=null;enemyDistance=rareDistance=float.PositiveInfinity;nextScan=nextTargets=0;targetScanRadius=0;targetCandidates=targetInRange=0;}
             Read(actor,input,needTargets);
+            if(recovery.ReadFailures>0){recovery.Reset();Error="";}
             if(!Armed){Status="Stopped - configure skills, then Start";return;}
-            if(paused){Status="Paused - panel/chat/focus";return;}
+            if(paused){Status="Paused - "+pauseReason;return;}
             var potion=actor.GetComponent<HealthPotion>();
             double now=Time.unscaledTime;
             if(AutoPlayRules.Drink(Settings.Potion,localReady,hp,potionCharges,potionCost,now,nextPotion) && potion!=null)
             {
+                actionAttempted=true;
                 TryPotion(potion,now);
                 return;
             }
@@ -166,7 +178,7 @@ internal sealed partial class AutoPlayRuntime
                 {
                     var target=rule.TargetRareBoss?rareBoss:nearest;
                     if(rule.SelfTarget || EnemyAlive(target,actor.GetActorSync()?.actorVisuals?.alignment))
-                    {heldUse.TryUpdateTargetLocationIfChannelling(rule.SelfTarget?actor.position():target.transform.position);Status="Holding: "+names[heldSlot];return;}
+                    {actionAttempted=true;heldUse.TryUpdateTargetLocationIfChannelling(rule.SelfTarget?actor.position():target.transform.position);Status="Holding: "+names[heldSlot];return;}
                 }
                 ReleaseHeld();
             }
@@ -176,15 +188,22 @@ internal sealed partial class AutoPlayRuntime
             {Status="Waiting - manual skill / cast / control state";return;}
             int slot=schedule.Select(Settings,contexts,now);
             if(slot<0){Status="Running - waiting for skill conditions";return;}
-            TryCast(actor,use,slot,now);
+            actionAttempted=true;TryCast(actor,use,slot,now);
         }
         catch(Exception ex)
         {
-            InputBlock(null,false);Armed=false;Status="Stopped - native read/action failed";
+            try{InputBlock(null,false);}catch{blockedInput=null;}
+            bool retry=recovery.Failed(Time.unscaledTime,actionAttempted);
+            if(!retry)Armed=false;
+            localReady=false;enemies.Clear();nearest=rareBoss=null;
+            nextScan=nextRead=nextTargets=nextBuffs=0;
+            Status=retry?"Paused - native read retry "+recovery.ReadFailures+"/3":
+                actionAttempted?"Stopped - native action failed; F1 to restart":"Stopped - repeated native read failure; F1 to restart";
             string message=ex.GetBaseException().Message;if(Error!=message)MelonLoader.MelonLogger.Warning("Auto Play: "+message);Error=message;
         }
         finally
         {
+            if(!Open)LastRunStatus=Status;
             try
             {
                 var input=EpochInputManager.instance;var ui=UIBase.instance;
@@ -194,7 +213,14 @@ internal sealed partial class AutoPlayRuntime
             }
             catch{heldUse=null;heldAbility=null;heldSlot=-1;}
             try{panelView??=new(this);panelView.Tick();}
-            catch(Exception ex){Armed=false;Error="Panel: "+ex.Message;}
+            catch(Exception ex)
+            {
+                string message="Panel: "+ex.Message;
+                if(Error!=message)MelonLoader.MelonLogger.Warning("Auto Play "+message);
+                Error=message;
+                // Rendering errors must not clear the user's master switch.
+                // An open F1 still pauses actions; F1 can close it independently.
+            }
         }
     }
     private bool TryPotion(HealthPotion potion,double now)
@@ -289,7 +315,8 @@ internal sealed partial class AutoPlayRuntime
             contexts[i]=new(a?.name??"",hp,mp,manaKnown,enemyDistance,rareDistance,
                 a!=null && actor.chargeManager!=null && !actor.chargeManager.onCoooldown(a),buffKnown,hasBuff,ward,protection!=null);
             slotStatus[i]=a==null?"No skill":AutoPlayRules.Blocked(rule,contexts[i]);
-            if(slotStatus[i]=="")slotStatus[i]="Ready";
+            if(slotStatus[i]=="")
+            {double wait=schedule.WaitSeconds(i,Time.unscaledTime);slotStatus[i]=wait>0?$"Repeat interval: {wait:0.00}s":"Ready";}
         }
         if(input!=null && Time.unscaledTime>=nextBindings)
         {

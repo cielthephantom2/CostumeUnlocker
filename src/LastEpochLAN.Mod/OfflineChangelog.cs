@@ -10,6 +10,7 @@ internal static class OfflineChangelog
     private static GUIStyle bodyStyle;
     private static readonly string content=
         "<b>BONUS OFFLINE</b>\n"+
+        "• Dev.32: sửa Assist bị pause sau bật/tắt DPS rồi đóng F4; Bloodrage UI hiển thị2/10 đến10/10.\n"+
         "• Bloodrage (Rage of Morditas): mỗi nấc nhận2 charge, tổng2/4/6/8/10; giữ mốc kill và tiêu hao native.\n"+
         "• Glyph of Hope: 33% không tốn Forging Potential.\n"+
         "• Glyph of Despair: T1 100%, T2 70%, T3 50%, T4 33%; cùng tỷ lệ cho Rare và Exalted có T6/T7. Không mở seal T5 trở lên.\n"+
@@ -60,7 +61,7 @@ internal static class OfflineChangelog
         "• Loot Filter vẫn chia sẻ trong phòng; chỉnh/switch/tắt filter được cập nhật cho các máy khác.\n"+
         "• Tạm tắt đồng bộ quái/combat/HP/status/thưởng, nhân vật/pet/VFX, Teleport/Monolith và Encounter để giảm tải.\n"+
         "• Combat Assist, DPS và toàn bộ tiện ích cá nhân trong Mod Settings tiếp tục hoạt động.\n"+
-        "• Dev.31 giữ protocol40; phòng Internet vẫn chỉ F2 + Loot Filters. Bản dev.27/protocol36 không kết nối chung.";
+        "• Dev.32 giữ protocol40; phòng Internet vẫn chỉ F2 + Loot Filters. Bản dev.27/protocol36 không kết nối chung.";
 
     internal static void Show(){scroll=Vector2.zero;Open=true;}
     internal static void Draw(string version)

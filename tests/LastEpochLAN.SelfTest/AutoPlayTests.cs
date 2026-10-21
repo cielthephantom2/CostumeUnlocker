@@ -79,11 +79,25 @@ internal static class AutoPlayTests
         settings.Skills[1].Enabled=false;
         check(schedule.Select(settings,contexts,11.5)==-1 && schedule.Select(settings,contexts,12.1)==0,"per-skill repeat interval survives no-cooldown abilities");
         schedule.Reset();check(schedule.Select(settings,contexts,1)==0,"new character/session clears previous scheduling timestamps");
+        settings.Skills[0].Interval=120;schedule.Reset();schedule.Select(settings,contexts,10);schedule.Requested(0,10,120,true);
+        check(schedule.WaitSeconds(0,11)==119,"Assist diagnostics distinguish configured repeat delay from blocked skill conditions");
+        settings.Skills[0].Interval=0;
+        check(schedule.Select(settings,contexts,11)==0,"changing repeat interval 120s to Hold immediately clears old per-skill timer");
+        var recovery=new AutoPlayRecovery();
+        check(recovery.Failed(10,false) && recovery.ReadFailures==1 && recovery.RetryAt==10.25,
+            "one transient native read failure retries with bounded delay instead of disarming Assist");
+        recovery.Reset();
+        check(recovery.ReadFailures==0 && recovery.RetryAt==0,"successful read/restart clears transient recovery state");
+        check(recovery.Failed(20,false) && recovery.Failed(21,false) && recovery.Failed(22,false) && !recovery.Failed(23,false),
+            "persistent native read failures stop after three retries, not an infinite loop");
+        recovery.Reset();
+        check(!recovery.Failed(30,true) && recovery.ReadFailures==0,
+            "native action failure never auto-retries potentially already-executed cast/potion");
         settings.Skills[0].Interval=0;schedule.Reset();schedule.Requested(0,20,0,true);
         check(schedule.Select(settings,contexts,20.03)==0,"zero interval resumes after 25ms dispatch guard without a 200ms pause");
         schedule.Observed(0,20.04,0);
         check(schedule.Select(settings,contexts,20.04)==0,"native confirmation does not add a global gap to zero interval");
-        settings.Skills[1].Enabled=true;schedule.Requested(0,30,2,true);schedule.Observed(0,30.03,2);
+        settings.Skills[0].Interval=2;settings.Skills[1].Enabled=true;schedule.Requested(0,30,2,true);schedule.Observed(0,30.03,2);
         check(schedule.Select(settings,contexts,30.04)==1,"confirming one skill does not delay another ready skill");
         settings.Skills[1].Enabled=false;
         check(schedule.Select(settings,contexts,32.02)==-1 && schedule.Select(settings,contexts,32.04)==0,"positive interval still starts at confirmed native cast");

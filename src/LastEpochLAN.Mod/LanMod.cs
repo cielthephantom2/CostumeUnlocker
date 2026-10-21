@@ -5,7 +5,7 @@ using MelonLoader;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
-[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.31", "Local research")]
+[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.32", "Local research")]
 [assembly: HarmonyDontPatchAll]
 [assembly: MelonGame("Eleventh Hour Games", "Last Epoch")]
 
@@ -316,7 +316,11 @@ public sealed class LanMod : MelonMod
             if(Input.GetKeyDown(KeyCode.F2))sharedChest.Toggle();
             if (RoomFeaturePolicy.SharedWorldEnabled && !StartupArguments.Contains("--lelan-gift-smoke")) partyTravel.Tick(session);
             if (RoomFeaturePolicy.SharedWorldEnabled && !StartupArguments.Contains("--lelan-gift-smoke")) monolithParty.Tick(session);
-            if(supported) using (RuntimePerformance.Measure(PerformanceArea.AutoAssist)) autoPlay.Tick(panel || sharedChest.Open || OfflineTools.OfflineToolkit.PanelOpen,partyTravel.Busy || monolithParty.Busy);
+            // Mod Settings is a child page, drawn only while the F4 root is
+            // visible. Its remembered page flag must not pause Assist after F4
+            // hides that root (e.g. after toggling Show/Hide DPS).
+            if(supported) using (RuntimePerformance.Measure(PerformanceArea.AutoAssist)) autoPlay.Tick(panel || sharedChest.Open,
+                RoomFeaturePolicy.SharedWorldEnabled && (partyTravel.Busy || monolithParty.Busy));
             if (!StartupArguments.Contains("--lelan-hud-policy")) HudAuthority.Session = RoomFeaturePolicy.SharedWorldEnabled && (session?.IsHost==true || partyTravel.Participation.Enabled) ? session : null;
             lootFilters.Tick(session);
             if (session == null)
@@ -706,6 +710,9 @@ public sealed class LanMod : MelonMod
             phase, utc = DateTimeOffset.UtcNow, modVersion = ModVersion, protocolVersion = LanProtocol.Version, supported, gameAssemblySha256 = fingerprint, offlineMode,
             roomMode = "Internet inventory-only: F2 + Loot Filters",
             sharedWorldEnabled = RoomFeaturePolicy.SharedWorldEnabled,
+            modUi = new { f4Visible=panel, settingsPageSelected=OfflineTools.OfflineToolkit.PanelOpen,
+                settingsVisible=panel && OfflineTools.OfflineToolkit.PanelOpen, stashVisible=sharedChest.Open,
+                dpsVisible=OfflineTools.OfflineToolkit.Settings.DpsVisible },
             runtimePatches = new { RoomPatches.Installed, RoomPatches.Skipped },
             partyTravel = new { partyTravel.Completed, partyTravel.Busy, partyTravel.Message, partyTravel.Error },
             monolithParty=new {monolithParty.Entries,monolithParty.Restores,monolithParty.RewardGrants,monolithParty.Busy,monolithParty.Borrowing,monolithParty.Message,monolithParty.Error,monolithParty.ObjectiveError},

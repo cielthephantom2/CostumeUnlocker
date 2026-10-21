@@ -251,11 +251,11 @@ internal sealed partial class AutoPlayRuntime
             Button(frame.transform,"HelpTab",22,470,52,25,()=>"?",()=>owner.tab=6);
             Box(frame.transform,"Footer divider",104,476,554,1,stroke,false);
             var status=Box(frame.transform,"Status dot",106,497,7,7,muted);
-            Label(frame.transform,122,485,418,20,()=>owner.Armed?"Master ON - paused while panel is open":"Master OFF - automation stopped",12);
+            Label(frame.transform,122,485,418,20,()=>owner.LastRunStatus,12);
             Label(frame.transform,122,505,414,15,()=>owner.Error!=""?owner.Error:"Settings saved automatically",10,true);
             updates.Add(()=>status.color=owner.Armed?accent:muted);
             startButton=Button(frame.transform,"StartStop",574,486,84,32,()=>owner.Armed?"Stop":"Start",()=>
-            {if(owner.Armed)owner.Armed=false;else if(owner.localReady){owner.Armed=true;owner.schedule.Reset();owner.Status="Armed - close F1 and F4 to run";}});
+            {if(owner.Armed)owner.Armed=false;else if(owner.localReady){owner.Armed=true;owner.schedule.Reset();owner.recovery.Reset();owner.Error="";owner.Status="Armed - close F1 and F4 to run";}});
             updates.Add(()=>startButton.targetGraphic.color=owner.Armed?new Color(0.34f,0.18f,0.23f):new Color(0.12f,0.33f,0.32f));
         }
         internal void Tick()

@@ -24,6 +24,11 @@ var bloodrageTargets=new Dictionary<string,(string Type,string Method)>
  ["OfflineBloodrageChargeCountPatch"]=("Il2Cpp.RageOfMorditasSync","GetBloodrageChargeCount"),
  ["OfflineBloodrageInitialRewardsPatch"]=("Il2Cpp.RageOfMorditasRewardLogic","Initialize")
 };
+var bloodrageUiTargets=new Dictionary<string,(string Type,string Method)>
+{
+ ["OfflineBloodrageHuntProgressTextPatch"]=("Il2Cpp.RageOfMorditasHuntProgress","SetBloodrageCharges"),
+ ["OfflineBloodrageQuestProgressTextPatch"]=("Il2Cpp.RageOfMorditasQuestTrackerUI","UpdatePhaseVisuals")
+};
 foreach(var patch in patches)
 {
  // CoF Rank7 offline quantity bonus is an explicitly retained gameplay bonus.
@@ -34,12 +39,16 @@ foreach(var patch in patches)
   {
    bool authorizedCharge=patch.Namespace=="LastEpochLAN.Mod.OfflineTools" && bloodrageTargets.TryGetValue(patch.Name,out var charge) &&
     type.FullName==charge.Type && attribute.ConstructorArguments.Any(v=>Equals(v.Value,charge.Method));
-   if(!authorizedCharge)violations.Add(patch.FullName+" -> "+type.FullName);
+   bool authorizedUi=patch.Namespace=="LastEpochLAN.Mod.OfflineTools" && bloodrageUiTargets.TryGetValue(patch.Name,out var ui) &&
+    type.FullName==ui.Type && attribute.ConstructorArguments.Any(v=>Equals(v.Value,ui.Method));
+   if(!authorizedCharge && !authorizedUi)violations.Add(patch.FullName+" -> "+type.FullName);
   }
  foreach(var owner in Walk(new[]{patch}))foreach(var method in owner.Methods.Where(m=>m.HasBody))
  foreach(var instruction in method.Body.Instructions)
  {
   var target=instruction.Operand switch {MethodReference m=>m.DeclaringType.FullName,TypeReference t=>t.FullName,_=>""};
+  if(bloodrageUiTargets.TryGetValue(patch.Name,out var uiRead) && instruction.Operand is MethodReference uiGetter &&
+    uiGetter.DeclaringType.FullName==uiRead.Type && uiGetter.Name is "get_chargesText" or "get_bloodrageChargesText" or "get__currentBloodChargeCount")continue;
   // Amber scaling reads its serialized base/slopes from the encounter data
   // asset. This exact read is allowed; interaction/reward execution stays banned.
   if(patch.Name=="LinearCorruptionAmberPatch" && instruction.Operand is MethodReference amberRead &&
@@ -185,6 +194,28 @@ Check(chargePatches.Length==3 && chargePatches.SelectMany(t=>t.Methods).Where(m=
 Check(!chargePatches.SelectMany(t=>t.CustomAttributes).SelectMany(a=>a.ConstructorArguments).Any(a=>
  Equals(a.Value,"ConsumeReward") || Equals(a.Value,"FixedUpdate_Hunt") || Equals(a.Value,"GrantBloodrageCharge")),
  "Bloodrage native threshold progression, per-charge spending and timer stay unpatched");
+var progressText=types.Single(t=>t.Name=="OfflineBloodrageProgressText").Methods.Single(m=>m.Name=="Refresh");
+Check(installed.Count(t=>bloodrageUiTargets.ContainsKey(t.Name))==2 &&
+ progressText.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="OfflineToolkit" && m.Name=="get_Enabled") &&
+ progressText.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="BloodrageChargeRules" && m.Name=="Earned") &&
+ progressText.Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Where(m=>m.Name.StartsWith("set_",StringComparison.Ordinal))
+ .All(m=>m.Name=="set_text"),
+ "Bloodrage hunt/quest counters scale only the UI maximum; helper writes text only, no threshold/currency/save mutations");
+var assistRuntime=types.Single(t=>t.Name=="AutoPlayRuntime");
+var assistTick=assistRuntime.Methods.Single(m=>m.Name=="Tick");
+Check(assistTick.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="AutoPlayRecovery" && m.Name=="Failed") &&
+ assistRuntime.Fields.Any(f=>f.Name=="LastRunStatus") && assistRuntime.Fields.Any(f=>f.Name=="pauseReason"),
+ "Assist retains bounded native-read recovery and observable last-run/pause reason without new global hooks");
+var assistSchedule=Walk(core.MainModule.Types).Single(t=>t.Name=="AutoPlaySchedule");
+Check(assistSchedule.Fields.Any(f=>f.Name=="intervals") && assistSchedule.Methods.Any(m=>m.Name=="WaitSeconds") &&
+ types.Single(t=>t.Name=="LanMod").Methods.Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Count(i=>
+ i.Operand is MethodReference call && call.DeclaringType.Name=="AutoPlayRuntime" && call.Name=="Tick")==1,
+ "Assist timer diagnostics/config-change tracking keep a single local scheduler tick");
+var modUpdate=types.Single(t=>t.Name=="LanMod").Methods.Single(m=>m.Name=="OnUpdate");
+Check(!modUpdate.Body.Instructions.Any(i=>i.Operand is FieldReference f && f.DeclaringType.Name=="OfflineToolkit" && f.Name=="PanelOpen") &&
+ modUpdate.Body.Instructions.Any(i=>i.Operand is FieldReference f && f.DeclaringType.Name=="LanMod" && f.Name=="panel") &&
+ modUpdate.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="AutoPlayRuntime" && m.Name=="Tick"),
+ "DPS Settings -> close F4 regression: Assist reads visible root panel, never stale hidden Settings page flag");
 File.WriteAllText(args[2],JsonSerializer.Serialize(new{passed=checks.Count,patchesInspected=patches.Length,
  installedPatches=installed.Select(t=>t.FullName),skippedPatches=skipped.Select(t=>t.FullName),
  scope="compiled metadata and IL audit; not gameplay acceptance",checks},new JsonSerializerOptions{WriteIndented=true}));

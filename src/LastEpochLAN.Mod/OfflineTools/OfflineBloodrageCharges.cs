@@ -38,3 +38,30 @@ internal static class OfflineBloodrageInitialRewardsPatch
         if (OfflineToolkit.Enabled) __2 = BloodrageChargeRules.InitialRewards(__2, __3);
     }
 }
+
+internal static class OfflineBloodrageProgressText
+{
+    internal static void Refresh(Il2CppTMPro.TMP_Text label, int earnedCharges)
+    {
+        if (!OfflineToolkit.Enabled || label == null) return;
+        var thresholds = RageOfMorditasData.Instance?.HuntKillThresholdsForBloodrageCharges;
+        if (thresholds == null) return;
+        // The numerator is already converted to earned currency by dev31.
+        // Only convert the native tier-count denominator; never change the asset.
+        label.text = $"{earnedCharges}/{BloodrageChargeRules.Earned(thresholds.Count)}";
+    }
+}
+
+[HarmonyPatch(typeof(RageOfMorditasHuntProgress), nameof(RageOfMorditasHuntProgress.SetBloodrageCharges))]
+internal static class OfflineBloodrageHuntProgressTextPatch
+{
+    private static void Postfix(RageOfMorditasHuntProgress __instance, int __0)
+        => OfflineBloodrageProgressText.Refresh(__instance.chargesText, __0);
+}
+
+[HarmonyPatch(typeof(RageOfMorditasQuestTrackerUI), nameof(RageOfMorditasQuestTrackerUI.UpdatePhaseVisuals))]
+internal static class OfflineBloodrageQuestProgressTextPatch
+{
+    private static void Postfix(RageOfMorditasQuestTrackerUI __instance)
+        => OfflineBloodrageProgressText.Refresh(__instance.bloodrageChargesText, __instance._currentBloodChargeCount);
+}

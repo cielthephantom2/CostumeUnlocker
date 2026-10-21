@@ -1,0 +1,29 @@
+{
+  "version": "1.1.0-dev.32",
+  "protocol": 40,
+  "build": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "managedChecks": 892,
+  "compiledAuditChecks": 38,
+  "selectedPatchClasses": 65,
+  "skippedPatchClasses": 67,
+  "updaterFixtureChecks": 15,
+  "nativeGameplayVerified": false,
+  "fpsMeasured": false,
+  "scope": "Combat Assist hidden DPS Settings pause fix, bounded read recovery, repeat interval edits and diagnostics; Bloodrage UI 10/10; Internet F2 and Loot Filters only",
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1005568,
+      "sha256": "2B3D4DA8171764425D5CD979D8E6E73A24195AFF7E196DFA6DD3671974F839B8"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 393216,
+      "sha256": "8295C068AEF595067610A342BA3AC9FE0E126DCDFFEF0CC59257494C8A09CD24"
+    }
+  ],
+  "releaseZipSha256": "8D6BFFF5120BE58052FB4FFCBC66B1D3184E9C869BE6E1B8DB7523BCB7011365"
+}

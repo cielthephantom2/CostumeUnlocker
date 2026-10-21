@@ -1,6 +1,8 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.31
+# TM Last Epoch Co-op Mod — 1.1.0-dev.32
 
 Development release, protocol **40**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). Both Host and Client must update. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
+
+**Dev.32:** fixes Combat Assist remaining paused after toggling DPS in Mod Settings and closing F4: a hidden Settings page no longer counts as a visible panel. Adds bounded recovery for transient native reads/loading, corrects stale repeat timers after interval edits, and shows last-run/pause diagnostics in F1. Fixes Bloodrage counters **10/5 -> 10/10** in hunt notifications and quest UI. Update both DLLs; protocol40 and Internet F2 + Loot Filters policy remain unchanged. See [dev.32 changes and validation](RELEASE-1.1.0-dev32-VI.md).
 
 **Dev.31:** removes Corruption diminishing returns from the audited EXP, native monster-gold, standard Memory Amber, LP roll, WW promotion-roll and Echo Reward Rarity paths. Existing gold /40 bonus remains, so combined gold grows faster than a straight line. Bloodrage's five earned tiers now award **2/4/6/8/10** actual initial reward charges with matching hunt displays. Fixes **x5 Shade catch-up overshoot**: only earned base/Gaze are multiplied; convergence to the native highest-C target is recalculated. Already-saved excessive Corruption is **not repaired automatically**. No native gameplay acceptance claimed; Internet rooms remain F2 + Loot Filters only. See [dev.31 changes, rates and limits](RELEASE-1.1.0-dev31-VI.md).
 

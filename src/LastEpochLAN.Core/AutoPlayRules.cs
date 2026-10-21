@@ -123,6 +123,7 @@ public sealed class AutoPlaySchedule
 {
     private readonly double[] next=new double[5];
     private readonly string[] identities=new string[5];
+    private readonly float[] intervals=new float[5];
     private int cursor;
     private double globalNext;
     public void Reset(){Array.Clear(next,0,next.Length);Array.Clear(identities,0,identities.Length);cursor=0;globalNext=0;}
@@ -133,19 +134,21 @@ public sealed class AutoPlaySchedule
         {
             int i=(cursor+n)%5;
             if(i>=settings.Skills.Length || i>=contexts.Count)continue;
-            if(identities[i]!=contexts[i].Ability){identities[i]=contexts[i].Ability;next[i]=0;}
+            if(identities[i]!=contexts[i].Ability || intervals[i]!=settings.Skills[i].Interval)
+            {identities[i]=contexts[i].Ability;intervals[i]=settings.Skills[i].Interval;next[i]=0;}
             if(now>=next[i] && AutoPlayRules.Blocked(settings.Skills[i],contexts[i])=="")return i;
         }
         return -1;
     }
     public void Requested(int slot,double now,float interval,bool accepted)
     {
-        next[slot]=now+(accepted?Math.Max(0,interval):0.15);globalNext=now+0.025;cursor=(slot+1)%5;
+        intervals[slot]=interval;next[slot]=now+(accepted?Math.Max(0,interval):0.15);globalNext=now+0.025;cursor=(slot+1)%5;
     }
     public void Observed(int slot,double now,float interval)
     {
         // Confirmation starts this skill's repeat timer, not a global pause.
         // A zero interval should be ready as soon as the native cast ends.
-        next[slot]=now+Math.Max(0,interval);
+        intervals[slot]=interval;next[slot]=now+Math.Max(0,interval);
     }
+    public double WaitSeconds(int slot,double now)=>Math.Max(0,Math.Max(next[slot],globalNext)-now);
 }
