@@ -1,0 +1,16 @@
+PASS: verified paired install: Mods/LastEpochLAN.dll
+PASS: verified paired install: UserLibs/LastEpochLAN.Core.dll
+PASS: release lookup uses no GitHub REST API
+PASS: manifest and both DLLs use exactly one pinned commit
+PASS: already-current install accepts text advertisement and skips both DLL downloads
+PASS: malformed, truncated, missing or duplicate branch advertisement rejected
+PASS: malformed, truncated, missing or duplicate branch advertisement rejected
+PASS: malformed, truncated, missing or duplicate branch advertisement rejected
+PASS: malformed, truncated, missing or duplicate branch advertisement rejected
+PASS: malformed, truncated, missing or duplicate branch advertisement rejected
+PASS: corrupt downloaded DLL rejected
+PASS: download failure preserves installed files
+PASS: running game rejected before network or writes
+PASS: running-game guard performs no network requests
+PASS: only inactive fixture paths were used; no game launched
+All 15 public updater fixture checks passed.

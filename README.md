@@ -40,7 +40,7 @@ See [Vietnamese release report](RELEASE-1.1.0-dev14-VI.md) and [historical rewri
 
 ## Validation
 
-- Dev.29: Release build zero warnings/errors, **806 managed/TCP checks**, **20 compiled checks**. Of 114 compiled Harmony patch classes, **47 selected / 67 skipped**. Audits confirm the shared-world paths are unreachable under release policy and F2/filter/local-tool hooks remain selected. Updater verifies the published DLL pair. Native FPS improvement and two-PC Internet gameplay have not been measured for this release. No running game is modified or closed by the build/publish workflow.
+- Dev.29: Release build zero warnings/errors, **806 managed/TCP checks**, **20 compiled checks**. Of 114 compiled Harmony patch classes, **47 selected / 67 skipped**. Audits confirm the shared-world paths are unreachable under release policy and F2/filter/local-tool hooks remain selected. **15 updater fixture checks / 17 live GitHub updater checks** pass with exact DLL hashes. Native FPS improvement and two-PC Internet gameplay have not been measured for this release. No running game is modified or closed by the build/publish workflow.
 - The following older validation entries are historical and do not replace the dev.29 report.
 - Dev.14 Release build: zero warnings/errors. No managed/native/visual or physical multiplayer tests were run for this release; the reported Client transfer failure is not confirmed resolved.
 - Dev.13 icon and slider fixes are retained and remain unverified in game.

@@ -30,7 +30,7 @@ Mỗi máy tự chơi map/quái/Encounter và nhận thưởng native của mìn
 - Release build: **0 warnings / 0 errors**.
 - **806 managed/TCP checks PASS**: gồm inventory-only presence, F2 request không cần map/co-op readiness, filter qua socket đã xác thực, public IPv4 policy, custody/replay/save protocols và Assist/profiler regression.
 - **20 compiled audit checks PASS**: Melon PatchAll opt-out, policy false không có config override, hook allowlist, control-flow OnUpdate/OnLateUpdate, presence không gọi capture nặng, không còn Disintegrate/Arcane overrides. 114 lớp patch compiled, 47 chọn và 67 bỏ.
-- Kiểm tra updater fixture và bản GitHub được lưu tại `validation/release-dev29-*`.
+- **15 updater fixture checks / 17 live GitHub updater checks PASS**: tải lại đúng SHA256 của cả hai DLL từ commit đã push vào thư mục giả lập không chạy game. Bằng chứng tại `validation/release-dev29-*`.
 - Chưa native-test phiên bản này trong game hoặc nghiệm thu hai máy Internet; không tự đóng game, không khởi chạy engine QA thứ hai, không cài vào Steam trong lượt build/upload này.
 
 ## Cập nhật
