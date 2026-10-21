@@ -86,7 +86,7 @@ internal sealed class LanSharedChest
             try { return new {Open,Status,characterReady=Ready,inventoryReady=Manager?.IsFullyInitializedAndLoaded==true,
                 identityReady=identity.Identity!="" && identity.Character!="",journalReady=journal!=null,
                 connected=session?.Connected==true,selectedTab=SelectedTab,tabCount=stashTabs.Length,tabEditPending=pendingTabEdit!=null,viewReceived=view!=null,nativeVisible=nativeView?.Visible==true,
-                nativeError=nativeView?.Error??"",sourcePanel=nativeView?.SourcePanelKind??"",
+                nativeError=nativeView?.Error??"",sourcePanel=nativeView?.SourcePanelKind??"",nativeControls=nativeView?.NativeControlsKind??"",
                 hostRequests,transferAttempts,lastHostBlock,savePending,failed,nativeInteractions=nativeView?.Interactions??0,
                 transactionStages=journal?.Records.GroupBy(t=>t.Stage).ToDictionary(g=>g.Key,g=>g.Count()),
                 localAccessBlock=AccessBlock(session?.PlayerPositions.FirstOrDefault(p=>p.Id==session.LocalId))}; }

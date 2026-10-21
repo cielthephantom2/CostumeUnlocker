@@ -5,7 +5,7 @@ using MelonLoader;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
-[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.34", "Local research")]
+[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.35", "Local research")]
 [assembly: HarmonyDontPatchAll]
 [assembly: MelonGame("Eleventh Hour Games", "Last Epoch")]
 
@@ -107,8 +107,10 @@ public sealed class LanMod : MelonMod
         using var stream = File.OpenRead(assemblyPath);
         using var sha256 = SHA256.Create();
         fingerprint = Convert.ToHexString(sha256.ComputeHash(stream));
-        // Pinned to the actual client inspected here; refuse incompatible adapters.
-        supported = fingerprint == "D5F9FB458F0E9878E697A92B590A586A52FD77E645F8BF87BB4F2B74C6C56567";
+        // Exact inspected builds only. The 2026-10-22 Steam build26087601
+        // passed new-interop compilation and installed all72 selected hooks.
+        // This compatibility gate is not native gameplay acceptance.
+        supported = IsSupportedGameAssembly(fingerprint);
         roomCode = Convert.ToHexString(RandomNumberGenerator.GetBytes(4));
         adapterSmokeRequested = StartupArguments.Contains("--lelan-adapter-smoke");
         classSmokeRequested = StartupArguments.Contains("--lelan-class-visual-smoke");
@@ -139,6 +141,10 @@ public sealed class LanMod : MelonMod
         LoggerInstance.Msg($"Internet room: F2 Shared Stash and Loot Filters enabled; shared world/combat/travel disabled. Patches installed={RoomPatches.Installed}, skipped={RoomPatches.Skipped}. F4 opens the panel.");
         if (!supported) message = "Unsupported GameAssembly build. See README.";
     }
+
+    internal static bool IsSupportedGameAssembly(string hash)=>hash is
+        "D5F9FB458F0E9878E697A92B590A586A52FD77E645F8BF87BB4F2B74C6C56567" or
+        "323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464";
 
     public override void OnUpdate()
     {

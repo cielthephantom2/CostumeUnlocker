@@ -277,6 +277,34 @@ Check(sharedView.Methods.Single(m=>m.Name=="BindArtwork").Body.Instructions.Any(
 Check(sharedView.Methods.Single(m=>m.Name=="Tick").Body.Instructions.Any(i=>i.Operand is FieldReference f && f.Name=="projectedItems") &&
  sharedClient.Methods.Single(m=>m.Name=="Tick").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="PollTabConfiguration"),
  "Other-tab revisions do not rebuild unchanged item projections, and native Configure modal completion is polled even after F2 closes");
+var legacyCapture=sharedView.Methods.Single(m=>m.Name=="CaptureLegacyTabArtwork");
+Check(legacyCapture.Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="get_addTabButton") &&
+ legacyCapture.Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="get_tabPrefab") &&
+ legacyCapture.Body.Instructions.Select(i=>i.Operand).OfType<GenericInstanceMethod>().Any(m=>m.GenericArguments.Any(a=>a.Name=="StashSortConfigureSearchButtonsNavigable")),
+ "Legacy Stash captures its real tab prefab, add button and Sort/Configure controls instead of falling back to fabricated UI");
+Check(sharedView.Methods.All(m=>m.Name is not ("Label" or "Button" or "AddControls")) &&
+ sharedView.Methods.Where(m=>m.HasBody && m.Name!="Build").SelectMany(m=>m.Body.Instructions)
+ .All(i=>!(i.OpCode.Code==Mono.Cecil.Cil.Code.Newobj && i.Operand is MethodReference m && m.DeclaringType.FullName=="UnityEngine.GameObject")),
+ "Shared view creates no replacement button, tab strip, page label or status overlay GameObjects");
+Check(sharedView.Methods.Single(m=>m.Name=="BindArtwork").Body.Instructions.Any(i=>i.OpCode.Code==Mono.Cecil.Cil.Code.Newobj &&
+ i.Operand is MethodReference m && m.DeclaringType.Name=="ButtonClickedEvent"),
+ "Native button rebinding replaces serialized events so private-stash persistent callbacks cannot survive");
+Check(sharedView.Methods.Single(m=>m.Name=="CaptureSearch").Body.Instructions.Count(i=>i.OpCode.Code==Mono.Cecil.Cil.Code.Newobj)>=5 &&
+ sharedView.Methods.Single(m=>m.Name=="ApplyNativeSearch").Body.Instructions.Any(i=>i.Operand is MethodReference m &&
+ m.DeclaringType.Name=="ItemContainerUIWithSearch" && m.Name=="PerformSearch"),
+ "Original search field uses fresh events and native search on the isolated shared projection");
+Check(sharedView.Methods.Single(m=>m.Name=="RestoreNativeTabLayout").Body.Instructions.Select(i=>i.Operand).OfType<GenericInstanceMethod>()
+ .Any(m=>m.Name=="AddComponent" && m.GenericArguments.Any(a=>a.Name=="SimpleLayoutGroup")) &&
+ sharedView.Methods.Single(m=>m.Name=="RefreshNativeTabLayout").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="UpdateLayout"),
+ "Legacy tabs reuse the native SimpleLayoutGroup with fresh element records and original layout settings");
+Check(!sharedView.Methods.Single(m=>m.Name=="Tick").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>()
+ .Any(m=>m.Name=="RefreshNativeTabLayout"),
+ "Native tab layout rebuild is driven by changed tab metadata, not an unconditional per-frame rebuild");
+var buildGate=types.Single(t=>t.Name=="LanMod").Methods.Single(m=>m.Name=="IsSupportedGameAssembly");
+Check(buildGate.Body.Instructions.Where(i=>i.OpCode.Code==Mono.Cecil.Cil.Code.Ldstr).Select(i=>(string)i.Operand).OrderBy(s=>s)
+ .SequenceEqual(new[]{"D5F9FB458F0E9878E697A92B590A586A52FD77E645F8BF87BB4F2B74C6C56567","323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464"}.OrderBy(s=>s)) &&
+ buildGate.Body.Instructions.Count(i=>i.Operand is MethodReference m && m.DeclaringType.FullName=="System.String" && m.Name=="op_Equality")==2,
+ "Game compatibility accepts only the old pinned SHA and inspected Steam26087601 SHA, without a wildcard bypass");
 File.WriteAllText(args[2],JsonSerializer.Serialize(new{passed=checks.Count,patchesInspected=patches.Length,
  installedPatches=installed.Select(t=>t.FullName),skippedPatches=skipped.Select(t=>t.FullName),
  scope="compiled metadata and IL audit; not gameplay acceptance",checks},new JsonSerializerOptions{WriteIndented=true}));

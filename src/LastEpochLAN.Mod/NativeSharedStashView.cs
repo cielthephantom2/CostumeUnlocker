@@ -12,13 +12,13 @@ using Il2CppLE.UI.PanelSystem;
 
 namespace LastEpochLAN.Mod;
 
-// Native graphics + a NEW base ItemContainerUI. Never instantiate a second
+// Native graphics + a NEW searchable ItemContainerUI. Never instantiate a second
 // live Stash controller, bind manager.currentStash, or share its pool/delegates.
 internal sealed partial class NativeSharedStashView : IDisposable
 {
     internal static NativeSharedStashView Active;
     private readonly LanSharedChest owner;
-    private GameObject parking,root,statusRoot;
+    private GameObject parking,root;
     private ItemContainerUI grid;
     private readonly List<ItemContainer> pages=new();
     private readonly Dictionary<uint,ChestItem> displayed=new();
@@ -32,7 +32,6 @@ internal sealed partial class NativeSharedStashView : IDisposable
     private ChestItem[] projectedItems=Array.Empty<ChestItem>();
     private int page;
     private Vector2Int dimensions;
-    private TextMeshProUGUI pageLabel,statusLabel;
     private float retry;
     private float loadStarted=-1;
     private bool loadFailed;
@@ -61,7 +60,6 @@ internal sealed partial class NativeSharedStashView : IDisposable
         if(snapshot==null)
         {
             if(!awaitingTab && grid!=null){grid.ResetInternal(true,true);displayed.Clear();itemButtons.Clear();projectedItems=Array.Empty<ChestItem>();awaitingTab=true;}
-            if(statusLabel!=null)statusLabel.text=owner.Status;
             return;
         }
         awaitingTab=false;
@@ -83,8 +81,7 @@ internal sealed partial class NativeSharedStashView : IDisposable
             }
             RefreshSharedTabs(snapshot);
             BindItemActions();
-            if(statusLabel!=null)statusLabel.text=owner.Status;
-            if(pageLabel!=null)pageLabel.text=$"{owner.StashTabs[snapshot.Tab].Name}  |  Page {page+1}/{pages.Count}  |  {snapshot.Items.Length}/{SharedStashRules.ItemsPerTab}";
+            PollNativeOverflow();
         }
         catch(Exception ex){Error=ex.Message;owner.Status="Stash native: "+Error;Dispose();loadFailed=true;MelonLoader.MelonLogger.Warning(owner.Status);}
     }
@@ -133,13 +130,17 @@ internal sealed partial class NativeSharedStashView : IDisposable
         parking=new GameObject("Shared Stash inactive staging");parking.SetActive(false);
         root=UnityEngine.Object.Instantiate(source.gameObject,parking.transform,false);root.name="LAN Shared Stash - independent native view";
         CaptureNativeTabArtwork(source);
+        // Preserve native button colors/sprites/transitions, remove only their
+        // personal-stash callbacks. Selected shared actions are rebound below.
+        foreach(var button in root.GetComponentsInChildren<UnityEngine.UI.Button>(true))
+        {button.onClick=new UnityEngine.UI.Button.ButtonClickedEvent();button.interactable=false;}
         var gridTransform=root.transform;foreach(int index in path)gridTransform=gridTransform.GetChild(index);
         foreach(var item in root.GetComponentsInChildren<InventoryItemUI>(true))UnityEngine.Object.DestroyImmediate(item.gameObject);
         foreach(var script in root.GetComponentsInChildren<MonoBehaviour>(true))
         {
             bool graphic=script.TryCast<Graphic>()!=null;
-            bool layout=script.TryCast<LayoutGroup>()!=null || script.TryCast<ContentSizeFitter>()!=null || script.TryCast<LayoutElement>()!=null || script.TryCast<Mask>()!=null || script.TryCast<RectMask2D>()!=null || script.TryCast<ScrollRect>()!=null || script.TryCast<Scrollbar>()!=null;
-            if(!graphic && !layout)UnityEngine.Object.DestroyImmediate(script);
+            bool layout=script.TryCast<LayoutGroup>()!=null || script.TryCast<ContentSizeFitter>()!=null || script.TryCast<LayoutElement>()!=null || script.TryCast<Mask>()!=null || script.TryCast<RectMask2D>()!=null || script.TryCast<TMP_InputField>()!=null || script.TryCast<ScrollRect>()!=null || script.TryCast<Scrollbar>()!=null;
+            if(!graphic && !layout && script.TryCast<UnityEngine.UI.Button>()==null)UnityEngine.Object.DestroyImmediate(script);
         }
         // Artwork kept from the prefab must not intercept item clicks after its
         // original controllers have been removed. Preserve hidden child groups.
@@ -154,7 +155,14 @@ internal sealed partial class NativeSharedStashView : IDisposable
             if(canvas.GetComponent<GraphicRaycaster>()==null)canvas.gameObject.AddComponent<GraphicRaycaster>();
         foreach(var text in root.GetComponentsInChildren<TMP_Text>(true))
             if(text.text?.Trim().Equals("STASH",StringComparison.OrdinalIgnoreCase)==true)text.text="SHARED STASH";
-        grid=gridTransform.gameObject.AddComponent<ItemContainerUI>();
+        var searchGrid=gridTransform.gameObject.AddComponent<ItemContainerUIWithSearch>();
+        grid=searchGrid;
+        var sourceHighlight=sourceGrid.TryCast<ItemContainerUIWithHighlight>();
+        if(sourceHighlight!=null)
+        {
+            searchGrid.hilightPrefab=sourceHighlight.hilightPrefab;
+            searchGrid._highlightContainer=Cloned(source.transform,sourceHighlight._highlightContainer)?.GetComponent<RectTransform>();
+        }
         grid.identifier=ContainerID.STASH;grid.interactable=true;grid.forceFillRect=sourceGrid.forceFillRect;
         grid.disableItemBackground=sourceGrid.disableItemBackground;grid.slotSize=sourceGrid.slotSize;
         grid.initialiseOnEnableBehaviour=ItemContainerUI.InitialiseOnEnableBehaviour.Default;
@@ -164,7 +172,6 @@ internal sealed partial class NativeSharedStashView : IDisposable
         gridGraphic.raycastTarget=true;
         pages.Add(NewPage());Active=this;
         root.SetActive(false);root.transform.SetParent(source.transform.parent,false);
-        AddControls();
         BuildSharedTabControls();
         if(source.gameObject.activeInHierarchy)
         {
@@ -200,6 +207,7 @@ internal sealed partial class NativeSharedStashView : IDisposable
         }
         finally{Populating=false;}
         page=Math.Clamp(page,0,pages.Count-1);grid.Initialize();
+        grid.TryCast<ItemContainerUIWithSearch>()?.itemStringCache?.Clear();ApplyNativeSearch();
         if(BoundToPrivateStash)throw new InvalidOperationException("Shared projection accidentally bound to personal stash");
     }
     private void Flip(int delta)
@@ -261,49 +269,6 @@ internal sealed partial class NativeSharedStashView : IDisposable
         if(receiver==null || receiver.Pointer!=ui.gameObject.Pointer)throw new InvalidOperationException("Item click intercepted by "+hit.gameObject.name+" / "+receiver?.name);
         return receiver.name;
     }
-    private TextMeshProUGUI Label(string name,Vector2 anchor,Vector2 position,Vector2 size,string text)
-    {
-        var go=new GameObject(name,Il2CppType.Of<RectTransform>());go.transform.SetParent(root.transform,false);
-        var rect=go.GetComponent<RectTransform>();rect.anchorMin=rect.anchorMax=anchor;rect.pivot=anchor;rect.anchoredPosition=position;rect.sizeDelta=size;
-        var label=go.AddComponent<TextMeshProUGUI>();
-        var font=root.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(t=>t.font!=null)?.font;
-        if(font!=null)label.font=font;
-        label.fontSize=17;label.color=Color.white;label.raycastTarget=false;label.text=text;return label;
-    }
-    private void Button(string name,Vector2 anchor,Vector2 pos,Vector2 size,string text,Action action)
-    {
-        var go=new GameObject(name,Il2CppType.Of<RectTransform>());go.transform.SetParent(root.transform,false);
-        var rect=go.GetComponent<RectTransform>();rect.anchorMin=rect.anchorMax=anchor;rect.pivot=anchor;rect.anchoredPosition=pos;rect.sizeDelta=size;
-        var image=go.AddComponent<Image>();image.color=new Color(0.12f,0.1f,0.06f,0.95f);
-        var label=Label(name+" text",new(0.5f,0.5f),Vector2.zero,size,text);label.transform.SetParent(go.transform,false);label.alignment=TextAlignmentOptions.Center;
-        var button=go.AddComponent<UnityEngine.UI.Button>();button.targetGraphic=image;
-        button.onClick.AddListener(action);
-    }
-    private void AddControls()
-    {
-        Button("Shared close",new(1,1),new(-8,-8),new(45,34),"X",owner.Toggle);
-        Button("Shared previous",new(0,0),new(12,5),new(40,32),"<",()=>Flip(-1));
-        Button("Shared next",new(1,0),new(-12,5),new(40,32),">",()=>Flip(1));
-        pageLabel=Label("Shared page",new(0.5f,0),new(0,8),new(380,28),"");
-        // The cloned Stash has different layouts/canvas bounds in V1 and V2.
-        // Give transfer feedback a screen-space canvas so it cannot be clipped
-        // or covered by the native inventory or Stash frame.
-        statusRoot=new GameObject("Shared Stash transfer status",Il2CppType.Of<RectTransform>());
-        var statusCanvas=statusRoot.AddComponent<Canvas>();
-        statusCanvas.renderMode=RenderMode.ScreenSpaceOverlay;statusCanvas.sortingOrder=32600;
-        var strip=new GameObject("Status background",Il2CppType.Of<RectTransform>());
-        strip.transform.SetParent(statusRoot.transform,false);
-        float width=Mathf.Min(620,Screen.width-24);
-        var stripRect=strip.GetComponent<RectTransform>();
-        stripRect.anchorMin=stripRect.anchorMax=stripRect.pivot=new(0.5f,1);
-        stripRect.anchoredPosition=new(0,-12);stripRect.sizeDelta=new(width,60);
-        var background=strip.AddComponent<Image>();
-        background.color=new Color(0.04f,0.055f,0.075f,0.97f);background.raycastTarget=false;
-        statusLabel=Label("Shared status",new(0.5f,0.5f),Vector2.zero,new(width-24,52),owner.Status);
-        statusLabel.transform.SetParent(strip.transform,false);
-        statusLabel.fontSize=14;statusLabel.alignment=TextAlignmentOptions.Center;
-        statusLabel.enableWordWrapping=true;
-    }
     internal void Click(ItemContainerUI ui,PointerEventData data)
     {
         Interactions++;
@@ -324,7 +289,6 @@ internal sealed partial class NativeSharedStashView : IDisposable
     }
     public void Dispose()
     {
-        if(statusRoot!=null){statusRoot.SetActive(false);UnityEngine.Object.Destroy(statusRoot);statusRoot=null;}
         if(root!=null)root.SetActive(false);
         if(grid!=null){try{grid.ResetInternal(true,true);}catch{}}
         if(root!=null)UnityEngine.Object.Destroy(root);if(parking!=null)UnityEngine.Object.Destroy(parking);

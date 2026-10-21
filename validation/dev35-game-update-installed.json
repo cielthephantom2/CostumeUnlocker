@@ -1,0 +1,26 @@
+{
+  "version": "1.1.0-dev.35",
+  "protocol": 41,
+  "steamBuildId": 26087601,
+  "gameAssemblySha256": "323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464",
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "sha256": "F23878A0ABC5C052A43E515BEEFB7413240D83BAC8067C70ADEB76FD160A07A0",
+      "size": 1035264
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "sha256": "B6893904116FDE16E644ED40C3533D8502414D9A7B96EB854480DD62B32A0D06",
+      "size": 406528
+    }
+  ],
+  "backup": "D:\\SteamLibrary\\steamapps\\common\\Last Epoch\\UserData\\LastEpochLAN\\backups\\before-dev35-game-update-1792604433439",
+  "installed": true,
+  "buildWarnings": 0,
+  "buildErrors": 0,
+  "compiledAuditChecks": 60,
+  "nativeGameplayVerified": false,
+  "gameLaunched": false,
+  "zipSha256": "1DD99DCC10B993686177DC497692546A18C2E8BCBA2455911F02CE7B87913D5E"
+}

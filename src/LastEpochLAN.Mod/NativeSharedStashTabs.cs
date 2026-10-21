@@ -45,20 +45,25 @@ internal sealed partial class NativeSharedStashView
         foreach(var script in artwork.GetComponentsInChildren<MonoBehaviour>(true))
         {
             bool keep=script.TryCast<Graphic>()!=null || script.TryCast<LayoutGroup>()!=null || script.TryCast<ContentSizeFitter>()!=null ||
-                script.TryCast<LayoutElement>()!=null || script.TryCast<Mask>()!=null || script.TryCast<RectMask2D>()!=null;
+                script.TryCast<LayoutElement>()!=null || script.TryCast<Mask>()!=null || script.TryCast<RectMask2D>()!=null || script.TryCast<UnityEngine.UI.Button>()!=null;
             if(!keep)UnityEngine.Object.DestroyImmediate(script);
         }
         foreach(var graphic in artwork.GetComponentsInChildren<Graphic>(true))graphic.raycastTarget=false;
+        foreach(var button in artwork.GetComponentsInChildren<UnityEngine.UI.Button>(true))
+        {button.onClick=new UnityEngine.UI.Button.ButtonClickedEvent();button.interactable=false;}
     }
     private void CaptureNativeTabArtwork(StashPanel source)
     {
-        var controls=source.GetComponentInChildren<NewStashTabbedUIControls>(true);
-        if(controls==null)return;
+        var controls=source.TryCast<StashPanelV2>()?._stashControls;
+        if(controls==null){CaptureLegacyTabArtwork(source);return;}
         sharedTabHolder=Cloned(source.transform,controls._tabHolder);
         tabScroll=Cloned(source.transform,controls._tabsScrollRect?.transform)?.GetComponent<ScrollRect>();
         sortArtwork=Cloned(source.transform,controls._sortButton?.transform)?.gameObject;
         configureArtwork=Cloned(source.transform,controls._configureButton?.transform)?.gameObject;
         addArtwork=Cloned(source.transform,controls._addButton?.transform)?.gameObject;
+        closeArtwork=Cloned(source.transform,controls._closeButton?.transform)?.gameObject;
+        CaptureSearch(source,controls._searchLabel?._serializedInput);
+        CaptureNativeNavigation(source);
         if(controls._tabInfo!=null)
         {
             sharedTabTitle=Cloned(source.transform,controls._tabInfo._label?.transform)?.GetComponent<TMP_Text>();
@@ -74,7 +79,7 @@ internal sealed partial class NativeSharedStashView
         tabColors=controls._tabColors?.ToArray()??Array.Empty<Color>();
         tabIcons=controls._tabIcons?.ToArray()??Array.Empty<Sprite>();
         var template=source.GetComponentsInChildren<StashTabUI>(true).FirstOrDefault(t=>!t._quickViewTab);
-        if(template==null)return;
+        if(template==null)throw new InvalidOperationException("Native Stash tab artwork is not ready; reopen F2");
         tabNamePath=template._tabName!=null?Indices(template.transform,template._tabName.transform):null;
         tabIconPath=template._icon!=null?Indices(template.transform,template._icon.transform):null;
         tabSelectionPath=template._selectedBackground!=null?Indices(template.transform,template._selectedBackground.transform):null;
@@ -95,19 +100,24 @@ internal sealed partial class NativeSharedStashView
         var group=artwork.GetComponent<CanvasGroup>()??artwork.AddComponent<CanvasGroup>();
         group.alpha=1;group.interactable=true;group.blocksRaycasts=true;group.ignoreParentGroups=true;
         graphic.raycastTarget=true;
-        var button=artwork.AddComponent<UnityEngine.UI.Button>();button.targetGraphic=graphic;
-        button.onClick.RemoveAllListeners();button.onClick.AddListener((Action)(()=>
+        var button=artwork.GetComponent<UnityEngine.UI.Button>()??artwork.AddComponent<UnityEngine.UI.Button>();
+        button.targetGraphic??=graphic;button.interactable=true;
+        button.onClick=new UnityEngine.UI.Button.ButtonClickedEvent();button.onClick.AddListener((Action)(()=>
         {try{action();}catch(Exception ex){owner.Status="Shared Stash: "+ex.Message;MelonLoader.MelonLogger.Warning(owner.Status);}}));
         return button;
     }
     private void BuildSharedTabControls()
     {
+        if(sharedTabHolder==null || tabArtwork==null || sortArtwork==null || configureArtwork==null || addArtwork==null || closeArtwork==null)
+            throw new InvalidOperationException("Native Stash controls are incomplete; no replacement UI will be created");
         // Keep native button artwork/placement but replace every callback. None
         // of the personal-stash controllers survives the projection clone.
         sortButton=BindArtwork(sortArtwork,SortSharedTab);
         configureButton=BindArtwork(configureArtwork,ConfigureSharedTab);
         addButton=BindArtwork(addArtwork,owner.AddTab);
-        if(sharedTabHolder!=null)
+        BindArtwork(closeArtwork,owner.Toggle);
+        foreach(var (artwork,action) in nativeNavigation)BindArtwork(artwork,action);
+        BindNativeSearch();
         {
             // Keep the native ScrollRect/layout and put a flat list of shared
             // tabs into it. Never retain personal tab names or folder widgets.
@@ -116,19 +126,7 @@ internal sealed partial class NativeSharedStashView
             for(int i=sharedTabHolder.childCount-1;i>=0;i--)UnityEngine.Object.DestroyImmediate(sharedTabHolder.GetChild(i).gameObject);
             if(addInside)addArtwork.transform.SetParent(sharedTabHolder,false);
         }
-        else
-        {
-            var row=new GameObject("Shared tab navigation",Il2CppType.Of<RectTransform>());row.transform.SetParent(root.transform,false);
-            var rect=row.GetComponent<RectTransform>();rect.anchorMin=rect.anchorMax=rect.pivot=new(.5f,1);
-            rect.anchoredPosition=new(0,-44);rect.sizeDelta=new(390,34);
-            row.AddComponent<Image>().color=new(0,0,0,.001f);row.AddComponent<RectMask2D>();
-            var content=new GameObject("Shared tab scroll content",Il2CppType.Of<RectTransform>());content.transform.SetParent(row.transform,false);
-            var contentRect=content.GetComponent<RectTransform>();contentRect.anchorMin=contentRect.anchorMax=contentRect.pivot=new(0,.5f);contentRect.sizeDelta=new(390,34);
-            var layout=content.AddComponent<HorizontalLayoutGroup>();layout.spacing=3;layout.childForceExpandWidth=false;layout.childControlWidth=false;
-            content.AddComponent<ContentSizeFitter>().horizontalFit=ContentSizeFitter.FitMode.PreferredSize;
-            tabScroll=row.AddComponent<ScrollRect>();tabScroll.viewport=rect;tabScroll.content=contentRect;tabScroll.horizontal=true;tabScroll.vertical=false;
-            tabScroll.movementType=ScrollRect.MovementType.Clamped;sharedTabHolder=content.transform;
-        }
+        RestoreNativeTabLayout();
         if(tabScroll!=null)
         {
             tabScroll.onValueChanged.RemoveAllListeners();
@@ -148,9 +146,6 @@ internal sealed partial class NativeSharedStashView
                 if(bar.targetGraphic!=null)bar.targetGraphic.raycastTarget=true;
             }
         }
-        if(sortButton==null)Button("Shared sort",new(0,1),new(10,-8),new(65,30),"SORT",SortSharedTab);
-        if(configureButton==null)Button("Shared configure",new(.5f,1),new(0,-8),new(150,30),"CONFIGURE TAB",ConfigureSharedTab);
-        if(addButton==null)Button("Shared add tab",new(1,1),new(-60,-8),new(38,30),"+",owner.AddTab);
     }
     private void RefreshSharedTabs(ChestReply snapshot)
     {
@@ -167,17 +162,9 @@ internal sealed partial class NativeSharedStashView
             sharedTabVisuals.Clear();renderedTabs=snapshot.Tabs.ToArray();
             foreach(var tab in renderedTabs)
             {
-                var visual=tabArtwork!=null?UnityEngine.Object.Instantiate(tabArtwork,sharedTabHolder,false):
-                    new GameObject("Shared tab",Il2CppType.Of<RectTransform>());
+                var visual=UnityEngine.Object.Instantiate(tabArtwork,sharedTabHolder,false);
                 visual.transform.SetParent(sharedTabHolder,false);visual.name="Shared tab "+tab.Id;
-                if(tabArtwork==null)
-                {
-                    var rect=visual.GetComponent<RectTransform>();rect.sizeDelta=new(62,30);
-                    visual.AddComponent<Image>().color=new(.12f,.1f,.06f,.95f);
-                    var label=Label("Shared tab name",new(.5f,.5f),Vector2.zero,new(60,28),(tab.Id+1).ToString());
-                    label.transform.SetParent(visual.transform,false);label.alignment=TextAlignmentOptions.Center;
-                }
-                else
+                if(tabArtwork!=null)
                 {
                     var label=At(visual.transform,tabNamePath)?.GetComponent<TMP_Text>();if(label!=null)label.text=tab.Name;
                     var icon=At(visual.transform,tabIconPath)?.GetComponent<Image>();
@@ -189,12 +176,16 @@ internal sealed partial class NativeSharedStashView
                 }
                 int id=tab.Id;BindArtwork(visual,()=>owner.SelectTab(id));visual.SetActive(true);sharedTabVisuals.Add(visual);
             }
+            if(addArtwork.transform.parent==sharedTabHolder)addArtwork.transform.SetAsLastSibling();
+            RefreshNativeTabLayout();
+            scrollTab=-1;
         }
         if(addArtwork!=null && addArtwork.transform.parent==sharedTabHolder)addArtwork.transform.SetAsLastSibling();
         for(int i=0;i<sharedTabVisuals.Count;i++)
         {
             var selected=tabArtwork!=null?At(sharedTabVisuals[i].transform,tabSelectionPath)?.gameObject:null;
             if(selected!=null)selected.SetActive(i==owner.SelectedTab);
+            RefreshLegacyTabSelection(sharedTabVisuals[i],i==owner.SelectedTab);
             var button=sharedTabVisuals[i].GetComponent<UnityEngine.UI.Button>();if(button!=null)button.interactable=owner.TabControlsReady && i!=owner.SelectedTab;
         }
         if(tabScroll!=null && scrollTab!=owner.SelectedTab)
@@ -286,6 +277,7 @@ internal sealed partial class NativeSharedStashView
         sharedTabHolder=null;tabScroll=null;scrollTab=-1;tabArtwork=null;sortArtwork=configureArtwork=addArtwork=null;sharedTabTitle=null;sharedTabTitleIcon=null;
         sharedTabVisuals.Clear();renderedTabs=Array.Empty<SharedStashTab>();sortButton=configureButton=addButton=null;
         shownTab=-1;awaitingTab=false;
+        DisposeNativeControls();
         // An open native modal owns its own lifetime. Poll it before the next
         // projection tick; ignore results if F2 was closed or the tab changed.
     }

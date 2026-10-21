@@ -1,6 +1,8 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.34
+# TM Last Epoch Co-op Mod — 1.1.0-dev.35
 
 Development release, protocol **41**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). The Host and every Client must update both DLLs; older protocol40 peers cannot join. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
+
+**Dev.35:** Shared Stash reuses the original Stash buttons, tab artwork, layout and Search field on both legacy and V2 panels. Removes the extra numbered row, flat buttons and custom footer/status overlay. Adds exact-build support for Steam **26087601** after the game update; unknown builds remain blocked. Every peer must use the same game build. Native Shared Stash UI/gameplay acceptance remains pending. Includes the dev.34 shared tabs and Weaver Imprint ×2 changes. See [dev.35 changes and validation](RELEASE-1.1.0-dev35-VI.md).
 
 **Dev.34:** Shared Stash starts with **6 tabs ×96 items**, expandable with **+** to **24 tabs**. Adds native **SORT** and **CONFIGURE TAB** (name/color/icon). The Host persists all tabs and transfers; old stash data stays in tab1. Doubles all six Weaver Imprint effects (Woven/Loomed use spawn weights). Native UI/gameplay acceptance remains pending. Corruption behavior is unchanged; the reported client 100→400 after a displayed +60 is awaiting the user's test and is not claimed fixed. See [dev.34 changes and validation](RELEASE-1.1.0-dev34-VI.md).
 
