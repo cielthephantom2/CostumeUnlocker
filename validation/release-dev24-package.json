@@ -1,0 +1,26 @@
+{
+  "version": "1.1.0-dev.24",
+  "protocol": 36,
+  "scope": "Combat Assist/minimap/DPS changes on released dev22 base; paused Encounter development excluded",
+  "build": {
+    "warnings": 0,
+    "errors": 0
+  },
+  "managedChecks": 761,
+  "encounterExclusionAuditChecks": 9,
+  "updaterFixtureChecks": 15,
+  "nativeGameplayVerified": false,
+  "steamInstalled": false,
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 976384,
+      "sha256": "502F00D5105FC414D56055BFFA842CA194AE0AAA96233C200D48A97F8A50F22F"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 388096,
+      "sha256": "A8A6DD004BBE5DC8B1E96BB0A17B71F7534ADA2CC78DB74EAAF92AB875908A34"
+    }
+  ]
+}

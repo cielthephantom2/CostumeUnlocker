@@ -53,7 +53,22 @@ internal static class AutoPlayTests
         schedule.Reset();check(schedule.Select(settings,contexts,1)==0,"new character/session clears previous scheduling timestamps");
         settings.Skills=new[]{new AutoSkillRule {Radius=float.NaN,Interval=-10,Ability=new string('a',999)}};
         settings.Potion.Interval=float.PositiveInfinity;settings.Potion.Reserve=-5;settings.Normalize();
-        check(settings.Skills.Length==5 && settings.Skills[0].Radius==20 && settings.Skills[0].Interval==0.25f && settings.Skills[0].Ability.Length==160 && settings.Potion.Interval==2 && settings.Potion.Reserve==0,"profile normalization bounds invalid values and restores five slots");
+        check(settings.Skills.Length==5 && settings.Skills[0].Radius==20 && settings.Skills[0].Interval==0 && settings.Skills[0].Ability.Length==160 && settings.Potion.Interval==2 && settings.Potion.Reserve==0,"profile normalization bounds invalid values and restores five slots");
+        var wardRule=new AutoSkillRule{Enabled=true,Ability="buff",LowWard=true,WardThreshold=500,Interval=0};
+        check(AutoPlayRules.Blocked(wardRule,c with {Ward=500,WardKnown=true})=="" && AutoPlayRules.Blocked(wardRule,c with {Ward=501,WardKnown=true})!="","low ward includes exact absolute threshold and excludes higher ward");
+        check(AutoPlayRules.Blocked(wardRule,c)!="" && AutoPlayRules.Blocked(wardRule,c with {Ward=float.NaN,WardKnown=true})!="","unknown or invalid ward never satisfies low ward");
+        wardRule.LowHealth=true;wardRule.RequireAll=true;
+        check(AutoPlayRules.Blocked(wardRule,c with {Ward=100,WardKnown=true})!="" && AutoPlayRules.Blocked(wardRule,c with {Ward=100,WardKnown=true,HealthPercent=40})=="","ALL applies to ward and HP together");
+        wardRule.RequireAll=false;
+        check(AutoPlayRules.Blocked(wardRule,c with {Ward=100,WardKnown=true})=="","ANY allows low ward with healthy HP");
+        check(AutoPlayRules.ContinueHold(wardRule,c with {Ward=100,WardKnown=true,CooldownReady=false}),"held channel ignores only its already-consumed charge cooldown");
+        check(!AutoPlayRules.ContinueHold(wardRule,c with {Ward=700,WardKnown=true}) && !AutoPlayRules.ContinueHold(wardRule,c with {Ward=100,WardKnown=true,Ability="other"}),"hold releases when conditions fail or equipped skill changes");
+        wardRule.Interval=1;
+        check(!AutoPlayRules.ContinueHold(wardRule,c with {Ward=100,WardKnown=true}),"positive repeat interval cannot sustain a hold");
+        wardRule.Interval=0;wardRule.MinimumManaPercent=30;
+        check(!AutoPlayRules.ContinueHold(wardRule,c with {Ward=100,WardKnown=true,ManaPercent=20}),"hold respects minimum current MP");
+        var wardCopy=JsonSerializer.Deserialize<AutoSkillRule>(JsonSerializer.Serialize(wardRule))!;wardCopy.Normalize();
+        check(wardCopy.Interval==0 && wardCopy.LowWard && wardCopy.WardThreshold==500,"zero hold interval and ward settings survive profile serialization");
         var copy=JsonSerializer.Deserialize<AutoPlaySettings>(JsonSerializer.Serialize(settings))!;copy.Normalize();
         check(copy.Skills[0].Ability==settings.Skills[0].Ability && !JsonSerializer.Serialize(settings).Contains("Armed"),"saved settings roundtrip without persisting START state");
     }

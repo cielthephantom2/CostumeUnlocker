@@ -29,7 +29,16 @@ internal sealed partial class AutoPlayRuntime
     private float nextRead,nextScan,nextBindings,saveAt=-1,enemyDistance=float.PositiveInfinity,rareDistance=float.PositiveInfinity;
     private double nextPotion;
     private string character="",profilePath="",potionKey="1",scene="";
-    private float hp,mp;
+    private float hp,mp,ward;
+    private UsingAbilityPlayer heldUse;
+    private Ability heldAbility;
+    private int heldSlot=-1;
+    private void ReleaseHeld()
+    {
+        var use=heldUse;var ability=heldAbility;heldUse=null;heldAbility=null;heldSlot=-1;
+        // End only the channel we started; never cancel a replacement/manual cast.
+        if(use!=null && ability!=null && use.ability?.Pointer==ability.Pointer && use.isUsingChannelledAbility())use.stopUsingAbility(true);
+    }
     private int potionCharges,potionMax,potionCost=1;
     private bool localReady;
     private IntPtr actorPointer;
@@ -48,7 +57,7 @@ internal sealed partial class AutoPlayRuntime
     private static int ActionId(int i)=>i switch {0=>(int)EpochInputManager.InputActions.Ability1,1=>(int)EpochInputManager.InputActions.Ability2,
         2=>(int)EpochInputManager.InputActions.Ability3,3=>(int)EpochInputManager.InputActions.Ability4,_=>(int)EpochInputManager.InputActions.Ability5};
     internal void Changed()=>saveAt=Time.unscaledTime+0.5f;
-    internal void Suspend(){InputBlock(null,false);Open=false;Armed=false;localReady=false;panelView?.Tick();Status="Stopped - offline character required";}
+    internal void Suspend(){ReleaseHeld();InputBlock(null,false);Open=false;Armed=false;localReady=false;panelView?.Tick();Status="Stopped - offline character required";}
     private void Save()
     {
         if(profilePath=="" || saveAt<0)return;
@@ -56,11 +65,11 @@ internal sealed partial class AutoPlayRuntime
         File.WriteAllText(profilePath+".tmp",JsonSerializer.Serialize(Settings,new JsonSerializerOptions {WriteIndented=true}));
         File.Move(profilePath+".tmp",profilePath,true);saveAt=-1;
     }
-    internal void Dispose(){InputBlock(null,false);panelView?.Dispose();try{Save();}catch(Exception ex){MelonLoader.MelonLogger.Warning("Auto Play save: "+ex.Message);}if(Active==this)Active=null;}
+    internal void Dispose(){ReleaseHeld();InputBlock(null,false);panelView?.Dispose();try{Save();}catch(Exception ex){MelonLoader.MelonLogger.Warning("Auto Play save: "+ex.Message);}if(Active==this)Active=null;}
     private void Profile(string id)
     {
         if(character==id)return;
-        Save();character=id;Armed=false;schedule.Reset();nextPotion=0;
+        ReleaseHeld();Save();character=id;Armed=false;schedule.Reset();nextPotion=0;
         profilePath=Path.Combine(Root,Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(id)))+".json");
         Settings=new();
         try
@@ -116,7 +125,7 @@ internal sealed partial class AutoPlayRuntime
             Profile(id);
             string nowScene=SceneList.GetCurrentSceneDetails()?.Name??"";
             if(actorPointer!=actor.Pointer || scene!=nowScene)
-            {actorPointer=actor.Pointer;scene=nowScene;enemies.Clear();nearest=rareBoss=null;nextScan=nextRead=0;schedule.Reset();}
+            {ReleaseHeld();actorPointer=actor.Pointer;scene=nowScene;enemies.Clear();nearest=rareBoss=null;nextScan=nextRead=0;schedule.Reset();}
             if(Time.unscaledTime>=nextScan){Scan();nextScan=Time.unscaledTime+0.5f;}
             if(Time.unscaledTime<nextRead)return;
             nextRead=Time.unscaledTime+0.1f;
@@ -134,6 +143,19 @@ internal sealed partial class AutoPlayRuntime
                 TryPotion(potion,now);
                 return;
             }
+            if(heldSlot>=0)
+            {
+                var rule=Settings.Skills[heldSlot];
+                bool same=heldUse!=null && heldAbility!=null && heldUse.ability?.Pointer==heldAbility.Pointer &&
+                    abilities[heldSlot]?.Pointer==heldAbility.Pointer && heldUse.isUsingChannelledAbility();
+                if(same && !heldUse.isAbilityUseRestricted && AutoPlayRules.ContinueHold(rule,contexts[heldSlot]) && !input.IsHoldingAbilityButton())
+                {
+                    var target=rule.TargetRareBoss?rareBoss:nearest;
+                    if(rule.SelfTarget || EnemyAlive(target,actor.GetActorSync()?.actorVisuals?.alignment))
+                    {heldUse.TryUpdateTargetLocationIfChannelling(rule.SelfTarget?actor.position():target.transform.position);Status="Holding: "+names[heldSlot];return;}
+                }
+                ReleaseHeld();
+            }
             var state=actor.stateController;
             var use=state?.usingAbility?.TryCast<UsingAbilityPlayer>();
             if(use==null || use.isAbilityUseRestricted || (!state.IsIdle && !state.IsMoving) || input.IsHoldingAbilityButton())
@@ -149,6 +171,14 @@ internal sealed partial class AutoPlayRuntime
         }
         finally
         {
+            try
+            {
+                var input=EpochInputManager.instance;var ui=UIBase.instance;
+                if(!Armed || Open || otherPanel || transition || !localReady || !Application.isFocused || Time.timeScale<=0 ||
+                    input==null || input.forceDisableInput || input.cinematicActive || input.IsInputFieldActive || input.ButtonPressBlocked ||
+                    ui==null || ui.menuOpen || ui.IsChatInputFocused || ui.AnyPanelOpened())ReleaseHeld();
+            }
+            catch{heldUse=null;heldAbility=null;heldSlot=-1;}
             try{panelView??=new(this);panelView.Tick();}
             catch(Exception ex){Armed=false;Error="Panel: "+ex.Message;}
         }
@@ -172,6 +202,8 @@ internal sealed partial class AutoPlayRuntime
             // Programmatic single press: -1 avoids tying the command's lifetime
             // to a physical Rewired key that is not actually being held.
             bool accepted=use.UseAbilityCommand(ability,slot,target,transform,-1,true,false,false,false);
+            if(accepted && rule.Interval==0 && use.ability?.Pointer==ability.Pointer && use.isUsingChannelledAbility())
+            {heldUse=use;heldAbility=ability;heldSlot=slot;}
             Requests++;schedule.Requested(slot,now,rule.Interval,accepted);
             Status=(accepted?"Cast requested: ":"Game rejected: ")+names[slot];
             return accepted;
@@ -192,6 +224,7 @@ internal sealed partial class AutoPlayRuntime
         hp=100*Mathf.Clamp01(actor.health.currentHealth/actor.health.maxHealth);
         bool manaKnown=actor.mana!=null && actor.mana.maxMana>0;
         mp=manaKnown?100*Mathf.Clamp01(actor.mana.currentMana/actor.mana.maxMana):0;
+        var protection=actor.GetComponent<ProtectionClass>();ward=protection?.CurrentWard??0;
         var potion=actor.GetComponent<HealthPotion>();potionCharges=potion?.currentCharges??0;potionMax=potion?.maxCharges??0;potionCost=potion?.chargeCost??1;
         nearest=rareBoss=null;enemyDistance=rareDistance=float.PositiveInfinity;
         var local=actor.GetActorSync()?.actorVisuals?.alignment;var origin=actor.position();
@@ -217,7 +250,7 @@ internal sealed partial class AutoPlayRuntime
             var rule=Settings.Skills[i];bool buffKnown=buffs!=null;
             bool hasBuff=buffNames.Any(n=>string.Equals(n,rule.BuffName,StringComparison.OrdinalIgnoreCase));
             contexts[i]=new(a?.name??"",hp,mp,manaKnown,enemyDistance,rareDistance,
-                a!=null && actor.chargeManager!=null && !actor.chargeManager.onCoooldown(a),buffKnown,hasBuff);
+                a!=null && actor.chargeManager!=null && !actor.chargeManager.onCoooldown(a),buffKnown,hasBuff,ward,protection!=null);
             slotStatus[i]=a==null?"No skill":AutoPlayRules.Blocked(rule,contexts[i]);
             if(slotStatus[i]=="")slotStatus[i]="Ready";
         }

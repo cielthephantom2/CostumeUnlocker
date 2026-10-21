@@ -32,6 +32,9 @@ internal sealed partial class AutoPlayRuntime
         private string binding="";
         private int selected=-1;
         private Button startButton;
+        private LineRenderer radiusRing;
+        private Material radiusMaterial;
+        private float previewUntil;
         private readonly Color accent=new(0.35f,0.82f,0.75f),text=new(0.91f,0.94f,0.98f),muted=new(0.53f,0.60f,0.69f);
         private readonly Color surface=new(0.075f,0.10f,0.145f),control=new(0.12f,0.16f,0.22f),stroke=new(0.17f,0.22f,0.29f);
         internal NativePanel(AutoPlayRuntime runtime){owner=runtime;}
@@ -72,10 +75,10 @@ internal sealed partial class AutoPlayRuntime
             var dot=Box(button.transform,"Indicator",w-25,10,8,8,muted);
             detailUpdates.Add(()=>{button.targetGraphic.color=get()?new Color(0.105f,0.24f,0.25f):control;dot.color=get()?accent:muted;});
         }
-        private void Slider(float x,float y,float w,string name,Func<float> get,Action<float> set,float min,float max,bool whole=false,string unit="%")
+        private void Slider(float x,float y,float w,string name,Func<float> get,Action<float> set,float min,float max,bool whole=false,string unit="%",Func<string> display=null,bool previewRadius=false)
         {
-            Label(details.transform,x,y,w-68,20,()=>name,12,true,detailUpdates);
-            var number=Label(details.transform,x+w-70,y,70,20,()=>$"{get():0.##}{unit}",12,false,detailUpdates);number.alignment=TextAlignmentOptions.TopRight;
+            Label(details.transform,x,y,w-78,20,()=>name,12,true,detailUpdates);
+            var number=Label(details.transform,x+w-100,y,100,20,()=>display?.Invoke()??$"{get():0.##}{unit}",12,false,detailUpdates);number.alignment=TextAlignmentOptions.TopRight;
             var go=Node(name,details.transform,x,y+22,w,16);Paint(go,new Color(0,0,0,0),true,false);
             var slider=go.AddComponent<UnityEngine.UI.Slider>();slider.minValue=min;slider.maxValue=max;slider.wholeNumbers=whole;
             var track=Box(go.transform,"Track",0,6,w,4,control);
@@ -93,10 +96,31 @@ internal sealed partial class AutoPlayRuntime
                 set(slider.value);
                 // Rules can round to a step; keep the handle and saved value equal.
                 slider.SetValueWithoutNotify(get());
-                number.text=$"{get():0.##}{unit}";
+                number.text=display?.Invoke()??$"{get():0.##}{unit}";
+                if(previewRadius)previewUntil=Time.unscaledTime+1.2f;
                 owner.Changed();
             }));
             detailUpdates.Add(()=>slider.SetValueWithoutNotify(get()));
+            if(previewRadius)detailUpdates.Add(()=>
+            {if(RectTransformUtility.RectangleContainsScreenPoint(go.GetComponent<RectTransform>(),Input.mousePosition,null))previewUntil=Time.unscaledTime+0.1f;});
+        }
+        private void RadiusPreview()
+        {
+            bool show=Visible && owner.localReady && selected>=0 && selected<5 && Time.unscaledTime<previewUntil;
+            var actor=show?Il2Cpp.PlayerFinder.getPlayerActor():null;
+            if(actor==null){if(radiusRing!=null)radiusRing.gameObject.SetActive(false);return;}
+            if(radiusRing==null)
+            {
+                var shader=Shader.Find("Sprites/Default");if(shader==null)return;
+                radiusMaterial=new Material(shader);
+                var go=new GameObject("Combat Assist detection radius");UnityEngine.Object.DontDestroyOnLoad(go);
+                radiusRing=go.AddComponent<LineRenderer>();radiusRing.material=radiusMaterial;radiusRing.useWorldSpace=true;
+                radiusRing.loop=true;radiusRing.positionCount=96;radiusRing.startWidth=radiusRing.endWidth=0.07f;
+                radiusRing.startColor=radiusRing.endColor=accent;radiusRing.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+                radiusRing.receiveShadows=false;
+            }
+            radiusRing.gameObject.SetActive(true);var center=actor.position()+Vector3.up*0.12f;float radius=owner.Settings.Skills[selected].Radius;
+            for(int i=0;i<96;i++){float a=i*Mathf.PI*2/96;radiusRing.SetPosition(i,center+new Vector3(Mathf.Cos(a)*radius,0,Mathf.Sin(a)*radius));}
         }
         private void Chrome()
         {
@@ -217,12 +241,13 @@ internal sealed partial class AutoPlayRuntime
         }
         internal void Tick()
         {
-            if(!owner.Open){if(root!=null)root.SetActive(false);return;}
+            if(!owner.Open){if(root!=null)root.SetActive(false);previewUntil=0;RadiusPreview();return;}
             if(root==null)Build();root.SetActive(true);ScanIcons();
             root.GetComponent<CanvasScaler>().scaleFactor=Mathf.Clamp(Mathf.Min(Screen.width/1600f,Screen.height/900f),0.75f,1f);
             string currentBinding=owner.tab<5?owner.contexts[owner.tab].Ability??"":"";
             if(selected!=owner.tab || profile!=owner.Settings || binding!=currentBinding){selected=owner.tab;profile=owner.Settings;binding=currentBinding;Details();}
             foreach(var update in updates)update();foreach(var update in detailUpdates)update();
+            RadiusPreview();
         }
         private void Title(string title,string subtitle)
         {
@@ -231,7 +256,7 @@ internal sealed partial class AutoPlayRuntime
         }
         private void Details()
         {
-            if(details!=null){details.SetActive(false);UnityEngine.Object.Destroy(details);}detailUpdates.Clear();
+            previewUntil=0;if(details!=null){details.SetActive(false);UnityEngine.Object.Destroy(details);}detailUpdates.Clear();
             details=Node("Settings",frame.transform,108,87,548,385);
             if(selected==5){Potion();return;}if(selected==6){Help();return;}
             int i=selected;var r=owner.Settings.Skills[i];
@@ -253,19 +278,21 @@ internal sealed partial class AutoPlayRuntime
             {if(r.SelfTarget){r.SelfTarget=false;r.TargetRareBoss=false;}else if(!r.TargetRareBoss)r.TargetRareBoss=true;else r.SelfTarget=true;},detailUpdates);
             Label(details.transform,0,109,345,20,()=>"CAST CONDITIONS",11,true,detailUpdates).characterSpacing=0.7f;
             Button(details.transform,"Trigger logic",431,103,105,24,()=>r.RequireAll?"All selected":"Any selected",()=>r.RequireAll=!r.RequireAll,detailUpdates);
-            Toggle(0,137,258,"Enemy nearby",()=>r.EnemyNear,v=>r.EnemyNear=v);
-            Toggle(278,137,258,"Rare / boss",()=>r.RareBossNear,v=>r.RareBossNear=v);
-            Toggle(0,176,258,"Low health",()=>r.LowHealth,v=>r.LowHealth=v);
-            Toggle(278,176,258,"Low mana",()=>r.LowMana,v=>r.LowMana=v);
-            Slider(0,215,258,"HP threshold",()=>r.HealthPercent,v=>r.HealthPercent=v,1,100,true);
-            Slider(278,215,258,"MP threshold",()=>r.ManaPercent,v=>r.ManaPercent=v,1,100,true);
-            Slider(0,267,258,"Detection radius",()=>r.Radius,v=>r.Radius=v,1,60,true," m");
-            Slider(278,267,258,"Minimum MP reserve",()=>r.MinimumManaPercent,v=>r.MinimumManaPercent=v,0,100,true);
-            Slider(0,319,258,"Repeat interval",()=>r.Interval,v=>r.Interval=(float)Math.Round(v*4)/4,0.25f,120,false," s");
-            Toggle(278,316,258,"Only when buff missing",()=>r.BuffMissing,v=>r.BuffMissing=v);
-            Button(details.transform,"Choose buff",278,352,258,25,()=>r.BuffName==""?"Choose detected buff":r.BuffName,()=>
+            Toggle(0,125,258,"Enemy nearby",()=>r.EnemyNear,v=>r.EnemyNear=v);
+            Toggle(278,125,258,"Rare / boss",()=>r.RareBossNear,v=>r.RareBossNear=v);
+            Toggle(0,158,258,"Low health",()=>r.LowHealth,v=>r.LowHealth=v);
+            Toggle(278,158,258,"Low mana",()=>r.LowMana,v=>r.LowMana=v);
+            Toggle(0,191,258,"Low ward",()=>r.LowWard,v=>r.LowWard=v);
+            Slider(278,191,258,"Ward threshold",()=>r.WardThreshold,v=>r.WardThreshold=v,0,100000,true,"");
+            Slider(0,232,258,"HP threshold",()=>r.HealthPercent,v=>r.HealthPercent=v,1,100,true);
+            Slider(278,232,258,"MP threshold",()=>r.ManaPercent,v=>r.ManaPercent=v,1,100,true);
+            Slider(0,276,258,"Detection radius",()=>r.Radius,v=>r.Radius=v,1,60,true," m",previewRadius:true);
+            Slider(278,276,258,"MP before cast",()=>r.MinimumManaPercent,v=>r.MinimumManaPercent=v,0,100,true);
+            Slider(0,320,258,"Repeat interval",()=>r.Interval,v=>r.Interval=(float)Math.Round(v*4)/4,0,120,false," s",()=>r.Interval==0?"0 s / Hold key":$"{r.Interval:0.##} s");
+            Toggle(278,317,258,"Only when buff missing",()=>r.BuffMissing,v=>r.BuffMissing=v);
+            Button(details.transform,"Choose buff",278,352,258,22,()=>r.BuffName==""?"Choose detected buff":r.BuffName,()=>
             {var names=new[]{""}.Concat(owner.buffNames).Concat(new[]{r.BuffName}).Distinct().ToArray();r.BuffName=names[(Array.IndexOf(names,r.BuffName)+1)%names.Length];},detailUpdates);
-            Label(details.transform,0,364,263,17,()=>"No condition = cast when ready",10,true,detailUpdates);
+            Label(details.transform,0,364,263,15,()=>"0 s = hold cast while conditions match",10,true,detailUpdates);
         }
         private void Potion()
         {
@@ -283,7 +310,7 @@ internal sealed partial class AutoPlayRuntime
         private void Help()
         {
             Title("Quick setup","Local character only - no LAN room required");
-            var guide=Label(details.transform,0,78,530,157,()=>"1  Select a skill icon and confirm the equipped skill.\n2  Enable it, then choose target and cast conditions.\n3  Press Start and close F1 / F4 to resume.\n\nCooldown and normal game restrictions always apply.\nManual casting takes priority. Start is not saved.",14,true,detailUpdates);guide.enableWordWrapping=true;
+            var guide=Label(details.transform,0,78,530,157,()=>"1  Confirm a skill, enable it, then choose conditions.\n2  Press Start and close F1 / F4 to resume.\n0 s / Hold key: repeat casts or sustain a channel.\nLow ward uses absolute Ward, not a percentage.\nMP required before cast: minimum current MP %.\nCooldown and normal game restrictions still apply.\nManual casting takes priority. Start is not saved.",13,true,detailUpdates);guide.enableWordWrapping=true;
             Label(details.transform,0,245,530,42,()=>$"Enemy: {Distance(owner.enemyDistance)}   /   Rare or boss: {Distance(owner.rareDistance)}\nRequests {owner.Requests}   /   Observed casts {owner.ConfirmedCasts}",12,true,detailUpdates).enableWordWrapping=true;
             var buffs=Label(details.transform,0,310,530,65,()=>"ACTIVE STAT BUFFS\n"+(owner.buffNames.Count>0?string.Join(", ",owner.buffNames.Take(8)):"Cast your buff once to detect its name. Keep toggle auras manual if no active stat-buff name is readable."),12,true,detailUpdates);buffs.enableWordWrapping=true;
         }
@@ -331,6 +358,7 @@ internal sealed partial class AutoPlayRuntime
         public void Dispose()
         {
             if(root!=null)UnityEngine.Object.Destroy(root);root=null;updates.Clear();detailUpdates.Clear();
+            if(radiusRing!=null)UnityEngine.Object.Destroy(radiusRing.gameObject);if(radiusMaterial!=null)UnityEngine.Object.Destroy(radiusMaterial);
             foreach(var asset in iconAssets)asset?.Dispose();
             if(ownedFont!=null)UnityEngine.Object.Destroy(ownedFont);
             if(chrome!=null)UnityEngine.Object.Destroy(chrome);if(chromeTexture!=null)UnityEngine.Object.Destroy(chromeTexture);

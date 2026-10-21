@@ -1,0 +1,16 @@
+{
+  "passed": 9,
+  "patchesInspected": 113,
+  "scope": "compiled metadata and IL audit; not gameplay acceptance",
+  "checks": [
+    "legacy encounter adapters and global Nemesis/Omen/shrine classes absent from binary",
+    "generic callback/state-graph/object-state replay engines absent",
+    "remaining Harmony patches do not target encounter or generic interaction types: ",
+    "legacy encounter payloads and skill-RPC model absent from Core",
+    "NPC world snapshots have no legacy encounter side channel",
+    "skill visual channel cannot carry legacy interaction or reward acknowledgements",
+    "NPC animation, remote VFX and enemy replicas remain compiled",
+    "development encounter catalogue has no Harmony patch or native gameplay mutation calls",
+    "native encounter discovery requires explicit development switch"
+  ]
+}

@@ -22,6 +22,8 @@ public sealed class AutoSkillRule
     public bool RareBossNear {get;set;}
     public bool LowHealth {get;set;}
     public bool LowMana {get;set;}
+    public bool LowWard {get;set;}
+    public float WardThreshold {get;set;}=500;
     public bool RequireAll {get;set;}
     public float HealthPercent {get;set;}=50;
     public float ManaPercent {get;set;}=30;
@@ -34,7 +36,8 @@ public sealed class AutoSkillRule
     {
         Ability=Trim(Ability);BuffName=Trim(BuffName);
         HealthPercent=Clamp(HealthPercent,1,100,50);ManaPercent=Clamp(ManaPercent,1,100,30);
-        MinimumManaPercent=Clamp(MinimumManaPercent,0,100,0);Radius=Clamp(Radius,1,60,20);Interval=Clamp(Interval,0.25f,120,1);
+        MinimumManaPercent=Clamp(MinimumManaPercent,0,100,0);Radius=Clamp(Radius,1,60,20);Interval=Clamp(Interval,0,120,1);
+        WardThreshold=Clamp(WardThreshold,0,100000,500);
     }
     internal static string Trim(string? s)=>(s??"").Length>160?(s??"")[..160]:(s??"");
     internal static float Clamp(float v,float min,float max,float fallback)=>float.IsFinite(v)?Math.Clamp(v,min,max):fallback;
@@ -54,10 +57,15 @@ public sealed class AutoPotionRule
 }
 
 public readonly record struct AutoSkillContext(string Ability,float HealthPercent,float ManaPercent,bool ManaKnown,
-    float EnemyDistance,float RareBossDistance,bool CooldownReady,bool BuffKnown,bool BuffActive);
+    float EnemyDistance,float RareBossDistance,bool CooldownReady,bool BuffKnown,bool BuffActive,
+    float Ward=0,bool WardKnown=false);
 
 public static class AutoPlayRules
 {
+    // A running native channel already consumed its charge; its own cooldown
+    // must not cancel the hold. All resource/target/trigger guards still apply.
+    public static bool ContinueHold(AutoSkillRule r,AutoSkillContext c)=>
+        r.Interval==0 && Blocked(r,c with {CooldownReady=true})=="";
     public static string Blocked(AutoSkillRule r,AutoSkillContext c)
     {
         if(!r.Enabled)return "Disabled";
@@ -74,6 +82,7 @@ public static class AutoPlayRules
         Condition(r.RareBossNear,c.RareBossDistance<=r.Radius);
         Condition(r.LowHealth,c.HealthPercent<=r.HealthPercent);
         Condition(r.LowMana,c.ManaKnown && float.IsFinite(c.ManaPercent) && c.ManaPercent<=r.ManaPercent);
+        Condition(r.LowWard,c.WardKnown && float.IsFinite(c.Ward) && c.Ward>=0 && c.Ward<=r.WardThreshold);
         if(count>0 && (r.RequireAll?matched!=count:matched==0))return "Waiting for conditions";
         return "";
     }
@@ -104,6 +113,6 @@ public sealed class AutoPlaySchedule
     }
     public void Requested(int slot,double now,float interval,bool accepted)
     {
-        next[slot]=now+(accepted?Math.Max(0.25,interval):0.75);globalNext=now+0.2;cursor=(slot+1)%5;
+        next[slot]=now+(accepted?Math.Max(0,interval):0.75);globalNext=now+0.2;cursor=(slot+1)%5;
     }
 }

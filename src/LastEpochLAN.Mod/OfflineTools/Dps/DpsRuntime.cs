@@ -46,7 +46,7 @@ internal static class DpsSettings
 {
     public static bool damageMeterEnabled => OfflineToolkit.Enabled;
     public static bool damageMeterVisible => OfflineToolkit.Settings.DpsVisible;
-    public static bool damageMeterShowWhenIdle => false;
+    public static bool damageMeterShowWhenIdle => true;
     public static float damageMeterScale
     {
         get => DpsRules.Scale(OfflineToolkit.Settings.DpsScale);
@@ -72,7 +72,7 @@ internal static class DpsSettings
     public static bool damageMeterShowBiggestHit => true;
     public static bool damageMeterShowHitCount => true;
     public static bool damageMeterShowMapLabel => false;
-    public static bool damageMeterShowSessionTimer => true;
+    public static bool damageMeterShowSessionTimer => false;
     public static bool damageMeterShowRowTooltips => true;
     public static bool damageMeterShowDamageTypeMeta => true;
     public static bool damageMeterShowSkillTagMeta => true;

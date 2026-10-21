@@ -58,7 +58,7 @@ internal static class DamageMeterOverlay
 		public Color ValueColor { get; } = valueColor;
 	}
 
-    private const float PanelWidth = 420f;
+    private const float PanelWidth = 340f;
 
 	private const float PanelGap = 8f;
 
@@ -191,9 +191,7 @@ internal static class DamageMeterOverlay
 	internal static bool ShouldCaptureGameMouseInput => s_shouldCaptureGameMouseInput;
 	internal static bool IsManipulating => s_isDragging || s_isResizing;
 	internal static Rect LastDrawnBounds;
-    private static float lastDamageAt = float.NegativeInfinity;
-    internal static bool IsShown => DpsSettings.damageMeterEnabled && DpsSettings.damageMeterVisible &&
-        (DpsSettings.damageMeterShowWhenIdle || DpsRules.HudActive(Time.unscaledTime,lastDamageAt,IsManipulating));
+    internal static bool IsShown => DpsSettings.damageMeterEnabled && DpsSettings.damageMeterVisible;
     private static void HidePresentation()
     {LastDrawnBounds=default;s_shouldCaptureGameMouseInput=false;s_isDragging=false;s_isResizing=false;}
 	internal static (double Total,int Hits,int Skills) Readout => (s_totalDamage,s_hitsCaptured,s_skillTotals.Count);
@@ -310,7 +308,7 @@ internal static class DamageMeterOverlay
 			}
 			Rect rect = ResolvePanelRect(GetBasePanelHeight(list.Count, visibleSkillRowCount), num);
 			LastDrawnBounds = new Rect(rect.x, rect.y, rect.width * num, rect.height * num);
-			Color accent = WithOpacity(new Color(0.96f, 0.52f, 0.17f, 1f), opacity);
+			Color accent = WithOpacity(new Color(0.35f, 0.78f, 0.48f, 1f), opacity);
 			Vector2 vector = ResolveScaledMousePosition(rect.position, num);
             Rect rect2 = new Rect(rect.x + 14f, rect.y + 8f, rect.width - 28f, 26f);
 			Rect resizeGripRect = new Rect(rect.xMax - 18f - 6f, rect.yMax - 18f - 6f, 18f, 18f);
@@ -370,8 +368,6 @@ internal static class DamageMeterOverlay
 			{
 				GUIUtility.ScaleAroundPivot(new Vector2(num, num), rect.position);
 			}
-			DrawPanel(rect, accent, opacity);
-			DrawHeader(rect, accent, opacity, s_isDragging || rect2.Contains(vector));
 			DrawStatCards(rect, opacity, list);
 			Vector2 mousePosition = (DpsSettings.damageMeterShowRowTooltips ? ResolveScaledMousePosition(rect.position, num) : new Vector2(float.MinValue, float.MinValue));
 			DrawSkillTable(rect, accent, opacity, mousePosition, list, topSkills, visibleSkillRowCount);
@@ -385,7 +381,7 @@ internal static class DamageMeterOverlay
 		if (!s_isPaused && !(damage <= 0f) && !float.IsNaN(damage) && !float.IsInfinity(damage))
 		{
 			float unscaledTime = Time.unscaledTime;
-            lastDamageAt=unscaledTime;cachedCards=null;
+            cachedCards=null;
 			s_totalDamage += damage;
 			s_biggestHit = Math.Max(s_biggestHit, damage);
 			s_hitsCaptured++;
@@ -416,7 +412,7 @@ internal static class DamageMeterOverlay
 
 	public static void ResetCombatData()
 	{
-        lastDamageAt=float.NegativeInfinity;HidePresentation();
+        HidePresentation();
 		cachedCards=null;nextCardsAt=0;labelCache.Clear();
 		s_sessionStartTime = Time.unscaledTime;
 		s_totalDamage = 0.0;
@@ -654,7 +650,7 @@ internal static class DamageMeterOverlay
 
 	private static float GetBasePanelHeight(int statCardCount, int skillRows)
 	{
-        return 42f + 44f + 10f + 16f + 6f + (float)skillRows * 34f + (float)Math.Max(0, skillRows - 1) * 6f + 12f;
+        return 8f + statCardCount*22f + 12f + 16f + 6f + skillRows*34f + Math.Max(0,skillRows-1)*6f + 12f;
 	}
 
 	private static int GetVisibleSkillRowCount()
@@ -678,7 +674,7 @@ internal static class DamageMeterOverlay
 		nextCardsAt=Time.unscaledTime+0.1f;
 		List<StatCard> list = new List<StatCard>(5)
 		{
-            new StatCard("DPS", FormatRollingDps(), new Color(0.96f, 0.52f, 0.17f, 1f), new Color(0.98f, 0.98f, 0.99f, 1f))
+            new StatCard(s_isPaused?"DPS (paused)":"DPS", FormatRollingDps(), new Color(0.96f, 0.52f, 0.17f, 1f), new Color(0.98f, 0.98f, 0.99f, 1f))
 		};
 		if (DpsSettings.damageMeterShowRecentFiveSecond)
 		{
@@ -696,85 +692,22 @@ internal static class DamageMeterOverlay
 		cachedCards=list;return list;
 	}
 
-	private static void DrawPanel(Rect rect, Color accent, float opacity)
-	{
-		DrawShadow(rect, 1f, 0.16f * opacity);
-		DrawShadow(rect, 4f, 0.08f * opacity);
-		DrawShadow(rect, 8f, 0.04f * opacity);
-		DrawFilledRect(rect, WithOpacity(new Color(0.04f, 0.05f, 0.07f, 0.88f), opacity));
-		DrawVerticalGradient(new Rect(rect.x, rect.y, rect.width, rect.height), WithOpacity(new Color(0.1f, 0.12f, 0.16f, 0.16f), opacity), WithOpacity(new Color(0f, 0f, 0f, 0f), opacity), 12);
-		DrawVerticalGradient(new Rect(rect.x, rect.y, rect.width, 74f), WithOpacity(new Color(accent.r, accent.g, accent.b, 0.08f), opacity), WithOpacity(new Color(accent.r, accent.g, accent.b, 0f), opacity), 12);
-		DrawOutline(rect, WithOpacity(new Color(0.39f, 0.47f, 0.55f, 0.25f), opacity));
-		DrawFilledRect(new Rect(rect.x, rect.y, rect.width, 1.5f), WithOpacity(new Color(accent.r, accent.g, accent.b, 0.9f), opacity));
-		DrawFilledRect(new Rect(rect.x + 1f, rect.y + 1.5f, rect.width - 2f, 1f), WithOpacity(new Color(1f, 1f, 1f, 0.04f), opacity));
-	}
-
-	private static void DrawHeader(Rect panelRect, Color accent, float opacity, bool hovered)
-	{
-		float num = panelRect.x + 14f;
-		float num2 = panelRect.y + 14f;
-		Rect rect = new Rect(num, num2 - 1f, 38f, 14f);
-		DrawFilledRect(rect, WithOpacity(accent, opacity));
-		DrawOutline(rect, WithOpacity(new Color(1f, 0.92f, 0.82f, 0.2f), opacity));
-		DrawText(rect, "DMG", s_badgeStyle, WithOpacity(new Color(1f, 1f, 1f, 0.98f), opacity));
-		DrawTextWithShadow(new Rect(num + 46f, num2 - 3f, panelRect.width - 28f - 118f, 18f), "DPS Tracker", s_titleStyle, WithOpacity(new Color(0.97f, 0.98f, 0.99f, 0.98f), opacity), 0.3f * opacity);
-		float y = num2 + 14f;
-		float width = panelRect.width - 28f - 118f;
-		if (DpsSettings.damageMeterShowMapLabel)
-		{
-			DrawText(new Rect(num + 46f, y, width, 12f), GetMapLabel(), s_headerMetaStyle, WithOpacity(new Color(0.35f, 0.48f, 0.54f, 0.94f), opacity));
-		}
-        if (DpsSettings.damageMeterShowSessionTimer && !s_isPaused)
-		{
-			float seconds = Mathf.Max(0f, Time.unscaledTime - s_sessionStartTime);
-			DrawText(new Rect(panelRect.x + panelRect.width - 14f - 72f, num2 + 2f, 72f, 10f), FormatDuration(seconds), s_headerMetaStyle, WithOpacity(new Color(0.62f, 0.67f, 0.73f, 0.76f), opacity), TextAnchor.UpperRight);
-		}
-		if (s_isPaused)
-		{
-            Rect rect2 = new Rect(panelRect.x + panelRect.width - 14f - 70f, num2, 70f, 16f);
-			DrawFilledRect(rect2, WithOpacity(new Color(accent.r, accent.g, accent.b, 0.18f), opacity));
-			DrawOutline(rect2, WithOpacity(new Color(accent.r, accent.g, accent.b, 0.34f), opacity));
-			DrawText(rect2, "PAUSED", s_badgeStyle, WithOpacity(new Color(1f, 0.95f, 0.9f, 0.98f), opacity));
-		}
-		if (hovered)
-		{
-            DrawOutline(new Rect(panelRect.x + 1f, panelRect.y + 1f, panelRect.width - 2f, 33f), WithOpacity(new Color(accent.r, accent.g, accent.b, 0.1f), opacity));
-		}
-        DrawFilledRect(new Rect(num, panelRect.y + 34f, panelRect.width - 28f, 1f), WithOpacity(new Color(1f, 1f, 1f, 0.06f), opacity));
-	}
-
 	private static void DrawStatCards(Rect panelRect, float opacity, List<StatCard> cards)
-	{
-		if (cards.Count != 0)
-		{
-            float num = panelRect.width - 28f - 6f * (cards.Count - 1);
-            float num2 = num / cards.Count;
-            float num3 = panelRect.y + 42f;
-			float num4 = panelRect.x + 14f;
-			for (int i = 0; i < cards.Count; i++)
-			{
-                Rect rect = new Rect(num4 + i * (num2 + 6f), num3, num2, 44f);
-				DrawStatCard(rect, cards[i], opacity);
-			}
-		}
-	}
+    {
+        for(int i=0;i<cards.Count;i++)DrawStatCard(new Rect(panelRect.x+14,panelRect.y+8+i*22,panelRect.width-28,22),cards[i],opacity);
+    }
 
 	private static void DrawStatCard(Rect rect, StatCard card, float opacity)
-	{
-		DrawFilledRect(rect, WithOpacity(new Color(1f, 1f, 1f, 0.03f), opacity));
-		DrawVerticalGradient(rect, WithOpacity(new Color(1f, 1f, 1f, 0.03f), opacity), WithOpacity(new Color(0f, 0f, 0f, 0f), opacity), 8);
-		DrawOutline(rect, WithOpacity(new Color(1f, 1f, 1f, 0.045f), opacity));
-		DrawFilledRect(new Rect(rect.x, rect.y, rect.width, 1.5f), WithOpacity(new Color(card.Accent.r, card.Accent.g, card.Accent.b, 0.82f), opacity));
-        DrawText(new Rect(rect.x + 6f, rect.y + 6f, rect.width - 12f, 10f), card.Label, s_statLabelStyle, WithOpacity(new Color(0.72f, 0.76f, 0.81f, 0.82f), opacity));
-        DrawTextWithShadow(new Rect(rect.x + 6f, rect.y + 20f, rect.width - 12f, 18f), FitTextWithEllipsis(card.Value,s_statValueStyle,rect.width-12f), s_statValueStyle, WithOpacity(card.ValueColor, opacity), 0.28f * opacity);
-	}
+    {
+        DrawTextWithShadow(new Rect(rect.x,rect.y,95,20),card.Label,s_statLabelStyle,WithOpacity(new Color(0.8f,0.84f,0.86f),opacity),0.5f*opacity);
+        DrawText(new Rect(rect.x+100,rect.y,rect.width-100,20),card.Value,s_statValueStyle,WithOpacity(new Color(0.94f,0.96f,0.94f),opacity),TextAnchor.MiddleRight);
+    }
 
 	private static void DrawSkillTable(Rect panelRect, Color accent, float opacity, Vector2 mousePosition, List<StatCard> cards, List<SkillTotal> topSkills, int visibleRows)
 	{
-        float num2 = panelRect.y + 96f;
+        float num2 = panelRect.y + 8f + cards.Count*22f + 12f;
 		float num3 = panelRect.x + 14f;
 		float num4 = panelRect.width - 28f;
-		DrawText(new Rect(num3, num2, num4 * 0.55f, 16f), "SKILLS", s_listHeaderStyle, WithOpacity(new Color(accent.r, accent.g, accent.b, 0.88f), opacity));
 		DrawText(new Rect(num3 + num4 - 106f, num2, 46f, 16f), "SHARE", s_listHeaderStyle, WithOpacity(new Color(0.58f, 0.63f, 0.69f, 0.78f), opacity), TextAnchor.UpperRight);
 		DrawText(new Rect(num3 + num4 - 58f, num2, 58f, 16f), "TOTAL", s_listHeaderStyle, WithOpacity(new Color(0.58f, 0.63f, 0.69f, 0.78f), opacity), TextAnchor.UpperRight);
 		if (!DpsSettings.damageMeterShowSkillBreakdown)
@@ -823,9 +756,9 @@ internal static class DamageMeterOverlay
 		Color color2 = (flag ? new Color(accent.r, accent.g, accent.b, flag2 ? 0.26f : 0.2f) : new Color(accent.r, accent.g, accent.b, flag2 ? 0.16f : 0.12f));
 		Color color3 = (flag ? new Color(0.98f, 0.98f, 0.99f, 0.99f) : new Color(0.91f, 0.94f, 0.97f, 0.95f));
 		Color color4 = new Color(0.63f, 0.68f, 0.74f, 0.8f);
-		Color color5 = (flag ? new Color(1f, 0.96f, 0.9f, 0.98f) : new Color(0.91f, 0.94f, 0.97f, 0.94f));
+		Color color5 = new Color(0.92f,0.96f,0.93f,0.98f);
 		DrawFilledRect(rect, WithOpacity(color, opacity));
-		DrawVerticalGradient(rect, WithOpacity(new Color(1f, 1f, 1f, 0.02f), opacity), WithOpacity(new Color(0f, 0f, 0f, 0f), opacity), 8);
+
 		DrawFilledRect(new Rect(rect.x, rect.y, width, rect.height), WithOpacity(color2, opacity));
 		DrawOutline(rect, WithOpacity(flag2 ? new Color(accent.r, accent.g, accent.b, 0.18f) : new Color(1f, 1f, 1f, 0.035f), opacity));
 		if (flag)
@@ -1168,7 +1101,7 @@ internal static class DamageMeterOverlay
 			list.Add((skill.Kills == 1) ? "1 kill" : (skill.Kills.ToString("N0", CultureInfo.InvariantCulture) + " kills"));
 		}
 		list.Add((skill.Hits == 1) ? "1 hit" : (skill.Hits.ToString("N0", CultureInfo.InvariantCulture) + " hits"));
-		return string.Join(" · ", list);
+		return string.Join(" Â· ", list);
 	}
 
 	private static void DrawSkillTooltip(Rect anchorRect, SkillTotal skill, double totalDamage, Color accent, float opacity)
@@ -1355,7 +1288,7 @@ internal static class DamageMeterOverlay
 
 	private static void DrawResizeGrip(Rect resizeGripRect, bool hovered, float opacity)
 	{
-		Color color = (hovered ? WithOpacity(new Color(0.83f, 0.52f, 0.24f, 0.7f), opacity) : WithOpacity(new Color(0.4f, 0.46f, 0.52f, 0.55f), opacity));
+		Color color = (hovered ? WithOpacity(new Color(0.65f, 0.75f, 0.68f, 0.7f), opacity) : WithOpacity(new Color(0.4f, 0.46f, 0.52f, 0.55f), opacity));
 		float num = resizeGripRect.xMax - 3f;
 		float num2 = resizeGripRect.yMax - 3f;
 		for (int i = 0; i < 3; i++)

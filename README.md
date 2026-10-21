@@ -1,6 +1,8 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.22
+# TM Last Epoch Co-op Mod — 1.1.0-dev.24
 
 Development release, protocol **36**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). Both Host and Client must update. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
+
+**Dev.24:** updates F1 Combat Assist with a zero-second Hold cast mode, Low ward and an absolute Ward threshold, a detection-radius preview, and a clearer minimum-current-MP label. Small minimap enemy dots use 30% of their previous size; Tab overlay dots keep their original size. The DPS overlay stays visible, uses a transparent frame and green bars, and stacks its statistics vertically. Native gameplay/visual verification is pending. Encounter work remains paused and is excluded from this release. See [dev.24 changes and limits](RELEASE-1.1.0-dev24-VI.md).
 
 **Dev.22:** removes all custom Disintegrate channel/movement/rotation damage patches and related Arcane Ascendance handling. Both skills return to native behavior. Update both DLLs on every peer. Encounter development is incomplete and its new native gameplay remains disabled by default. See [dev.22 changes and limits](RELEASE-1.1.0-dev22-VI.md).
 

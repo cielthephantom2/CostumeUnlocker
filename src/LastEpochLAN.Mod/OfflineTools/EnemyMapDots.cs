@@ -77,8 +77,11 @@ internal static class EnemyMapDots
                 entry.Kind=kind;
                 entry.Icon.sprite=sprites[kind];entry.Icon.icon=sprites[kind];
                 entry.Icon.ChangeIcon(sprites[kind]);
-                entry.Icon.scaleMultiplier=kind==2?0.23f:kind==1?0.19f:0.15f;
+
             }
+            // Native Tab overlay uses the original size; only the small corner map shrinks.
+            float scale=(kind==2?0.23f:kind==1?0.19f:0.15f)*(UIBase.instance?.overlayMapOpen==true?1f:0.3f);
+            if(entry.Icon.scaleMultiplier!=scale)entry.Icon.scaleMultiplier=scale;
             if(entry.Icon.img!=null) entry.Icon.img.raycastTarget=false;
             updateIndex++;
         }
@@ -100,7 +103,7 @@ internal static class EnemyMapDots
         var icon=anchor.AddComponent<DMMapIcon>();entry.Icon=icon;
         icon.sprite=sprites[0];icon.icon=sprites[0];
         icon.tint=new Color32(255,255,255,255);
-        icon.scaleMultiplier=0.15f;icon.scaleWithZoom=false;
+        icon.scaleMultiplier=UIBase.instance?.overlayMapOpen==true?0.15f:0.045f;icon.scaleWithZoom=false;
         icon.overrideGlobalScaleMode=true;icon.ignoreGlobalScale=true;
         icon.rotate=false;icon.rotateWithMap=false;icon.useDirectionIndicator=false;
         icon.useCompositeDirectionIndicator=false;icon.WorldScale=false;

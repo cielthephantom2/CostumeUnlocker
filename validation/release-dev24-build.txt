@@ -1,0 +1,11 @@
+  Determining projects to restore...
+  Restored D:\New folder\CostumeUnlocker-Publish\src\LastEpochLAN.Core\LastEpochLAN.Core.csproj (in 1.38 sec).
+  Restored D:\New folder\CostumeUnlocker-Publish\src\LastEpochLAN.Mod\LastEpochLAN.Mod.csproj (in 1.38 sec).
+  LastEpochLAN.Core -> D:\New folder\CostumeUnlocker-Publish\src\LastEpochLAN.Core\bin\Release\net6.0\LastEpochLAN.Core.dll
+  LastEpochLAN.Mod -> D:\New folder\CostumeUnlocker-Publish\src\LastEpochLAN.Mod\bin\Release\net6.0\LastEpochLAN.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:07.45
