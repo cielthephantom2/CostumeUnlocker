@@ -6,6 +6,7 @@ using LastEpochLAN.Core;
 using UnityEngine;
 using UnityEngine.UI;
 using Il2CppInterop.Runtime;
+using UnityEngine.EventSystems;
 
 namespace LastEpochLAN.Mod;
 
@@ -30,6 +31,8 @@ internal sealed partial class NativeSharedStashView
     private bool awaitingTab;
     private readonly List<(GameObject Widget,bool Active)> hiddenModalWidgets=new();
     private IntPtr constrainedModal;
+    private int configureRequestedTab=-1;
+    private bool legacyConfiguration;
 
     private Transform Cloned(Transform sourceRoot,Transform original)
     {
@@ -64,6 +67,7 @@ internal sealed partial class NativeSharedStashView
         closeArtwork=Cloned(source.transform,controls._closeButton?.transform)?.gameObject;
         CaptureSearch(source,controls._searchLabel?._serializedInput);
         CaptureNativeNavigation(source);
+        CaptureModernCategories(source,controls);
         if(controls._tabInfo!=null)
         {
             sharedTabTitle=Cloned(source.transform,controls._tabInfo._label?.transform)?.GetComponent<TMP_Text>();
@@ -85,6 +89,7 @@ internal sealed partial class NativeSharedStashView
         tabSelectionPath=template._selectedBackground!=null?Indices(template.transform,template._selectedBackground.transform):null;
         tabArtwork=UnityEngine.Object.Instantiate(template.gameObject,parking.transform,false);
         tabArtwork.name="Shared native tab artwork";tabArtwork.SetActive(false);StripTabScripts(tabArtwork);
+        SharedStashNativeLayout.Restore(template.transform,tabArtwork.transform);
         // A copied personal tab may contain a private item-count label. Shared
         // counts are shown in the selected-tab footer, never copied from it.
         if(template._itemsCount!=null)At(tabArtwork.transform,Indices(template.transform,template._itemsCount.transform))?.gameObject.SetActive(false);
@@ -95,13 +100,16 @@ internal sealed partial class NativeSharedStashView
     {
         if(artwork==null)return null;
         var graphic=artwork.GetComponent<Graphic>();
+        bool createdHit=graphic==null;
         if(graphic==null){var hit=artwork.AddComponent<Image>();hit.color=new(0,0,0,.001f);graphic=hit;}
         artwork.SetActive(true);
         var group=artwork.GetComponent<CanvasGroup>()??artwork.AddComponent<CanvasGroup>();
         group.alpha=1;group.interactable=true;group.blocksRaycasts=true;group.ignoreParentGroups=true;
         graphic.raycastTarget=true;
+        graphic.enabled=true;
         var button=artwork.GetComponent<UnityEngine.UI.Button>()??artwork.AddComponent<UnityEngine.UI.Button>();
         button.targetGraphic??=graphic;button.interactable=true;
+        SharedStashNativeLayout.PreserveHitSurface(graphic,button,createdHit);
         button.onClick=new UnityEngine.UI.Button.ButtonClickedEvent();button.onClick.AddListener((Action)(()=>
         {try{action();}catch(Exception ex){owner.Status="Shared Stash: "+ex.Message;MelonLoader.MelonLogger.Warning(owner.Status);}}));
         return button;
@@ -113,8 +121,12 @@ internal sealed partial class NativeSharedStashView
         // Keep native button artwork/placement but replace every callback. None
         // of the personal-stash controllers survives the projection clone.
         sortButton=BindArtwork(sortArtwork,SortSharedTab);
-        configureButton=BindArtwork(configureArtwork,ConfigureSharedTab);
-        addButton=BindArtwork(addArtwork,owner.AddTab);
+        configureButton=BindArtwork(configureArtwork,()=>
+        {
+            if(owner.StashTabs[owner.SelectedTab].Category!=selectedCategory)ConfigureSharedCategory(selectedCategory);
+            else ConfigureSharedTab();
+        });
+        addButton=BindArtwork(addArtwork,()=>owner.AddTabInCategory(selectedCategory));
         BindArtwork(closeArtwork,owner.Toggle);
         foreach(var (artwork,action) in nativeNavigation)BindArtwork(artwork,action);
         BindNativeSearch();
@@ -126,6 +138,7 @@ internal sealed partial class NativeSharedStashView
             for(int i=sharedTabHolder.childCount-1;i>=0;i--)UnityEngine.Object.DestroyImmediate(sharedTabHolder.GetChild(i).gameObject);
             if(addInside)addArtwork.transform.SetParent(sharedTabHolder,false);
         }
+        BuildSharedCategories();
         RestoreNativeTabLayout();
         if(tabScroll!=null)
         {
@@ -149,6 +162,8 @@ internal sealed partial class NativeSharedStashView
     }
     private void RefreshSharedTabs(ChestReply snapshot)
     {
+        if(shownCategoryTab!=snapshot.Tab){selectedCategory=snapshot.Tabs[snapshot.Tab].Category;shownCategoryTab=snapshot.Tab;}
+        RefreshSharedCategories(snapshot);
         var activeTab=snapshot.Tabs[snapshot.Tab];
         if(sharedTabTitle!=null)sharedTabTitle.text=activeTab.Name;
         if(sharedTabTitleIcon!=null)
@@ -162,22 +177,32 @@ internal sealed partial class NativeSharedStashView
             sharedTabVisuals.Clear();renderedTabs=snapshot.Tabs.ToArray();
             foreach(var tab in renderedTabs)
             {
-                var visual=UnityEngine.Object.Instantiate(tabArtwork,sharedTabHolder,false);
-                visual.transform.SetParent(sharedTabHolder,false);visual.name="Shared tab "+tab.Id;
+                var visual=UnityEngine.Object.Instantiate(tabArtwork,TabParent(tab),false);
+                SharedStashNativeLayout.Restore(tabArtwork.transform,visual.transform);
+                visual.transform.SetParent(TabParent(tab),false);visual.name="Shared tab "+tab.Id;
                 if(tabArtwork!=null)
                 {
-                    var label=At(visual.transform,tabNamePath)?.GetComponent<TMP_Text>();if(label!=null)label.text=tab.Name;
+                    var label=At(visual.transform,tabNamePath)?.GetComponent<TMP_Text>();
+                    if(label!=null)
+                    {
+                        label.gameObject.SetActive(true);label.enabled=true;label.text=tab.Name;
+                        SharedStashNativeLayout.SizeLabel(label);
+                    }
                     var icon=At(visual.transform,tabIconPath)?.GetComponent<Image>();
                     if(icon!=null)
                     {
-                        if(tab.Icon<tabIcons.Length)icon.sprite=tabIcons[tab.Icon];
-                        if(tab.Color<tabColors.Length)icon.color=tabColors[tab.Color];
+                        icon.sprite=tab.Icon>0 && tab.Icon<tabIcons.Length?tabIcons[tab.Icon]:null;
+                        icon.enabled=icon.sprite!=null;
+                        icon.gameObject.SetActive(icon.enabled);
+                        if(legacyTabImagePath!=null)icon.color=Color.white;
+                        else if(tab.Color<tabColors.Length)icon.color=tabColors[tab.Color];
                     }
+                    ApplyLegacyTabColor(visual,tab.Color);
                 }
-                int id=tab.Id;BindArtwork(visual,()=>owner.SelectTab(id));visual.SetActive(true);sharedTabVisuals.Add(visual);
+                int id=tab.Id;BindArtwork(visual,()=>owner.SelectTab(id));
+                BindTabConfigurationClick(visual,id);visual.SetActive(true);sharedTabVisuals.Add(visual);
             }
             if(addArtwork.transform.parent==sharedTabHolder)addArtwork.transform.SetAsLastSibling();
-            RefreshNativeTabLayout();
             scrollTab=-1;
         }
         if(addArtwork!=null && addArtwork.transform.parent==sharedTabHolder)addArtwork.transform.SetAsLastSibling();
@@ -185,19 +210,36 @@ internal sealed partial class NativeSharedStashView
         {
             var selected=tabArtwork!=null?At(sharedTabVisuals[i].transform,tabSelectionPath)?.gameObject:null;
             if(selected!=null)selected.SetActive(i==owner.SelectedTab);
+            if(modernCategoryTabsPath==null)sharedTabVisuals[i].SetActive(renderedTabs[i].Category==selectedCategory);
             RefreshLegacyTabSelection(sharedTabVisuals[i],i==owner.SelectedTab);
-            var button=sharedTabVisuals[i].GetComponent<UnityEngine.UI.Button>();if(button!=null)button.interactable=owner.TabControlsReady && i!=owner.SelectedTab;
+            var button=sharedTabVisuals[i].GetComponent<UnityEngine.UI.Button>();if(button!=null)button.interactable=owner.TabControlsReady;
         }
+        if(layoutCategory!=selectedCategory || scrollTab<0){Canvas.ForceUpdateCanvases();RefreshNativeTabLayout();layoutCategory=selectedCategory;}
         if(tabScroll!=null && scrollTab!=owner.SelectedTab)
         {
             Canvas.ForceUpdateCanvases();
-            if(tabScroll.horizontal)tabScroll.horizontalNormalizedPosition=owner.SelectedTab/(float)Math.Max(1,renderedTabs.Length-1);
-            else if(tabScroll.vertical)tabScroll.verticalNormalizedPosition=1-owner.SelectedTab/(float)Math.Max(1,renderedTabs.Length-1);
+            ScrollSharedSelection();
             scrollTab=owner.SelectedTab;
         }
         if(sortButton!=null)sortButton.interactable=owner.TabControlsReady;
         if(configureButton!=null)configureButton.interactable=owner.TabControlsReady;
         if(addButton!=null)addButton.interactable=owner.TabControlsReady && renderedTabs.Length<SharedStashRules.MaxTabs;
+        if(configureRequestedTab>=0 && owner.SelectedTab==configureRequestedTab && owner.TabControlsReady)
+        {configureRequestedTab=-1;ConfigureSharedTab();}
+    }
+    private void BindTabConfigurationClick(GameObject visual,int tab)
+    {
+        var trigger=visual.AddComponent<EventTrigger>();
+        trigger.triggers=new Il2CppSystem.Collections.Generic.List<EventTrigger.Entry>();
+        var entry=new EventTrigger.Entry{eventID=EventTriggerType.PointerClick};
+        entry.callback.AddListener((Action<BaseEventData>)(data=>
+        {
+            var pointer=data.TryCast<PointerEventData>();
+            if(pointer==null || pointer.button!=PointerEventData.InputButton.Right || !owner.TabControlsReady || Configuring)return;
+            try{owner.SelectTab(tab);configureRequestedTab=tab;}
+            catch(Exception ex){owner.Status="Shared tab configuration: "+ex.Message;MelonLoader.MelonLogger.Warning(owner.Status);}
+        }));
+        trigger.triggers.Add(entry);
     }
     private void SortSharedTab()
     {
@@ -229,47 +271,60 @@ internal sealed partial class NativeSharedStashView
     {
         if(!owner.TabControlsReady){owner.Status="Wait for the current stash operation";return;}
         var tab=owner.StashTabs[owner.SelectedTab];
-        var names=new Il2CppSystem.Collections.Generic.List<string>();names.Add("Shared Stash");
-        var ids=new Il2CppSystem.Collections.Generic.List<int>();ids.Add(0);
-        var data=new StashConfigureTabModalOpenData(tab.Icon,tab.Color,tab.Name,tab.Id,0,names,ids,false,new StashPriority(),true,false,
-            new StashPriority(),new Il2CppSystem.Collections.Generic.List<string>(),new Il2CppSystem.Collections.Generic.List<int>());
-        configureAwaiter=UIBase.instance.PanelSystem.OpenModalAsync<StashConfigureTabModalV2,StashConfigureTabModalOpenData,StashConfigureTabModalResult>(
-            data,new Il2CppSystem.Nullable<PanelLocation>()).GetAwaiter();
+        var names=new Il2CppSystem.Collections.Generic.List<string>();
+        var ids=new Il2CppSystem.Collections.Generic.List<int>();
+        foreach(var category in owner.StashCategories){names.Add(category.Name);ids.Add(category.Id);}
+        var folder=owner.StashCategories.Single(c=>c.Id==tab.Category);
+        var availableNames=new Il2CppSystem.Collections.Generic.List<string>();
+        var availableIds=new Il2CppSystem.Collections.Generic.List<int>();
+        foreach(var candidate in owner.StashTabs){availableNames.Add(candidate.Name);availableIds.Add(candidate.Id);}
+        var data=new StashConfigureTabModalOpenData(tab.Icon,tab.Color,tab.Name,tab.Id,tab.Category,names,ids,false,
+            SharedStashPriorityCodec.Decode(tab.Priority),false,tab.IgnoreFolderPriority,
+            SharedStashPriorityCodec.Decode(folder.Priority),availableNames,availableIds);
+        OpenSharedConfiguration(data);
+        configureCategory=-1;
         configureTab=tab.Id;configureChestId=owner.QaView?.ChestId??"";Configuring=true;
     }
     internal void InvalidateConfiguration()=>configureChestId="";
     internal void PollTabConfiguration()
     {
         if(!Configuring)return;
-        var modal=UIBase.instance?.PanelSystem?.GetPanelIfOpen<StashConfigureTabModalV2>();
-        if(modal!=null && modal.Pointer!=constrainedModal)
-        {
-            constrainedModal=modal.Pointer;
-            var controls=modal._configureTabUI;
-            if(controls!=null)
-            {
-                foreach(var widget in new[]{controls._duplicateTabButton?.gameObject,controls._deleteCategoryButton?.gameObject,
-                    controls._parentSelectDropdown?.gameObject,controls._childTabsDropdown?.gameObject,
-                    controls._priorityHeader?.gameObject,controls._ignoreFolderPriority?.gameObject,controls._stashPriorityUI?.gameObject})
-                {
-                    if(widget==null)continue;
-                    hiddenModalWidgets.Add((widget,widget.activeSelf));widget.SetActive(false);
-                }
-            }
-        }
+        BindSharedModalActions();
         if(!configureAwaiter.IsCompleted)return;
         try
         {
             var result=configureAwaiter.GetResult();Configuring=false;
-            if(result==null || !owner.Open || configureTab!=owner.SelectedTab || owner.QaView?.ChestId!=configureChestId)return;
-            if(result.Action!=StashConfigureResult.Save){owner.Status="Shared tabs support name, color and icon configuration";return;}
-            owner.ConfigureTab(new(configureTab,result.TabName.Trim(),result.SelectedColorId,result.SelectedIconId));
+            if(!owner.Open || configureTab!=owner.SelectedTab || owner.QaView?.ChestId!=configureChestId)return;
+            if(forcedModalAction.HasValue)
+            {
+                if(forcedModalAction==StashConfigureResult.Duplicate)
+                {if(configureCategory>=0)DuplicateCategory();else owner.DuplicateTab();}
+                else if(forcedModalAction==StashConfigureResult.Delete && configureCategory>=0)
+                    owner.DeleteCategory(owner.StashCategories.Single(c=>c.Id==configureCategory));
+                return;
+            }
+            if(result==null)return;
+            if(result.Action==StashConfigureResult.Duplicate)
+            {if(configureCategory>=0)DuplicateCategory();else owner.DuplicateTab();return;}
+            if(result.Action==StashConfigureResult.Delete && configureCategory>=0)
+            {owner.DeleteCategory(owner.StashCategories.Single(c=>c.Id==configureCategory));return;}
+            if(result.Action!=StashConfigureResult.Save)return;
+            if(configureCategory>=0)
+                owner.ConfigureCategory(new(configureCategory,result.TabName.Trim(),result.SelectedColorId,result.SelectedIconId,
+                    SharedStashPriorityCodec.Encode(result.TabPriority)),result.SelectedTabIDsToMove?.ToArray());
+            else
+            {
+                owner.ConfigureTab(new(configureTab,result.TabName.Trim(),result.SelectedColorId,result.SelectedIconId){
+                    Category=result.SelectedParentId,Priority=SharedStashPriorityCodec.Encode(result.TabPriority),IgnoreFolderPriority=result.IgnoreFolderPriority});
+                selectedCategory=result.SelectedParentId;
+            }
         }
         catch(Exception ex){Configuring=false;owner.Status="Shared tab configuration: "+ex.Message;}
         finally
         {
             foreach(var (widget,active) in hiddenModalWidgets)if(widget!=null)widget.SetActive(active);
-            hiddenModalWidgets.Clear();constrainedModal=IntPtr.Zero;
+            RestoreSharedModalActions();
+            hiddenModalWidgets.Clear();constrainedModal=IntPtr.Zero;forcedModalAction=null;
         }
     }
     private void DisposeSharedTabs()
@@ -277,6 +332,7 @@ internal sealed partial class NativeSharedStashView
         sharedTabHolder=null;tabScroll=null;scrollTab=-1;tabArtwork=null;sortArtwork=configureArtwork=addArtwork=null;sharedTabTitle=null;sharedTabTitleIcon=null;
         sharedTabVisuals.Clear();renderedTabs=Array.Empty<SharedStashTab>();sortButton=configureButton=addButton=null;
         shownTab=-1;awaitingTab=false;
+        configureRequestedTab=-1;
         DisposeNativeControls();
         // An open native modal owns its own lifetime. Poll it before the next
         // projection tick; ignore results if F2 was closed or the tab changed.

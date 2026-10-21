@@ -17,7 +17,10 @@ public sealed record ChestCommand
 {
     public int Tab {get;init;}
     public long ExpectedRevision {get;init;}=-1;
+    public int DestinationCategory {get;init;}=-1;
     public SharedStashTab? Settings {get;init;}
+    public SharedStashCategory? CategorySettings {get;init;}
+    public int[] MoveTabs {get;init;}=Array.Empty<int>();
     public string[] Order {get;init;}=Array.Empty<string>();
     public string Kind {get;init;}="query";
     public string ChestId {get;init;}="";
@@ -25,8 +28,8 @@ public sealed record ChestCommand
     public string ItemId {get;init;}="";
     public ChestItem? Item {get;init;}
     public string Ticket {get;init;}="";
-    public bool Valid()=>SharedStashRules.ValidTabIndex(Tab) && (Kind=="query" ? ChestId.Length<=32 && Operation=="" && Item==null && Settings==null && Order.Length==0 :
-        Kind is "add-tab" or "configure-tab" or "sort-tab" ? Guid.TryParseExact(ChestId,"N",out _) && Guid.TryParseExact(Operation,"N",out _) &&
+    public bool Valid()=> (Kind=="add-tab" ? DestinationCategory is >=-1 and <24 : DestinationCategory==-1) && (Kind is "add-category" or "configure-category" or "delete-category" or "duplicate-category" ? CategorySettings?.Valid()==true : CategorySettings==null) && MoveTabs is {Length:<=24} && MoveTabs.Distinct().Count()==MoveTabs.Length && MoveTabs.All(SharedStashRules.ValidTabIndex) && (Kind=="configure-category" || MoveTabs.Length==0) && SharedStashRules.ValidTabIndex(Tab) && (Kind=="query" ? ChestId.Length<=32 && Operation=="" && Item==null && Settings==null && Order.Length==0 :
+        Kind is "add-tab" or "configure-tab" or "sort-tab" or "duplicate-tab" or "add-category" or "configure-category" or "delete-category" or "duplicate-category" ? Guid.TryParseExact(ChestId,"N",out _) && Guid.TryParseExact(Operation,"N",out _) &&
         ExpectedRevision>=0 && Item==null && ItemId=="" && Ticket=="" &&
         (Kind=="configure-tab" ? Settings?.Valid()==true && Settings.Id==Tab : Settings==null) &&
         (Kind=="sort-tab" ? Order.Length<=SharedStashRules.ItemsPerTab && Order.All(id=>Guid.TryParseExact(id,"N",out _)) && Order.Distinct().Count()==Order.Length : Order.Length==0) :
@@ -39,7 +42,10 @@ public sealed record ChestReply
 {
     public int Tab {get;init;}
     public int ChangedTab {get;init;}=-1;
+    public int ChangedCategory {get;init;}=-1;
+    public int[] Counts {get;init;}=Array.Empty<int>();
     public SharedStashTab[] Tabs {get;init;}=SharedStashRules.InitialTabs();
+    public SharedStashCategory[] Categories {get;init;}=SharedStashCategory.Initial();
     public string Error {get;init;}="";
     public string ChestId {get;init;}="";
     public string HostIdentity {get;init;}="";
@@ -48,9 +54,9 @@ public sealed record ChestReply
     public string Status {get;init;}="view";
     public ChestItem? Grant {get;init;}
     public ChestItem[] Items {get;init;}=Array.Empty<ChestItem>();
-    public bool Valid()=>SharedStashRules.ValidTabs(Tabs) && Tab>=0 && Tab<Tabs.Length && ChangedTab>=-1 && ChangedTab<Tabs.Length && Error is {Length:<=256} && (Error=="" || Status=="view" && Grant==null && Items is {Length:0}) &&
+    public bool Valid()=> (Counts.Length==0 || Counts.Length==Tabs.Length && Counts.All(c=>c is >=0 and <=96)) && ChangedCategory is >=-1 and <24 && SharedStashRules.ValidTabs(Tabs) && SharedStashCategory.ValidAll(Categories,Tabs) && Tab>=0 && Tab<Tabs.Length && ChangedTab>=-1 && ChangedTab<Tabs.Length && Error is {Length:<=256} && (Error=="" || Status=="view" && Grant==null && Items is {Length:0}) &&
         Guid.TryParseExact(ChestId,"N",out _) && Guid.TryParseExact(HostIdentity,"N",out _) && Revision>=0 &&
-        (Operation=="" || Guid.TryParseExact(Operation,"N",out _)) && Status is "view" or "stored" or "reserved" or "done" or "unavailable" or "full" or "tab-added" or "configured" or "sorted" or "conflict" &&
+        (Operation=="" || Guid.TryParseExact(Operation,"N",out _)) && Status is "view" or "stored" or "reserved" or "done" or "unavailable" or "full" or "tab-added" or "configured" or "sorted" or "category-added" or "category-configured" or "category-deleted" or "conflict" &&
         (Grant==null || Grant.Valid() && Grant.Tab==Tab) && Items is {Length:<=SharedStashRules.ItemsPerTab} && Items.All(i=>i!=null && i.Valid() && i.Tab==Tab) && Items.Select(i=>i.Id).Distinct().Count()==Items.Length;
 }
 public sealed record ChestRequest(string SenderId,ChestCommand Command);
@@ -58,6 +64,7 @@ public sealed record ChestOperation(string Id,string Owner,string Kind,string It
 public sealed record ChestState
 {
     public SharedStashTab[] Tabs {get;init;}=SharedStashRules.InitialTabs();
+    public SharedStashCategory[] Categories {get;init;}=SharedStashCategory.Initial();
     public SharedStashEdit[] Edits {get;init;}=Array.Empty<SharedStashEdit>();
     public string Id {get;init;}=Guid.NewGuid().ToString("N");
     public long Revision {get;init;}
@@ -98,7 +105,7 @@ public sealed class SharedChestStore
     private static void Validate(ChestState value)
     {
         if(!Guid.TryParseExact(value.Id,"N",out _) || value.Revision<0 || value.Items.Length>SharedStashRules.MaximumItems || value.Operations.Length>16384 ||
-            !SharedStashRules.ValidTabs(value.Tabs) || value.Edits.Length>4096 || value.Edits.Any(e=>!e.Valid(value.Tabs.Length)) ||
+            !SharedStashRules.ValidTabs(value.Tabs) || !SharedStashCategory.ValidAll(value.Categories,value.Tabs) || value.Edits.Length>4096 || value.Edits.Any(e=>!e.Valid(value.Tabs.Length)) ||
             value.Edits.Select(e=>e.Id).Distinct().Count()!=value.Edits.Length ||
             value.Items.Concat(value.Operations.Where(o=>o.State=="reserved").Select(o=>o.Item!)).GroupBy(i=>i.Tab).Any(g=>g.Key>=value.Tabs.Length || g.Count()>SharedStashRules.ItemsPerTab) ||
             value.Items.Any(i=>!i.Valid()) || value.Items.Select(i=>i.Id).Distinct().Count()!=value.Items.Length || value.Items.Select(i=>i.NativeId).Distinct().Count()!=value.Items.Length ||
@@ -113,7 +120,14 @@ public sealed class SharedChestStore
     {Validate(next);DurableJson.Write(path,next);state=next;}
     private void Reload()
     {var current=JsonSerializer.Deserialize<ChestState>(File.ReadAllText(path))??throw new InvalidDataException("Empty chest");Validate(current);if(current.Id!=state.Id)throw new InvalidDataException("Chest identity replaced during session");state=current;}
-    private ChestReply ViewCore(int tab=0)=>new(){Tab=tab,Tabs=state.Tabs.ToArray(),ChestId=state.Id,HostIdentity=host,Revision=state.Revision,Items=state.Items.Where(i=>i.Tab==tab).ToArray()};
+    private int[] Occupancy()
+    {
+        var counts=new int[state.Tabs.Length];
+        foreach(var item in state.Items)counts[item.Tab]++;
+        foreach(var operation in state.Operations)if(operation.State=="reserved")counts[operation.Item!.Tab]++;
+        return counts;
+    }
+    private ChestReply ViewCore(int tab=0)=>new(){Tab=tab,Tabs=state.Tabs.ToArray(),Categories=state.Categories.ToArray(),Counts=Occupancy(),ChestId=state.Id,HostIdentity=host,Revision=state.Revision,Items=state.Items.Where(i=>i.Tab==tab).ToArray()};
     public ChestReply View(int tab=0)
     {
         lock(gate){using var ownership=new FileStream(path+".lock",FileMode.OpenOrCreate,FileAccess.ReadWrite,FileShare.None);Reload();if(tab<0 || tab>=state.Tabs.Length)throw new InvalidDataException("Stash tab unavailable");return ViewCore(tab);}
@@ -127,7 +141,7 @@ public sealed class SharedChestStore
         if(command.Kind=="query")return ViewCore(command.Tab);
         if(command.ChestId!=state.Id)throw new InvalidDataException("Different Host chest; held transaction cannot migrate");
         ChestReply Reply(string status,ChestItem? grant=null)=>ViewCore(command.Tab) with{Operation=command.Operation,Status=status,Grant=grant};
-        if(command.Kind is "add-tab" or "configure-tab" or "sort-tab")return EditTab(owner,command);
+        if(command.Kind is "add-tab" or "configure-tab" or "sort-tab" or "duplicate-tab" or "add-category" or "configure-category" or "delete-category" or "duplicate-category")return EditTab(owner,command);
         if(state.Edits.Any(e=>e.Id==command.Operation))throw new InvalidDataException("Operation ID already used by tab edit");
         var old=state.Operations.FirstOrDefault(o=>o.Id==command.Operation);
         if(old!=null)
@@ -167,36 +181,73 @@ public sealed class SharedChestStore
     private ChestReply EditTab(string owner,ChestCommand command)
     {
         string payload=Convert.ToHexString(SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(command)));
-        ChestReply Reply(string status,int changed=-1)=>ViewCore(command.Tab) with{Operation=command.Operation,Status=status,ChangedTab=changed};
+        ChestReply Reply(string status,int changed=-1,int category=-1)=>ViewCore(command.Tab) with{Operation=command.Operation,Status=status,ChangedTab=changed,ChangedCategory=category};
         var previous=state.Edits.FirstOrDefault(e=>e.Id==command.Operation);
         if(previous!=null)
         {
             if(previous.Owner!=owner || previous.Payload!=payload)throw new InvalidDataException("Tab edit operation ID reused");
-            return Reply(previous.Status,previous.ChangedTab);
+            return Reply(previous.Status,previous.ChangedTab,previous.ChangedCategory);
         }
         if(state.Operations.Any(o=>o.Id==command.Operation))throw new InvalidDataException("Operation ID already used by item transfer");
         if(command.ExpectedRevision!=state.Revision)return Reply("conflict");
         if(state.Edits.Length>=4096)return Reply("full");
-        int changed=command.Tab;
+        int changed=command.Tab;int changedCategory=-1;
         var tabs=state.Tabs;
+        var categories=state.Categories;
         var items=state.Items;
         string status;
-        if(command.Kind=="add-tab")
+        if(command.Kind is "add-tab" or "duplicate-tab")
         {
             if(tabs.Length>=SharedStashRules.MaxTabs)return Reply("full");
-            changed=tabs.Length;tabs=tabs.Append(new SharedStashTab(changed,"Shared "+(changed+1))).ToArray();status="tab-added";
+            if(command.DestinationCategory>=0 && categories.All(c=>c.Id!=command.DestinationCategory))return Reply("conflict");
+            changed=tabs.Length;
+            var added=command.Kind=="duplicate-tab"?tabs[command.Tab] with{Id=changed}:new SharedStashTab(changed,"Shared "+(changed+1)){Category=command.DestinationCategory>=0?command.DestinationCategory:tabs[command.Tab].Category};
+            tabs=tabs.Append(added).ToArray();status="tab-added";
+        }
+        else if(command.Kind=="duplicate-category")
+        {
+            var source=categories.FirstOrDefault(c=>c.Id==command.CategorySettings!.Id);
+            if(source==null)return Reply("conflict");
+            var sourceTabs=tabs.Where(t=>t.Category==source.Id).ToArray();
+            if(categories.Length>=24 || tabs.Length+sourceTabs.Length>SharedStashRules.MaxTabs)return Reply("full");
+            int id=Enumerable.Range(0,24).First(i=>categories.All(c=>c.Id!=i));
+            changedCategory=id;categories=categories.Append(source with{Id=id}).ToArray();
+            int next=tabs.Length;
+            tabs=tabs.Concat(sourceTabs.Select((t,index)=>t with{Id=next+index,Category=id})).ToArray();status="category-added";
+        }
+        else if(command.Kind=="add-category")
+        {
+            if(categories.Length>=24)return Reply("full");
+            int id=Enumerable.Range(0,24).First(i=>categories.All(c=>c.Id!=i));
+            changedCategory=id;categories=categories.Append(command.CategorySettings! with{Id=id}).ToArray();status="category-added";
+        }
+        else if(command.Kind is "configure-category" or "delete-category")
+        {
+            int id=command.CategorySettings!.Id;
+            if(categories.All(c=>c.Id!=id) || command.MoveTabs.Any(t=>t>=tabs.Length))return Reply("conflict");
+            if(command.Kind=="delete-category")
+            {
+                if(id==0)return Reply("conflict");
+                categories=categories.Where(c=>c.Id!=id).ToArray();
+                tabs=tabs.Select(t=>t.Category==id?t with{Category=0}:t).ToArray();status="category-deleted";
+            }
+            else
+            {
+                categories=categories.Select(c=>c.Id==id?command.CategorySettings!:c).ToArray();
+                tabs=tabs.Select(t=>command.MoveTabs.Contains(t.Id)?t with{Category=id}:t).ToArray();status="category-configured";
+            }
         }
         else if(command.Kind=="configure-tab")
-        {tabs=tabs.Select(t=>t.Id==command.Tab?command.Settings!:t).ToArray();status="configured";}
+        {if(categories.All(c=>c.Id!=command.Settings!.Category))return Reply("conflict");tabs=tabs.Select(t=>t.Id==command.Tab?command.Settings!:t).ToArray();status="configured";}
         else
         {
             var current=items.Where(i=>i.Tab==command.Tab).ToDictionary(i=>i.Id);
             if(current.Count!=command.Order.Length || command.Order.Any(id=>!current.ContainsKey(id)))return Reply("conflict");
             items=items.Where(i=>i.Tab!=command.Tab).Concat(command.Order.Select(id=>current[id])).ToArray();status="sorted";
         }
-        var edit=new SharedStashEdit(command.Operation,owner,payload,status,changed);
-        Commit(state with{Revision=state.Revision+1,Tabs=tabs,Items=items,Edits=state.Edits.Append(edit).ToArray()});
-        return Reply(status,changed);
+        var edit=new SharedStashEdit(command.Operation,owner,payload,status,changed){ChangedCategory=changedCategory};
+        Commit(state with{Revision=state.Revision+1,Tabs=tabs,Categories=categories,Items=items,Edits=state.Edits.Append(edit).ToArray()});
+        return Reply(status,changed,changedCategory);
     }
 
 }

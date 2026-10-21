@@ -1,0 +1,14 @@
+{
+  "gameAssemblySha256": "323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464",
+  "stockTooltipVerifiedByUser": {
+    "points": 1,
+    "echoMaximum": 0.5,
+    "warlord": 0.03,
+    "sealed": 0.06
+  },
+  "legacySealedNativeConstant": 0.029,
+  "explicitModSealedTarget": 0.12,
+  "cacheRollFlow": "UpdateWeaverTreeNode field0x120 -> ApplyHostWeaverModifiers zone0x304 -> OpenAfterDelay native RNG.Roll",
+  "requiresNewEcho": true,
+  "actualInGameVerification": false
+}

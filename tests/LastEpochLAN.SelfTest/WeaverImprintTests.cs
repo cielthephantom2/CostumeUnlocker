@@ -7,8 +7,8 @@ internal static class WeaverImprintTests
         bool Near(float a,float b) => Math.Abs(a-b)<0.000001f;
         for(int points=0;points<=10;points++)
         {
-            check(Near(WeaverImprintRules.DoubleChance(.029f*points),.058f*points),
-                $"Sealed Riches {points} points doubles the native 2.9%/point probability");
+            check(Near(WeaverImprintRules.SealedChance(points),Math.Min(1f,.12f*points)),
+                $"Sealed Riches {points} points uses12%/point from verified unmodded6% tooltip, capped at100%");
             check(Near(WeaverImprintRules.DoubleChance(.03f*points),.06f*points),
                 $"Warlord Riches {points} points doubles native 3%/point without unlocking zero points");
         }
@@ -28,5 +28,15 @@ internal static class WeaverImprintTests
         check(WeaverImprintRules.DoubleChance(float.NaN)==0 && WeaverImprintRules.DoubleChance(-1)==0 &&
             float.IsFinite(WeaverImprintRules.DoubleWeight(float.MaxValue)),
             "Imprint scaling does not produce NaN, negative chances or overflowing infinite weights");
+        check(WeaverImprintRules.DoubleTooltipPercent("3%") == "6%" &&
+            WeaverImprintRules.DoubleTooltipPercent("6%") == "12%" &&
+            WeaverImprintRules.DoubleTooltipPercent("50%") == "100%", "verified one-point Sealed/Warlord/Echoing tooltip targets are12%/6%/100%");
+        check(WeaverImprintRules.SealedChance(-1)==0 && WeaverImprintRules.SealedChance(int.MaxValue)==1,
+            "Sealed explicit rate never unlocks negative/zero points or overflows at large point counts");
+        check(WeaverImprintRules.DoubleTooltipPercent("+8,7 %") == "+17,4 %", "multi-point tooltip preserves comma decimal and percent formatting");
+        check(WeaverImprintRules.DoubleTooltipPercent("75%") == "100%" &&
+            WeaverImprintRules.DoubleTooltipPercent("79228162514264337593543950335%") == "100%", "tooltip probability caps safely without decimal overflow");
+        check(WeaverImprintRules.DoubleTooltipPercent("3 items, 2 affixes") == "3 items, 2 affixes" &&
+            WeaverImprintRules.DoubleTooltipPercent("<color=white>3%</color>") == "<color=white>3%</color>", "tooltip scaler never modifies prose, quantities or markup");
     }
 }

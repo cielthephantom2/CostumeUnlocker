@@ -37,6 +37,7 @@ internal sealed partial class NativeSharedStashView
         var controls=source._stashTabbedUIControls??source.GetComponentInChildren<StashTabbedUIControls>(true);
         if(controls==null)throw new InvalidOperationException("Native Stash tab controller is not ready; reopen F2");
         NativeControlsKind="StashTabbedUIControls";
+        tabSelectionPath=null;
         sharedTabHolder=Cloned(source.transform,controls.tabHolder);
         tabScroll=Cloned(source.transform,controls.tabsScrollRect?.transform)?.GetComponent<ScrollRect>();
         addArtwork=Cloned(source.transform,controls.addTabButton)?.gameObject;
@@ -48,28 +49,23 @@ internal sealed partial class NativeSharedStashView
         configureArtwork=Cloned(source.transform,navigation?.configureBtn?.transform)?.gameObject;
         CaptureSearch(source,controls.primarySearchBar);
         CaptureNativeNavigation(source);
-        // The horizontal shared tab strip replaces personal tabs. Keep just
-        // one native category decoration; there is no shared folder protocol.
-        HideCloned(source,controls.addCategoryButton);
+        // Reuse the original category row while binding its metadata to Host.
+        CaptureLegacyCategories(source,controls);
         HideCloned(source,controls.verticalTabWrapper?.transform);
         HideCloned(source,controls.cycleDropdown?.transform);
         HideCloned(source,controls.cycleMergeButton?.transform);
         HideCloned(source,controls.gridBlocker?.transform);
         HideCloned(source,controls.removeOnlyTitle?.transform);
-        var categories=Cloned(source.transform,controls.categoryHolder);
-        if(categories!=null)
-        {
-            var first=categories.GetComponentsInChildren<TabbedUITabWithIcon>(true).FirstOrDefault(t=>t.gameObject.activeSelf);
-            foreach(var tab in categories.GetComponentsInChildren<TabbedUITabWithIcon>(true))
-            {
-                var label=tab.tabName;
-                if(tab!=first)tab.gameObject.SetActive(false);
-                else if(label!=null)label.text="Shared Stash";
-            }
-        }
-        var template=controls.tabPrefab?.GetComponent<TabbedUITabWithIcon>()??
-            source.GetComponentsInChildren<TabbedUITabWithIcon>(true).FirstOrDefault(t=>t.isTab && !t.vertTab);
+        // The raw prefab has not received the native name/icon/size setup.
+        // Start with an initialized visible tab, then replace shared metadata.
+        var template=controls.localTabs?.ToArray().Select(pair=>pair.tabUI)
+            .FirstOrDefault(t=>t!=null && t.gameObject.activeInHierarchy && t.transform.IsChildOf(controls.tabHolder))??
+            source.GetComponentsInChildren<TabbedUITabWithIcon>(true)
+            .FirstOrDefault(t=>t.isTab && !t.vertTab && t.gameObject.activeInHierarchy && t.transform.IsChildOf(controls.tabHolder))??
+            controls.tabPrefab?.GetComponent<TabbedUITabWithIcon>();
         if(template==null)throw new InvalidOperationException("Native Stash tab prefab is unavailable");
+        if(template.tabName==null || template.tabImage==null || template.activeTab==null || template.inactiveTab==null)
+            throw new InvalidOperationException("Native Stash tab visuals are not initialized; reopen F2 after the personal Stash has loaded");
         tabNamePath=template.tabName!=null?Indices(template.transform,template.tabName.transform):null;
         tabIconPath=template.icon!=null?Indices(template.transform,template.icon.transform):null;
         legacyTabImagePath=template.tabImage!=null?Indices(template.transform,template.tabImage.transform):null;
@@ -77,6 +73,7 @@ internal sealed partial class NativeSharedStashView
         legacyActiveTab=template.activeTab;legacyInactiveTab=template.inactiveTab;
         tabArtwork=UnityEngine.Object.Instantiate(template.gameObject,parking.transform,false);
         tabArtwork.name="Shared native tab artwork";tabArtwork.SetActive(false);StripTabScripts(tabArtwork);
+        SharedStashNativeLayout.Restore(template.transform,tabArtwork.transform);
     }
 
     private void HideCloned(StashPanel source,Transform widget)
@@ -88,6 +85,8 @@ internal sealed partial class NativeSharedStashView
         foreach(var button in source.GetComponentsInChildren<UnityEngine.UI.Button>(true))
         {
             var artwork=Cloned(source.transform,button.transform)?.gameObject;
+            if(button.GetComponentsInChildren<TMP_Text>(true).Any(t=>t.text?.Trim().Equals("CONFIGURE CATEGORY",StringComparison.OrdinalIgnoreCase)==true))
+            {artwork?.SetActive(false);continue;}
             for(int i=0;i<button.onClick.GetPersistentEventCount();i++)
             {
                 var method=button.onClick.GetPersistentMethodName(i);
@@ -97,9 +96,10 @@ internal sealed partial class NativeSharedStashView
                     case "ConfigureActiveTab":case "OnConfigureClicked":configureArtwork??=artwork;break;
                     case "ScrollTabsLeft":nativeNavigation.Add((artwork,()=>ScrollNativeTabs(-1)));break;
                     case "ScrollTabsRight":nativeNavigation.Add((artwork,()=>ScrollNativeTabs(1)));break;
-                    case "ScrollCategoryLeft":case "ScrollCategoryRight":
-                    case "AddNewCategory":case "ConfigureActiveCategory":
-                        artwork?.SetActive(false);break;
+                    case "ScrollCategoryLeft":nativeNavigation.Add((artwork,()=>ScrollCategories(-1)));break;
+                    case "ScrollCategoryRight":nativeNavigation.Add((artwork,()=>ScrollCategories(1)));break;
+                    case "AddNewCategory":nativeNavigation.Add((artwork,owner.AddCategory));break;
+                    case "ConfigureActiveCategory":artwork?.SetActive(false);break;
                     case "ClearSearchField":case "ClearSearch":
                         nativeNavigation.Add((artwork,()=>{if(nativeSearch!=null)nativeSearch.text="";}));break;
                     case "Close":case "ClosePanel":case "OnCloseClicked":case "CloseStash":
@@ -123,25 +123,15 @@ internal sealed partial class NativeSharedStashView
         if(sourceTabLayout==null)return;
         // Recreate only the native layout engine, with fresh element records.
         // The copied engine's records still point at destroyed personal tabs.
-        nativeTabLayout=sharedTabHolder.gameObject.AddComponent<SimpleLayoutGroup>();
-        nativeTabLayout._rectTransform=sharedTabHolder.GetComponent<RectTransform>();
-        nativeTabLayout._layoutMode=sourceTabLayout._layoutMode;
-        nativeTabLayout._padding=sourceTabLayout._padding;
-        nativeTabLayout._spacing=sourceTabLayout._spacing;
-        nativeTabLayout._childAlignment=sourceTabLayout._childAlignment;
-        nativeTabLayout._adaptHorizontalSize=sourceTabLayout._adaptHorizontalSize;
-        nativeTabLayout._adaptVerticalSize=sourceTabLayout._adaptVerticalSize;
-        nativeTabLayout._minWidth=sourceTabLayout._minWidth;
-        nativeTabLayout._minHeight=sourceTabLayout._minHeight;
-        nativeTabLayout._preferredWidth=sourceTabLayout._preferredWidth;
-        nativeTabLayout._preferredHeight=sourceTabLayout._preferredHeight;
+        nativeTabLayout=SharedStashNativeLayout.CopySettings(sharedTabHolder,sourceTabLayout);
     }
 
     private void RefreshNativeTabLayout()
     {
+        if(modernCategoryTabsPath!=null){RefreshModernCategoryLayouts();return;}
         if(nativeTabLayout==null)return;
         nativeTabLayout.Elements.Clear();
-        foreach(var visual in sharedTabVisuals)nativeTabLayout.AddElement(visual);
+        foreach(var visual in sharedTabVisuals.Where(v=>v.activeSelf)){SharedStashNativeLayout.Reflow(visual);nativeTabLayout.AddElement(visual);}
         if(addArtwork.transform.parent==sharedTabHolder)nativeTabLayout.AddElement(addArtwork);
         nativeTabLayout.UpdateLayout();
     }
@@ -152,6 +142,12 @@ internal sealed partial class NativeSharedStashView
         if(image!=null)image.sprite=selected?legacyActiveTab:legacyInactiveTab;
         var ornament=At(tab.transform,legacyOrnamentPath)?.gameObject;
         if(ornament!=null)ornament.SetActive(selected);
+    }
+
+    private void ApplyLegacyTabColor(GameObject tab,int color)
+    {
+        var image=At(tab.transform,legacyTabImagePath)?.GetComponent<Image>();
+        if(image!=null && color<tabColors.Length)image.color=tabColors[color];
     }
 
     private void BindNativeSearch()
@@ -183,6 +179,7 @@ internal sealed partial class NativeSharedStashView
 
     private void DisposeNativeControls()
     {
+        DisposeSharedCategories();
         nativeNavigation.Clear();closeArtwork=null;nativeSearch=null;nativeTabLayout=null;sourceTabLayout=null;
         legacyTabImagePath=legacyOrnamentPath=null;legacyActiveTab=legacyInactiveTab=null;
         sharedSearch="";NativeControlsKind="";

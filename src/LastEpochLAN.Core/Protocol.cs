@@ -7,11 +7,12 @@ namespace LastEpochLAN.Core;
 
 public static class LanProtocol
 {
-    public const int Version = 41;
+    public const int Version = 43;
 }
 
 public sealed record PlayerState
 {
+    public RoomLadderCharacter? Ladder {get;init;}
     // Inventory transactions can remain ready while a borrowed Echo context is
     // waiting for world synchronization. This does not grant combat authority.
     public bool StashReady {get;init;}
@@ -38,9 +39,9 @@ public sealed record PlayerState
     public float Ward { get; init; }
     public AvatarState? Avatar { get; init; }
     public DroppedItemState[] DroppedItems { get; init; } = Array.Empty<DroppedItemState>();
-    public PlayerState Copy() => this with { Avatar = Avatar?.Copy(), DroppedItems = DroppedItems.ToArray(),Summons=Summons.Select(s=>s.Copy()).ToArray() };
+    public PlayerState Copy() => this with { Ladder = Ladder?.Copy(), Avatar = Avatar?.Copy(), DroppedItems = DroppedItems.ToArray(),Summons=Summons.Select(s=>s.Copy()).ToArray() };
 
-    public bool IsValid() => (SummonEpoch=="" ? Summons is {Length:0} && SummonSampleTime==0 : Guid.TryParseExact(SummonEpoch,"N",out _)) &&
+    public bool IsValid() => (Ladder == null || Ladder.IsValid()) && (SummonEpoch=="" ? Summons is {Length:0} && SummonSampleTime==0 : Guid.TryParseExact(SummonEpoch,"N",out _)) &&
         double.IsFinite(SummonSampleTime) && SummonSampleTime>=0 && Summons is {Length:<=SummonState.MaximumPerPlayer} &&
         Summons.All(s=>s!=null && s.IsValid()) && Summons.Select(s=>s.Id).Distinct().Count()==Summons.Length &&
         (EchoRunId=="" || Guid.TryParseExact(EchoRunId,"N",out _)) && Scene is { Length: <= 256 } && CharacterId is { Length: <= 128 } && GiftGroup is { Length: <= 96 } &&

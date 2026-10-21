@@ -1,3 +1,5 @@
+> Đính chính dev45: người dùng xác nhận tooltip Sealed gốc6% với1 điểm. Mục tiêu sửa là12%; .029 trong native không được đồng nhất với tooltip hiển thị. Xem [báo cáo đính chính](WEAVER-RATE-CORRECTION-dev45-VI.md). Bảng dưới là ghi chép phân tích native trước đính chính, không phải mức Sealed đang áp dụng.
+
 # Weaver Imprint — tỷ lệ native, 2026-10-21
 
 Native baseline audit of installed game metadata/native code. **Update: dev.34 now applies x2 to these six Imprint effects; see [implementation and validation](WEAVER-IMPRINT-X2-dev34-VI.md). The combined dev.34/protocol41 release is documented in RELEASE-1.1.0-dev34-VI.md.** The table below records original native values before the multiplier.

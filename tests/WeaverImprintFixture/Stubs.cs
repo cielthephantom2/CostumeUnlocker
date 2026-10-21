@@ -7,6 +7,13 @@ namespace HarmonyLib
 }
 namespace Il2Cpp
 {
+    public class SkillTreeNode {public T TryCast<T>()where T:class=>this as T;}
+    public class NodeTooltipManager
+    {
+        public sealed class Text {public string text;}
+        public Text description=new();public bool requireLayoutUpdate;
+        public static string BuildColoredValue()=>"";public void setInfoForNode(){}
+    }
     public sealed class MonolithZoneManager
     {
         public IntPtr Pointer {get;set;}
@@ -24,7 +31,10 @@ namespace Il2CppLE.Gameplay.Monolith
 }
 namespace Il2CppLE.Factions
 {
-    public enum WeaverTreeNodeEffect { Other, ImprintContainerCachesDropMoreItemsOfType, ImprintContainerChampionsDropMoreItemsOfType }
+    public enum WeaverTreeNodeEffect { Other, ImprintContainerCachesDropMoreItemsOfType, ImprintContainerChampionsDropMoreItemsOfType,
+        ImprintContainerEnemiesDropMoreItemsOfType, ImprintContainerEchoCompletionsDropMoreItemsOfType,
+        ImprintContainerSpawnMoreWovenEchoesOfType, ImprintContainerSpawnMoreWovenEchoesOfTypeSecond }
+    public class WeaverTreeNode:Il2Cpp.SkillTreeNode {public WeaverTreeNodeEffect nodeEffect;}
     public sealed class TheWeaver
     {
         public float OnCacheOpenedChanceForSimilarItems {get;set;}
@@ -41,3 +51,9 @@ namespace Il2CppLE.Factions
 }
 namespace LastEpochLAN.Mod.OfflineTools
 { internal static class OfflineToolkit {internal static bool Enabled {get;set;}=true;} }
+namespace Il2CppLE.UI.Tooltips
+{
+    public class NodeTooltipModifierInfo {public string Value;}
+    public class NodeTooltipInfo {public string Description;}
+    public static class NodeTooltipContentBuilder {public static void GetModifierInfo(){}public static void GetNodeTooltipInfo(){}}
+}

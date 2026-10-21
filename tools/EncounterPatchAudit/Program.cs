@@ -233,12 +233,15 @@ Check(!installed.SelectMany(t=>t.CustomAttributes.Where(a=>a.AttributeType.Name=
  target.Name is "RandomizeLegendaryPotentialItemContainer" or "RandomizeLegendaryPotentialCraftingUI" or "ZoneRestrictedCraftingManager"),
  "Woven input container, crafting UI and zone/use gate remain entirely native");
 var imprintPatches=installed.Where(t=>t.Name.StartsWith("OfflineWeaver",StringComparison.Ordinal)).ToArray();
-Check(imprintPatches.Length==7,"all seven narrowly selected Weaver Imprint patch classes are installed");
+Check(imprintPatches.Length==11,"all eleven narrowly selected Weaver Imprint gameplay/legacy/V2 tooltip patch classes are installed");
 var pointImprints=imprintPatches.Single(t=>t.Name=="OfflineWeaverImprintPointRatesPatch");
 Check(pointImprints.Methods.Single(m=>m.Name=="Postfix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>()
  .Where(m=>m.Name.StartsWith("set_",StringComparison.Ordinal)).Select(m=>m.Name).OrderBy(n=>n).SequenceEqual(new[]{
  "set_ImprintContainerChampionsChanceToDropMoreItemsOfType","set_OnCacheOpenedChanceForSimilarItems"}),
  "Imprint point refresh writes only Sealed/Warlord derived rate fields, not shared assets, points or unlock flags");
+Check(pointImprints.Methods.Single(m=>m.Name=="Postfix").Parameters.Any(p=>p.Name=="__1" && p.ParameterType.FullName=="System.Int32") &&
+ pointImprints.Methods.Single(m=>m.Name=="Postfix").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="SealedChance"),
+ "Sealed uses actual allocated-point argument and the explicit6%-to12% rate, not legacy .029 doubled to .058");
 var commonerImprints=imprintPatches.Single(t=>t.Name=="OfflineWeaverCommonerDropPatch");
 Check(commonerImprints.Methods.Single(m=>m.Name=="Finalizer").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="set_totalSpawners") &&
  commonerImprints.Fields.Any(f=>f.CustomAttributes.Any(a=>a.AttributeType.Name=="ThreadStaticAttribute")),
@@ -257,20 +260,20 @@ Check(sharedSort.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.De
  sharedSort.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="LanSharedChest" && m.Name=="SortTab") &&
  !sharedSort.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name is "get_stash" or "SaveItems" or "SetDirty"),
  "Shared Sort uses native algorithm on isolated projection containers and submits only order to Host, never personal stash save");
-Check(sharedView.Methods.Single(m=>m.Name=="ConfigureSharedTab").Body.Instructions.Any(i=>i.Operand is GenericInstanceMethod m &&
+Check(sharedView.Methods.Single(m=>m.Name=="OpenSharedConfiguration").Body.Instructions.Any(i=>i.Operand is GenericInstanceMethod m &&
  m.Name=="OpenModalAsync" && m.GenericArguments.Any(a=>a.Name=="StashConfigureTabModalV2")) &&
  sharedView.Methods.Single(m=>m.Name=="PollTabConfiguration").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="ConfigureTab" && m.DeclaringType.Name=="LanSharedChest"),
  "Configure Tab reuses native V2 modal and saves result through authoritative shared Host command");
 Check(sharedView.Methods.Any(m=>m.Name=="CaptureNativeTabArtwork") && sharedView.Methods.Any(m=>m.Name=="BuildSharedTabControls") &&
- sharedView.Methods.Single(m=>m.Name=="BuildSharedTabControls").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="AddTab" && m.DeclaringType.Name=="LanSharedChest"),
+ types.Where(t=>t.FullName.StartsWith(sharedView.FullName)).SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Any(i=>i.Operand is MethodReference m && m.Name=="AddTabInCategory" && m.DeclaringType.Name=="LanSharedChest"),
  "Shared tab navigation reuses native tab/control artwork with a dedicated add-tab action");
 var sharedClient=types.Single(t=>t.Name=="LanSharedChest");
 Check(sharedClient.Methods.Single(m=>m.Name=="Receive").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="ChestReply" && m.Name=="get_Tab") &&
  sharedClient.Methods.Single(m=>m.Name=="SelectTab").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="get_TabControlsReady"),
  "Shared tab switching is blocked during custody operations and selected view checks reply tab identity");
-Check(core.MainModule.Types.Single(t=>t.Name=="LanProtocol").Fields.Single(f=>f.Name=="Version").Constant is int sharedProtocol && sharedProtocol==41 &&
+Check(core.MainModule.Types.Single(t=>t.Name=="LanProtocol").Fields.Single(f=>f.Name=="Version").Constant is int sharedProtocol && sharedProtocol==43 &&
  core.MainModule.Types.Single(t=>t.Name=="SharedStashRules").Fields.Single(f=>f.Name=="ItemsPerTab").Constant is int perTab && perTab==96,
- "Protocol41 requires matching peers; per-tab snapshots retain the96-item transport limit");
+ "Protocol43 requires matching peers; per-tab snapshots retain the96-item transport limit");
 Check(sharedView.Methods.Single(m=>m.Name=="BindArtwork").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="set_raycastTarget") &&
  sharedView.Methods.Single(m=>m.Name=="BuildSharedTabControls").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="SetPersistentListenerState"),
  "Native shared-tab buttons create stable root hit targets; copied scroll controls disable serialized private callbacks");
@@ -293,14 +296,157 @@ Check(sharedView.Methods.Single(m=>m.Name=="CaptureSearch").Body.Instructions.Co
  sharedView.Methods.Single(m=>m.Name=="ApplyNativeSearch").Body.Instructions.Any(i=>i.Operand is MethodReference m &&
  m.DeclaringType.Name=="ItemContainerUIWithSearch" && m.Name=="PerformSearch"),
  "Original search field uses fresh events and native search on the isolated shared projection");
-Check(sharedView.Methods.Single(m=>m.Name=="RestoreNativeTabLayout").Body.Instructions.Select(i=>i.Operand).OfType<GenericInstanceMethod>()
+Check(sharedView.Methods.Single(m=>m.Name=="RestoreNativeTabLayout").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>()
+ .Any(m=>m.DeclaringType.Name=="SharedStashNativeLayout" && m.Name=="CopySettings") &&
+ types.Single(t=>t.Name=="SharedStashNativeLayout").Methods.Single(m=>m.Name=="CopySettings").Body.Instructions.Select(i=>i.Operand).OfType<GenericInstanceMethod>()
  .Any(m=>m.Name=="AddComponent" && m.GenericArguments.Any(a=>a.Name=="SimpleLayoutGroup")) &&
  sharedView.Methods.Single(m=>m.Name=="RefreshNativeTabLayout").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="UpdateLayout"),
  "Legacy tabs reuse the native SimpleLayoutGroup with fresh element records and original layout settings");
 Check(!sharedView.Methods.Single(m=>m.Name=="Tick").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>()
  .Any(m=>m.Name=="RefreshNativeTabLayout"),
  "Native tab layout rebuild is driven by changed tab metadata, not an unconditional per-frame rebuild");
+var configureModal=sharedView.Methods.Single(m=>m.Name=="OpenSharedConfiguration");
+Check(configureModal.Body.Instructions.Select(i=>i.Operand).OfType<GenericInstanceMethod>().Where(m=>m.Name=="OpenModalAsync")
+ .SelectMany(m=>m.GenericArguments).Any(t=>t.Name=="StashConfigureTabModal") &&
+ configureModal.Body.Instructions.Select(i=>i.Operand).OfType<GenericInstanceMethod>().Where(m=>m.Name=="OpenModalAsync")
+ .SelectMany(m=>m.GenericArguments).Any(t=>t.Name=="StashConfigureTabModalV2") &&
+ configureModal.Body.Instructions.Any(i=>i.Operand is FieldReference f && f.Name=="legacyConfiguration"),
+ "Configure uses the original legacy or V2 modal matching the captured native Stash controls");
+Check(sharedView.Methods.Single(m=>m.Name=="BindTabConfigurationClick").Body.Instructions.Select(i=>i.Operand).OfType<GenericInstanceMethod>()
+ .Any(m=>m.Name=="AddComponent" && m.GenericArguments.Any(t=>t.Name=="EventTrigger")) &&
+ sharedView.Methods.Single(m=>m.Name=="RefreshSharedTabs").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="BindTabConfigurationClick") &&
+ sharedView.Methods.Single(m=>m.Name=="RefreshSharedTabs").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="ConfigureSharedTab"),
+ "Every native shared tab gets a context-click handler and configuration waits for the selected Host tab snapshot");
+Check(sharedView.Methods.Single(m=>m.Name=="RefreshSharedTabs").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="ApplyLegacyTabColor") &&
+ sharedView.Methods.Single(m=>m.Name=="ApplyLegacyTabColor").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="set_color"),
+ "Legacy tab tint is applied to its native background, separately from the icon");
+Check(sharedView.Methods.Single(m=>m.Name=="ConfigureSharedTab").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>()
+ .Any(m=>m.DeclaringType.Name=="SharedStashPriorityCodec" && m.Name=="Decode") &&
+ sharedView.Methods.Single(m=>m.Name=="PollTabConfiguration").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>()
+ .Any(m=>m.DeclaringType.Name=="SharedStashPriorityCodec" && m.Name=="Encode"),
+ "Native modal priority values are initialized from Host metadata and serialized on confirm, without hiding priority widgets");
+Check(sharedView.Methods.Single(m=>m.Name=="ConfigureSharedCategory").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="OpenSharedConfiguration") &&
+ sharedView.Methods.Single(m=>m.Name=="PollTabConfiguration").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="ConfigureCategory"),
+ "Category editor reuses native modal and submits settings to the authoritative Host");
+Check(sharedView.Methods.Single(m=>m.Name=="BuildSharedCategories").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="AddCategory") &&
+ sharedView.Methods.Single(m=>m.Name=="CaptureLegacyCategories").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="get_categoryPrefab"),
+ "Shared categories use native category artwork and add control instead of custom UI");
+Check(sharedView.Methods.Single(m=>m.Name=="BindSharedModalActions").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="RebindModalButton") &&
+ sharedView.Methods.Single(m=>m.Name=="RestoreSharedModalActions").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="set_onClick"),
+ "Native duplicate/delete callbacks are scoped to shared modal and original callback objects are restored afterwards");
+Check(installed.Any(t=>t.Name=="SharedStashPreparationVisibilityPatch") &&
+ sharedView.Methods.Single(m=>m.Name=="MaskNativePreparation").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="set_alpha") &&
+ sharedView.Methods.Single(m=>m.Name=="RestoreStagingVisibility").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="set_alpha"),
+ "Scoped native panel-open hook masks the source before rendering and restores its visual state");
+Check(sharedClient.Methods.Single(m=>m.Name=="ReleaseView").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="Hide") &&
+ !sharedClient.Methods.Single(m=>m.Name=="ReleaseView").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="Dispose" && m.DeclaringType.Name=="NativeSharedStashView"),
+ "Closing F2 hides cached projection instead of reopening/cloning the personal stash on every toggle");
+var routing=types.Single(t=>t.Name=="SharedStashPriorityRouting");
+Check(types.Where(t=>t.FullName.StartsWith(routing.FullName)).SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions)
+ .Any(i=>i.Operand is MethodReference m && m.Name=="Match" && m.DeclaringType.Name=="StashPriority") &&
+ sharedClient.Methods.Single(m=>m.Name=="Deposit").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="Choose" && m.DeclaringType.Name=="SharedStashPriorityRouting"),
+ "Shared deposits use native priority matching and route before starting the durable custody transaction");
 var buildGate=types.Single(t=>t.Name=="LanMod").Methods.Single(m=>m.Name=="IsSupportedGameAssembly");
+var geometry=types.Single(t=>t.Name=="SharedStashGeometry");
+Check(sharedView.Methods.Single(m=>m.Name=="ScrollSharedSelection").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.DeclaringType.Name=="SharedStashGeometry") &&
+ geometry.Methods.Single(m=>m.Name=="RelativeRect").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="TransformPoint") &&
+ geometry.Methods.Single(m=>m.Name=="RelativeRect").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="InverseTransformPoint"),
+ "shared tab scrolling measures four corners through native transform bindings instead of stripped Unity bounds helper");
+var strippedCalls=new List<string>();
+foreach(var source in types.Where(t=>t.Name is "NativeSharedStashView" or "SharedStashGeometry" or "SharedStashNativeLayout").SelectMany(t=>t.Methods).Where(m=>m.HasBody))
+foreach(var call in source.Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Where(m=>m.DeclaringType.Namespace.StartsWith("UnityEngine",StringComparison.Ordinal) || m.DeclaringType.Namespace=="Il2CppTMPro"))
+{
+ var target=call.Resolve();
+ if(target?.HasBody==true && target.Body.Instructions.Any(i=>i.OpCode.Code==Mono.Cecil.Cil.Code.Ldstr && i.Operand is string text && text.Contains("unstripping",StringComparison.OrdinalIgnoreCase)))
+  strippedCalls.Add(source.Name+" -> "+call.FullName);
+}
+Check(strippedCalls.Count==0,"shared native view and geometry have no direct Unity/TMP unstripping-failure stubs: "+string.Join(",",strippedCalls));
+var nativeLayout=types.Single(t=>t.Name=="SharedStashNativeLayout");
+Check(nativeLayout.Methods.Single(m=>m.Name=="Restore").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="set__excludeIfInactive") &&
+ nativeLayout.Methods.Single(m=>m.Name=="CopySettings").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="set__updateMode"),
+ "native layout restore preserves update mode, inactive-element policy and freshly mapped clone element records");
+Check(sharedView.Methods.Single(m=>m.Name=="BindArtwork").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="PreserveHitSurface") &&
+ nativeLayout.Methods.Single(m=>m.Name=="PreserveHitSurface").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="set_transition"),
+ "synthetic input hit surfaces remain transparent instead of becoming flat default Button backgrounds");
+Check(!sharedView.Fields.Any(f=>f.Name is "nativeTabNamePadding" or "nativeCategoryNamePadding") &&
+ sharedView.Methods.Single(m=>m.Name=="RefreshNativeTabLayout").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="Reflow"),
+ "tab/category sizing uses restored native layout rather than a fixed copied width or text-padding estimate");
+Check(new[]{"RefreshSharedTabs","RefreshSharedCategories"}.All(name=>sharedView.Methods.Single(m=>m.Name==name).Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="SizeLabel")) &&
+ nativeLayout.Methods.Single(m=>m.Name=="SizeLabel").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="GetPreferredValues") &&
+ nativeLayout.Methods.Single(m=>m.Name=="SizeLabel").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="SetSizeWithCurrentAnchors"),
+ "both shared tab/category labels resize their rect from TMP preferred text metrics before native parent layout");
+Check(Walk(new[]{sharedView}).SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Any(i=>i.OpCode.Code==Mono.Cecil.Cil.Code.Ldstr && Equals(i.Operand,"CONFIGURE CATEGORY")) &&
+ sharedView.Methods.Single(m=>m.Name=="CaptureNativeNavigation").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="SetActive") &&
+ sharedView.Methods.Single(m=>m.Name=="RefreshSharedCategories").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="BindContextAction"),
+ "extra Configure Category footer control is explicitly suppressed while category context actions remain available");
+Check(new[]{"OfflineWeaverImprintTooltipStatPatch","OfflineWeaverImprintTooltipInfoPatch"}.All(name=>installed.Any(t=>t.Name==name)) &&
+ types.Single(t=>t.Name=="OfflineWeaverImprintTooltipStatPatch").Methods.Single(m=>m.Name=="Postfix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="DoubleTooltipPercent") &&
+ !types.Single(t=>t.Name=="OfflineWeaverImprintTooltipInfoPatch").Methods.SelectMany(m=>m.HasBody?m.Body.Instructions:Enumerable.Empty<Mono.Cecil.Cil.Instruction>()).Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="set_pointsAllocated"),
+ "offline Imprint tooltip updates fresh native display values without granting or editing node points");
+Check(new[]{"OfflineWeaverImprintLegacyValuePatch","OfflineWeaverImprintLegacyInfoPatch"}.All(name=>installed.Any(t=>t.Name==name)) &&
+ types.Single(t=>t.Name=="OfflineWeaverImprintLegacyValuePatch").Methods.Single(m=>m.Name=="Prefix").Parameters.Any(p=>p.Name=="valueText" && p.ParameterType.IsByReference) &&
+ types.Single(t=>t.Name=="OfflineWeaverImprintLegacyValuePatch").Methods.Single(m=>m.Name=="Prefix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="DoubleTooltipPercent"),
+ "legacy NodeTooltipManager path scales only the fresh valueText before native coloring");
+Check(types.Single(t=>t.Name=="OfflineWeaverImprintLegacyInfoPatch").Methods.Single(m=>m.Name=="Postfix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="set_requireLayoutUpdate") &&
+ !types.Single(t=>t.Name=="OfflineWeaverImprintLegacyValuePatch").Methods.Single(m=>m.Name=="Prefix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="set_value" || m.Name=="set_pointsAllocated"),
+ "legacy tooltip note requests native layout refresh without editing serialized node stats or allocated points");
+var ladder=types.Single(t=>t.Name=="NativeRoomLadder");
+var ladderHooks=new[]{"RoomLadderOpenPatch","RoomLadderClosePatch","RoomLadderSessionPatch","RoomLadderSelfRowPatch","RoomLadderFilterPatch"};
+Check(ladderHooks.All(name=>installed.Any(t=>t.Name==name)),"all five offline native ladder hooks are selected by the release allowlist");
+Check(!patches.Any(t=>t.Name=="RoomLadderSeasonPatch") &&
+ !patches.SelectMany(t=>t.CustomAttributes).Where(a=>a.AttributeType.FullName=="HarmonyLib.HarmonyPatch").SelectMany(a=>a.ConstructorArguments).Any(a=>Equals(a.Value,"HandleSeasonEventUI")),
+ "shared no-op native HandleSeasonEventUI body is never detoured; season visuals are changed only while opening the concrete Ladder view");
+using(var nativeMetadata=AssemblyDefinition.ReadAssembly(Path.Combine(args[3],"MelonLoader","Dependencies","Il2CppAssemblyGenerator","Cpp2IL","cpp2il_out","LE.dll")))
+{
+ var nativeTypes=Walk(nativeMetadata.MainModule.Types).ToDictionary(t=>t.FullName);
+ var image=File.ReadAllBytes(Path.Combine(args[3],"GameAssembly.dll"));
+ byte[] NativeBody(string type,string name)
+ {
+  var method=nativeTypes[type].Methods.Single(m=>m.Name==name);
+  var address=method.CustomAttributes.Single(a=>a.AttributeType.Name=="AddressAttribute");
+  int Read(string field)=>Convert.ToInt32(address.Fields.Single(f=>f.Name==field).Argument.Value.ToString()!.Replace("0x",""),16);
+  return image.AsSpan(Read("Offset"),Read("Length")).ToArray();
+ }
+ Check(NativeBody("MonolithZoneManager","ApplyHostWeaverModifiers").AsSpan().IndexOf(new byte[]{0x8B,0x81,0x20,0x01,0,0,0x89,0x83,0x04,0x03,0,0})>=0,
+  "native Echo setup copies faction cache chance at0x120 into the zone roll field at0x304");
+ Check(NativeBody("OneShotCacheGameplayObject/<OpenAfterDelay>d__26","MoveNext").AsSpan().IndexOf(new byte[]{0xF3,0x0F,0x10,0x88,0x04,0x03,0,0})>=0,
+  "actual cache coroutine reads zone chance at0x304 for its native RNG roll, rather than only reading tooltip stats");
+ foreach(var hook in installed.Where(t=>ladderHooks.Contains(t.Name) || t.Name is "AggressiveMinionAcquirePatch" or "AggressiveMinionTargetPatch" or "OfflineWeaverImprintTooltipStatPatch" or "OfflineWeaverImprintTooltipInfoPatch" or "OfflineWeaverImprintLegacyValuePatch" or "OfflineWeaverImprintLegacyInfoPatch"))
+ {
+  var attribute=hook.CustomAttributes.Single(a=>a.AttributeType.FullName=="HarmonyLib.HarmonyPatch");
+  var type=(TypeReference)attribute.ConstructorArguments[0].Value;
+  string name=type.FullName.StartsWith("Il2Cpp.",StringComparison.Ordinal)?type.FullName[7..]:type.FullName[6..];
+  string methodName=(string)attribute.ConstructorArguments[1].Value;
+  var method=nativeTypes[name].Methods.Single(m=>m.Name==methodName);
+  var address=method.CustomAttributes.Single(a=>a.AttributeType.Name=="AddressAttribute");
+  int offset=Convert.ToInt32(address.Fields.Single(f=>f.Name=="Offset").Argument.Value.ToString()!.Replace("0x",""),16);
+  Check(image[offset] is not (0xC3 or 0xC2 or 0xCC),"native hook targets a non-noop implementation: "+name+"::"+methodName);
+ }
+}
+Check(presenceCalls.Any(m=>m.DeclaringType.Name=="NativeRoomLadder" && m.Name=="Capture") &&
+ reachable.Any(m=>m.DeclaringType.Name=="NativeRoomLadder" && m.Name=="Tick"),
+ "inventory-only room publishes bounded character ladder data and refreshes native table");
+var ladderCalls=Walk(new[]{ladder}).SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(!ladderCalls.Any(m=>m.DeclaringType.Name is "LadderOnlineClientService" or "ServiceProvider" or "HttpClient") &&
+ ladderCalls.Any(m=>m.Name=="ShowSelectedLadder") && ladderCalls.Any(m=>m.Name=="SetRecords"),
+ "room ladder supplies native sessions/table without online services or a custom overlay");
+Check(ladder.Methods.Single(m=>m.Name=="Filter").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="get_Cycle") &&
+ !ladder.Methods.Single(m=>m.Name=="Filter").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.DeclaringType.Name=="ServiceProvider"),
+ "offline class/mode filters use loaded character cycle rather than online cycle service");
+Check(ladderCalls.Any(m=>m.Name=="remove_LadderSelectionChanged") && ladderCalls.Any(m=>m.Name=="remove_LocaleChanged") &&
+ ladderCalls.Any(m=>m.Name=="RemoveListener"),"offline ladder detaches its owned filter/locale/scroll subscriptions");
+var minion=types.Single(t=>t.Name=="AggressiveMinionRange");
+var minionCalls=minion.Methods.Single(m=>m.Name=="Applies").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(minionCalls.Any(m=>m.DeclaringType.Name=="OfflineToolkit" && m.Name=="get_Enabled") &&
+ minionCalls.Any(m=>m.Name=="getPlayerActor") && minionCalls.Any(m=>m.Name=="GetPlayerMinionStance") && minionCalls.Any(m=>m.Name=="get_creator"),
+ "aggressive minion gate checks offline environment, stance and bounded local ownership chain");
+Check(new[]{"AggressiveMinionAcquirePatch","AggressiveMinionTargetPatch"}.All(name=>installed.Any(t=>t.Name==name) &&
+ types.Single(t=>t.Name==name).Methods.Any(m=>m.Name=="Finalizer")),
+ "both x2 minion acquisition hooks install with finalizers restoring temporary native fields");
+var acquisition=types.Single(t=>t.Name=="AggressiveMinionAcquirePatch");
+Check(acquisition.Methods.SelectMany(m=>m.HasBody?m.Body.Instructions:Enumerable.Empty<Mono.Cecil.Cil.Instruction>()).Select(i=>i.Operand).OfType<MethodReference>()
+ .All(m=>m.Name is not "set_maximumAggroRange" and not "set_maxHorizontalOffsetForAggro" and not "UseAbility"),
+ "minion acquisition never mutates global aggro constants or executes an extra attack");
 Check(buildGate.Body.Instructions.Where(i=>i.OpCode.Code==Mono.Cecil.Cil.Code.Ldstr).Select(i=>(string)i.Operand).OrderBy(s=>s)
  .SequenceEqual(new[]{"D5F9FB458F0E9878E697A92B590A586A52FD77E645F8BF87BB4F2B74C6C56567","323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464"}.OrderBy(s=>s)) &&
  buildGate.Body.Instructions.Count(i=>i.Operand is MethodReference m && m.DeclaringType.FullName=="System.String" && m.Name=="op_Equality")==2,

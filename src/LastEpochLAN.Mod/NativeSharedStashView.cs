@@ -56,7 +56,8 @@ internal sealed partial class NativeSharedStashView : IDisposable
     internal void Tick(ChestReply snapshot)
     {
         PollTabConfiguration();
-        if(!owner.Open || !owner.NativeReady){Dispose();return;}
+        if(!owner.Open){Hide();return;}
+        if(!owner.NativeReady){Dispose();return;}
         if(snapshot==null)
         {
             if(!awaitingTab && grid!=null){grid.ResetInternal(true,true);displayed.Clear();itemButtons.Clear();projectedItems=Array.Empty<ChestItem>();awaitingTab=true;}
@@ -71,8 +72,10 @@ internal sealed partial class NativeSharedStashView : IDisposable
             {
                 if(Time.unscaledTime<retry)return;
                 retry=Time.unscaledTime+1;
+                Active=this;
                 if(!Build())return;
             }
+            if(!root.activeSelf)root.SetActive(true);
             if(snapshot.Tab!=shownTab || snapshot.ChestId!=chestId || snapshot.Revision!=revision)
             {
                 if(snapshot.Tab!=shownTab || snapshot.ChestId!=chestId || !projectedItems.SequenceEqual(snapshot.Items))
@@ -83,7 +86,12 @@ internal sealed partial class NativeSharedStashView : IDisposable
             BindItemActions();
             PollNativeOverflow();
         }
-        catch(Exception ex){Error=ex.Message;owner.Status="Stash native: "+Error;Dispose();loadFailed=true;MelonLoader.MelonLogger.Warning(owner.Status);}
+        catch(Exception ex)
+        {
+            Error=ex.GetBaseException().Message;owner.Status="Stash native: "+Error;
+            MelonLoader.MelonLogger.Warning(owner.Status+"\n"+ex);
+            try{Dispose();}finally{loadFailed=true;}
+        }
     }
     private static int[] Indices(Transform root,Transform child)
     {
@@ -129,6 +137,7 @@ internal sealed partial class NativeSharedStashView : IDisposable
         // gameplay/controller/navigation callbacks before activating any child.
         parking=new GameObject("Shared Stash inactive staging");parking.SetActive(false);
         root=UnityEngine.Object.Instantiate(source.gameObject,parking.transform,false);root.name="LAN Shared Stash - independent native view";
+        RestoreStagingVisibility(true);
         CaptureNativeTabArtwork(source);
         // Preserve native button colors/sprites/transitions, remove only their
         // personal-stash callbacks. Selected shared actions are rebound below.
@@ -145,6 +154,7 @@ internal sealed partial class NativeSharedStashView : IDisposable
         // Artwork kept from the prefab must not intercept item clicks after its
         // original controllers have been removed. Preserve hidden child groups.
         foreach(var graphic in root.GetComponentsInChildren<Graphic>(true))graphic.raycastTarget=false;
+        SharedStashNativeLayout.Restore(source.transform,root.transform);
         var rootGroup=root.GetComponent<CanvasGroup>()??root.AddComponent<CanvasGroup>();
         rootGroup.alpha=1;rootGroup.interactable=true;rootGroup.blocksRaycasts=true;rootGroup.ignoreParentGroups=true;
         // Raycasters are MonoBehaviours too: stripping the source controllers
@@ -152,7 +162,10 @@ internal sealed partial class NativeSharedStashView : IDisposable
         var canvases=root.GetComponentsInChildren<Canvas>(true).ToArray();
         if(canvases.Length==0)canvases=new[]{root.AddComponent<Canvas>()};
         foreach(var canvas in canvases)
+        {
+            canvas.enabled=true;
             if(canvas.GetComponent<GraphicRaycaster>()==null)canvas.gameObject.AddComponent<GraphicRaycaster>();
+        }
         foreach(var text in root.GetComponentsInChildren<TMP_Text>(true))
             if(text.text?.Trim().Equals("STASH",StringComparison.OrdinalIgnoreCase)==true)text.text="SHARED STASH";
         var searchGrid=gridTransform.gameObject.AddComponent<ItemContainerUIWithSearch>();
@@ -180,6 +193,7 @@ internal sealed partial class NativeSharedStashView : IDisposable
             var v2=source.TryCast<StashPanelV2>();
             if(v2!=null)panels.ClosePanel(v2);else panels.ClosePanel(source);
         }
+        RestoreStagingVisibility(false);
         root.SetActive(true);grid.Initialize();
         UIBase.instance.openInventory(false,false,false,0,false);
         if(!owner.Busy)owner.Status="Drop items to deposit | Click to withdraw | F2 / Esc to close";
@@ -289,6 +303,7 @@ internal sealed partial class NativeSharedStashView : IDisposable
     }
     public void Dispose()
     {
+        RestoreStagingVisibility(false);
         if(root!=null)root.SetActive(false);
         if(grid!=null){try{grid.ResetInternal(true,true);}catch{}}
         if(root!=null)UnityEngine.Object.Destroy(root);if(parking!=null)UnityEngine.Object.Destroy(parking);

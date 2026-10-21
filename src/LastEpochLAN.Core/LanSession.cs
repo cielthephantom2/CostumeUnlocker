@@ -561,7 +561,9 @@ public sealed partial class LanSession : IDisposable
             var currentWorld = Volatile.Read(ref world);
             var gifts = new List<GiftMessage>();
             var chest=new List<ChestReply>();
-            while(chest.Count<2 && peer.ChestReplies.TryDequeue(out var chestReply))chest.Add(chestReply);
+            // Category/priority metadata can be large. Keep one bounded reply
+            // per frame instead of combining two near the1MB wire limit.
+            while(chest.Count<1 && peer.ChestReplies.TryDequeue(out var chestReply))chest.Add(chestReply);
             while (gifts.Count < 8 && peer.Gifts.TryDequeue(out var gift)) gifts.Add(gift);
             bool changed = !ReferenceEquals(currentWorld, peer.LastWorld);
             var chunks = changed ? peer.WorldWriter.Encode(currentWorld with { RewardEnemyIds = deathLedger.Eligible(peer.Id, currentWorld) },allowDelta:true) : Array.Empty<WorldChunk>();

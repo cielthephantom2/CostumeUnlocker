@@ -13,13 +13,20 @@ namespace LastEpochLAN.Mod.OfflineTools;
 [HarmonyPatch(typeof(TheWeaver), nameof(TheWeaver.UpdateWeaverTreeNode))]
 internal static class OfflineWeaverImprintPointRatesPatch
 {
-    private static void Postfix(TheWeaver __instance, WeaverTreeNodeEffect __0)
+    internal static long CacheUpdates,ChampionUpdates;
+    private static void Postfix(TheWeaver __instance, WeaverTreeNodeEffect __0, int __1)
     {
         if (!OfflineToolkit.Enabled) return;
         if (__0 == WeaverTreeNodeEffect.ImprintContainerCachesDropMoreItemsOfType)
-            __instance.OnCacheOpenedChanceForSimilarItems = WeaverImprintRules.DoubleChance(__instance.OnCacheOpenedChanceForSimilarItems);
+        {
+            __instance.OnCacheOpenedChanceForSimilarItems = WeaverImprintRules.SealedChance(__1);
+            CacheUpdates++;
+        }
         else if (__0 == WeaverTreeNodeEffect.ImprintContainerChampionsDropMoreItemsOfType)
+        {
             __instance.ImprintContainerChampionsChanceToDropMoreItemsOfType = WeaverImprintRules.DoubleChance(__instance.ImprintContainerChampionsChanceToDropMoreItemsOfType);
+            ChampionUpdates++;
+        }
     }
 }
 

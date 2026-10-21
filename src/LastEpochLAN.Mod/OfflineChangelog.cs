@@ -10,6 +10,15 @@ internal static class OfflineChangelog
     private static GUIStyle bodyStyle;
     private static readonly string content=
         "<b>BONUS OFFLINE</b>\n"+
+        "• Dev.45: Sealed Riches 1 điểm =12% theo tooltip gốc6%; thay mức5.8% cũ. Warlord6%; Echoing hiển thị tối đa100%, vẫn phụ thuộc điểm thưởng/Corruption. Sealed áp dụng khi vào Echo mới.\n"+
+        "• Dev.43: đo lại chiều rộng tên tab/category bằng font gốc trước khi căn layout Shared Stash; sửa chữ Unique/Set/Shared bị cắt.\n"+
+        "• Dev.42: sửa tooltip Imprint ở giao diện cây cũ NodeTooltipManager: Warlord6%, Sealed5.8% mỗi điểm; bản trước chỉ sửa tooltip V2.\n"+
+        "• Dev.41: bỏ Configure Category thừa ở chân Shared Stash; giữ chuột phải category. Khôi phục layout native cho tên/icon/nút+, giữ bề mặt bắt click trong suốt.\n"+
+        "• Dev.39: sửa Shared Stash gọi hàm Unity bị strip khi cuộn tab. Tooltip Imprint khớp bonus x2: Sealed5.8%, Warlord6% mỗi điểm; node0/1 vẫn chưa kích hoạt. Protocol43.\n"+
+        "• Dev.38: Ladder gốc hiển thị người đang trong phòng: level/XP, Arena, Corruption và Omen; cập nhật khi đổi nhân vật/rời phòng. Protocol43, cập nhật cả hai DLL trên mọi máy.\n"+
+        "• Minion/companion ở stance tấn công tìm địch trong phạm vi x2; giữ tầm đánh gốc và stance bảo vệ.\n"+
+        "• Dev.37: Shared Stash dùng Configure gốc đầy đủ: tên/icon/màu, Category và Priority theo Unique/rarity/type/class/level/faction/Corruption/LP/FP/WW/Touch. Duplicate chỉ sao chép cấu hình sang ngăn rỗng.\n"+
+        "• Chuột phải tab hoặc category để cấu hình; + ở hàng category tạo nhóm. F2 tái sử dụng UI, nguồn hòm cá nhân được chuẩn bị ẩn. Protocol42, Host và mọi Client phải cập nhật cả hai DLL.\n"+
         "• Dev.34: F2 có6 ngăn chung, mỗi ngăn96 món; nút + thêm tối đa24 ngăn; Sort và Configure Tab (tên/màu/icon). Protocol41, cần cập nhật cả Host và Client.\n"+
         "• Dev.34: sáu node Imprint x2: Commoner/Sealed/Echoing/Warlord và trọng số Woven/Loomed.\n"+
         "• Dev.33: cập nhật tỷ lệ Woven Potential cho1–4 LP; đồ0 LP không được phép đưa vào máy.\n"+
@@ -64,7 +73,7 @@ internal static class OfflineChangelog
         "• Loot Filter vẫn chia sẻ trong phòng; chỉnh/switch/tắt filter được cập nhật cho các máy khác.\n"+
         "• Tạm tắt đồng bộ quái/combat/HP/status/thưởng, nhân vật/pet/VFX, Teleport/Monolith và Encounter để giảm tải.\n"+
         "• Combat Assist, DPS và toàn bộ tiện ích cá nhân trong Mod Settings tiếp tục hoạt động.\n"+
-        "• Dev.34 dùng protocol41; phòng Internet vẫn chỉ F2 + Loot Filters. Các bản protocol40 trở xuống không kết nối chung.";
+        "• Dev.37 dùng protocol42; phòng Internet vẫn chỉ F2 + Loot Filters. Các bản protocol41 trở xuống không kết nối chung.";
 
     internal static void Show(){scroll=Vector2.zero;Open=true;}
     internal static void Draw(string version)

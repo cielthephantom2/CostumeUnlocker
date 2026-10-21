@@ -11,8 +11,10 @@ internal static class RoomFeaturePolicy
         ns == "LastEpochLAN.Mod.OfflineTools" || ns.StartsWith("LastEpochLAN.Mod.OfflineTools.", StringComparison.Ordinal) ||
         ns == "LastEpochLAN.Mod" && (parent == "LanLootFilters" || name is
             "SharedChestItemLockPatch" or "SharedChestManagerLockPatch" or
-            "SharedStashNativeBindingPatch" or "SharedStashNativeInputPatch" or "SharedStashProjectionMutationPatch" or
-            "LanGiftApplyingLockPatch" or "AutoPlayCastObservationPatch");
+            "SharedStashNativeBindingPatch" or "SharedStashNativeInputPatch" or "SharedStashProjectionMutationPatch" or "SharedStashPreparationVisibilityPatch" or
+            "LanGiftApplyingLockPatch" or "AutoPlayCastObservationPatch" or
+            "RoomLadderOpenPatch" or "RoomLadderClosePatch" or "RoomLadderSessionPatch" or "RoomLadderSelfRowPatch" or
+            "RoomLadderFilterPatch");
 
     internal static PlayerState Presence(bool ready, string identity, string character, string group) => new()
     {

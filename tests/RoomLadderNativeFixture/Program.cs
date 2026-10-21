@@ -1,0 +1,45 @@
+using System.Text.Json;
+using Il2Cpp;
+using Il2CppLE.Services.Ladders;
+using LastEpochLAN.Mod;
+using LastEpochLAN.Mod.OfflineTools;
+
+int count=0;
+void Check(bool ok,string label){if(!ok)throw new Exception(label);count++;Console.WriteLine("PASS: "+label);}
+var character=NativeRoomLadder.Capture();
+Check(character.IsValid() && character.Class==3 && character.Mastery=="Necromancer" && character.Skills.SequenceEqual(new[]{"skill-one","skill-two"}),"native character capture includes mastery and specialized skills");
+var panel=new LadderUIFilterPanel{ladderType=LadderType.Corruption,ladderMode=LadderMode.Softcore};
+Check(NativeRoomLadder.Filter(panel).Cycle==PlayerFinder.Player.characterDataTracker.charData.Cycle,"native filters use loaded offline cycle without CycleStatusService");
+LadderSession Session(LadderType type)=>NativeRoomLadder.CreateSession(new(type,LadderMode.Softcore,LadderGroup.NoParty,Il2CppLE.Data.Cycle.Current,LadderClassFilter.All));
+var arena=(RankedLadderEntry<ArenaLadderEntry>)Session(LadderType.Arena).Records.Single();
+Check(arena.Rank==1 && arena.LadderEntry.Wave==100 && arena.LadderEntry.PlayerEntries.Single().CharacterName=="Character","native arena record uses solo member's best waves and character fields");
+var level=(RankedLadderEntry<LevelLadderEntry>)Session(LadderType.Level).Records.Single();
+Check(level.LadderEntry.PlayerEntry.CharacterTotalExp==12345 && level.Metadata["hasDied"]=="False","native level record includes XP and safe hardcore death metadata");
+var corruption=(RankedLadderEntry<CorruptionLadderEntry>)Session(LadderType.Corruption).Records.Single();
+Check(corruption.LadderEntry.PlayerEntry.MaxCorruption==300,"native corruption record uses saved max corruption");
+var omen=(RankedLadderEntry<OmenLadderEntry>)Session(LadderType.SeasonEvent).Records.Single();
+Check(omen.LadderEntry.PlayerEntry.OmenKills==60 && omen.LadderEntry.PlayerEntry.OmenWindowsCompleted==5,"native Omen record preserves kills and completed windows");
+Check(Session(LadderType.Level).State==LadderSession.LoadingState.Complete && Session(LadderType.Level).PlayerRecord!=null,"offline ladder session completes and identifies local record without online account");
+var party=NativeRoomLadder.CreateSession(new(LadderType.Arena,LadderMode.Softcore,LadderGroup.PartyOf2,Il2CppLE.Data.Cycle.Current,LadderClassFilter.All));
+Check(party.Records.Count==0,"solo scores are never fabricated into party achievements");
+PlayerFinder.Player.characterDataTracker.charData.Hardcore=true;PlayerFinder.Player.characterDataTracker.charData.Deaths=1;
+var hardcore=NativeRoomLadder.CreateSession(new(LadderType.Level,LadderMode.Hardcore,LadderGroup.NoParty,Il2CppLE.Data.Cycle.Current,LadderClassFilter.All));
+Check(((RankedLadderEntry<LevelLadderEntry>)hardcore.Records.Single()).Metadata["hasDied"]=="True","dead hardcore character retains native death marker");
+PlayerFinder.Player.characterDataTracker.charData.Hardcore=false;
+var view=new LadderUIManager();NativeRoomLadder.Open(view);
+Check(!view.disabledGroup.gameObject.Active && view.activableElements.All(e=>e.gameObject.Active) && view.Session.Records.Count==1 && view.filterPanel.header.text.StartsWith("LOCAL LADDER"),"opening offline ladder exposes native table and local fallback");
+Check(!view.seasonEventMessageTab.gameObject.Active && view.seasonEventTabButton.gameObject.Active && !view.seasonEventBanner.gameObject.Active,
+    "season UI is configured on concrete Ladder open without detouring the shared native no-op method");
+Check(view.filterPanel.Listeners.Count==1 && Localization.Listeners.Count==1 && view.scrollBar.onValueChanged.Listeners.Count==1,"offline opening owns one filter, locale and scroll listener");
+int before=view.RefreshCount;UnityEngine.Time.unscaledTime=2;NativeRoomLadder.Tick(null);
+Check(view.RefreshCount==before,"unchanged presence does not rebuild/reset native ladder");
+view.scrollRect.verticalNormalizedPosition=0.3f;PlayerFinder.Player.characterDataTracker.charData.MaxWave=200;UnityEngine.Time.unscaledTime=4;NativeRoomLadder.Tick(null);
+Check(view.RefreshCount==before+1 && view.scrollRect.verticalNormalizedPosition==0.3f,"live score refresh preserves user's scroll position");
+NativeRoomLadder.Open(view);
+Check(view.filterPanel.Listeners.Count==1 && Localization.Listeners.Count==1 && view.scrollBar.onValueChanged.Listeners.Count==1,"reopening does not duplicate UI subscriptions");
+NativeRoomLadder.Close(view);
+Check(view.filterPanel.Listeners.Count==0 && Localization.Listeners.Count==0 && view.scrollBar.onValueChanged.Listeners.Count==0,"closing detaches all owned UI subscriptions");
+Il2CppLE.UI.LoadingScreen.IsVisible=true;Check(NativeRoomLadder.Capture()==null,"loading clears character presence instead of keeping stale ladder data");Il2CppLE.UI.LoadingScreen.IsVisible=false;
+OfflineToolkit.Enabled=false;Check(NativeRoomLadder.Capture()==null,"online play is excluded from room ladder capture");
+Console.WriteLine($"All {count} actual-source native ladder stub checks passed; Unity rendering not exercised.");
+if(args.Length>0)File.WriteAllText(args[0],JsonSerializer.Serialize(new{passed=count,nativeGameplayVerified=false}));

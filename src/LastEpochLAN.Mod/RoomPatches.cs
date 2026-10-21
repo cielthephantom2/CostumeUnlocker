@@ -12,6 +12,7 @@ internal static class RoomPatches
         {
             if (!RoomFeaturePolicy.AllowsPatch(type.Namespace ?? "", type.Name, type.DeclaringType?.Name ?? ""))
             { Skipped++; continue; }
+            MelonLoader.MelonLogger.Msg("Installing hook: "+type.FullName);
             harmony.CreateClassProcessor(type).Patch(); Installed++;
         }
     }

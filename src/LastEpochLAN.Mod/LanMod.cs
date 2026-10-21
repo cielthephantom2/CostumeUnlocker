@@ -5,7 +5,7 @@ using MelonLoader;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
-[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.35", "Local research")]
+[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.45", "Local research")]
 [assembly: HarmonyDontPatchAll]
 [assembly: MelonGame("Eleventh Hour Games", "Last Epoch")]
 
@@ -138,7 +138,7 @@ public sealed class LanMod : MelonMod
         settings.ExperimentalClassModels = settings.GuestPrivateRewards = settings.HostOwnedEnemies = settings.ExperimentalGuestCombat = false;
         settings.ExperimentalNativeRewards = settings.ProbeRemoteCharacter = false;
         SaveRuntimeReport("initialized", null);
-        LoggerInstance.Msg($"Internet room: F2 Shared Stash and Loot Filters enabled; shared world/combat/travel disabled. Patches installed={RoomPatches.Installed}, skipped={RoomPatches.Skipped}. F4 opens the panel.");
+        LoggerInstance.Msg($"Internet room: F2 Shared Stash, Loot Filters and Room Ladder enabled; offline aggressive minion detection x2; shared world/combat/travel disabled. Patches installed={RoomPatches.Installed}, skipped={RoomPatches.Skipped}. F4 opens the panel.");
         if (!supported) message = "Unsupported GameAssembly build. See README.";
     }
 
@@ -329,6 +329,7 @@ public sealed class LanMod : MelonMod
                 RoomFeaturePolicy.SharedWorldEnabled && (partyTravel.Busy || monolithParty.Busy));
             if (!StartupArguments.Contains("--lelan-hud-policy")) HudAuthority.Session = RoomFeaturePolicy.SharedWorldEnabled && (session?.IsHost==true || partyTravel.Participation.Enabled) ? session : null;
             lootFilters.Tick(session);
+            NativeRoomLadder.Tick(session);
             if (session == null)
             {
                 if((autoPlay.Open || autoPlay.Armed) && Time.unscaledTime>=nextRuntimeReport)
@@ -409,7 +410,7 @@ public sealed class LanMod : MelonMod
         using var performance = RuntimePerformance.Measure(PerformanceArea.PlayerPublish);
         var actor = Il2Cpp.PlayerFinder.getPlayerActor();
         bool ready = sharedChest.NativeReady && actor != null && gift.Character == actor.characterDataTracker?.charData?.Id;
-        session.Publish(RoomFeaturePolicy.Presence(ready, gift.Identity, gift.Character, gift.Group));
+        session.Publish(RoomFeaturePolicy.Presence(ready, gift.Identity, gift.Character, gift.Group) with {Ladder = NativeRoomLadder.Capture()});
     }
 
     private void PublishPlayer()
@@ -582,7 +583,7 @@ public sealed class LanMod : MelonMod
         if(OfflineChangelog.Open) {OfflineChangelog.Draw(ModVersion);return;}
         if(OfflineTools.OfflineToolkit.PanelOpen) {OfflineTools.OfflineToolkit.Draw();return;}
         GUI.Box(new Rect(16, 16, 460, 518), "TM Last Epoch Co-op Mod v" + ModVersion + " (F4)");
-        GUI.Label(new Rect(30,492,420,24),"Internet room: F2 Shared Stash + Loot Filters only.");
+        GUI.Label(new Rect(30,492,420,24),"Internet room: Shared Stash + Loot Filters + Ladder.");
         if(GUI.Button(new Rect(30,395,420,27),"Mod Settings")) OfflineTools.OfflineToolkit.PanelOpen=true;
         if(GUI.Button(new Rect(30,430,420,27),"Changelog")) OfflineChangelog.Show();
         updateChecker.Check(ModVersion);
@@ -695,6 +696,7 @@ public sealed class LanMod : MelonMod
         session?.Dispose();
         session = null;
         lootFilters.Tick(null);
+        NativeRoomLadder.Tick(null);
         remoteStates = Array.Empty<PlayerState>(); nextRemoteRead = 0; appliedVisualSequence.Clear();
         foreach (var marker in markers.Values) if (marker != null) UObject.Destroy(marker);
         markers.Clear();
@@ -714,7 +716,7 @@ public sealed class LanMod : MelonMod
         reportWriter.Publish(reportFile,new
         {
             phase, utc = DateTimeOffset.UtcNow, modVersion = ModVersion, protocolVersion = LanProtocol.Version, supported, gameAssemblySha256 = fingerprint, offlineMode,
-            roomMode = "Internet inventory-only: F2 + Loot Filters",
+            roomMode = "Internet inventory-only: F2 + Loot Filters + Room Ladder",
             sharedWorldEnabled = RoomFeaturePolicy.SharedWorldEnabled,
             modUi = new { f4Visible=panel, settingsPageSelected=OfflineTools.OfflineToolkit.PanelOpen,
                 settingsVisible=panel && OfflineTools.OfflineToolkit.PanelOpen, stashVisible=sharedChest.Open,
@@ -737,6 +739,9 @@ public sealed class LanMod : MelonMod
             lanGift = new { gift.Status, gift.Error, gift.Sent, gift.Received, gift.Pending, gift.Busy },
             sharedChest = sharedChest?.Diagnostics,
             localCharacterReadiness = new { monolithParty.GameplayReady,monolithParty.SharedWorldReady,monolithParty.GuestSession },
+            roomLadder = new { NativeRoomLadder.Error },
+            weaverImprints = OfflineTools.WeaverImprintDiagnostics.Snapshot(),
+            aggressiveMinions = new { OfflineTools.AggressiveMinionRange.ExpandedAcquisitions, OfflineTools.AggressiveMinionRange.ExpandedTargetSearches },
             avatarCaptureError = ClassVisualReplica.CaptureError,
             summons=new {local=summonCapture.Count,omitted=summonCapture.Omitted,captureError=summonCapture.Error,remote=summonReplicas.Count,renderError=summonReplicas.Error},
             enemyHostSync = worldSync.Status, fullCoop = false, adapterSmokePassed, worldSmokePassed, guiReported, classSmokeCompleted, classSmokePassed,

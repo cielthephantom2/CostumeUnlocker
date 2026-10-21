@@ -1,0 +1,47 @@
+C:\Program Files\dotnet\sdk\10.0.401\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.EolTargetFrameworks.targets(32,5): warning NETSDK1138: The target framework 'net6.0' is out of support and will not receive security updates in the future. Please refer to https://aka.ms/dotnet-core-support for more information about the support policy. [D:\New folder\CostumeUnlocker-Publish\tests\WeaverImprintFixture\WeaverImprintFixture.csproj]
+C:\Program Files\dotnet\sdk\10.0.401\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.EolTargetFrameworks.targets(32,5): warning NETSDK1138: The target framework 'net6.0' is out of support and will not receive security updates in the future. Please refer to https://aka.ms/dotnet-core-support for more information about the support policy. [D:\New folder\CostumeUnlocker-Publish\tests\WeaverImprintFixture\WeaverImprintFixture.csproj]
+C:\Program Files\dotnet\sdk\10.0.401\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.EolTargetFrameworks.targets(32,5): warning NETSDK1138: The target framework 'net6.0' is out of support and will not receive security updates in the future. Please refer to https://aka.ms/dotnet-core-support for more information about the support policy. [D:\New folder\CostumeUnlocker-Publish\tests\WeaverImprintFixture\WeaverImprintFixture.csproj]
+PASS: One Sealed point overrides legacy .029 with .12 to match unmodded 6% x2
+PASS: One Sealed point overrides legacy .029 with .12 to match unmodded 6% x2
+PASS: One Sealed point overrides legacy .029 with .12 to match unmodded 6% x2
+PASS: Repeating the Sealed hook without native reset never stacks above12%
+PASS: Removing all Sealed points removes bonus
+PASS: Champion drop field gets x2 before native consumers read it
+PASS: Actual Commoner prefix doubles inlined numerator
+PASS: Helper inside native Commoner scope does not multiply a second time
+PASS: Reentrant drop for same zone does not multiply or restore outer scope
+PASS: Nested different-zone exception restores only its own original numerator
+PASS: Native failure finalizer restores exact numerator and clears scope
+PASS: Direct Commoner chance helper doubles once outside drop scope
+PASS: Shared helpers remain unchanged outside Imprint consumers
+PASS: Echo scope boosts only its Corruption factor, including factors above1
+PASS: Nested Woven scopes scale exactly once and preserve enclosing Echo context
+PASS: Exception disposes nested Woven scopes without clearing outer Echo scope
+PASS: All Imprint contexts cleared after operation
+PASS: Woven scope includes outer Monolith spawn-weight consumer, not only final normalized selection
+PASS: Online mode does not modify Commoner data or helper
+PASS: Online mode never boosts Echo/Woven even with an existing scope
+PASS: Online mode leaves faction point-derived rates unchanged
+PASS: fresh Warlord native tooltip refresh shows6% without repeated stacking
+PASS: fresh Warlord native tooltip refresh shows6% without repeated stacking
+PASS: fresh Warlord native tooltip refresh shows6% without repeated stacking
+PASS: verified Sealed 6% tooltip becomes12% and preserves plus sign and percent spacing
+PASS: Echoing displayed maximum doubles50% to100% rather than remaining50%
+PASS: non-Weaver node tooltip remains untouched
+PASS: pile quantity is never doubled by tooltip correction
+PASS: six Imprint descriptions preserve native rules and accurately explain offline rate/weight multiplier
+PASS: six Imprint descriptions preserve native rules and accurately explain offline rate/weight multiplier
+PASS: six Imprint descriptions preserve native rules and accurately explain offline rate/weight multiplier
+PASS: six Imprint descriptions preserve native rules and accurately explain offline rate/weight multiplier
+PASS: six Imprint descriptions preserve native rules and accurately explain offline rate/weight multiplier
+PASS: six Imprint descriptions preserve native rules and accurately explain offline rate/weight multiplier
+PASS: official online tooltip keeps original values
+PASS: legacy BuildColoredValue receives6% before native coloring, even for unallocated preview
+PASS: legacy one-point Sealed tooltip matches12% gameplay target
+PASS: legacy Echoing tooltip shows100% maximum
+PASS: Sealed description no longer contradicts native12% tooltip or gameplay target
+PASS: legacy renderer description is updated and native layout invalidated
+PASS: legacy description correction does not append duplicate notes
+PASS: legacy unrelated skill/passive node remains untouched
+PASS: legacy official online values stay native
+All 43 Weaver patch fixture checks passed.
