@@ -14,7 +14,7 @@ namespace LastEpochLAN.Mod;
 
 // Native graphics + a NEW base ItemContainerUI. Never instantiate a second
 // live Stash controller, bind manager.currentStash, or share its pool/delegates.
-internal sealed class NativeSharedStashView : IDisposable
+internal sealed partial class NativeSharedStashView : IDisposable
 {
     internal static NativeSharedStashView Active;
     private readonly LanSharedChest owner;
@@ -29,6 +29,7 @@ internal sealed class NativeSharedStashView : IDisposable
     private ItemContainersManager manager;
     private string chestId="";
     private long revision=-1;
+    private ChestItem[] projectedItems=Array.Empty<ChestItem>();
     private int page;
     private Vector2Int dimensions;
     private TextMeshProUGUI pageLabel,statusLabel;
@@ -55,8 +56,16 @@ internal sealed class NativeSharedStashView : IDisposable
     }
     internal void Tick(ChestReply snapshot)
     {
-        if(!owner.Open || !owner.NativeReady || snapshot==null){Dispose();return;}
-        if(Input.GetKeyDown(KeyCode.Escape)){owner.Toggle();return;}
+        PollTabConfiguration();
+        if(!owner.Open || !owner.NativeReady){Dispose();return;}
+        if(snapshot==null)
+        {
+            if(!awaitingTab && grid!=null){grid.ResetInternal(true,true);displayed.Clear();itemButtons.Clear();projectedItems=Array.Empty<ChestItem>();awaitingTab=true;}
+            if(statusLabel!=null)statusLabel.text=owner.Status;
+            return;
+        }
+        awaitingTab=false;
+        if(!Configuring && Input.GetKeyDown(KeyCode.Escape)){owner.Toggle();return;}
         try
         {
             if(manager!=null && manager.Pointer!=PlayerFinder.getItemContainersManager()?.Pointer)Dispose();
@@ -66,13 +75,16 @@ internal sealed class NativeSharedStashView : IDisposable
                 retry=Time.unscaledTime+1;
                 if(!Build())return;
             }
-            if(snapshot.ChestId!=chestId || snapshot.Revision!=revision)
+            if(snapshot.Tab!=shownTab || snapshot.ChestId!=chestId || snapshot.Revision!=revision)
             {
-                Rebuild(snapshot);chestId=snapshot.ChestId;revision=snapshot.Revision;
+                if(snapshot.Tab!=shownTab || snapshot.ChestId!=chestId || !projectedItems.SequenceEqual(snapshot.Items))
+                {Rebuild(snapshot);projectedItems=snapshot.Items.ToArray();}
+                chestId=snapshot.ChestId;revision=snapshot.Revision;shownTab=snapshot.Tab;
             }
+            RefreshSharedTabs(snapshot);
             BindItemActions();
             if(statusLabel!=null)statusLabel.text=owner.Status;
-            if(pageLabel!=null)pageLabel.text=$"Host Stash  {page+1}/{pages.Count}  |  {snapshot.Items.Length}/96 items";
+            if(pageLabel!=null)pageLabel.text=$"{owner.StashTabs[snapshot.Tab].Name}  |  Page {page+1}/{pages.Count}  |  {snapshot.Items.Length}/{SharedStashRules.ItemsPerTab}";
         }
         catch(Exception ex){Error=ex.Message;owner.Status="Stash native: "+Error;Dispose();loadFailed=true;MelonLoader.MelonLogger.Warning(owner.Status);}
     }
@@ -120,12 +132,13 @@ internal sealed class NativeSharedStashView : IDisposable
         // gameplay/controller/navigation callbacks before activating any child.
         parking=new GameObject("Shared Stash inactive staging");parking.SetActive(false);
         root=UnityEngine.Object.Instantiate(source.gameObject,parking.transform,false);root.name="LAN Shared Stash - independent native view";
+        CaptureNativeTabArtwork(source);
         var gridTransform=root.transform;foreach(int index in path)gridTransform=gridTransform.GetChild(index);
         foreach(var item in root.GetComponentsInChildren<InventoryItemUI>(true))UnityEngine.Object.DestroyImmediate(item.gameObject);
         foreach(var script in root.GetComponentsInChildren<MonoBehaviour>(true))
         {
             bool graphic=script.TryCast<Graphic>()!=null;
-            bool layout=script.TryCast<LayoutGroup>()!=null || script.TryCast<ContentSizeFitter>()!=null || script.TryCast<LayoutElement>()!=null || script.TryCast<Mask>()!=null || script.TryCast<RectMask2D>()!=null;
+            bool layout=script.TryCast<LayoutGroup>()!=null || script.TryCast<ContentSizeFitter>()!=null || script.TryCast<LayoutElement>()!=null || script.TryCast<Mask>()!=null || script.TryCast<RectMask2D>()!=null || script.TryCast<ScrollRect>()!=null || script.TryCast<Scrollbar>()!=null;
             if(!graphic && !layout)UnityEngine.Object.DestroyImmediate(script);
         }
         // Artwork kept from the prefab must not intercept item clicks after its
@@ -152,6 +165,7 @@ internal sealed class NativeSharedStashView : IDisposable
         pages.Add(NewPage());Active=this;
         root.SetActive(false);root.transform.SetParent(source.transform.parent,false);
         AddControls();
+        BuildSharedTabControls();
         if(source.gameObject.activeInHierarchy)
         {
             // The public API pops the panel stack before native focus cleanup.
@@ -314,7 +328,8 @@ internal sealed class NativeSharedStashView : IDisposable
         if(root!=null)root.SetActive(false);
         if(grid!=null){try{grid.ResetInternal(true,true);}catch{}}
         if(root!=null)UnityEngine.Object.Destroy(root);if(parking!=null)UnityEngine.Object.Destroy(parking);
-        root=null;parking=null;grid=null;manager=null;pages.Clear();displayed.Clear();itemButtons.Clear();revision=-1;chestId="";loadStarted=-1;loadFailed=false;
+        DisposeSharedTabs();
+        root=null;parking=null;grid=null;manager=null;pages.Clear();displayed.Clear();itemButtons.Clear();revision=-1;projectedItems=Array.Empty<ChestItem>();chestId="";loadStarted=-1;loadFailed=false;
         if(Active==this)Active=null;
     }
 }

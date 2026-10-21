@@ -1,6 +1,6 @@
 # Weaver Imprint — tỷ lệ native, 2026-10-21
 
-Read-only audit of installed game metadata/native code. No Weaver rate changes.
+Native baseline audit of installed game metadata/native code. **Update: dev.34 now applies x2 to these six Imprint effects; see [implementation and validation](WEAVER-IMPRINT-X2-dev34-VI.md). The combined dev.34/protocol41 release is documented in RELEASE-1.1.0-dev34-VI.md.** The table below records original native values before the multiplier.
 
 ## Node effects and rates
 

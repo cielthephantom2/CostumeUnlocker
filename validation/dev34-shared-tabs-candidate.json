@@ -1,0 +1,22 @@
+{
+  "version": "1.1.0-dev.34",
+  "protocol": 41,
+  "status": "local candidate; not installed or published",
+  "managedChecks": 969,
+  "compiledAuditChecks": 53,
+  "weaverFixtureChecks": 20,
+  "nativeGameplayVerified": false,
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "sha256": "85C995FE82E4968E498304362230FE8B36DCE0E5A63E9E04FFAFAD8EC92AE914",
+      "size": 1028608
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "sha256": "B6893904116FDE16E644ED40C3533D8502414D9A7B96EB854480DD62B32A0D06",
+      "size": 406528
+    }
+  ],
+  "zipSha256": "12CC06C0005455651F4A3EA8CF522A41E7CB72C1105B89A7A1D55B05550068E3"
+}

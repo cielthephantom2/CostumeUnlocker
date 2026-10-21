@@ -1,0 +1,26 @@
+{
+  "passed": 20,
+  "scope": "actual patch source linked against native stubs; no game launched or native detours executed",
+  "checks": [
+    "Repeated native point refresh remains x2, never x4/x8",
+    "Repeated native point refresh remains x2, never x4/x8",
+    "Repeated native point refresh remains x2, never x4/x8",
+    "Removing all Sealed points removes bonus",
+    "Champion drop field gets x2 before native consumers read it",
+    "Actual Commoner prefix doubles inlined numerator",
+    "Helper inside native Commoner scope does not multiply a second time",
+    "Reentrant drop for same zone does not multiply or restore outer scope",
+    "Nested different-zone exception restores only its own original numerator",
+    "Native failure finalizer restores exact numerator and clears scope",
+    "Direct Commoner chance helper doubles once outside drop scope",
+    "Shared helpers remain unchanged outside Imprint consumers",
+    "Echo scope boosts only its Corruption factor, including factors above1",
+    "Nested Woven scopes scale exactly once and preserve enclosing Echo context",
+    "Exception disposes nested Woven scopes without clearing outer Echo scope",
+    "All Imprint contexts cleared after operation",
+    "Woven scope includes outer Monolith spawn-weight consumer, not only final normalized selection",
+    "Online mode does not modify Commoner data or helper",
+    "Online mode never boosts Echo/Woven even with an existing scope",
+    "Online mode leaves faction point-derived rates unchanged"
+  ]
+}

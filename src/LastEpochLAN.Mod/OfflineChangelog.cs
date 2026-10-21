@@ -10,6 +10,8 @@ internal static class OfflineChangelog
     private static GUIStyle bodyStyle;
     private static readonly string content=
         "<b>BONUS OFFLINE</b>\n"+
+        "• Dev.34: F2 có6 ngăn chung, mỗi ngăn96 món; nút + thêm tối đa24 ngăn; Sort và Configure Tab (tên/màu/icon). Protocol41, cần cập nhật cả Host và Client.\n"+
+        "• Dev.34: sáu node Imprint x2: Commoner/Sealed/Echoing/Warlord và trọng số Woven/Loomed.\n"+
         "• Dev.33: cập nhật tỷ lệ Woven Potential cho1–4 LP; đồ0 LP không được phép đưa vào máy.\n"+
         "• Bloodrage (Rage of Morditas): mỗi nấc nhận2 charge, tổng2/4/6/8/10; giữ mốc kill và tiêu hao native.\n"+
         "• Glyph of Hope: 33% không tốn Forging Potential.\n"+
@@ -62,7 +64,7 @@ internal static class OfflineChangelog
         "• Loot Filter vẫn chia sẻ trong phòng; chỉnh/switch/tắt filter được cập nhật cho các máy khác.\n"+
         "• Tạm tắt đồng bộ quái/combat/HP/status/thưởng, nhân vật/pet/VFX, Teleport/Monolith và Encounter để giảm tải.\n"+
         "• Combat Assist, DPS và toàn bộ tiện ích cá nhân trong Mod Settings tiếp tục hoạt động.\n"+
-        "• Dev.32 giữ protocol40; phòng Internet vẫn chỉ F2 + Loot Filters. Bản dev.27/protocol36 không kết nối chung.";
+        "• Dev.34 dùng protocol41; phòng Internet vẫn chỉ F2 + Loot Filters. Các bản protocol40 trở xuống không kết nối chung.";
 
     internal static void Show(){scroll=Vector2.zero;Open=true;}
     internal static void Draw(string version)

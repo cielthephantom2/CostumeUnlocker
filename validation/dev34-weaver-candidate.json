@@ -1,0 +1,17 @@
+{
+  "version": "1.1.0-dev.34",
+  "protocol": 40,
+  "status": "local candidate; not published or installed",
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1011200,
+      "sha256": "657D898964C200762F3E71A664FD56BDE5A34D99198DB1BFA7231FF17C46A5BF"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 393216,
+      "sha256": "474AFB9FC0F1759791F2B956194A17C023CE7605377C6460C58B0842E2BEA0C7"
+    }
+  ]
+}

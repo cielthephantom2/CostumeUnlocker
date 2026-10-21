@@ -1,0 +1,24 @@
+C:\Program Files\dotnet\sdk\10.0.401\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.EolTargetFrameworks.targets(32,5): warning NETSDK1138: The target framework 'net6.0' is out of support and will not receive security updates in the future. Please refer to https://aka.ms/dotnet-core-support for more information about the support policy. [D:\New folder\CostumeUnlocker-Publish\tests\WeaverImprintFixture\WeaverImprintFixture.csproj]
+C:\Program Files\dotnet\sdk\10.0.401\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.EolTargetFrameworks.targets(32,5): warning NETSDK1138: The target framework 'net6.0' is out of support and will not receive security updates in the future. Please refer to https://aka.ms/dotnet-core-support for more information about the support policy. [D:\New folder\CostumeUnlocker-Publish\tests\WeaverImprintFixture\WeaverImprintFixture.csproj]
+C:\Program Files\dotnet\sdk\10.0.401\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.EolTargetFrameworks.targets(32,5): warning NETSDK1138: The target framework 'net6.0' is out of support and will not receive security updates in the future. Please refer to https://aka.ms/dotnet-core-support for more information about the support policy. [D:\New folder\CostumeUnlocker-Publish\tests\WeaverImprintFixture\WeaverImprintFixture.csproj]
+PASS: Repeated native point refresh remains x2, never x4/x8
+PASS: Repeated native point refresh remains x2, never x4/x8
+PASS: Repeated native point refresh remains x2, never x4/x8
+PASS: Removing all Sealed points removes bonus
+PASS: Champion drop field gets x2 before native consumers read it
+PASS: Actual Commoner prefix doubles inlined numerator
+PASS: Helper inside native Commoner scope does not multiply a second time
+PASS: Reentrant drop for same zone does not multiply or restore outer scope
+PASS: Nested different-zone exception restores only its own original numerator
+PASS: Native failure finalizer restores exact numerator and clears scope
+PASS: Direct Commoner chance helper doubles once outside drop scope
+PASS: Shared helpers remain unchanged outside Imprint consumers
+PASS: Echo scope boosts only its Corruption factor, including factors above1
+PASS: Nested Woven scopes scale exactly once and preserve enclosing Echo context
+PASS: Exception disposes nested Woven scopes without clearing outer Echo scope
+PASS: All Imprint contexts cleared after operation
+PASS: Woven scope includes outer Monolith spawn-weight consumer, not only final normalized selection
+PASS: Online mode does not modify Commoner data or helper
+PASS: Online mode never boosts Echo/Woven even with an existing scope
+PASS: Online mode leaves faction point-derived rates unchanged
+All 20 Weaver patch fixture checks passed.

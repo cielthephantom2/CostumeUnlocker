@@ -7,7 +7,7 @@ namespace LastEpochLAN.Core;
 
 public static class LanProtocol
 {
-    public const int Version = 40;
+    public const int Version = 41;
 }
 
 public sealed record PlayerState

@@ -232,6 +232,51 @@ Check(!installed.SelectMany(t=>t.CustomAttributes.Where(a=>a.AttributeType.Name=
  .SelectMany(a=>a.ConstructorArguments).Any(a=>a.Value is TypeReference target &&
  target.Name is "RandomizeLegendaryPotentialItemContainer" or "RandomizeLegendaryPotentialCraftingUI" or "ZoneRestrictedCraftingManager"),
  "Woven input container, crafting UI and zone/use gate remain entirely native");
+var imprintPatches=installed.Where(t=>t.Name.StartsWith("OfflineWeaver",StringComparison.Ordinal)).ToArray();
+Check(imprintPatches.Length==7,"all seven narrowly selected Weaver Imprint patch classes are installed");
+var pointImprints=imprintPatches.Single(t=>t.Name=="OfflineWeaverImprintPointRatesPatch");
+Check(pointImprints.Methods.Single(m=>m.Name=="Postfix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>()
+ .Where(m=>m.Name.StartsWith("set_",StringComparison.Ordinal)).Select(m=>m.Name).OrderBy(n=>n).SequenceEqual(new[]{
+ "set_ImprintContainerChampionsChanceToDropMoreItemsOfType","set_OnCacheOpenedChanceForSimilarItems"}),
+ "Imprint point refresh writes only Sealed/Warlord derived rate fields, not shared assets, points or unlock flags");
+var commonerImprints=imprintPatches.Single(t=>t.Name=="OfflineWeaverCommonerDropPatch");
+Check(commonerImprints.Methods.Single(m=>m.Name=="Finalizer").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="set_totalSpawners") &&
+ commonerImprints.Fields.Any(f=>f.CustomAttributes.Any(a=>a.AttributeType.Name=="ThreadStaticAttribute")),
+ "Commoner inlined probability has exception-safe numerator restoration and thread-local reentrancy guard");
+var wovenImprints=imprintPatches.Single(t=>t.Name=="OfflineWeaverWovenImprintScopePatch");
+var wovenTargets=Walk(new[]{wovenImprints}).SelectMany(t=>t.Methods).Where(m=>m.HasBody)
+ .SelectMany(m=>m.Body.Instructions).Where(i=>i.OpCode.Code==Mono.Cecil.Cil.Code.Ldstr).Select(i=>i.Operand as string).ToArray();
+Check(new[]{"IncreaseChanceForSpecificEchoTypes","SetNaturalSpawnedWovenEchoIslandData","OverrideEchoTypes","CanSpawnSpecialEchoesNaturally"}.All(wovenTargets.Contains),
+ "Woven/Loomed scopes cover both outer island probability and final native weighted choice");
+Check(!imprintPatches.SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Select(i=>i.Operand).OfType<MethodReference>()
+ .Any(m=>m.DeclaringType.Name=="RngElement" || m.Name.Contains("DropAfterDelay") || m.Name=="RebuildID"),
+ "Imprint multiplier patches never roll/replay rewards or generate/mutate items directly");
+var sharedView=types.Single(t=>t.Name=="NativeSharedStashView");
+var sharedSort=sharedView.Methods.Single(m=>m.Name=="SortSharedTab");
+Check(sharedSort.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="ItemContainer" && m.Name=="TrySort") &&
+ sharedSort.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="LanSharedChest" && m.Name=="SortTab") &&
+ !sharedSort.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name is "get_stash" or "SaveItems" or "SetDirty"),
+ "Shared Sort uses native algorithm on isolated projection containers and submits only order to Host, never personal stash save");
+Check(sharedView.Methods.Single(m=>m.Name=="ConfigureSharedTab").Body.Instructions.Any(i=>i.Operand is GenericInstanceMethod m &&
+ m.Name=="OpenModalAsync" && m.GenericArguments.Any(a=>a.Name=="StashConfigureTabModalV2")) &&
+ sharedView.Methods.Single(m=>m.Name=="PollTabConfiguration").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="ConfigureTab" && m.DeclaringType.Name=="LanSharedChest"),
+ "Configure Tab reuses native V2 modal and saves result through authoritative shared Host command");
+Check(sharedView.Methods.Any(m=>m.Name=="CaptureNativeTabArtwork") && sharedView.Methods.Any(m=>m.Name=="BuildSharedTabControls") &&
+ sharedView.Methods.Single(m=>m.Name=="BuildSharedTabControls").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="AddTab" && m.DeclaringType.Name=="LanSharedChest"),
+ "Shared tab navigation reuses native tab/control artwork with a dedicated add-tab action");
+var sharedClient=types.Single(t=>t.Name=="LanSharedChest");
+Check(sharedClient.Methods.Single(m=>m.Name=="Receive").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="ChestReply" && m.Name=="get_Tab") &&
+ sharedClient.Methods.Single(m=>m.Name=="SelectTab").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="get_TabControlsReady"),
+ "Shared tab switching is blocked during custody operations and selected view checks reply tab identity");
+Check(core.MainModule.Types.Single(t=>t.Name=="LanProtocol").Fields.Single(f=>f.Name=="Version").Constant is int sharedProtocol && sharedProtocol==41 &&
+ core.MainModule.Types.Single(t=>t.Name=="SharedStashRules").Fields.Single(f=>f.Name=="ItemsPerTab").Constant is int perTab && perTab==96,
+ "Protocol41 requires matching peers; per-tab snapshots retain the96-item transport limit");
+Check(sharedView.Methods.Single(m=>m.Name=="BindArtwork").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="set_raycastTarget") &&
+ sharedView.Methods.Single(m=>m.Name=="BuildSharedTabControls").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="SetPersistentListenerState"),
+ "Native shared-tab buttons create stable root hit targets; copied scroll controls disable serialized private callbacks");
+Check(sharedView.Methods.Single(m=>m.Name=="Tick").Body.Instructions.Any(i=>i.Operand is FieldReference f && f.Name=="projectedItems") &&
+ sharedClient.Methods.Single(m=>m.Name=="Tick").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="PollTabConfiguration"),
+ "Other-tab revisions do not rebuild unchanged item projections, and native Configure modal completion is polled even after F2 closes");
 File.WriteAllText(args[2],JsonSerializer.Serialize(new{passed=checks.Count,patchesInspected=patches.Length,
  installedPatches=installed.Select(t=>t.FullName),skippedPatches=skipped.Select(t=>t.FullName),
  scope="compiled metadata and IL audit; not gameplay acceptance",checks},new JsonSerializerOptions{WriteIndented=true}));
