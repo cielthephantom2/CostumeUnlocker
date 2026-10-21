@@ -1,0 +1,25 @@
+{
+  "version": "1.1.0-dev.27",
+  "protocol": 36,
+  "build": {
+    "warnings": 0,
+    "errors": 0
+  },
+  "managedChecks": 772,
+  "compiledAuditChecks": 11,
+  "updaterFixtureChecks": 15,
+  "nativeGameplayVerified": false,
+  "scope": "Combat Assist/minimap/DPS update; custom Disintegrate and Ascendance overrides removed; paused Encounter branch excluded",
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 977920,
+      "sha256": "C65876D76009AF58CFFFF88593C313D1216B6C15EE38A6103C706CFA688911D6"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 388096,
+      "sha256": "E1C45F919E8B02BA8FD2963ADAF33A239C21BC89C25806D54E34E4FB5ADE314B"
+    }
+  ]
+}

@@ -191,7 +191,9 @@ internal static class DamageMeterOverlay
 	internal static bool ShouldCaptureGameMouseInput => s_shouldCaptureGameMouseInput;
 	internal static bool IsManipulating => s_isDragging || s_isResizing;
 	internal static Rect LastDrawnBounds;
-    internal static bool IsShown => DpsSettings.damageMeterEnabled && DpsSettings.damageMeterVisible;
+    private static float lastDamageAt=float.NegativeInfinity;
+    internal static bool IsShown => DpsSettings.damageMeterEnabled && DpsSettings.damageMeterVisible &&
+        DpsRules.HudActive(Time.unscaledTime,lastDamageAt,IsManipulating);
     private static void HidePresentation()
     {LastDrawnBounds=default;s_shouldCaptureGameMouseInput=false;s_isDragging=false;s_isResizing=false;}
 	internal static (double Total,int Hits,int Skills) Readout => (s_totalDamage,s_hitsCaptured,s_skillTotals.Count);
@@ -381,6 +383,7 @@ internal static class DamageMeterOverlay
 		if (!s_isPaused && !(damage <= 0f) && !float.IsNaN(damage) && !float.IsInfinity(damage))
 		{
 			float unscaledTime = Time.unscaledTime;
+            lastDamageAt=unscaledTime;
             cachedCards=null;
 			s_totalDamage += damage;
 			s_biggestHit = Math.Max(s_biggestHit, damage);
@@ -412,6 +415,7 @@ internal static class DamageMeterOverlay
 
 	public static void ResetCombatData()
 	{
+        lastDamageAt=float.NegativeInfinity;
         HidePresentation();
 		cachedCards=null;nextCardsAt=0;labelCache.Clear();
 		s_sessionStartTime = Time.unscaledTime;

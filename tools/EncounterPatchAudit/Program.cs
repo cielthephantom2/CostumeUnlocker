@@ -49,4 +49,11 @@ Check(!catalogue.CustomAttributes.Any(a=>a.AttributeType.FullName=="HarmonyLib.H
 Check(catalogue.Fields.Any(f=>f.Name=="Enabled" && f.IsStatic && f.IsInitOnly) &&
  catalogue.Methods.Single(m=>m.Name==".cctor").Body.Instructions.Any(i=>Equals(i.Operand,"--lelan-encounter-development")),
  "native encounter discovery requires explicit development switch");
+Check(!types.Any(t=>t.Name.Contains("Disintegrate") || t.Name.Contains("Ascendance")) &&
+ !Walk(core.MainModule.Types).Any(t=>t.Name=="ChannelLocomotionRules"),
+ "Disintegrate movement, animation, root overrides and related Core helpers are absent from binary");
+var skillOverrides=types.SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions)
+ .Select(i=>i.Operand).OfType<MemberReference>().Where(m=>m.DeclaringType!=null &&
+  (m.DeclaringType.Name.Contains("Disintegrate") || m.DeclaringType.Name.Contains("ArcaneAscendance") || m.DeclaringType.Name=="ModifyDamageOnRotation")).ToArray();
+Check(skillOverrides.Length==0,"compiled mod has no direct references to Disintegrate/Ascendance or rotation-penalty override APIs");
 File.WriteAllText(args[2],JsonSerializer.Serialize(new{passed=checks.Count,patchesInspected=patches.Length,scope="compiled metadata and IL audit; not gameplay acceptance",checks},new JsonSerializerOptions{WriteIndented=true}));

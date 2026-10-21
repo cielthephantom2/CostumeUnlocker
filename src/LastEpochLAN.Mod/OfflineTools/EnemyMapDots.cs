@@ -79,9 +79,7 @@ internal static class EnemyMapDots
                 entry.Icon.ChangeIcon(sprites[kind]);
 
             }
-            // Native Tab overlay uses the original size; only the small corner map shrinks.
-            float scale=(kind==2?0.23f:kind==1?0.19f:0.15f)*(UIBase.instance?.overlayMapOpen==true?1f:0.3f);
-            if(entry.Icon.scaleMultiplier!=scale)entry.Icon.scaleMultiplier=scale;
+            ApplySize(entry);
             if(entry.Icon.img!=null) entry.Icon.img.raycastTarget=false;
             updateIndex++;
         }
@@ -103,11 +101,27 @@ internal static class EnemyMapDots
         var icon=anchor.AddComponent<DMMapIcon>();entry.Icon=icon;
         icon.sprite=sprites[0];icon.icon=sprites[0];
         icon.tint=new Color32(255,255,255,255);
-        icon.scaleMultiplier=UIBase.instance?.overlayMapOpen==true?0.15f:0.045f;icon.scaleWithZoom=false;
+        icon.scaleWithZoom=false;
         icon.overrideGlobalScaleMode=true;icon.ignoreGlobalScale=true;
         icon.rotate=false;icon.rotateWithMap=false;icon.useDirectionIndicator=false;
         icon.useCompositeDirectionIndicator=false;icon.WorldScale=false;
+        icon.ApplyScaling=true;icon.SinScale=false;ApplySize(entry);
         anchor.SetActive(true);entry.Kind=-1;
+    }
+    private static void ApplySize(Entry entry)
+    {
+        // MinimapIconManager.LateUpdate uses min(abs(icon.transform.lossyScale))
+        // when ApplyScaling is enabled. BaseDMMapIcon.scaleMultiplier is ignored
+        // on this renderer. Normalize the parent so monster prefab size cannot
+        // enlarge the dot; the large Tab overlay keeps the original UI scale.
+        float desired=UIBase.instance?.overlayMapOpen==true?1f:0.3f;
+        var parent=entry.Anchor.transform.parent;
+        var inherited=parent!=null?parent.lossyScale:Vector3.one;
+        float minimum=Mathf.Min(Mathf.Abs(inherited.x),Mathf.Abs(inherited.y),Mathf.Abs(inherited.z));
+        float scale=float.IsFinite(minimum) && minimum>0.0001f?desired/minimum:desired;
+        var current=entry.Anchor.transform.localScale;
+        if(!Mathf.Approximately(current.x,scale) || !Mathf.Approximately(current.y,scale) || !Mathf.Approximately(current.z,scale))
+            entry.Anchor.transform.localScale=Vector3.one*scale;
     }
     private static void EnsureSprites()
     {

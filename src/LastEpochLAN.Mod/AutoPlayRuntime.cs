@@ -26,13 +26,14 @@ internal sealed partial class AutoPlayRuntime
     private readonly List<ActorVisuals> enemies=new();
     private readonly List<string> buffNames=new();
     private ActorVisuals nearest,rareBoss;
-    private float nextRead,nextScan,nextBindings,saveAt=-1,enemyDistance=float.PositiveInfinity,rareDistance=float.PositiveInfinity;
+    private float nextRead,nextScan,nextBindings,nextTargets,nextBuffs,saveAt=-1,enemyDistance=float.PositiveInfinity,rareDistance=float.PositiveInfinity;
     private double nextPotion;
     private string character="",profilePath="",potionKey="1",scene="";
     private float hp,mp,ward;
     private UsingAbilityPlayer heldUse;
     private Ability heldAbility;
     private int heldSlot=-1;
+    private float heldRequestedAt;
     private void ReleaseHeld()
     {
         var use=heldUse;var ability=heldAbility;heldUse=null;heldAbility=null;heldSlot=-1;
@@ -91,7 +92,7 @@ internal sealed partial class AutoPlayRuntime
         runtime.ConfirmedCasts++;
         for(int i=0;i<runtime.abilities.Length;i++)
             if(runtime.abilities[i]?.Pointer==ability.Pointer)
-            {runtime.schedule.Requested(i,Time.unscaledTime,runtime.Settings.Skills[i].Interval,true);break;}
+            {runtime.schedule.Observed(i,Time.unscaledTime,runtime.Settings.Skills[i].Interval);break;}
     }
     internal void Tick(bool otherPanel,bool transition)
     {
@@ -125,10 +126,10 @@ internal sealed partial class AutoPlayRuntime
             Profile(id);
             string nowScene=SceneList.GetCurrentSceneDetails()?.Name??"";
             if(actorPointer!=actor.Pointer || scene!=nowScene)
-            {ReleaseHeld();actorPointer=actor.Pointer;scene=nowScene;enemies.Clear();nearest=rareBoss=null;nextScan=nextRead=0;schedule.Reset();}
-            if(Time.unscaledTime>=nextScan){Scan();nextScan=Time.unscaledTime+0.5f;}
+            {ReleaseHeld();actorPointer=actor.Pointer;scene=nowScene;enemies.Clear();nearest=rareBoss=null;nextScan=nextRead=nextTargets=nextBuffs=0;schedule.Reset();}
+            if(Time.unscaledTime>=nextScan){Scan();nextScan=Time.unscaledTime+0.15f;}
             if(Time.unscaledTime<nextRead)return;
-            nextRead=Time.unscaledTime+0.1f;
+            nextRead=Time.unscaledTime+(Open?0.1f:0.025f);
             Read(actor,input);
             var ui=UIBase.instance;
             bool paused=Open || otherPanel || !Application.isFocused || Time.timeScale<=0 || input==null ||
@@ -146,8 +147,13 @@ internal sealed partial class AutoPlayRuntime
             if(heldSlot>=0)
             {
                 var rule=Settings.Skills[heldSlot];
-                bool same=heldUse!=null && heldAbility!=null && heldUse.ability?.Pointer==heldAbility.Pointer &&
-                    abilities[heldSlot]?.Pointer==heldAbility.Pointer && heldUse.isUsingChannelledAbility();
+                bool ownsCast=heldUse!=null && heldAbility!=null && heldUse.ability?.Pointer==heldAbility.Pointer && abilities[heldSlot]?.Pointer==heldAbility.Pointer;
+                // Some channels become active only after their initial cast animation.
+                // Keep the accepted request through that wind-up instead of losing ownership.
+                if(ownsCast && !heldUse.isAbilityUseRestricted && !heldUse.hasCast && !actor.stateController.IsIdle && !actor.stateController.IsMoving &&
+                    now-heldRequestedAt<1 && AutoPlayRules.ContinueHold(rule,contexts[heldSlot]) && !input.IsHoldingAbilityButton())
+                {Status="Starting: "+names[heldSlot];return;}
+                bool same=ownsCast && heldUse.isUsingChannelledAbility();
                 if(same && !heldUse.isAbilityUseRestricted && AutoPlayRules.ContinueHold(rule,contexts[heldSlot]) && !input.IsHoldingAbilityButton())
                 {
                     var target=rule.TargetRareBoss?rareBoss:nearest;
@@ -202,8 +208,8 @@ internal sealed partial class AutoPlayRuntime
             // Programmatic single press: -1 avoids tying the command's lifetime
             // to a physical Rewired key that is not actually being held.
             bool accepted=use.UseAbilityCommand(ability,slot,target,transform,-1,true,false,false,false);
-            if(accepted && rule.Interval==0 && use.ability?.Pointer==ability.Pointer && use.isUsingChannelledAbility())
-            {heldUse=use;heldAbility=ability;heldSlot=slot;}
+            if(accepted && rule.Interval==0 && use.ability?.Pointer==ability.Pointer)
+            {heldUse=use;heldAbility=ability;heldSlot=slot;heldRequestedAt=Time.unscaledTime;}
             Requests++;schedule.Requested(slot,now,rule.Interval,accepted);
             Status=(accepted?"Cast requested: ":"Game rejected: ")+names[slot];
             return accepted;
@@ -226,18 +232,25 @@ internal sealed partial class AutoPlayRuntime
         mp=manaKnown?100*Mathf.Clamp01(actor.mana.currentMana/actor.mana.maxMana):0;
         var protection=actor.GetComponent<ProtectionClass>();ward=protection?.CurrentWard??0;
         var potion=actor.GetComponent<HealthPotion>();potionCharges=potion?.currentCharges??0;potionMax=potion?.maxCharges??0;potionCost=potion?.chargeCost??1;
-        nearest=rareBoss=null;enemyDistance=rareDistance=float.PositiveInfinity;
-        var local=actor.GetActorSync()?.actorVisuals?.alignment;var origin=actor.position();
-        foreach(var v in enemies)
+        if(Time.unscaledTime>=nextTargets)
         {
-            if(!EnemyAlive(v,local) || v.gameObject.scene!=actor.gameObject.scene)continue;
-            float d=Vector3.Distance(origin,v.transform.position);
-            if(d<enemyDistance){enemyDistance=d;nearest=v;}
-            var kind=v.BaseDisplayInformation?.actorClass;
-            if((kind==DisplayActorClass.Rare || kind==DisplayActorClass.Boss) && d<rareDistance){rareDistance=d;rareBoss=v;}
+            nextTargets=Time.unscaledTime+0.05f;nearest=rareBoss=null;enemyDistance=rareDistance=float.PositiveInfinity;
+            var local=actor.GetActorSync()?.actorVisuals?.alignment;var origin=actor.position();
+            foreach(var v in enemies)
+            {
+                if(!EnemyAlive(v,local) || v.gameObject.scene!=actor.gameObject.scene)continue;
+                float d=Vector3.Distance(origin,v.transform.position);
+                if(d<enemyDistance){enemyDistance=d;nearest=v;}
+                var kind=v.BaseDisplayInformation?.actorClass;
+                if((kind==DisplayActorClass.Rare || kind==DisplayActorClass.Boss) && d<rareDistance){rareDistance=d;rareBoss=v;}
+            }
         }
-        buffNames.Clear();var buffs=actor.statBuffs?.buffs;
-        if(buffs!=null)foreach(var buff in buffs)if(buff!=null && buff.remainingDuration>0 && !string.IsNullOrWhiteSpace(buff.name) && !buffNames.Contains(buff.name))buffNames.Add(buff.name);
+        var buffs=actor.statBuffs?.buffs;
+        if(Time.unscaledTime>=nextBuffs)
+        {
+            nextBuffs=Time.unscaledTime+0.1f;buffNames.Clear();
+            if(buffs!=null)foreach(var buff in buffs)if(buff!=null && buff.remainingDuration>0 && !string.IsNullOrWhiteSpace(buff.name) && !buffNames.Contains(buff.name))buffNames.Add(buff.name);
+        }
         var use=actor.stateController?.usingAbility?.TryCast<UsingAbilityPlayer>();
         for(int i=0;i<5;i++)
         {

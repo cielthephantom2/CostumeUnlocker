@@ -62,6 +62,14 @@ public readonly record struct AutoSkillContext(string Ability,float HealthPercen
 
 public static class AutoPlayRules
 {
+    public static bool TrySliderValue(string text,float min,float max,bool whole,out float value)
+    {
+        value=0;
+        if(string.IsNullOrWhiteSpace(text) || text.Length>32)return false;
+        if(!float.TryParse(text.Trim().Replace(',','.'),System.Globalization.NumberStyles.Float,
+            System.Globalization.CultureInfo.InvariantCulture,out var parsed) || !float.IsFinite(parsed))return false;
+        value=Math.Clamp(whole?MathF.Round(parsed):parsed,min,max);return true;
+    }
     // A running native channel already consumed its charge; its own cooldown
     // must not cancel the hold. All resource/target/trigger guards still apply.
     public static bool ContinueHold(AutoSkillRule r,AutoSkillContext c)=>
@@ -113,6 +121,12 @@ public sealed class AutoPlaySchedule
     }
     public void Requested(int slot,double now,float interval,bool accepted)
     {
-        next[slot]=now+(accepted?Math.Max(0,interval):0.75);globalNext=now+0.2;cursor=(slot+1)%5;
+        next[slot]=now+(accepted?Math.Max(0,interval):0.15);globalNext=now+0.025;cursor=(slot+1)%5;
+    }
+    public void Observed(int slot,double now,float interval)
+    {
+        // Confirmation starts this skill's repeat timer, not a global pause.
+        // A zero interval should be ready as soon as the native cast ends.
+        next[slot]=now+Math.Max(0,interval);
     }
 }

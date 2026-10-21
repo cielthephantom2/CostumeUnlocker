@@ -1,6 +1,8 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.24
+# TM Last Epoch Co-op Mod — 1.1.0-dev.27
 
 Development release, protocol **36**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). Both Host and Client must update. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
+
+**Dev.27:** speeds up Combat Assist scheduling, adds click-to-edit numeric slider values, fixes small minimap enemy dots to render at 30% size, and hides the DPS overlay after 15 seconds without damage (new damage shows it again without clearing totals). All custom Disintegrate movement, animation and related Arcane Ascendance overrides are removed; those skills use native behavior. Encounter remains paused and excluded. See [dev.27 changes and limits](RELEASE-1.1.0-dev27-VI.md).
 
 **Dev.24:** updates F1 Combat Assist with a zero-second Hold cast mode, Low ward and an absolute Ward threshold, a detection-radius preview, and a clearer minimum-current-MP label. Small minimap enemy dots use 30% of their previous size; Tab overlay dots keep their original size. The DPS overlay stays visible, uses a transparent frame and green bars, and stacks its statistics vertically. Native gameplay/visual verification is pending. Encounter work remains paused and is excluded from this release. See [dev.24 changes and limits](RELEASE-1.1.0-dev24-VI.md).
 

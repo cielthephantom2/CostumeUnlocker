@@ -75,10 +75,16 @@ internal sealed partial class AutoPlayRuntime
             var dot=Box(button.transform,"Indicator",w-25,10,8,8,muted);
             detailUpdates.Add(()=>{button.targetGraphic.color=get()?new Color(0.105f,0.24f,0.25f):control;dot.color=get()?accent:muted;});
         }
-        private void Slider(float x,float y,float w,string name,Func<float> get,Action<float> set,float min,float max,bool whole=false,string unit="%",Func<string> display=null,bool previewRadius=false)
+        private void Slider(float x,float y,float w,string name,Func<float> get,Action<float> set,float min,float max,bool whole=false,string unit="%",bool previewRadius=false)
         {
-            Label(details.transform,x,y,w-78,20,()=>name,12,true,detailUpdates);
-            var number=Label(details.transform,x+w-100,y,100,20,()=>display?.Invoke()??$"{get():0.##}{unit}",12,false,detailUpdates);number.alignment=TextAlignmentOptions.TopRight;
+            Label(details.transform,x,y,w-78,20,()=>name+(unit=="%"?" (%)":unit.Trim()=="s"?" (s)":unit.Trim()=="m"?" (m)":""),12,true,detailUpdates);
+            // Real native input field: no per-frame text replacement while editing.
+            var fieldRoot=Node(name+" value",details.transform,x+w-76,y-2,76,23);var background=Paint(fieldRoot,control);
+            var viewport=Node("Viewport",fieldRoot.transform,3,0,70,23);viewport.AddComponent<RectMask2D>();
+            var number=Label(viewport.transform,0,0,70,23,()=>"",12,false,new List<Action>());number.alignment=TextAlignmentOptions.MidlineRight;
+            var field=fieldRoot.AddComponent<TMP_InputField>();field.targetGraphic=background;field.textViewport=viewport.GetComponent<RectTransform>();field.textComponent=number;
+            field.fontAsset=font;field.lineType=TMP_InputField.LineType.SingleLine;field.characterLimit=32;
+            field.SetTextWithoutNotify(get().ToString("0.##",System.Globalization.CultureInfo.InvariantCulture));
             var go=Node(name,details.transform,x,y+22,w,16);Paint(go,new Color(0,0,0,0),true,false);
             var slider=go.AddComponent<UnityEngine.UI.Slider>();slider.minValue=min;slider.maxValue=max;slider.wholeNumbers=whole;
             var track=Box(go.transform,"Track",0,6,w,4,control);
@@ -96,11 +102,23 @@ internal sealed partial class AutoPlayRuntime
                 set(slider.value);
                 // Rules can round to a step; keep the handle and saved value equal.
                 slider.SetValueWithoutNotify(get());
-                number.text=display?.Invoke()??$"{get():0.##}{unit}";
+                if(!field.isFocused)field.SetTextWithoutNotify(get().ToString("0.##",System.Globalization.CultureInfo.InvariantCulture));
                 if(previewRadius)previewUntil=Time.unscaledTime+1.2f;
                 owner.Changed();
             }));
-            detailUpdates.Add(()=>slider.SetValueWithoutNotify(get()));
+            field.onEndEdit.AddListener((Action<string>)(_=>
+            {
+                // As with Slider.value, read actual native state rather than the event argument.
+                if(LastEpochLAN.Core.AutoPlayRules.TrySliderValue(field.text,min,max,whole,out float value))
+                {set(value);owner.Changed();if(previewRadius)previewUntil=Time.unscaledTime+1.2f;}
+                field.SetTextWithoutNotify(get().ToString("0.##",System.Globalization.CultureInfo.InvariantCulture));
+                slider.SetValueWithoutNotify(get());
+            }));
+            detailUpdates.Add(()=>
+            {
+                slider.SetValueWithoutNotify(get());
+                if(!field.isFocused)field.SetTextWithoutNotify(get().ToString("0.##",System.Globalization.CultureInfo.InvariantCulture));
+            });
             if(previewRadius)detailUpdates.Add(()=>
             {if(RectTransformUtility.RectangleContainsScreenPoint(go.GetComponent<RectTransform>(),Input.mousePosition,null))previewUntil=Time.unscaledTime+0.1f;});
         }
@@ -288,7 +306,7 @@ internal sealed partial class AutoPlayRuntime
             Slider(278,232,258,"MP threshold",()=>r.ManaPercent,v=>r.ManaPercent=v,1,100,true);
             Slider(0,276,258,"Detection radius",()=>r.Radius,v=>r.Radius=v,1,60,true," m",previewRadius:true);
             Slider(278,276,258,"MP before cast",()=>r.MinimumManaPercent,v=>r.MinimumManaPercent=v,0,100,true);
-            Slider(0,320,258,"Repeat interval",()=>r.Interval,v=>r.Interval=(float)Math.Round(v*4)/4,0,120,false," s",()=>r.Interval==0?"0 s / Hold key":$"{r.Interval:0.##} s");
+            Slider(0,320,258,"Repeat interval",()=>r.Interval,v=>r.Interval=(float)Math.Round(v*4)/4,0,120,false," s");
             Toggle(278,317,258,"Only when buff missing",()=>r.BuffMissing,v=>r.BuffMissing=v);
             Button(details.transform,"Choose buff",278,352,258,22,()=>r.BuffName==""?"Choose detected buff":r.BuffName,()=>
             {var names=new[]{""}.Concat(owner.buffNames).Concat(new[]{r.BuffName}).Distinct().ToArray();r.BuffName=names[(Array.IndexOf(names,r.BuffName)+1)%names.Length];},detailUpdates);
