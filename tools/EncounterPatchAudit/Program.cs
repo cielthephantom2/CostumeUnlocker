@@ -56,4 +56,60 @@ var skillOverrides=types.SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany
  .Select(i=>i.Operand).OfType<MemberReference>().Where(m=>m.DeclaringType!=null &&
   (m.DeclaringType.Name.Contains("Disintegrate") || m.DeclaringType.Name.Contains("ArcaneAscendance") || m.DeclaringType.Name=="ModifyDamageOnRotation")).ToArray();
 Check(skillOverrides.Length==0,"compiled mod has no direct references to Disintegrate/Ascendance or rotation-penalty override APIs");
-File.WriteAllText(args[2],JsonSerializer.Serialize(new{passed=checks.Count,patchesInspected=patches.Length,scope="compiled metadata and IL audit; not gameplay acceptance",checks},new JsonSerializerOptions{WriteIndented=true}));
+Check(mod.CustomAttributes.Any(a=>a.AttributeType.Name=="HarmonyDontPatchAllAttribute"),
+ "Melon automatic PatchAll is disabled; release installs only selected inventory/local hooks");
+var policy=types.Single(t=>t.Name=="RoomFeaturePolicy");
+var enabled=policy.Methods.Single(m=>m.Name=="get_SharedWorldEnabled").Body.Instructions;
+Check(enabled.Count==2 && enabled[0].OpCode.Code==Mono.Cecil.Cil.Code.Ldc_I4_0 && enabled[1].OpCode.Code==Mono.Cecil.Cil.Code.Ret,
+ "compiled release shared-world policy is false with no configuration or command-line override");
+string ReflectionNamespace(TypeDefinition type)=>type.IsNested ? ReflectionNamespace(type.DeclaringType) : type.Namespace;
+var installed=patches.Where(t=>LastEpochLAN.Mod.RoomFeaturePolicy.AllowsPatch(ReflectionNamespace(t),t.Name,t.DeclaringType?.Name??"")).ToArray();
+var skipped=patches.Except(installed).ToArray();
+Check(installed.Any(t=>t.Name=="SharedChestItemLockPatch") && installed.Any(t=>t.Name=="SharedStashProjectionMutationPatch") &&
+ installed.Any(t=>t.DeclaringType?.Name=="LanLootFilters") && installed.Any(t=>t.Name=="AutoPlayCastObservationPatch") &&
+ installed.Any(t=>t.Name=="DpsActorDamagePatch"), "selected compiled hooks retain F2 custody/projection, Loot Filter labels, local Assist and DPS");
+Check(skipped.Any(t=>t.Name=="NativeGlobalVisualCapturePatch") && skipped.Any(t=>t.Name=="ReplicaAiPatch") &&
+ skipped.Any(t=>t.Name=="SkillCapture") && skipped.Any(t=>t.Name=="SharedEchoCompletionPatch") &&
+ !installed.Any(t=>t.Namespace=="LastEpochLAN.Mod" && t.Name.Contains("Visual")),
+ "network VFX, skill capture, enemy AI and shared Monolith hooks are not selected for installation");
+var installer=types.Single(t=>t.Name=="RoomPatches").Methods.Single(m=>m.Name=="Install");
+Check(installer.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="RoomFeaturePolicy" && m.Name=="AllowsPatch") &&
+ installer.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="CreateClassProcessor") &&
+ !types.SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Any(i=>i.Operand is MethodReference m && m.Name=="PatchAll"),
+ "runtime patch installation uses the release allowlist without a PatchAll bypass");
+IEnumerable<Mono.Cecil.Cil.Instruction> Reachable(MethodDefinition method)
+{
+ var pending=new Stack<Mono.Cecil.Cil.Instruction>();var visited=new HashSet<Mono.Cecil.Cil.Instruction>();pending.Push(method.Body.Instructions[0]);
+ while(pending.TryPop(out var instruction))
+ {
+  if(!visited.Add(instruction))continue;
+  yield return instruction;
+  if(instruction.Operand is MethodReference target && target.DeclaringType.Name=="RoomFeaturePolicy" && target.Name=="get_SharedWorldEnabled")
+  {
+   var branch=instruction.Next;
+   if(branch?.OpCode.Code is Mono.Cecil.Cil.Code.Brtrue or Mono.Cecil.Cil.Code.Brtrue_S)
+   {if(branch.Next!=null)pending.Push(branch.Next);continue;}
+   if(branch?.OpCode.Code is Mono.Cecil.Cil.Code.Brfalse or Mono.Cecil.Cil.Code.Brfalse_S)
+   {pending.Push((Mono.Cecil.Cil.Instruction)branch.Operand);continue;}
+   throw new InvalidOperationException("Unrecognized shared-world guard IL; inspect before releasing.");
+  }
+  if(instruction.OpCode.FlowControl is Mono.Cecil.Cil.FlowControl.Return or Mono.Cecil.Cil.FlowControl.Throw)continue;
+  if(instruction.Operand is Mono.Cecil.Cil.Instruction jump)pending.Push(jump);
+  if(instruction.Operand is Mono.Cecil.Cil.Instruction[] jumps)foreach(var jumpTarget in jumps)pending.Push(jumpTarget);
+  if(instruction.OpCode.FlowControl!=Mono.Cecil.Cil.FlowControl.Branch && instruction.Next!=null)pending.Push(instruction.Next);
+ }
+}
+var lan=types.Single(t=>t.Name=="LanMod");
+var reachable=Reachable(lan.Methods.Single(m=>m.Name=="OnUpdate")).Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(!reachable.Any(m=>m.Name=="Tick" && m.DeclaringType.Name is "WorldSynchronizer" or "NativeGuestCombat" or "LanPartyTravel" or "LanMonolithParty" or "NativeVisualEvents" or "NativePartyReplica" or "NativeEncounterCatalogue") &&
+ !reachable.Any(m=>m.Name=="UpdateMarkers"), "compiled OnUpdate cannot reach shared-world/combat/map/encounter/remote rendering updates under release policy");
+Check(reachable.Any(m=>m.Name=="PublishInventoryPresence") && reachable.Any(m=>m.Name=="Tick" && m.DeclaringType.Name=="LanSharedChest") &&
+ reachable.Any(m=>m.Name=="Tick" && m.DeclaringType.Name=="LanLootFilters"), "compiled OnUpdate still processes inventory presence, F2 and room filters");
+Check(!Reachable(lan.Methods.Single(m=>m.Name=="OnLateUpdate")).Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name!="RoomFeaturePolicy"),
+ "compiled OnLateUpdate returns before native party status, cosmetics, summon and enemy pose work");
+var presenceCalls=lan.Methods.Single(m=>m.Name=="PublishInventoryPresence").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(!presenceCalls.Any(m=>m.DeclaringType.Name is "ClassVisualReplica" or "NativeSummonCapture" or "LanDroppedItems" or "NativeSkillVisualCapture"),
+ "inventory presence does not capture avatar, summons, ground items or VFX");
+File.WriteAllText(args[2],JsonSerializer.Serialize(new{passed=checks.Count,patchesInspected=patches.Length,
+ installedPatches=installed.Select(t=>t.FullName),skippedPatches=skipped.Select(t=>t.FullName),
+ scope="compiled metadata and IL audit; not gameplay acceptance",checks},new JsonSerializerOptions{WriteIndented=true}));

@@ -31,6 +31,7 @@ internal static class MapFog
     }
     internal static void Tick()
     {
+        using var performance = RuntimePerformance.Measure(PerformanceArea.MapFog);
         if(!OfflineToolkit.Settings.RemoveFog || !OfflineToolkit.Ready) {ClearPreview();return;}
         var image=Il2CppDMM.DMMap.Instance?.mapImage;
         if(image==null || !image.isActiveAndEnabled) {if(preview!=null) preview.enabled=false;return;}

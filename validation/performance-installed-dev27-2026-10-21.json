@@ -1,0 +1,119 @@
+{
+  "scope": "Historical installed dev27 snapshot and source inspection; no live map FPS benchmark",
+  "sourceLastWrite": "2026-10-21T13:40:10.3338084+07:00",
+  "utc": "2026-10-21T13:40:10.2951625+07:00",
+  "version": "1.1.0-dev.27",
+  "protocol": 36,
+  "localScene": "M_Rest",
+  "sessionStatus": "Hosting",
+  "participants": [
+    {
+      "Scene": "M_Rest",
+      "Available": true,
+      "Cooperative": true
+    },
+    {
+      "Scene": "M_Rest",
+      "Available": true,
+      "Cooperative": false
+    }
+  ],
+  "callbackPerformance": {
+    "update": {
+      "Samples": 600,
+      "AverageMs": 5.857588833333331,
+      "P95Ms": 16.3564,
+      "P99Ms": 22.099,
+      "MaxMs": 28.9042,
+      "AverageManagedBytes": 1072289,
+      "MaxManagedBytes": 2552480
+    },
+    "lateUpdate": {
+      "Samples": 600,
+      "AverageMs": 0.00997749999999999,
+      "P95Ms": 0.0137,
+      "P99Ms": 0.0241,
+      "MaxMs": 0.0766,
+      "AverageManagedBytes": 0,
+      "MaxManagedBytes": 0
+    },
+    "reportWriterError": "",
+    "gc0": 16224,
+    "gc1": 7029,
+    "gc2": 207
+  },
+  "worldCostBreakdown": [
+    {
+      "name": "mapTriggers",
+      "count": 80105,
+      "averageMs": 4.27351601023972E-05,
+      "maxMs": 0.0821
+    },
+    {
+      "name": "actorScan",
+      "count": 79664,
+      "averageMs": 0.049090662030529114,
+      "maxMs": 23.7217
+    },
+    {
+      "name": "actorRead",
+      "count": 79664,
+      "averageMs": 1.4647912871560496,
+      "maxMs": 72.276
+    },
+    {
+      "name": "sceneGraphs",
+      "count": 79664,
+      "averageMs": 0.05363718743723903,
+      "maxMs": 85.621
+    },
+    {
+      "name": "publish",
+      "count": 79664,
+      "averageMs": 0.018324249347259066,
+      "maxMs": 6.036
+    }
+  ],
+  "network": {
+    "SentBytes": 232418142,
+    "ReceivedBytes": 2845889,
+    "SentFrames": 1754,
+    "ReceivedFrames": 1653,
+    "AverageSendMs": 2.0124771949828966,
+    "MaxSendMs": 29.7551,
+    "PendingOutgoingCombat": 0,
+    "PendingIncomingCombat": 0
+  },
+  "observedGameFpsLifetime": 72.61492382066933,
+  "lanFrameSamples": 632714,
+  "vfxCumulative": {
+    "captured": 47612,
+    "snapshots": 1607699,
+    "localSnapshots": 1556169,
+    "particleCountMetadata": 123792394
+  },
+  "tools": {
+    "AutoCompleteNewCharacter": false,
+    "UnlockCosmetics": true,
+    "Gold": true,
+    "Keys": true,
+    "Potions": true,
+    "Materials": true,
+    "Bones": true,
+    "RangePickup": true,
+    "RevealObjectives": true,
+    "EnemyMapDots": true,
+    "RemoveFog": true,
+    "UnexploredOpacity": 0.2,
+    "WideMinimapZoom": true,
+    "CustomZoom": true,
+    "ZoomDistance": 1.19,
+    "DpsVisible": false,
+    "DpsOffsetX": 7,
+    "DpsBottomOffset": 0,
+    "DpsTopOffset": 719.0625,
+    "DpsPositionVersion": 1,
+    "DpsScale": 1.28125
+  },
+  "installedDllSha256": "C65876D76009AF58CFFFF88593C313D1216B6C15EE38A6103C706CFA688911D6"
+}

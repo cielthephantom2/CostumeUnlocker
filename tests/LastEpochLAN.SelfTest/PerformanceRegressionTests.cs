@@ -7,6 +7,31 @@ internal static class PerformanceRegressionTests
 {
     internal static async Task Run(Action<bool,string> check)
     {
+        var auto = new AutoPlaySettings(); auto.Potion.Enabled = true;
+        check(!AutoPlayRules.RequiresTargetScan(auto,false,true,false), "potion-only assist does not scan enemy registry");
+        auto.Skills[0].Enabled = true;
+        check(!AutoPlayRules.RequiresTargetScan(auto,false,true,false), "unconditional self buff does not scan enemies");
+        auto.Skills[0].SelfTarget = false;
+        check(AutoPlayRules.RequiresTargetScan(auto,false,true,false) && !AutoPlayRules.RequiresTargetScan(auto,false,true,true),
+            "offensive assist retains target scans while running and suspends them behind chat or menus");
+        check(AutoPlayRules.RequiresTargetScan(auto,true,false,true), "configuration panel retains enabled target condition previews");
+        auto.Skills[0].SelfTarget = true; auto.Skills[0].RareBossNear = true;
+        check(AutoPlayRules.RequiresTargetScan(auto,false,true,false), "self buffs conditioned on rare or boss proximity still scan targets");
+        auto.Skills[0].RareBossNear = false; auto.Skills[0].EnemyNear = true;
+        check(AutoPlayRules.RequiresTargetScan(auto,false,true,false) && !AutoPlayRules.RequiresTargetScan(auto,false,false,false),
+            "self buffs conditioned on nearby enemies scan only when assist runs");
+        var frames = new FrameTimingWindow(4);
+        frames.Advance(10); frames.Record(10, 2, 100); frames.Record(10, 3, 200);
+        frames.Advance(11); frames.Advance(12);
+        var burst = frames.Read();
+        check(frames.Calls == 2 && burst.Samples == 2 && burst.AverageMs == 2.5 && burst.MaxMs == 5 && burst.AverageManagedBytes == 150,
+            "performance hooks aggregate all hits within a frame and include empty frames rather than averaging per hit");
+        frames.Record(12, double.NaN, 10); frames.Advance(1000000);
+        check(frames.Read().Samples == 4 && frames.Read().MaxMs == 0 && frames.Calls == 2,
+            "frame profiling bounds idle catch-up and rejects invalid readings");
+        long beforeFrames = GC.GetAllocatedBytesForCurrentThread();
+        for(int i=1000001;i<1001001;i++) { frames.Advance(i); frames.Record(i, 1, 100); }
+        check(GC.GetAllocatedBytesForCurrentThread()-beforeFrames < 1024, "per-frame feature profiling records without allocating managed objects");
         var window=new TimingWindow(100);
         for(int i=1;i<=200;i++) window.Record(i,i*10);
         var timing=window.Read();

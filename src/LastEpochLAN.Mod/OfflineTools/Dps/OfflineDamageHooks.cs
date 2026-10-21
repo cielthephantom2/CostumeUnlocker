@@ -39,16 +39,19 @@ internal static class OfflineDamageHooks
     internal static Scope Begin(DamageStatsHolder holder, Actor target)
     {
         if (!CaptureEnabled || !OfflineToolkit.Enabled || holder == null || target == null || target.isPlayerActor || target.summoned?.playerMinion == true) return null;
+        using var performance = RuntimePerformance.Measure(PerformanceArea.DpsCapture);
         try
         {
-            var health = target.GetComponent<UnitHealth>();
-            if (health == null || health.currentHealth <= 0) return null;
-            scopes ??= new();
-            if (scopes.Any(scope => scope.Holder == holder.Pointer && scope.Health != null && scope.Health.Pointer == health.Pointer)) return null;
             var references = holder.GetCreationReferences();
             var creator = holder.getCreator();
             bool owned = Owned(creator) || references != null && (Owned(references.creator) || references.HasBeenCreatedByLocalPlayer());
-            if (!owned && scopes.Count == 0) return null;
+            if (!owned && (scopes == null || scopes.Count == 0)) return null;
+            var health = target.GetComponent<UnitHealth>();
+            if (health == null || health.currentHealth <= 0) return null;
+            scopes ??= new();
+            // Preserve nested-hit subtraction without a captured LINQ predicate.
+            foreach (var active in scopes)
+                if (active.Holder == holder.Pointer && active.Health != null && active.Health.Pointer == health.Pointer) return null;
             var scope = new Scope { Holder = holder.Pointer, Health = health, Before = health.currentHealth, Owned = owned };
             if (owned)
             {
@@ -74,6 +77,7 @@ internal static class OfflineDamageHooks
     {
         if(privateQa) DotDiagnostic=$"begin actor={receiver?.actor!=null}, entries={ailments?.Count}";
         if(!CaptureEnabled || !OfflineToolkit.Enabled || receiver?.actor==null || receiver.actor.isPlayerActor || ailments==null || ailments.Count==0) return null;
+        using var performance = RuntimePerformance.Measure(PerformanceArea.DpsCapture);
         try
         {
             var health=receiver.actor.GetComponent<UnitHealth>();
@@ -101,6 +105,7 @@ internal static class OfflineDamageHooks
     internal static void End(Scope scope)
     {
         if (scope == null) return;
+        using var performance = RuntimePerformance.Measure(PerformanceArea.DpsCapture);
         try
         {
             scopes.Remove(scope);

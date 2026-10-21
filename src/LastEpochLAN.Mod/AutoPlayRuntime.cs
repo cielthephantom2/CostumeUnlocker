@@ -127,14 +127,19 @@ internal sealed partial class AutoPlayRuntime
             string nowScene=SceneList.GetCurrentSceneDetails()?.Name??"";
             if(actorPointer!=actor.Pointer || scene!=nowScene)
             {ReleaseHeld();actorPointer=actor.Pointer;scene=nowScene;enemies.Clear();nearest=rareBoss=null;nextScan=nextRead=nextTargets=nextBuffs=0;schedule.Reset();}
-            if(Time.unscaledTime>=nextScan){Scan();nextScan=Time.unscaledTime+0.15f;}
             if(Time.unscaledTime<nextRead)return;
             nextRead=Time.unscaledTime+(Open?0.1f:0.025f);
-            Read(actor,input);
             var ui=UIBase.instance;
             bool paused=Open || otherPanel || !Application.isFocused || Time.timeScale<=0 || input==null ||
                 input.forceDisableInput || input.cinematicActive || input.IsInputFieldActive || input.ButtonPressBlocked ||
                 ui==null || ui.menuOpen || ui.IsChatInputFocused || ui.AnyPanelOpened();
+            // The panel shows target conditions while configuring. Closed and
+            // paused automation needs neither a scene walk nor target reads.
+            bool needTargets=AutoPlayRules.RequiresTargetScan(Settings,Open,Armed,paused);
+            if(needTargets && Time.unscaledTime>=nextScan){Scan();nextScan=Time.unscaledTime+0.15f;}
+            if(!needTargets)
+            {enemies.Clear();nearest=rareBoss=null;enemyDistance=rareDistance=float.PositiveInfinity;nextScan=nextTargets=0;}
+            Read(actor,input,needTargets);
             if(!Armed){Status="Stopped - configure skills, then Start";return;}
             if(paused){Status="Paused - panel/chat/focus";return;}
             var potion=actor.GetComponent<HealthPotion>();
@@ -216,6 +221,7 @@ internal sealed partial class AutoPlayRuntime
     }
     private void Scan()
     {
+        using var performance = RuntimePerformance.Measure(PerformanceArea.AutoTargets);
         enemies.Clear();var groups=ActorManager.instance?.visuals;if(groups==null)return;
         foreach(var group in groups)
         {
@@ -225,20 +231,21 @@ internal sealed partial class AutoPlayRuntime
     }
     private static bool EnemyAlive(ActorVisuals v,Alignment local)=>v!=null && v.isActiveAndEnabled && !v.isPlayer && !v.dead && !v.isCorpse &&
         v.actorSync?.IsDead!=true && v.alignment!=null && local!=null && v.alignment.IsFoe(local);
-    private void Read(Actor actor,EpochInputManager input)
+    private void Read(Actor actor,EpochInputManager input,bool needTargets=true)
     {
         hp=100*Mathf.Clamp01(actor.health.currentHealth/actor.health.maxHealth);
         bool manaKnown=actor.mana!=null && actor.mana.maxMana>0;
         mp=manaKnown?100*Mathf.Clamp01(actor.mana.currentMana/actor.mana.maxMana):0;
         var protection=actor.GetComponent<ProtectionClass>();ward=protection?.CurrentWard??0;
         var potion=actor.GetComponent<HealthPotion>();potionCharges=potion?.currentCharges??0;potionMax=potion?.maxCharges??0;potionCost=potion?.chargeCost??1;
-        if(Time.unscaledTime>=nextTargets)
+        if(needTargets && Time.unscaledTime>=nextTargets)
         {
+            using var performance = RuntimePerformance.Measure(PerformanceArea.AutoTargets);
             nextTargets=Time.unscaledTime+0.05f;nearest=rareBoss=null;enemyDistance=rareDistance=float.PositiveInfinity;
-            var local=actor.GetActorSync()?.actorVisuals?.alignment;var origin=actor.position();
+            var local=actor.GetActorSync()?.actorVisuals?.alignment;var origin=actor.position();var actorScene=actor.gameObject.scene;
             foreach(var v in enemies)
             {
-                if(!EnemyAlive(v,local) || v.gameObject.scene!=actor.gameObject.scene)continue;
+                if(!EnemyAlive(v,local) || v.gameObject.scene!=actorScene)continue;
                 float d=Vector3.Distance(origin,v.transform.position);
                 if(d<enemyDistance){enemyDistance=d;nearest=v;}
                 var kind=v.BaseDisplayInformation?.actorClass;

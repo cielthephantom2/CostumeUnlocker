@@ -10,6 +10,7 @@ internal static class ObjectiveReveal
     internal static void Track(DelayedZoneObjectivePulse pulse)=>pulses[pulse.GetInstanceID()]=(pulse,Time.unscaledTime+0.5f);
     internal static void Tick()
     {
+        using var performance = RuntimePerformance.Measure(PerformanceArea.Objectives);
         if(!OfflineToolkit.Ready || !OfflineToolkit.Settings.RevealObjectives) return;
         foreach(var pair in pulses.ToArray())
         {

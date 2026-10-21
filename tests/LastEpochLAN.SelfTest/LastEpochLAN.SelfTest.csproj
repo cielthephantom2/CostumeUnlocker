@@ -3,4 +3,5 @@
   <ItemGroup><ProjectReference Include="../../src/LastEpochLAN.Core/LastEpochLAN.Core.csproj" /></ItemGroup>
   <ItemGroup><Compile Include="../../src/LastEpochLAN.Mod/OfflineTools/CharacterSetupGate.cs" Link="CharacterSetupGate.cs" /></ItemGroup>
   <ItemGroup><Compile Include="../../src/LastEpochLAN.Mod/ReleaseUpdateChecker.cs" Link="ReleaseUpdateChecker.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="../../src/LastEpochLAN.Mod/RoomFeaturePolicy.cs" Link="RoomFeaturePolicy.cs" /></ItemGroup>
 </Project>

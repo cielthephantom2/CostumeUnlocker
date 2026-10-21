@@ -24,7 +24,7 @@ internal static class OfflineChangelog
         "<b>MẬT ĐỘ QUÁI</b>\n"+
         $"• Ngoài Monolith: mật độ sinh quái x{DensityRules.Multiplier(false,0):0}.\n"+
         "• Trong Monolith: hệ số = corruption / 100, tối thiểu x1. Ví dụ: 1.000 corruption → x10.\n"+
-        "• Áp dụng khi tạo map mới. Trong co-op, Host quản lý quái của cả phòng.\n\n"+
+        "• Áp dụng khi tạo map mới. Mỗi máy giữ gameplay/quái riêng trong bản hiện tại.\n\n"+
         "<b>CIRCLE OF FORTUNE — THƯỞNG THEO RANK</b>\n"+
         $"• Rank 1: quái có {FortuneRules.EnemyDoubleChance*100:0}% xác suất rơi gấp đôi số vật phẩm.\n"+
         $"• Rank 3: khi Idol rơi, có {FortuneRules.IdolExtraChance*100:0}% xác suất rơi thêm {FortuneRules.AdditionalIdols} Idol.\n"+
@@ -44,22 +44,18 @@ internal static class OfflineChangelog
         "• Nhặt đồ từ xa bằng cách bấm vào loot; hiện mục tiêu, chấm quái trên minimap, mở sương mù và mở rộng zoom minimap.\n"+
         "• Zoom camera: phím dấu phẩy / dấu chấm, phạm vi 0,5–5x.\n\n"+
         "<b>DPS TRACKER & GIAO DIỆN</b>\n"+
-        "• Mặc định ở góc trên trái, chỉ hiện khi ghi nhận sát thương; tự ẩn sau 5 giây không có sát thương mới.\n"+
-        "• Hiển thị tối đa 8 kỹ năng; DPS, tổng 5 giây, tổng sát thương, đòn lớn nhất và số hit nằm cùng hàng.\n"+
+        "• Mặc định ở góc trên trái, chỉ hiện khi ghi nhận sát thương; tự ẩn sau 15 giây không có sát thương mới.\n"+
+        "• Hiển thị tối đa 8 kỹ năng; thống kê xếp dọc, nền trong suốt và thanh sát thương xanh lá.\n"+
         "• Có nút ẩn/hiện, chỉnh kích thước và đặt lại vị trí.\n"+
         "• F4: có bản cập nhật mới hiện màu đỏ; đang ở bản mới nhất hiện màu xanh lá.\n\n"+
         "<b>CO-OP — THAY ĐỔI GAMEPLAY HIỆN CÓ</b>\n"+
-        "• Join chỉ vào party: giữ map và gameplay solo của Client; chỉ nút Teleport mới yêu cầu load sang gần Host. Mỗi Echo mới cần yêu cầu Teleport, không tự đi theo.\n"+
+        "• Phòng Host/Join qua public IP + port trên Internet vẫn hoạt động. Mỗi máy chơi map riêng.\n"+
         "• F2: hòm chung riêng, dữ liệu lưu trên Host, dùng được khi khác map. Gửi/lấy trang bị hoặc Idol x1 có ID riêng; khóa món đang lưu để tránh thao tác trùng.\n"+
         "• Giao dịch gửi/lấy có nhật ký; mất mạng hoặc lỗi lưu giữ món trong escrow chờ xác minh, không tự cấp lại/hoàn lại. Hòm không dùng stash cá nhân.\n"+
-        "• Đã thêm hiển thị minion/companion của đồng đội: model, di chuyển và animation theo máy chủ nhân, tối đa 64 triệu hồi/người. Cần kiểm nghiệm hai máy.\n"+
-        "• Đã gỡ hệ thống co-op encounter cũ. Tương tác/thưởng encounter và tương tác map chung chưa được hỗ trợ trong bản thử nghiệm viết lại.\n"+
-        "• Solo dùng encounter và nhận thưởng native; chưa xác nhận toàn bộ encounter trong game thật.\n"+
-        "• NPC Client dùng đồng bộ animation và bộ đệm chuyển động theo Host; độ mượt vẫn đang được kiểm nghiệm.\n"+
-        "• Teleport đến đồng đội ở map thường, thị trấn và hub.\n"+
-        "• Monolith: Host chọn Echo thường, Client bấm Teleport để theo đúng lượt; đồng bộ mục tiêu, hoàn thành, đường nhận thưởng và trở về Rest.\n"+
-        "• Quest Echo/boss quest, Woven/Tombs và lượt Arena/Dungeon/Pinnacle chưa được hỗ trợ trong luồng đi chung mới.\n"+
-        "• Host nên đợi đồng đội nhận thưởng ở Rest trước khi mở Echo tiếp. Co-op Monolith hai máy vẫn cần kiểm nghiệm thực tế.";
+        "• Loot Filter vẫn chia sẻ trong phòng; chỉnh/switch/tắt filter được cập nhật cho các máy khác.\n"+
+        "• Tạm tắt đồng bộ quái/combat/HP/status/thưởng, nhân vật/pet/VFX, Teleport/Monolith và Encounter để giảm tải.\n"+
+        "• Combat Assist, DPS và toàn bộ tiện ích cá nhân trong Mod Settings tiếp tục hoạt động.\n"+
+        "• Cả Host và Client cần cập nhật dev.29/protocol40; bản cũ không kết nối chung.";
 
     internal static void Show(){scroll=Vector2.zero;Open=true;}
     internal static void Draw(string version)

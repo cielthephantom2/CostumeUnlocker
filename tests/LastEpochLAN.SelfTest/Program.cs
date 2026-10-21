@@ -101,6 +101,7 @@ await EncounterRewriteTests.Run(Check);
 ResolvedAilmentTests.Run(Check);
 await PartyStatusTests.Run(Check);
 await PerformanceRegressionTests.Run(Check);
+await InventoryOnlyRoomTests.Run(Check);
 SourceStatusVisualsTests.Run(Check);
 await SourceStatusTransportTests.Run(Check);
 var longHistory = new EnemyHistory();

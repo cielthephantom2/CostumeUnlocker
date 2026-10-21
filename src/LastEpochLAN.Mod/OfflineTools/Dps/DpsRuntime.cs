@@ -19,6 +19,7 @@ internal static class DpsRuntime
     }
     internal static void Draw()
     {
+        using var performance = RuntimePerformance.Measure(PerformanceArea.DpsGui);
         if (!OfflineToolkit.Ready) return;
         var matrix = GUI.matrix;
         var color = GUI.color;
@@ -35,7 +36,7 @@ internal static class DpsRuntime
     {
         get
         {
-            if (!OfflineToolkit.Ready || !DamageMeterOverlay.IsShown) return false;
+            if (!DamageMeterOverlay.IsShown || !OfflineToolkit.Ready) return false;
             var mouse = Input.mousePosition;
             return DamageMeterOverlay.IsManipulating || DamageMeterOverlay.LastDrawnBounds.Contains(new Vector2(mouse.x, Screen.height - mouse.y));
         }

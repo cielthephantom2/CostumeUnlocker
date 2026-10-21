@@ -225,6 +225,7 @@ internal static class NativeSkillVisualCapture
     internal static SkillVisualState[] CaptureFor(Il2Cpp.Actor creator,int limit=32)
     {
         if (creator == null || limit<=0) return Array.Empty<SkillVisualState>();
+        using var performance = RuntimePerformance.Measure(PerformanceArea.VisualCapture);
         limit=Math.Min(32,limit);
         if (sampledFrame != Time.frameCount)
         {
@@ -302,6 +303,7 @@ internal static class NativeSkillVisualCapture
 
     private static SkillVisualState Read(Tracked entry)
     {
+        using var performance = RuntimePerformance.Measure(PerformanceArea.VisualRead);
         var source = entry.Source;
         if (source == null && entry.AbilityObject != null)
             source = entry.AbilityObject.GetComponent<Il2Cpp.AbilityObjectIndicator>()?.abilitySync;

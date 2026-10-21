@@ -1,0 +1,13 @@
+{
+  "scope": "Local performance candidate based on public dev27/protocol36; not installed, released or gameplay FPS validated",
+  "build": {
+    "warnings": 0,
+    "errors": 0
+  },
+  "managedChecks": 781,
+  "compiledAuditChecks": 11,
+  "modSha256": "7B1A81A023CF83401BE454F0541B042E7E57C9463138246E903C92322FC6431A",
+  "coreSha256": "D5AFED58411E7A46BC44AB69544C0410DDC25A0C40C858C9D366E58D864CE9E6",
+  "installedModSha256": "C65876D76009AF58CFFFF88593C313D1216B6C15EE38A6103C706CFA688911D6",
+  "report": "PERFORMANCE-REVIEW-2026-10-21-VI.md"
+}

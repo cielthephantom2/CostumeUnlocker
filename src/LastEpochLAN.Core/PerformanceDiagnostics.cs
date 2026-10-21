@@ -33,6 +33,35 @@ public sealed class TimingWindow
     }
 }
 
+// Aggregate callbacks that may run many times per rendered frame (damage/GUI).
+// Empty frames count too, so per-hit averages cannot hide a combat burst.
+public sealed class FrameTimingWindow
+{
+    private readonly TimingWindow window;
+    private int frame = -1;
+    private double milliseconds;
+    private long bytes;
+    public long Calls { get; private set; }
+    public FrameTimingWindow(int capacity = 600) => window = new(capacity);
+    public void Advance(int nextFrame)
+    {
+        if (nextFrame == frame) return;
+        if (frame >= 0)
+        {
+            window.Record(milliseconds, bytes);
+            // Bound catch-up when a caller resumes after a long disabled period.
+            for (int i = 1; i < Math.Min((long)nextFrame - frame, 600); i++) window.Record(0, 0);
+        }
+        frame = nextFrame; milliseconds = 0; bytes = 0;
+    }
+    public void Record(int currentFrame, double elapsedMs, long allocatedBytes)
+    {
+        if (!double.IsFinite(elapsedMs) || elapsedMs < 0 || allocatedBytes < 0) return;
+        Advance(currentFrame); milliseconds += elapsedMs; bytes += allocatedBytes; Calls++;
+    }
+    public TimingSummary Read() => window.Read();
+}
+
 // Latest-value coalescing: the Unity thread captures data, this worker alone
 // serializes and writes it. At most one pending report, not an unbounded backlog.
 public sealed class LatestReportWriter : IDisposable

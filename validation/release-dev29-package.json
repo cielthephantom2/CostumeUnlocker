@@ -1,0 +1,28 @@
+{
+  "version": "1.1.0-dev.29",
+  "protocol": 40,
+  "build": {
+    "warnings": 0,
+    "errors": 0
+  },
+  "managedChecks": 806,
+  "compiledAuditChecks": 20,
+  "selectedPatchClasses": 47,
+  "skippedPatchClasses": 67,
+  "updaterFixtureChecks": 15,
+  "nativeGameplayVerified": false,
+  "fpsMeasured": false,
+  "scope": "Internet public-IP rooms retain F2 Shared Stash and Loot Filters; shared world/combat/travel/remote VFX disabled; personal tools and density preserved",
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 986624,
+      "sha256": "DD0CD56AF8B664718BD90A9B4ED63F074A046BBFE1E0A4346AC05EDAED33F2C9"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 389120,
+      "sha256": "E2092D1E19A289434AF8B6FA23B3BE679A9A30605F17FA085FAB21B87316ECBF"
+    }
+  ]
+}

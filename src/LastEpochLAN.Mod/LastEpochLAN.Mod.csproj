@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable>
-    <AssemblyName>LastEpochLAN</AssemblyName><Version>1.1.0-dev.27</Version><TreatWarningsAsErrors>true</TreatWarningsAsErrors><LangVersion>12</LangVersion><AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AssemblyName>LastEpochLAN</AssemblyName><Version>1.1.0-dev.29</Version><TreatWarningsAsErrors>true</TreatWarningsAsErrors><LangVersion>12</LangVersion><AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RuntimeRoot Condition="'$(RuntimeRoot)' == ''">../../runtime</RuntimeRoot>
   </PropertyGroup>
   <ItemGroup>

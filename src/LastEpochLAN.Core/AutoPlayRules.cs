@@ -62,6 +62,13 @@ public readonly record struct AutoSkillContext(string Ability,float HealthPercen
 
 public static class AutoPlayRules
 {
+    public static bool RequiresTargetScan(AutoPlaySettings settings,bool open,bool armed,bool paused)
+    {
+        if(!open && (!armed || paused)) return false;
+        foreach(var rule in settings.Skills)
+            if(rule.Enabled && (!rule.SelfTarget || rule.EnemyNear || rule.RareBossNear)) return true;
+        return false;
+    }
     public static bool TrySliderValue(string text,float min,float max,bool whole,out float value)
     {
         value=0;

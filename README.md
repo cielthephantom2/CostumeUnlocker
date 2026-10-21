@@ -1,6 +1,8 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.27
+# TM Last Epoch Co-op Mod — 1.1.0-dev.29
 
-Development release, protocol **36**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). Both Host and Client must update. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
+Development release, protocol **40**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). Both Host and Client must update. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
+
+**Dev.29 — Internet inventory-only rooms:** Host/Join through a public IPv4 address and port remains supported. Rooms keep **F2 Shared Stash and shared Loot Filters**. World/enemy/combat/status/reward synchronization, remote characters/pets/VFX, Teleport, shared Monolith and Encounter are temporarily disabled. Unused native hooks are skipped entirely, and presence sends only inventory readiness/identity every 250 ms. Each player keeps their own map and native gameplay. F1 Combat Assist, DPS Tracker, density and all personal Mod Settings remain enabled. Includes the Assist/DPS performance cleanup and per-feature diagnostics. See [dev.29 changes and validation](RELEASE-1.1.0-dev29-VI.md). Dev.28 is reserved for the unfinished Encounter branch and is not included here.
 
 **Dev.27:** speeds up Combat Assist scheduling, adds click-to-edit numeric slider values, fixes small minimap enemy dots to render at 30% size, and hides the DPS overlay after 15 seconds without damage (new damage shows it again without clearing totals). All custom Disintegrate movement, animation and related Arcane Ascendance overrides are removed; those skills use native behavior. Encounter remains paused and excluded. See [dev.27 changes and limits](RELEASE-1.1.0-dev27-VI.md).
 
@@ -22,7 +24,7 @@ Development release, protocol **36**. Close the game and run `update.bat` from t
 
 **Room Loot Filters:** each member shares their selected filter in memory. Edits, selection changes and disabling propagate automatically, polled once per second, including across maps. Keep the local result/style when it shows an item; if it hides the item, a remote filter may show it. Ground labels attribute filters that show the item. Remote filters do not overwrite local files or character bindings. Invalid remote filters are isolated by owner. Native Match uses an ABI-aware pointer bridge instead of Harmony out-Nullable marshalling. See [filter implementation and limits](ROOM-LOOT-FILTERS-2026-10-20-VI.md).
 
-Joining only creates party membership: the Client stays in its own map and solo gameplay until it explicitly selects Teleport. Each new Host Echo requires another Teleport request. Party-only clients do not take over the Host world. Party HP scaling is removed in dev.15.
+Joining creates room membership for F2 and Loot Filters only. Each player stays in their own map and solo gameplay. Teleport and shared Echo/world participation are disabled in dev.29. Party HP scaling remains removed.
 
 **F2 opens the independent Shared Chest**, persisted on the Host and usable across maps in the same character cycle/mode. It currently accepts eligible Gift equipment/Idols, one item per entry, with a native individual ID. It has 96 logical slots. The frontend now clones native Stash graphics and uses a new native item grid for icons and hover/tooltips. Its detached Host projection never binds personal Stash data; original controllers are stripped before activation. Cursor drop or inventory right/shift-click deposits; clicking a chest item receives it into inventory after Host/save confirmation. Pagination follows native item sizes. Shared Stash labels/help/status use English. Stash loading resolves the actual legacy/V2 panel with a bounded timeout. Item canvases have independent raycasters and native buttons keyed to Host item identity, fixing clicks passing through the chest into the world. Deposit/withdraw use durable client journals, Host reservations, save acknowledgments, operation deduplication and custody tickets. Uncertain operations stay held rather than being automatically refunded or regranted. Legacy encounter synchronization remains unsupported.
 
@@ -32,12 +34,14 @@ Echo of a World / Shade of Orobyss now gives **x5 positive Corruption gain**, in
 
 Woven Potential now uses: 1 LP → 2 LP (50%) / 0 LP (50%); 2 LP → 3 LP (50%) / 1 LP (50%); 3 LP → 4 LP (25%) / 1 LP (75%). The dropped-item minimum of 1 LP does not clamp Woven failures to 0 LP. Other input LP values keep their native behavior. Crafting eligibility and use consumption remain in the native caller.
 
-NPC movement, animation, VFX, minions, combat and party travel code is retained. That is not a two-PC acceptance claim; doors, quests and map interactions need regression after generic replay removal. The new typed Host encounter state machine is a managed foundation only; dedicated transport and private managed Nemesis turns exist, but per-family native adapters, presentation and durable private rewards remain unfinished. Encounter development is paused.
+NPC movement, animation, VFX, minions, combat and party travel code is retained for future work but its native hooks and regular update paths are disabled in this release. Shared-world settings left over from older config files cannot enable it. Encounter development remains paused and its unfinished branch is excluded.
 
 See [Vietnamese release report](RELEASE-1.1.0-dev14-VI.md) and [historical rewrite milestone](ENCOUNTER-REWRITE-VI.md).
 
 ## Validation
 
+- Dev.29: Release build zero warnings/errors, **806 managed/TCP checks**, **20 compiled checks**. Of 114 compiled Harmony patch classes, **47 selected / 67 skipped**. Audits confirm the shared-world paths are unreachable under release policy and F2/filter/local-tool hooks remain selected. Updater verifies the published DLL pair. Native FPS improvement and two-PC Internet gameplay have not been measured for this release. No running game is modified or closed by the build/publish workflow.
+- The following older validation entries are historical and do not replace the dev.29 report.
 - Dev.14 Release build: zero warnings/errors. No managed/native/visual or physical multiplayer tests were run for this release; the reported Client transfer failure is not confirmed resolved.
 - Dev.13 icon and slider fixes are retained and remain unverified in game.
 - Dev.12 historical baseline: 7 compiled audit checks, 17 updater fixture/live checks, basic native smoke and Mage Auto Play feature observations passed. These are not fresh dev.14 results.
