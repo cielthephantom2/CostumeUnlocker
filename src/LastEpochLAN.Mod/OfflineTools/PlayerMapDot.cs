@@ -33,7 +33,7 @@ internal static class PlayerMapDot
             RestoreOriginal();return;
         }
         if(anchor==null || dot==null)Create();
-        EnemyMapDots.ApplySize(anchor,1.5f);
+        EnemyMapDots.ApplySize(anchor,3f);
         if(original.enabled){hiddenOriginal=true;original.enabled=false;}
         if(!anchor.activeSelf)anchor.SetActive(true);
         if(dot.img!=null)dot.img.raycastTarget=false;

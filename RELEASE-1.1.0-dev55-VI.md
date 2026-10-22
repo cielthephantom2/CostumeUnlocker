@@ -32,3 +32,7 @@ Thay bằng chấm xanh dương có viền giống NPC, lớn hơn50% đường 
 ## Auto Pickup phản hồi theo trigger native
 
 Thay bộ quét5Hz/5ứng viên bằng callback trigger gold/potion native; Keys/Materials/Woven Echoes nhận qua native pickup/vacuum/storage. Giữ radius5, không đợi cursor đi qua loot xa, không yêu cầu di chuyển.44 fixture và169 audit checks đạt; chưa test physics/tốc độ trong game. [Chi tiết hiện tại](NATIVE-PICKUP-dev55-VI.md).
+
+## Chấm người chơi minimap tăng gấp đôi
+
+Scale chấm xanh dương từ0.45 lên0.90 (đường kính gấp3 chấm NPC). Giữ minimap góc màn hình, Tab icon gốc và các thay đổi trước. Tra cứu Mesembria: mỗi ô Prophecy tối đa99 completed charges; mỗi lần trigger dùng tối đa6 khi tích từ30. Không thay đổi cơ chế charge.

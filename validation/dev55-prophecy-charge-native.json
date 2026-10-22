@@ -1,0 +1,42 @@
+{
+  "gameAssemblySha256": "323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464",
+  "maxCompletedChargesPerSlot": 99,
+  "nativeLimitHex": "0x63",
+  "canCompleteChargeRva": "0x20B1B70",
+  "addChargesRva": "0x20B16C0",
+  "addFavorRva": "0x20B1790",
+  "getChargesToUseRva": "0x20B1D10",
+  "chargesPerTrigger": [
+    {
+      "storedMin": 1,
+      "storedMax": 1,
+      "consumed": 1
+    },
+    {
+      "storedMin": 2,
+      "storedMax": 2,
+      "consumed": 2
+    },
+    {
+      "storedMin": 3,
+      "storedMax": 10,
+      "consumed": 3
+    },
+    {
+      "storedMin": 11,
+      "storedMax": 19,
+      "consumed": 4
+    },
+    {
+      "storedMin": 20,
+      "storedMax": 29,
+      "consumed": 5
+    },
+    {
+      "storedMin": 30,
+      "storedMax": 99,
+      "consumed": 6
+    }
+  ],
+  "chargeBehaviorModified": false
+}

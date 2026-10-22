@@ -98,7 +98,7 @@ Với các tỷ lệ ngẫu nhiên, vài lần rơi chưa đủ kết luận xá
 
 ## Icon người chơi trên minimap
 
-- [ ] Icon vàng cũ trên minimap góc màn hình được thay bằng1 chấm xanh dương có viền, lớn hơn chấm NPC50% đường kính.
+- [ ] Icon vàng cũ trên minimap góc màn hình được thay bằng1 chấm xanh dương có viền, đường kính gấp3 chấm NPC (gấp đôi chấm xanh bản trước).
 - [ ] Di chuyển, đổi hướng, đổi class/model, +/- zoom: chấm theo đúng vị trí, giữ kích thước tương đối; không đổi kích thước nhân vật.
 - [ ] Tab mở: icon gốc; Tab đóng: chấm xanh dương; lặp lại không tạo icon trùng.
 - [ ] Tắt Enemy Map Dots: chấm người chơi vẫn còn; bật lại: màu và kích thước quái giữ nguyên.
