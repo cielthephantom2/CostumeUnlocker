@@ -102,5 +102,74 @@ string once=old.description.text;Call(typeof(OfflineMeteorLegacyInfoPatch),"Post
 Check(old.description.text==once && !once.Contains("Offline bonus"),"repeated description refresh adds no commentary");
 OfflineToolkit.Enabled=false;Check(Legacy(extinction,"10%","10%")=="10%" && Legacy(heat,"1","1")=="1","online tooltips remain native");
 Check(MeteorNodeRules.FrostClaws(int.MaxValue)==int.MaxValue && MeteorNodeRules.LargeMeteorChance(float.NaN)==0,"invalid and overflowing inputs remain bounded");
+
+OfflineToolkit.Enabled=true;
+// Native Tranquility contributes a -1 more multiplier to ManaRegen, not
+// BaseMana's channel/CharacterMutator suppression flags.
+Stats.Stat NoRegen()=>new(){property=SP.ManaRegen,moreValues=new(){-1}};
+var efficiency=new Stats.Stat{property=SP.ManaEfficiency,addedValue=.6f};
+var otherRegen=new Stats.Stat{property=SP.ManaRegen,increasedValue=.2f};
+var arcaneMutator=new ArcaneAscendanceMutator{actor=player};
+arcaneMutator.statsWhileActive.AddRange(new[]{NoRegen(),efficiency,otherRegen});
+tree.Attached=arcaneMutator;
+Call(typeof(OfflineArcaneTranquilityTreePatch),"Postfix",tree);
+Check(arcaneMutator.statsWhileActive.SequenceEqual(new[]{efficiency,otherRegen}),"Tranquility removes actual -100% regen while retaining efficiency and other regen stats");
+Call(typeof(OfflineArcaneTranquilityCastPatch),"Prefix",arcaneMutator);
+Check(arcaneMutator.statsWhileActive.Count==2,"repeated Tranquility casts do not modify remaining buffs");
+arcaneMutator.statsWhileActive.Insert(0,NoRegen());
+Call(typeof(OfflineArcaneTranquilityCastPatch),"Prefix",arcaneMutator);
+Check(arcaneMutator.statsWhileActive.Count==2,"actual cast repairs a skipped tree initialization hook");
+for(int refresh=0;refresh<3;refresh++)
+{
+ arcaneMutator.statsWhileActive.Insert(0,NoRegen());
+ Call(typeof(OfflineArcaneTranquilityTreePatch),"Postfix",tree);
+ Check(arcaneMutator.statsWhileActive.Count==2,"tree refresh reapplies correction without stacking: "+refresh);
+}
+foreach(var protectedStat in new[]{
+ new Stats.Stat{property=SP.ManaEfficiency,moreValues=new(){-1}},
+ new Stats.Stat{property=SP.ManaRegen,tags=1,moreValues=new(){-1}},
+ new Stats.Stat{property=SP.ManaRegen,specialTag=1,moreValues=new(){-1}},
+ new Stats.Stat{property=SP.ManaRegen,extraTag=1,moreValues=new(){-1}},
+ new Stats.Stat{property=SP.ManaRegen,addedValue=1,moreValues=new(){-1}},
+ new Stats.Stat{property=SP.ManaRegen,increasedValue=.5f,moreValues=new(){-1}},
+ new Stats.Stat{property=SP.ManaRegen,moreValues=new(){-.5f}},
+ new Stats.Stat{property=SP.ManaRegen,moreValues=new(){-1,.2f}}})
+{
+ arcaneMutator.statsWhileActive.Clear();arcaneMutator.statsWhileActive.Add(protectedStat);
+ Call(typeof(OfflineArcaneTranquilityCastPatch),"Prefix",arcaneMutator);
+ Check(arcaneMutator.statsWhileActive.Contains(protectedStat),"unrelated or non-native stat shape remains unchanged");
+}
+arcaneMutator.statsWhileActive.Clear();arcaneMutator.statsWhileActive.Add(NoRegen());
+arcaneMutator.actor=new Actor();Call(typeof(OfflineArcaneTranquilityCastPatch),"Prefix",arcaneMutator);
+Check(arcaneMutator.statsWhileActive.Count==1,"other actor keeps native Tranquility");arcaneMutator.actor=player;
+OfflineToolkit.Enabled=false;Call(typeof(OfflineArcaneTranquilityCastPatch),"Prefix",arcaneMutator);
+Check(arcaneMutator.statsWhileActive.Count==1,"online Tranquility remains native");OfflineToolkit.Enabled=true;
+arcaneMutator.statsWhileActive=null;Call(typeof(OfflineArcaneTranquilityCastPatch),"Prefix",arcaneMutator);
+Check(arcaneMutator.statsWhileActive==null,"uninitialized active stats are safely ignored");
+var tranquilityNode=new SkillTreeNode{tree=new ArcaneAscendanceTree{treeID="arcas"},id=19};
+var costRow=new SkillTreeNode.NodeTooltipStat{value="20%"};var regenRow=new SkillTreeNode.NodeTooltipStat{value=""};
+tranquilityNode.stats.Add(costRow);tranquilityNode.stats.Add(regenRow);var savedStats=tranquilityNode.stats;
+foreach(var hook in new[]{typeof(OfflineArcaneTranquilityLegacyTooltipPatch),typeof(OfflineArcaneTranquilityTooltipPatch)})
+{
+ object[] args2={tranquilityNode,null};Call(hook,"Prefix",args2);
+ Check(tranquilityNode.stats.Count==1 && ReferenceEquals(tranquilityNode.stats[0],costRow),"legacy/V2 tooltip retains native efficiency row and removes cannot-regen row");
+ object[] nested={tranquilityNode,null};Call(hook,"Prefix",nested);Call(hook,"Finalizer",nested[1]);
+ Check(tranquilityNode.stats.Count==1,"nested tooltip builders preserve enclosing filtered stats");
+ try{throw new Exception("native tooltip failure");}catch{Call(hook,"Finalizer",args2[1]);}
+ Check(ReferenceEquals(savedStats,tranquilityNode.stats) && tranquilityNode.stats.Count==2,"tooltip finalizer restores serialized node stats even after failure");
+}
+object[] trDescription={"arcas",(byte)19,"All of your spells cost less mana while Arcane Ascendance is active, but you cannot regenerate mana while Arcane Ascendance is active."};
+Call(typeof(OfflineArcaneTranquilityDescriptionPatch),"Postfix",trDescription);
+Check((string)trDescription[2]==ArcaneTranquility.Description && !((string)trDescription[2]).Contains("cannot"),"Tranquility description retains benefit and removes regen restriction");
+tranquilityNode.id=18;
+Check(TranquilityTooltipScope.Begin(tranquilityNode)==null,"neighboring node tooltip remains native");
+tranquilityNode.id=19;tranquilityNode.tree.treeID="mg-1";
+Check(TranquilityTooltipScope.Begin(tranquilityNode)==null,"same node ID in another tree remains native");
+tranquilityNode.tree.treeID="arcas";OfflineToolkit.Enabled=false;
+Check(TranquilityTooltipScope.Begin(tranquilityNode)==null,"online tooltip stat list remains native");
+object[] onlineDescription={"arcas",(byte)19,"native online description"};Call(typeof(OfflineArcaneTranquilityDescriptionPatch),"Postfix",onlineDescription);
+Check((string)onlineDescription[2]=="native online description","online Tranquility description remains native");
+OfflineToolkit.Enabled=true;
+
 Console.WriteLine($"All {checks.Count} actual-source Meteor checks passed; native execution/rendering not exercised.");
 if(args.Length>0)File.WriteAllText(args[0],JsonSerializer.Serialize(new{passed=checks.Count,nativeGameplayVerified=false,checks},new JsonSerializerOptions{WriteIndented=true}));

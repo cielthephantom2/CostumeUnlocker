@@ -80,7 +80,10 @@ Check(!types.Any(t=>t.Name.Contains("Disintegrate") || t.Name.Contains("Ascendan
 var skillOverrides=types.SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions)
  .Select(i=>i.Operand).OfType<MemberReference>().Where(m=>m.DeclaringType!=null &&
   (m.DeclaringType.Name.Contains("Disintegrate") || m.DeclaringType.Name.Contains("ArcaneAscendance") || m.DeclaringType.Name=="ModifyDamageOnRotation")).ToArray();
-Check(skillOverrides.Length==0,"compiled mod has no direct references to Disintegrate/Ascendance or rotation-penalty override APIs");
+Check(skillOverrides.All(m=>m.DeclaringType.Name is "ArcaneAscendanceTree" or "ArcaneAscendanceMutator"),
+ "skill overrides exclude Disintegrate and rotation penalties; Ascendance references are restricted to its tree and mutator");
+var tranquilityHooks=new[]{"OfflineArcaneTranquilityTreePatch","OfflineArcaneTranquilityCastPatch","OfflineArcaneTranquilityDescriptionPatch","OfflineArcaneTranquilityLegacyTooltipPatch","OfflineArcaneTranquilityTooltipPatch"};
+Check(tranquilityHooks.All(n=>patches.Any(t=>t.Name==n)),"Tranquility actual-stat, description and both tooltip hooks are compiled");
 Check(mod.CustomAttributes.Any(a=>a.AttributeType.Name=="HarmonyDontPatchAllAttribute"),
  "Melon automatic PatchAll is disabled; release installs only selected inventory/local hooks");
 var policy=types.Single(t=>t.Name=="RoomFeaturePolicy");
@@ -413,6 +416,9 @@ Check(meteorApply.Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>
 var castCalls=types.Single(t=>t.Name=="OfflineMeteorCastPatch").Methods.Single(m=>m.Name=="Prefix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
 Check(castCalls.Any(m=>m.Name=="Local") && castCalls.Any(m=>m.Name=="getSkillTreeData") && castCalls.Any(m=>m.Name=="Apply"),
  "Meteor cast refresh reads local allocated tree before native object creation even if loading skipped the tree hook");
+Check(tranquilityHooks.All(n=>installed.Any(t=>t.Name==n)),"all Tranquility gameplay and legacy/V2 tooltip hooks are selected for installation");
+Check(new[]{"OfflineArcaneTranquilityLegacyTooltipPatch","OfflineArcaneTranquilityTooltipPatch"}.All(n=>
+ types.Single(t=>t.Name==n).Methods.Any(m=>m.Name=="Finalizer")),"Tranquility tooltip list changes have native exception cleanup");
 var arcane=types.Single(t=>t.Name=="OfflineArcaneMovementPatch");
 var arcaneCalls=arcane.Methods.Single(m=>m.Name=="Prefix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
 Check(installed.Contains(arcane) && arcaneCalls.Any(m=>m.Name=="Local") && arcaneCalls.Any(m=>m.Name=="Instantiate") && arcaneCalls.Any(m=>m.Name=="set_roots") &&
@@ -467,6 +473,10 @@ using(var nativeMetadata=AssemblyDefinition.ReadAssembly(Path.Combine(args[3],"M
   CallsNative("EchoWeb","getIslandTypeForNewIsland","LE.Factions.WeaverTreeNodesExtensions","IncreaseChanceForSpecificEchoTypes") &&
   CallsNative("LE.Factions.WeaverTreeNodesExtensions","IncreaseChanceForSpecificEchoTypes","WovenEchoData","GetTotalNaturalSpawnWeighting"),
   "replacement Woven scope has no by-ref parameters and encloses the actual native Imprint weighting helper");
+ Check(NativeBody("ArcaneAscendanceTree","updateMutator").AsSpan().IndexOf(new byte[]{0xB2,0x12,0x48,0x8B,0xC8})>=0 &&
+  NativeBody("ArcaneAscendanceTree","updateMutator").AsSpan().IndexOf(new byte[]{0x4C,0x89,0xB3,0x28,0x01,0,0})>=0 &&
+  NativeBody("ArcaneAscendanceMutator","Mutate").AsSpan().IndexOf(new byte[]{0x48,0x8B,0x97,0x28,0x01,0,0})>=0,
+  "native Tranquility creates ManaRegen stat18 in statsWhileActive and actual activation consumes that same list");
  Check(NativeBody("MonolithZoneManager","ApplyHostWeaverModifiers").AsSpan().IndexOf(new byte[]{0x8B,0x81,0x20,0x01,0,0,0x89,0x83,0x04,0x03,0,0})>=0,
   "native Echo setup copies faction cache chance at0x120 into the zone roll field at0x304");
  Check(NativeBody("OneShotCacheGameplayObject/<OpenAfterDelay>d__26","MoveNext").AsSpan().IndexOf(new byte[]{0xF3,0x0F,0x10,0x88,0x04,0x03,0,0})>=0,

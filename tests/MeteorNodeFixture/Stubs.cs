@@ -23,6 +23,10 @@ namespace Il2Cpp
   public class SkillTreeData:TreeData{}
   public class NodeData{public byte id,pointsAllocated;}
  }
+ public class ArcaneAscendanceTree:Tree{public static void updateMutator(){}}
+ public enum SP{ManaRegen=18,ManaEfficiency=69}
+ public class Stats{public class Stat{public SP property;public int tags,specialTag,extraTag;public float addedValue,increasedValue;public List<float> moreValues=new();}}
+ public class ArcaneAscendanceMutator:Component{public Actor actor;public List<Stats.Stat> statsWhileActive=new();public void Mutate(){}}
  public class MeteorSkillTree:Tree{public static void updateMutator(){}}
  public class MeteorMutator:Component{public Actor actor;public float chanceFor100increasedArea;public int frostClawCastsOnImpact;public void Mutate(){}}
  public class MeteorAoEMutator:Component{public Actor actor;public int frostClawCastsOnImpact;public void Mutate(){}}
@@ -35,7 +39,7 @@ namespace Il2Cpp
  public class Tree:Component{public string treeID;}
  public class SkillTreeNode
  {
-  public Tree tree;public byte id;
+  public Tree tree;public byte id;public Il2CppSystem.Collections.Generic.List<NodeTooltipStat> stats=new();
   public class NodeTooltipStat{public string value;}
  }
  public class GlobalTreeData
@@ -65,3 +69,9 @@ namespace Il2CppLE.UI.Tooltips
 namespace LastEpochLAN.Mod.OfflineTools{internal static class OfflineToolkit{internal static bool Enabled=true;}}
 namespace Il2CppLocalizationSystem{public class LocalizationAbilities{public string GetDescription(Il2Cpp.Ability ability)=>"";}}
 namespace Il2CppLocalizationSystem{public class LocalizationSkills{public string GetNodeDescription(string treeID,byte nodeID,string originalValue)=>originalValue;public string GetStatName(string treeID,byte nodeID,int statIndex,string originalValue)=>originalValue;}}
+
+namespace Il2CppSystem.Collections.Generic
+{
+ public class List<T>:System.Collections.Generic.List<T>
+ {static int next;public IntPtr Pointer=(IntPtr)Interlocked.Increment(ref next);}
+}

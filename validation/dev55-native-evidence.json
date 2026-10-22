@@ -1,0 +1,54 @@
+{
+  "node": {
+    "tree": "arcas",
+    "id": 19,
+    "internalName": "Arcane Ascendance Mana Efficiency"
+  },
+  "native": {
+    "treeUpdate": "0x24B1150",
+    "branch": "0x24B1B79",
+    "regenStatConstructor": "0x24B1BD0",
+    "manaRegenProperty": 18,
+    "moreMultiplier": -1,
+    "manaEfficiencyProperty": 69,
+    "efficiencyPerPoint": 0.2,
+    "activeStatsWrite": "0x24B20B4",
+    "activeStatsRead": "0x15FB0B6"
+  },
+  "englishLocalization": [
+    {
+      "key": "Skill_arcas_19_Name",
+      "m_Id": 87270,
+      "m_Localized": "Tranquility",
+      "m_Metadata": {
+        "m_Items": []
+      }
+    },
+    {
+      "key": "Skill_arcas_19_Description",
+      "m_Id": 87271,
+      "m_Localized": "All of your spells cost less mana while Arcane Ascendance is active, but you cannot regenerate mana while Arcane Ascendance is active.",
+      "m_Metadata": {
+        "m_Items": []
+      }
+    },
+    {
+      "key": "Skill_arcas_19_0_Stat",
+      "m_Id": 87272,
+      "m_Localized": "Global Increased Mana Efficiency",
+      "m_Metadata": {
+        "m_Items": []
+      }
+    },
+    {
+      "key": "Skill_arcas_19_1_Stat",
+      "m_Id": 87273,
+      "m_Localized": "Cannot Regenerate Mana",
+      "m_Metadata": {
+        "m_Items": []
+      }
+    }
+  ],
+  "gameAssemblySha256": "323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464",
+  "nativeGameplayVerified": false
+}
