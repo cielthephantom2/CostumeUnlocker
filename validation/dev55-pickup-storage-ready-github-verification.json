@@ -1,0 +1,31 @@
+{
+  "releaseUrl": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.55",
+  "title": "dev.55 - Pickup gameplay readiness and diagnostics",
+  "tagCommit": "b5b1c254382d1de86b96c1f30d50b3945282493c",
+  "packageSha256": "75749A882A9C5B6C19FEFE04587973640257E93F5193579883CE4C241627834B",
+  "downloadedPackageAndGithubDigestMatched": true,
+  "manifestAndDllsMatched": true,
+  "radius": 5,
+  "requiresMovement": false,
+  "usesModelReadiness": false,
+  "checks": {
+    "pickup": 36,
+    "audit": 148,
+    "updaterFixture": 15,
+    "updaterLive": 17
+  },
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1140224,
+      "sha256": "BF3820D2A6947C6D01B5AB3A2D795F0609130C3548FBE0995E30FA2EB0D5949B"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 435712,
+      "sha256": "C747B38B9900D3A5C4FBDD5E9208D88D8BE2C48176134C4C56CDDACE76CB4FB0"
+    }
+  ],
+  "nativeGameplayValidated": false,
+  "steamInstallPerformed": false
+}
