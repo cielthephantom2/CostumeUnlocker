@@ -10,4 +10,6 @@ Build Release0warnings/errors.79 kiểm tra actual-source Meteor/Arcane (gồm28
 
 Bao gồm toàn bộ dev.54: đã gỡ UI Shortcut, giữ các sửa Meteor, Arcane movement, Archmage/text và hook Monolith. Protocol44, giữ nguyên Core47.
 
+Bổ sung Forgotten Knights: Rank1 100%, Rank2 100%, Rank5 50%, đồng bộ mô tả. Xem [báo cáo](FORGOTTEN-KNIGHTS-dev55-VI.md). Default Meteor đã gỡ.
+
 Đóng game rồi chạy update.bat để cập nhật cả hai DLL. Game đang chạy khi đóng gói nên chưa ghi đè DLL trong Steam.

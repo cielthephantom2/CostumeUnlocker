@@ -419,6 +419,14 @@ Check(castCalls.Any(m=>m.Name=="Local") && castCalls.Any(m=>m.Name=="getSkillTre
 Check(tranquilityHooks.All(n=>installed.Any(t=>t.Name==n)),"all Tranquility gameplay and legacy/V2 tooltip hooks are selected for installation");
 Check(new[]{"OfflineArcaneTranquilityLegacyTooltipPatch","OfflineArcaneTranquilityTooltipPatch"}.All(n=>
  types.Single(t=>t.Name==n).Methods.Any(m=>m.Name=="Finalizer")),"Tranquility tooltip list changes have native exception cleanup");
+var fkHooks=new[]{"OfflineForgottenKnightsRankPatch","OfflineForgottenKnightsDescriptionPatch"};
+Check(fkHooks.All(n=>installed.Any(t=>t.Name==n)),"Forgotten Knights rank and description hooks are selected for installation");
+var fkCalls=types.Single(t=>t.Name=="OfflineForgottenKnights").Methods.Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(new[]{"set_AdditionalChanceForSwappableNemesisUnique","set_DoubleStabilityGainChance","set_AdditionalChanceForHarbingersToDropTemporalKeystone"}.All(n=>fkCalls.Any(m=>m.Name==n)) &&
+ !fkCalls.Any(m=>m.Name is "AddStability" or "Roll" or "SetRank" or "Join"),
+ "Forgotten Knights changes three native rank fields without replaying rewards, replacing RNG or unlocking ranks");
+Check(fkCalls.Any(m=>m.Name=="get_IsMember") && fkCalls.Any(m=>m.Name=="getPlayerActor") && fkCalls.Any(m=>m.Name=="RankEnabled"),
+ "Forgotten Knights changes respect local membership, earned ranks and native toggle state");
 var arcane=types.Single(t=>t.Name=="OfflineArcaneMovementPatch");
 var arcaneCalls=arcane.Methods.Single(m=>m.Name=="Prefix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
 Check(installed.Contains(arcane) && arcaneCalls.Any(m=>m.Name=="Local") && arcaneCalls.Any(m=>m.Name=="Instantiate") && arcaneCalls.Any(m=>m.Name=="set_roots") &&

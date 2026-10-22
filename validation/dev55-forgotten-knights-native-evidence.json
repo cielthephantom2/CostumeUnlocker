@@ -1,0 +1,53 @@
+{
+  "scope": "Installed native ToggleRank switch, literal constants and English localization. No engine gameplay execution.",
+  "nativeToggleRank": "0x20BFC70",
+  "branches": {
+    "1": "0x20bfc96",
+    "2": "0x20bfcbe",
+    "5": "0x20bfd23"
+  },
+  "originalChances": {
+    "rank1": 0.4000000059604645,
+    "rank2": 0.10000000149011612,
+    "rank5": 0.20000000298023224
+  },
+  "requestedChances": {
+    "rank1": 1,
+    "rank2": 1,
+    "rank5": 0.5
+  },
+  "fields": {
+    "rank1": "AdditionalChanceForSwappableNemesisUnique @0x88",
+    "rank2": "DoubleStabilityGainChance @0x8C",
+    "rank5": "AdditionalChanceForHarbingersToDropTemporalKeystone @0x98"
+  },
+  "originalText": [
+    {
+      "key": "Faction_Rank_FK_Description_1",
+      "m_Id": 198919614366466048,
+      "m_Localized": "+40% chance for Nemesis items to include an Egg of the Forgotten",
+      "m_Metadata": {
+        "m_Items": []
+      }
+    },
+    {
+      "key": "Faction_Rank_FK_Description_2",
+      "m_Id": 198920880622649344,
+      "m_Localized": "+10% chance to gain twice the amount of stability when completing an echo",
+      "m_Metadata": {
+        "m_Items": []
+      }
+    },
+    {
+      "key": "Faction_Rank_FK_Description_5",
+      "m_Id": 198920991692013568,
+      "m_Localized": "20% additional Temporal Keystone drop chance from Harbingers, including Aberroth",
+      "m_Metadata": {
+        "m_Items": []
+      }
+    }
+  ],
+  "onlyCompletionStabilityChanceChanged": true,
+  "otherStabilitySourcesNotMultiplied": true,
+  "nativeGameplayVerified": false
+}

@@ -68,6 +68,7 @@ internal static class OfflineToolkit
         Safely(NewCharacterBoost.Tick);
         Safely(OfflineBuffs.Tick);
         Safely(OfflineFortune.Tick);
+        Safely(OfflineForgottenKnights.Tick);
         Safely(Dps.DpsRuntime.Tick);
         Safely(()=>CameraZoom.InputTick(panel));
         Safely(CameraZoom.ApplyCurrent);
