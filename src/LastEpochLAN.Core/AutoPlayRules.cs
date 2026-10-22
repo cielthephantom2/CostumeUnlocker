@@ -163,6 +163,6 @@ public sealed class AutoPlaySchedule
 public static class AutoPlayCadence
 {
     public const float PanelReadInterval=.1f, RegistryInterval=.1f, TargetInterval=.025f, MetadataInterval=.5f;
-    public static bool ReadFrameDue(bool panelOpen,double now,double nextPanelRead)=>
-        double.IsFinite(now) && (!panelOpen || now>=nextPanelRead);
+    public static bool ReadFrameDue(bool panelOpen,bool armed,double now,double nextPanelRead)=>
+        double.IsFinite(now) && (armed || !panelOpen || now>=nextPanelRead);
 }

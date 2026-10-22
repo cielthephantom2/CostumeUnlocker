@@ -1,6 +1,6 @@
 # Combat Assist phản ứng theo frame — dev.55 / protocol44
 
-- Khi Assist đang chạy và F1 đóng: bỏ hạn chế đọc25ms toàn bộ runtime. HP, mana, ward, potion và trạng thái cooldown của5slot được kiểm tra mỗi Unity frame. F1 mở vẫn refresh100ms.
+- Khi Assist đang Start (kể cả F1 mở): bỏ hạn chế đọc25ms toàn bộ runtime. HP, mana, ward, potion và trạng thái cooldown của5slot được kiểm tra mỗi Unity frame. Chỉ F1 mở khi Stop mới refresh100ms.
 - Potion được xét ngay sau điều kiện local/gameplay/input, trước registry mục tiêu, danh sách buff và5slot. Giữ ngưỡng HP, reserve, interval và API `UsePotion` gốc; một lượt gọi potion sẽ không gửi thêm cast trong cùng tick.
 - Registry mục tiêu100ms (trước150ms); chọn gần nhất/rare/boss trong cache25ms (trước50ms). Refresh registry kéo lượt chọn mục tiêu lên ngay tick đó. Vẫn loại mục tiêu xa bằng squared distance trước các native health/alignment/scene reads. Khi pause và F1 đóng thì bỏ target/skill reads nặng.
 - Tên/ID/label kỹ năng cache500ms, đổi pointer hotbar cập nhật ngay; cooldown và điều kiện vẫn đọc từng frame. Bind key label giữ1giây, buff names100ms.

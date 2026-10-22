@@ -7,7 +7,7 @@ Sửa các đường có thể giữ Assist ở trạng thái pause hoặc ngắ
 - StopRoom detach session ngay từ đầu, hủy pending join và dispose transport. Từng bước cleanup được bắt lỗi riêng và log rõ tên, nên native view lỗi không giữ session lỗi hoặc chặn phần còn lại.
 - Sau disconnect, Assist nhả channel/input block do nó sở hữu, xóa target native cũ, làm mới bindings/read timers và recovery cooldown. Giữ nguyên Armed, F1 Open, settings và profile. Assist đã Stop không tự Start; đổi nhân vật vẫn theo Profile guard cũ.
 - Không dọn các hệ thống shared world/combat trong release inventory-only, vì các hệ thống đó không được bật. Room vẫn có F2, filters, ladder.
-- Diagnostics có `DisconnectRefreshes`. Menu game, mất focus, nhân vật chết/loading và F1 mở vẫn pause theo quy tắc đang có.
+- Diagnostics có `DisconnectRefreshes`. Bản cập nhật UI tiếp theo cho phép chạy khi F1/F4/menu mở; mất focus, chết/loading, cinematic và game time pause vẫn giữ kiểm tra.
 
 Kiểm chứng: Release build0 warnings/errors;13 actual-source lifecycle checks pass (đang chạy/đang Stop/F1 mở/native object bị hủy/cleanup lỗi/lặp disconnect),153 compiled/native audit checks pass. Audit kiểm tra thứ tự local tick trước network, không Suspend/Dispose Assist lúc disconnect, không ghi đè Armed/profile và đóng F4. Chưa xác nhận disconnect thực tế trong game.
 

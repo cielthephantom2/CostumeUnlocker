@@ -310,10 +310,8 @@ public sealed class LanMod : MelonMod
                 LoggerInstance.Msg("Marker creation, transform, collider disabling and cleanup verified.");
             }
             // Local Assist runs before room polling/teardown can throw.
-            // Mod Settings is a child page, drawn only while the F4 root is
-            // visible. Its remembered page flag must not pause Assist after F4
-            // hides that root (e.g. after toggling Show/Hide DPS).
-            if(supported) using (RuntimePerformance.Measure(PerformanceArea.AutoAssist)) autoPlay.Tick(panel || sharedChest.Open,
+            // UI panels do not participate in the Assist pause policy.
+            if(supported) using (RuntimePerformance.Measure(PerformanceArea.AutoAssist)) autoPlay.Tick(
                 RoomFeaturePolicy.SharedWorldEnabled && (partyTravel.Busy || monolithParty.Busy));
             if (pendingJoin?.IsCompleted == true)
             {

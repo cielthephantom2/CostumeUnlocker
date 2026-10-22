@@ -107,7 +107,7 @@ internal sealed partial class AutoPlayRuntime
             if(runtime.abilities[i]?.Pointer==ability.Pointer)
             {runtime.schedule.Observed(i,Time.unscaledTime,runtime.Settings.Skills[i].Interval);break;}
     }
-    internal void Tick(bool otherPanel,bool transition)
+    internal void Tick(bool transition)
     {
         Active=this;
         bool actionAttempted=false;
@@ -129,7 +129,8 @@ internal sealed partial class AutoPlayRuntime
             localReady=offline && actor!=null && actor.gameObject.activeInHierarchy && actor.HasMovedToPlayerSpawn &&
                 actor.health?.currentHealth>0 && !actor.isDying(false) && actor.GetActorSync()?.actorVisuals?.HasBeenInitialized==true &&
                 !Il2CppLE.UI.LoadingScreen.IsVisible && !transition;
-            InputBlock(input,Open && localReady);
+            // UI visibility must neither pause Assist nor acquire a global input block.
+            InputBlock(null,false);
             if(!localReady)
             {
                 // Actors/identity disappear briefly during scene loading. Keep
@@ -144,13 +145,10 @@ internal sealed partial class AutoPlayRuntime
             if(actorPointer!=actor.Pointer || scene!=nowScene)
             {ReleaseHeld();prioritySlot=-1;actorPointer=actor.Pointer;scene=nowScene;enemies.Clear();nearest=rareBoss=null;nextScan=nextRead=nextTargets=nextBuffs=0;schedule.Reset();}
             if(Time.unscaledTime<recovery.RetryAt){Status="Paused - refreshing native character data";return;}
-            if(!AutoPlayCadence.ReadFrameDue(Open,Time.unscaledTime,nextRead))return;
+            if(!AutoPlayCadence.ReadFrameDue(Open,Armed,Time.unscaledTime,nextRead))return;
             nextRead=Time.unscaledTime+AutoPlayCadence.PanelReadInterval;
-            var ui=UIBase.instance;
-            pauseReason=Open?"F1 open":otherPanel?"Mod panel / Shared Stash open":!Application.isFocused?"Game unfocused":Time.timeScale<=0?"Game time paused":
-                input==null?"Input unavailable":input.forceDisableInput?"Game input disabled":input.cinematicActive?"Cinematic":
-                input.IsInputFieldActive?"Text input focused":input.ButtonPressBlocked?"Game buttons blocked":ui==null?"Game UI unavailable":
-                ui.menuOpen?"Game menu open":ui.IsChatInputFocused?"Chat focused":ui.AnyPanelOpened()?"Game panel open":"";
+            pauseReason=!Application.isFocused?"Game unfocused":Time.timeScale<=0?"Game time paused":
+                input==null?"Input unavailable":input.cinematicActive?"Cinematic":"";
             bool paused=pauseReason!="";
             // Critical HP/potion state is read before target walks, buff lists
             // or skill metadata. Running Assist reaches this on every frame.
@@ -224,13 +222,12 @@ internal sealed partial class AutoPlayRuntime
         }
         finally
         {
-            if(!Open)LastRunStatus=Status;
+            LastRunStatus=Status;
             try
             {
-                var input=EpochInputManager.instance;var ui=UIBase.instance;
-                if(!Armed || Open || otherPanel || transition || !localReady || !Application.isFocused || Time.timeScale<=0 ||
-                    input==null || input.forceDisableInput || input.cinematicActive || input.IsInputFieldActive || input.ButtonPressBlocked ||
-                    ui==null || ui.menuOpen || ui.IsChatInputFocused || ui.AnyPanelOpened())ReleaseHeld();
+                var input=EpochInputManager.instance;
+                if(!Armed || transition || !localReady || !Application.isFocused || Time.timeScale<=0 ||
+                    input==null || input.cinematicActive)ReleaseHeld();
             }
             catch{heldUse=null;heldAbility=null;heldSlot=-1;}
             try{panelView??=new(this);panelView.Tick();}
@@ -240,7 +237,7 @@ internal sealed partial class AutoPlayRuntime
                 if(Error!=message)MelonLoader.MelonLogger.Warning("Auto Play "+message);
                 Error=message;
                 // Rendering errors must not clear the user's master switch.
-                // An open F1 still pauses actions; F1 can close it independently.
+                // F1 can close independently while Assist continues running.
             }
         }
     }

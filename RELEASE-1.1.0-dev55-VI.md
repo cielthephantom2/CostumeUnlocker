@@ -20,3 +20,7 @@ Bổ sung x2 cả hai dòng Stability trong Echo Rewards mọi loại Echo và x
 Bổ sung faction/pickup: CoF Rank7 x15 Experimental, Rank10 +300% boss loot riêng, Rank11 Rare→Exalted50%; The Woven Rank7 reforge30%, Rank9 Memory Amber50%. Auto pickup quay lại bộ quét cũ với bán kính cố định5, nhặt cả khi đứng yên; bỏ trigger bổ sung. World Assist đã gỡ toàn bộ. Xem [báo cáo](FACTIONS-PICKUP-dev55-VI.md).
 
 Sửa pickup và gỡ World Assist: xem [báo cáo hiện tại](NATIVE-PICKUP-dev55-VI.md).
+
+## Combat Assist khi mở UI
+
+Khi Start, Assist tiếp tục chạy mỗi frame khi F1/F4/menu/chat/các panel mở, không tự nhả channel do UI và F1 không khóa input toàn game. Xem [chi tiết và kiểm chứng](ASSIST-UI-CONTINUE-dev55-VI.md). Giữ Auto Pickup nhẹ 5Hz/5 ứng viên/1 lệnh, Woven Echoes và bỏ log. Version/protocol không đổi.

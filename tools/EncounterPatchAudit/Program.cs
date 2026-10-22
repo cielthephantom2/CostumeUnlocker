@@ -263,7 +263,7 @@ int vitalsAt=Array.FindIndex(assistCalls,m=>m.Name=="ReadVitals"),potionAt=Array
 Check(vitalsAt>=0 && vitalsAt<potionAt && potionAt<Array.FindIndex(assistCalls,m=>m.Name=="Scan") && potionAt<Array.FindIndex(assistCalls,m=>m.Name=="ReadSkills"),
  "Assist checks native potion before target registry walks and five-slot reads");
 Check(assistCalls.Any(m=>m.DeclaringType.Name=="AutoPlayCadence" && m.Name=="ReadFrameDue"),
- "running Assist uses per-frame read policy with UI-only throttling");
+ "running Assist uses per-frame read policy including open configuration UI");
 Check(assistCalls.Any(m=>m.DeclaringType.Name=="AutoPlaySchedule" && m.Name=="SelectWhileHolding") && assistCalls.Any(m=>m.DeclaringType.Name=="AutoPlaySchedule" && m.Name=="Ready"),
  "owned channel yields to eligible periodic slot and revalidates queued conditions");
 Check(!assistCalls.Any(m=>m.DeclaringType.Namespace.StartsWith("System.Threading") || m.Name=="StartCoroutine"),
@@ -274,10 +274,15 @@ Check(assistSchedule.Fields.Any(f=>f.Name=="intervals") && assistSchedule.Method
  i.Operand is MethodReference call && call.DeclaringType.Name=="AutoPlayRuntime" && call.Name=="Tick")==1,
  "Assist timer diagnostics/config-change tracking keep a single local scheduler tick");
 var modUpdate=types.Single(t=>t.Name=="LanMod").Methods.Single(m=>m.Name=="OnUpdate");
-Check(!modUpdate.Body.Instructions.Any(i=>i.Operand is FieldReference f && f.DeclaringType.Name=="OfflineToolkit" && f.Name=="PanelOpen") &&
- modUpdate.Body.Instructions.Any(i=>i.Operand is FieldReference f && f.DeclaringType.Name=="LanMod" && f.Name=="panel") &&
+Check(assistTick.Parameters.Count==1 && assistTick.Parameters[0].Name=="transition" &&
  modUpdate.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="AutoPlayRuntime" && m.Name=="Tick"),
- "DPS Settings -> close F4 regression: Assist reads visible root panel, never stale hidden Settings page flag");
+ "Assist tick takes transition state only; F4/Shared Stash visibility is never passed as a pause flag");
+Check(!assistCalls.Any(m=>m.DeclaringType.Name=="UIBase" || m.Name is "get_forceDisableInput" or "get_ButtonPressBlocked") &&
+ !assistTick.Body.Instructions.Any(i=>i.Operand is FieldReference f && f.Name is "forceDisableInput" or "ButtonPressBlocked"),
+ "Assist neither pauses nor releases held channel for menu/chat/panels or UI input-block flags");
+Check(assistTick.Body.Instructions.Where(i=>i.Operand is MethodReference m && m.Name=="InputBlock")
+ .All(i=>i.Previous.OpCode.Code==Mono.Cecil.Cil.Code.Ldc_I4_0),
+ "Assist releases owned input blocks only; opening F1 never acquires a global input block");
 var woven=installed.Single(t=>t.Name=="OfflineWovenPotentialPatch");
 var wovenPrefix=woven.Methods.Single(m=>m.Name=="Prefix");
 Check(wovenPrefix.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="OfflineToolkit" && m.Name=="get_Enabled") &&

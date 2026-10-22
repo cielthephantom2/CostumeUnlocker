@@ -83,11 +83,15 @@ internal static class AutoPlayTests
         check(schedule.WaitSeconds(0,11)==119,"Assist diagnostics distinguish configured repeat delay from blocked skill conditions");
         settings.Skills[0].Interval=0;
         check(schedule.Select(settings,contexts,11)==0,"changing repeat interval 120s to Hold immediately clears old per-skill timer");
-        check(AutoPlayCadence.ReadFrameDue(false,10.001,10.025) && AutoPlayCadence.ReadFrameDue(false,10.008,10.025),
+        check(AutoPlayCadence.ReadFrameDue(false,true,10.001,10.025) && AutoPlayCadence.ReadFrameDue(false,true,10.008,10.025),
             "running Assist reads vitals/cooldowns every frame before old25ms deadline");
-        check(!AutoPlayCadence.ReadFrameDue(true,10.001,10.1) && AutoPlayCadence.ReadFrameDue(true,10.1,10.1),
-            "open F1 retains100ms configuration refresh");
-        check(!AutoPlayCadence.ReadFrameDue(false,double.NaN,0) && !AutoPlayCadence.ReadFrameDue(false,double.PositiveInfinity,0),
+        check(!AutoPlayCadence.ReadFrameDue(true,false,10.001,10.1) && AutoPlayCadence.ReadFrameDue(true,false,10.1,10.1),
+            "stopped F1 retains100ms configuration refresh");
+        check(AutoPlayCadence.ReadFrameDue(true,true,10.001,10.1) && AutoPlayCadence.ReadFrameDue(true,true,10.008,10.1),
+            "armed F1 reads vitals/cooldowns every frame while its panel stays open");
+        check(!AutoPlayCadence.ReadFrameDue(true,true,double.NaN,0) && !AutoPlayCadence.ReadFrameDue(true,true,double.PositiveInfinity,0),
+            "armed open panel still rejects invalid frame times");
+        check(!AutoPlayCadence.ReadFrameDue(false,true,double.NaN,0) && !AutoPlayCadence.ReadFrameDue(false,true,double.PositiveInfinity,0),
             "invalid frame time never dispatches reads");
         check(AutoPlayCadence.RegistryInterval<.15f && AutoPlayCadence.TargetInterval<.05f,
             "registry and target selection cadences improve without per-frame registry scans");

@@ -68,17 +68,17 @@ internal sealed partial class AutoPlayRuntime
                 panelView.Capture(QaImage);qaCaptured=true;qaCaptureAt=Time.unscaledTime+2;tab=5;return null;
             }
             if(!qaCaptured || Time.unscaledTime<qaCaptureAt || !File.Exists(QaImage))return null;
-            if(EpochInputManager.instance.forceDisableInput!=true)throw new InvalidOperationException("F1 panel did not block native gameplay input");
+            if(blockedInput!=null)throw new InvalidOperationException("F1 panel acquired a global gameplay input block");
             panelView.Capture(QaImage.Replace(".png","-potion.png"));
             Open=false;qaStage=3;return null;
         }
-        if(EpochInputManager.instance.forceDisableInput)throw new InvalidOperationException("Panel input block was not restored");
+        if(blockedInput!=null)throw new InvalidOperationException("Closing F1 retained an Assist input block");
         Armed=false;
         if(qaEnemy!=null){HostEnemyReplicas.DestroyActor(qaEnemy);qaEnemy=null;}
         return new {passed=true,nativeAutoPlay=new {equippedSlotsRead=true,nativeCooldownRead=true,nativeManaHealthRead=true,
             potionChargesDetected=true,nativePotionConsumedAndHealed=true,potionIntervalBlockedRepeat=true,nativeSkillCommandAccepted=true,
-            nativeLocalCastObserved=true,panelInputBlockedAndRestored=true,nativeStartStopRaycast=true,skillAndPotionIconsLoaded=true,design=panelView.DesignDiagnostics,panelScreenshot=QaImage,potionScreenshot=QaImage.Replace(".png","-potion.png"),
+            nativeLocalCastObserved=true,panelDoesNotBlockGameplayInput=true,nativeStartStopRaycast=true,skillAndPotionIconsLoaded=true,design=panelView.DesignDiagnostics,panelScreenshot=QaImage,potionScreenshot=QaImage.Replace(".png","-potion.png"),
             detectedKeys=keys,skill=names[qaSlot],Requests,ConfirmedCasts},
-            scope="Disposable native Mage character: live bar/cooldown/potion reads, actual game cast and potion, panel input block and screenshot. Multi-class buffs and physical two-PC combat remain unverified."};
+            scope="Disposable native Mage character: live bar/cooldown/potion reads, actual game cast and potion, panel input ownership and screenshot. Multi-class buffs and physical two-PC combat remain unverified."};
     }
 }

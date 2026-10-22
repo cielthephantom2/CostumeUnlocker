@@ -255,7 +255,7 @@ internal sealed partial class AutoPlayRuntime
             Label(frame.transform,122,505,414,15,()=>owner.Error!=""?owner.Error:"Settings saved automatically",10,true);
             updates.Add(()=>status.color=owner.Armed?accent:muted);
             startButton=Button(frame.transform,"StartStop",574,486,84,32,()=>owner.Armed?"Stop":"Start",()=>
-            {if(owner.Armed)owner.Armed=false;else if(owner.localReady){owner.Armed=true;owner.schedule.Reset();owner.recovery.Reset();owner.Error="";owner.Status="Armed - close F1 and F4 to run";}});
+            {if(owner.Armed)owner.Armed=false;else if(owner.localReady){owner.Armed=true;owner.schedule.Reset();owner.recovery.Reset();owner.Error="";owner.Status="Armed - running while UI is open";}});
             updates.Add(()=>startButton.targetGraphic.color=owner.Armed?new Color(0.34f,0.18f,0.23f):new Color(0.12f,0.33f,0.32f));
         }
         internal void Tick()
@@ -329,7 +329,7 @@ internal sealed partial class AutoPlayRuntime
         private void Help()
         {
             Title("Quick setup","Local character only - no LAN room required");
-            var guide=Label(details.transform,0,78,530,157,()=>"1  Confirm a skill, enable it, then choose conditions.\n2  Press Start and close F1 / F4 to resume.\n0 s / Hold: yields to due skills with interval > 0.\nLow ward uses absolute Ward, not a percentage.\nMP required before cast: minimum current MP %.\nCooldown/game restrictions apply; potion checked each running frame.\nManual casting takes priority. Start is not saved.",13,true,detailUpdates);guide.enableWordWrapping=true;
+            var guide=Label(details.transform,0,78,530,157,()=>"1  Confirm a skill, enable it, then choose conditions.\n2  Press Start; Assist continues while UI is open.\n0 s / Hold: yields to due skills with interval > 0.\nLow ward uses absolute Ward, not a percentage.\nMP required before cast: minimum current MP %.\nCooldown/game restrictions apply; potion checked each running frame.\nManual casting takes priority. Start is not saved.",13,true,detailUpdates);guide.enableWordWrapping=true;
             Label(details.transform,0,245,530,42,()=>$"Enemy: {Distance(owner.enemyDistance)}   /   Rare or boss: {Distance(owner.rareDistance)}\nRequests {owner.Requests}   /   Observed casts {owner.ConfirmedCasts}",12,true,detailUpdates).enableWordWrapping=true;
             var buffs=Label(details.transform,0,310,530,65,()=>"ACTIVE STAT BUFFS\n"+(owner.buffNames.Count>0?string.Join(", ",owner.buffNames.Take(8)):"Cast your buff once to detect its name. Keep toggle auras manual if no active stat-buff name is readable."),12,true,detailUpdates);buffs.enableWordWrapping=true;
         }

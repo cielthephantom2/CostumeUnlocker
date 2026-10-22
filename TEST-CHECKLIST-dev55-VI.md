@@ -69,7 +69,7 @@ Với các tỷ lệ ngẫu nhiên, vài lần rơi chưa đủ kết luận xá
 
 - [ ] Assist đang Start → Join → Disconnect: F4 đóng và Assist tiếp tục trên cùng nhân vật.
 - [ ] Host tắt room/mất mạng, F2 đang mở: cleanup không giữ pause vì room.
-- [ ] Assist đang Stop vẫn Stop; F1 đang mở vẫn pause, không tự đóng F1.
+- [ ] Assist đang Stop vẫn Stop; F1 đang mở vẫn mở và Assist đã Start tiếp tục chạy.
 - [ ] Lặp Join/Disconnect; kiểm tra runtime report `DisconnectRefreshes`, `Armed`, `pauseReason` và log.
 
 ## Combat Assist phản ứng theo frame
@@ -77,7 +77,7 @@ Với các tỷ lệ ngẫu nhiên, vài lần rơi chưa đủ kết luận xá
 - [ ] Potion tại ngưỡng HP vẫn ưu tiên khi đang channel; giữ reserve và interval.
 - [ ] Slot interval>0 đã bật/đến lượt làm channel nhường, cast khi game cho phép; sau đó channel có thể tiếp tục.
 - [ ] Hai slotHold0 không liên tục cắt channel của nhau; cooldown/MP/điều kiện vẫn chặn đúng.
-- [ ] F1/F4/menu/mất focus vẫn pause; Join→Disconnect giữ Start/Stop.
+- [ ] F1/F4/inventory/stash/passive/skill/menu/chat mở: Assist vẫn chạy, potion vẫn được kiểm tra và channel không tự nhả vì UI. Mất focus/chết/loading/cinematic/game time pause vẫn dừng; Join→Disconnect giữ Start/Stop.
 - [ ] Kiểm tra FPS và diagnostics ChannelYields/prioritySlot; bản này chưa có xác nhận native gameplay.
 
 ## Auto Pickup giảm tải + Woven Echoes
@@ -87,3 +87,11 @@ Với các tỷ lệ ngẫu nhiên, vài lần rơi chưa đủ kết luận xá
 - [ ] Bên ngoài5, equipment/tutorial và loại bị tắt không bị hút theo.
 - [ ] F4 không còn debug pickup hoặc chữ including while standing; log không còn Auto Pickup diagnostic.
 - [ ] Kiểm tra potion đầy, Range Pickup, đổi zone và map nhiều loot/FPS.
+
+## Combat Assist khi mở UI
+
+- [ ] Start ngay khi F1 mở: tự cast khi đủ điều kiện, potion dùng đúng ngưỡng HP.
+- [ ] Mở F4, Shared Stash, inventory, bảng skill/passive, menu/chat: Assist tiếp tục; đóng UI không phải bấm Start lại.
+- [ ] Giữ channel rồi mở từng UI: không bị nhả chỉ vì UI; kỹ năng interval vẫn được ưu tiên khi đủ điều kiện.
+- [ ] Stop khi F1 mở: dừng ngay và không tự Start khi đóng UI.
+- [ ] Mất focus, chết/loading, cinematic và game time pause: không cast; trở lại trạng thái hợp lệ thì tiếp tục nếu còn Start.

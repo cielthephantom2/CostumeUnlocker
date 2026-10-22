@@ -1,5 +1,7 @@
 # TM Last Epoch Co-op Mod — 1.1.0-dev.55
 
+**Dev.55, Combat Assist with UI open:** Start continues potion/skill checks every frame while F1/F4, inventory, stash, skill panels, menu or chat are open. Opening UI no longer releases owned channels or acquires a global input block. Death/loading, focus, cinematic and native cast constraints still apply. See [UI behavior and validation](ASSIST-UI-CONTINUE-dev55-VI.md).
+
 Development release, protocol **44**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). The Host and every Client must update both DLLs; older protocol peers cannot join. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
 
 **Dev.55, Assist responsiveness:** Running Assist checks potion/vitals and five-slot cooldowns each frame. Potion is evaluated before target scans. Cached target selection is 25ms, registry refresh 100ms; an owned channel yields to a due enabled skill with a positive repeat interval. Native actions stay on Unity's main thread. See [behavior and validation](ASSIST-RESPONSIVENESS-dev55-VI.md).

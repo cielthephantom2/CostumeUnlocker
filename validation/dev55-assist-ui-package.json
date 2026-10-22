@@ -1,0 +1,44 @@
+{
+  "version": "1.1.0-dev.55",
+  "protocol": 44,
+  "package": "local-releases\\TM-Coop-1.1.0-dev.55.zip",
+  "sha256": "606AE8E8F0F07883712C46022CE9CBA10E742BB91CA90DCC90F0A597D34EDB36",
+  "size": 618878,
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1142784,
+      "sha256": "978C5FE1880F99219F83801840F7CC270F9454BFE269A87967A25FFDD2E9DAA0"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 436224,
+      "sha256": "5B989395CBEA065DCBB869D5F91ECD694F0C31AE8A6100F98BAB3D44763435B5"
+    }
+  ],
+  "packageContents": [
+    "Mods/LastEpochLAN.dll",
+    "UserLibs/LastEpochLAN.Core.dll",
+    "latest.json",
+    "README.md",
+    "update.bat",
+    "RELEASE-1.1.0-dev55-VI.md",
+    "NATIVE-PICKUP-dev55-VI.md",
+    "TEST-CHECKLIST-dev55-VI.md",
+    "FACTIONS-PICKUP-dev55-VI.md",
+    "FORGOTTEN-KNIGHTS-dev55-VI.md",
+    "TIMELINE-STABILITY-X2-dev55-VI.md",
+    "ASSIST-DISCONNECT-dev55-VI.md",
+    "ASSIST-RESPONSIVENESS-dev55-VI.md",
+    "ASSIST-UI-CONTINUE-dev55-VI.md"
+  ],
+  "checks": {
+    "selfTests": 1053,
+    "actualSourceDisconnect": 13,
+    "compiledNativeAudit": 165
+  },
+  "buildWarnings": 0,
+  "buildErrors": 0,
+  "nativeGameplayValidated": false,
+  "steamInstallPerformed": false
+}
