@@ -1,0 +1,30 @@
+{
+  "releaseUrl": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.55",
+  "title": "dev.55 - Per-frame Assist recovery and channel priorities",
+  "tagCommit": "46bb6ee1839fb2631209a2d8a19effb0588cad04",
+  "packageSha256": "6FD1DBCDA888A73880EF68A04C76F1900A13292E55862EBBAC01B2420DD24C64",
+  "downloadedPackageAndGithubDigestMatched": true,
+  "manifestAndDllsMatched": true,
+  "checks": {
+    "selftest": 1051,
+    "actualSourceDisconnect": 13,
+    "audit": 159,
+    "updaterFixture": 15,
+    "updaterLive": 17
+  },
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1145856,
+      "sha256": "5F80C42F142C0AC65A82CAFED5B122315866E7C7538AC1137FF8E4D8C661D202"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 436224,
+      "sha256": "1C74808DC8A603ADA09D1B6C31A8A8DC5AD46BBF0D80AD10A41FC4D5019C14BA"
+    }
+  ],
+  "nativeGameplayValidated": false,
+  "fpsMeasured": false,
+  "steamInstallPerformed": false
+}
