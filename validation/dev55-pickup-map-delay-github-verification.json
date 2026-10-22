@@ -1,0 +1,32 @@
+{
+  "releaseUrl": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.55",
+  "title": "dev.55 - Map-wide auto pickup with 0.5s delay",
+  "tagCommit": "ab4c0c31cb26b0510d1516823e6e6a3571a9128b",
+  "packageSha256": "5F14922B3EE135A725F26099426ECB588F5A06F55871D399C520609379488449",
+  "downloadedPackageAndGithubDigestMatched": true,
+  "manifestAndDllsMatched": true,
+  "checks": {
+    "actualSourcePickup": 35,
+    "compiledNativeAudit": 169,
+    "updaterFixture": 15,
+    "updaterLive": 17
+  },
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1153536,
+      "sha256": "459806A3A727D7974BE94F33CE324795584C3202A8002866A85560705B0CD0B8"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 436224,
+      "sha256": "7636AEA03DBF24091AEC7F40468F672C887A84D98AE76B9CF31C5A1AB2797DB2"
+    }
+  ],
+  "mapWide": true,
+  "delaySeconds": 0.5,
+  "perFrameCountCap": false,
+  "nativeGameplayValidated": false,
+  "fpsMeasured": false,
+  "steamInstallPerformed": false
+}
