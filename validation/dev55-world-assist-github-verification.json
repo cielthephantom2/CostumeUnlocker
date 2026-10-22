@@ -1,0 +1,27 @@
+{
+  "releaseUrl": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.55",
+  "releaseTag": "v1.1.0-dev.55",
+  "releaseCommit": "77ff2c792e91077e212942abb96e28a572f051b0",
+  "isPrerelease": true,
+  "assetName": "TM-Coop-1.1.0-dev.55.zip",
+  "assetId": "RA_kwDOVLyC0c4ntv-M",
+  "assetSha256": "8866E19EA07EB7CBDAAA32DB40486333D582CF05DE03D1D5D7C92B431156A384",
+  "assetSize": 632657,
+  "files": [
+    {
+      "sha256": "68FF8964D917DA7B3903EDEF35AA3D1830E5FF026FF5745717D7DCE36FC2FCA5",
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1185280
+    },
+    {
+      "sha256": "650B53AF67B7BA477BA4219E9B513D17AA16CDDB3789110FBB976D1FAFE2248C",
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 435712
+    }
+  ],
+  "liveUpdaterChecks": 17,
+  "changeClassIncluded": false,
+  "steamFilesModified": false,
+  "nativeGameplayValidated": false,
+  "nativeRenderingValidated": false
+}
