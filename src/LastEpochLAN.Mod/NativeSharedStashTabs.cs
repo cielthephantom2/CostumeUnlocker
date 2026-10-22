@@ -33,6 +33,13 @@ internal sealed partial class NativeSharedStashView
     private IntPtr constrainedModal;
     private int configureRequestedTab=-1;
     private bool legacyConfiguration;
+    internal object TabLayoutDiagnostics=>sharedTabVisuals.Where(v=>v!=null && v.activeInHierarchy).Take(8).Select(v=>
+    {
+        var label=At(v.transform,tabNamePath)?.GetComponent<TMP_Text>();
+        return new {tab=v.name,text=label?.text??"",labelWidth=label?.rectTransform.rect.width??0,
+            preferredWidth=label?.GetPreferredValues(label.text,float.PositiveInfinity,float.PositiveInfinity).x??0,
+            tabWidth=v.GetComponent<RectTransform>()?.rect.width??0,maxCharacters=label?.maxVisibleCharacters??0};
+    }).ToArray();
 
     private Transform Cloned(Transform sourceRoot,Transform original)
     {
@@ -279,12 +286,12 @@ internal sealed partial class NativeSharedStashView
         var availableNames=new Il2CppSystem.Collections.Generic.List<string>();
         var availableIds=new Il2CppSystem.Collections.Generic.List<int>();
         foreach(var candidate in owner.StashTabs.Where(t=>!t.Deleted)){availableNames.Add(candidate.Name);availableIds.Add(candidate.Id);}
-        var data=new StashConfigureTabModalOpenData(tab.Icon,tab.Color,tab.Name,tab.Id,tab.Category,names,ids,CanDeleteSharedTab(tab.Id),
+        var data=new StashConfigureTabModalOpenData(tab.Icon,tab.Color,tab.Name,tab.Id,tab.Category,names,ids,true,
             SharedStashPriorityCodec.Decode(tab.Priority),false,tab.IgnoreFolderPriority,
             SharedStashPriorityCodec.Decode(folder.Priority),availableNames,availableIds);
-        OpenSharedConfiguration(data);
         configureCategory=-1;
-        configureTab=tab.Id;configureGeneration=tab.Generation;configureChestId=owner.QaView?.ChestId??"";Configuring=true;
+        configureTab=tab.Id;configureGeneration=tab.Generation;configureChestId=owner.QaView?.ChestId??"";
+        OpenSharedConfiguration(data);
     }
     internal void InvalidateConfiguration()=>configureChestId="";
     internal void PollTabConfiguration()
@@ -301,15 +308,15 @@ internal sealed partial class NativeSharedStashView
             {
                 if(forcedModalAction==StashConfigureResult.Duplicate)
                 {if(configureCategory>=0)DuplicateCategory();else owner.DuplicateTab();}
-                else if(forcedModalAction==StashConfigureResult.Delete)
-                {if(configureCategory>=0)owner.DeleteCategory(owner.StashCategories.Single(c=>c.Id==configureCategory));else owner.DeleteTab();}
+                else if(forcedModalAction==StashConfigureResult.Delete && configureCategory>0)
+                    owner.DeleteCategory(owner.StashCategories.Single(c=>c.Id==configureCategory));
                 return;
             }
             if(result==null)return;
             if(result.Action==StashConfigureResult.Duplicate)
             {if(configureCategory>=0)DuplicateCategory();else owner.DuplicateTab();return;}
             if(result.Action==StashConfigureResult.Delete)
-            {if(configureCategory>=0)owner.DeleteCategory(owner.StashCategories.Single(c=>c.Id==configureCategory));else owner.DeleteTab();return;}
+            {if(configureCategory>0)owner.DeleteCategory(owner.StashCategories.Single(c=>c.Id==configureCategory));return;}
             if(result.Action!=StashConfigureResult.Save)return;
             if(configureCategory>=0)
                 owner.ConfigureCategory(new(configureCategory,result.TabName.Trim(),result.SelectedColorId,result.SelectedIconId,

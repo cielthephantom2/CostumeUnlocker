@@ -43,5 +43,12 @@ foreach(var name in new[]{"Unique","Set","Exalted","Shared 1","A long renamed st
 text.fontScale=1.6f;SharedStashNativeLayout.SizeLabel(text);
 Check(text.rectTransform.width==MathF.Ceiling(text.GetPreferredValues(text.text).x),"label measures current font metrics instead of a fixed pixels-per-character estimate");
 Check(label.transform.width==25,"shared label resizing leaves the source personal label untouched");
+text.text="Unique";text.maxVisibleCharacters=2;text.enableWordWrapping=true;
+cloneLabel.GetComponent<ContentSizeFitter>().ResetWidth=true;
+SharedStashNativeLayout.Reflow(clone);
+Check(text.rectTransform.width==MathF.Ceiling(text.GetPreferredValues(text.text).x),"name width survives a fitter reset and parent-controlled native element during full reflow");
+Check(!copied.Elements[1].ParentControlsSize && !copied.Elements[1].ExpandAcrossAxis && copied.Elements[1].LayoutGroupReference==null,"label no longer takes a cached nested/prefab width from its cloned parent");
+Check(!text.enableWordWrapping && text.maxVisibleCharacters==int.MaxValue && text.maxVisibleWords==int.MaxValue && text.maxVisibleLines==int.MaxValue,"cloned TMP visibility limits cannot leave only two visible characters");
+Check(group.Elements[1].ParentControlsSize && group.Elements[1].LayoutGroupReference==nested,"private source retains original sizing flags after shared reflow");
 Console.WriteLine($"All {count} actual-source layout stub checks passed; Unity rendering not exercised.");
 if(args.Length>0)File.WriteAllText(args[0],JsonSerializer.Serialize(new{passed=count,nativeGameplayVerified=false}));

@@ -13,7 +13,9 @@ internal static class MeteorNodeRules
         (float)Math.Min(1d,(double)native*.33/.10);
     internal static int FrostClaws(int native)=>native<=0?0:(int)Math.Min(int.MaxValue,(long)native*2);
     internal static float HeatFluxMana(float native)=>float.IsFinite(native) && native>0?native/1.2f:native;
-    private static Match Number(string value)=>Regex.Match(value??"",@"^(\s*[+]?)(\d+(?:[.,]\d+)?)(\s*)(%?)(\s*)$");
+    // Native ScaleValueText appends localized "per point" text (and may wrap
+    // the number in TMP tags). Preserve that suffix and formatting verbatim.
+    private static Match Number(string value)=>Regex.Match(value??"",@"^((?:\s|<[^>]+>)*[+]?)(\d+(?:[.,]\d+)?)(\s*)(%?)(.*)$",RegexOptions.Singleline);
     private static bool Read(Match match,out decimal number)
     {
         number=0;return match.Success && decimal.TryParse(match.Groups[2].Value.Replace(',','.'),
@@ -52,13 +54,8 @@ internal static class MeteorNodeRuntime
     }
     internal static string Description(string original,string node)
     {
-        string note=node switch {
-            MeteorNodeRules.Extinction=>"Offline bonus: Large Meteor chance 33% per point (maximum 100%). Other Extinction bonuses are unchanged.",
-            MeteorNodeRules.HeatFlux=>"Offline bonus: 2 Frost Claw casts per point; each consumes 100% of its normal mana cost. Native target and mana requirements still apply.",
-            _=>""};
-        if(note=="")return original;
         if(node==MeteorNodeRules.HeatFlux)original=Regex.Replace(original??"",@"(?<![\d.,])120\s*%","100%");
-        return original?.Contains(note,StringComparison.Ordinal)==true?original:(original??"")+"\n\n"+note;
+        return original;
     }
 }
 

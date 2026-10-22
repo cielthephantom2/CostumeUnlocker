@@ -51,7 +51,6 @@ internal sealed class LanSharedChest
     internal void ConfigureTab(SharedStashTab settings)=>SendTabEdit("configure-tab",settings);
     internal void SortTab(string[] order)=>SendTabEdit("sort-tab",null,order);
     internal void DuplicateTab()=>SendTabEdit("duplicate-tab");
-    internal void DeleteTab()=>SendTabEdit("delete-tab");
     internal void AddCategory()=>SendTabEdit("add-category",category:new(0,"New Category"));
     internal void ConfigureCategory(SharedStashCategory category,int[] moveTabs=null)=>SendTabEdit("configure-category",category:category,moveTabs:moveTabs);
     internal void DeleteCategory(SharedStashCategory category)=>SendTabEdit("delete-category",category:category);
@@ -97,7 +96,7 @@ internal sealed class LanSharedChest
             try { return new {Open,Status,characterReady=Ready,inventoryReady=Manager?.IsFullyInitializedAndLoaded==true,
                 identityReady=identity.Identity!="" && identity.Character!="",journalReady=journal!=null,
                 connected=session?.Connected==true,selectedTab=SelectedTab,tabCount=stashTabs.Length,tabEditPending=pendingTabEdit!=null,viewReceived=view!=null,nativeVisible=nativeView?.Visible==true,
-                nativeError=nativeView?.Error??"",sourcePanel=nativeView?.SourcePanelKind??"",nativeControls=nativeView?.NativeControlsKind??"",
+                nativeError=nativeView?.Error??"",sourcePanel=nativeView?.SourcePanelKind??"",nativeControls=nativeView?.NativeControlsKind??"",tabLayout=nativeView?.TabLayoutDiagnostics,
                 hostRequests,transferAttempts,lastHostBlock,savePending,failed,nativeInteractions=nativeView?.Interactions??0,
                 transactionStages=journal?.Records.GroupBy(t=>t.Stage).ToDictionary(g=>g.Key,g=>g.Count()),
                 localAccessBlock=AccessBlock(session?.PlayerPositions.FirstOrDefault(p=>p.Id==session.LocalId))}; }

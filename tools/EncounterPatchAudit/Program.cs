@@ -271,13 +271,14 @@ var sharedClient=types.Single(t=>t.Name=="LanSharedChest");
 Check(sharedClient.Methods.Single(m=>m.Name=="Receive").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="ChestReply" && m.Name=="get_Tab") &&
  sharedClient.Methods.Single(m=>m.Name=="SelectTab").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="get_TabControlsReady"),
  "Shared tab switching is blocked during custody operations and selected view checks reply tab identity");
-Check(sharedClient.Methods.Single(m=>m.Name=="DeleteTab").Body.Instructions.Any(i=>Equals(i.Operand,"delete-tab")) &&
- sharedView.Methods.Single(m=>m.Name=="PollTabConfiguration").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="DeleteTab") &&
- sharedView.Methods.Single(m=>m.Name=="RebindDeleteButton").Body.Instructions.Any(i=>Equals(i.Operand,"DELETE TAB")),
- "child-tab deletion is wired to the existing native Delete action and an explicit DELETE TAB label");
+Check(!sharedClient.Methods.Any(m=>m.Name=="DeleteTab") &&
+ !sharedView.Methods.Any(m=>m.Name is "RebindDeleteButton" or "MaintainSharedDeleteButton" or "CanDeleteSharedTab") &&
+ !types.Any(t=>t.Name=="SharedStashModalLayout") &&
+ !sharedView.Methods.Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Any(i=>Equals(i.Operand,"DELETE TAB")),
+ "removed child-tab Delete UI, layout helper and client action are absent from the compiled mod");
 Check(sharedClient.Methods.Single(m=>m.Name=="Tick").Body.Instructions.Count(i=>i.Operand is MethodReference m && m.Name=="set_TabGeneration")>=3 &&
  sharedClient.Methods.Single(m=>m.Name=="Receive").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="get_Deleted") &&
- sharedView.Methods.Single(m=>m.Name=="RestoreSharedModalActions").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="set_interactable"),
+ sharedView.Methods.Single(m=>m.Name=="RestoreSharedModalActions").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="set_onClick"),
  "all deposit/withdraw/ack retries retain tab generation; deleted selection falls back and native modal state is restored");
 Check(core.MainModule.Types.Single(t=>t.Name=="LanProtocol").Fields.Single(f=>f.Name=="Version").Constant is int sharedProtocol && sharedProtocol==44 &&
  core.MainModule.Types.Single(t=>t.Name=="SharedStashRules").Fields.Single(f=>f.Name=="ItemsPerTab").Constant is int perTab && perTab==96,
@@ -342,6 +343,8 @@ Check(sharedView.Methods.Single(m=>m.Name=="BuildSharedCategories").Body.Instruc
 Check(sharedView.Methods.Single(m=>m.Name=="BindSharedModalActions").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="RebindModalButton") &&
  sharedView.Methods.Single(m=>m.Name=="RestoreSharedModalActions").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="set_onClick"),
  "Native duplicate/delete callbacks are scoped to shared modal and original callback objects are restored afterwards");
+Check(!types.Any(t=>t.Name is "SharedStashLegacyConfigurationPatch" or "SharedStashConfigurationPatch"),
+ "removed child-tab Delete lifecycle hooks are absent");
 Check(installed.Any(t=>t.Name=="SharedStashPreparationVisibilityPatch") &&
  sharedView.Methods.Single(m=>m.Name=="MaskNativePreparation").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="set_alpha") &&
  sharedView.Methods.Single(m=>m.Name=="RestoreStagingVisibility").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="set_alpha"),
@@ -361,7 +364,7 @@ Check(sharedView.Methods.Single(m=>m.Name=="ScrollSharedSelection").Body.Instruc
  geometry.Methods.Single(m=>m.Name=="RelativeRect").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="InverseTransformPoint"),
  "shared tab scrolling measures four corners through native transform bindings instead of stripped Unity bounds helper");
 var strippedCalls=new List<string>();
-foreach(var source in types.Where(t=>t.Name is "NativeSharedStashView" or "SharedStashGeometry" or "SharedStashNativeLayout").SelectMany(t=>t.Methods).Where(m=>m.HasBody))
+foreach(var source in types.Where(t=>t.Name is "NativeSharedStashView" or "SharedStashGeometry" or "SharedStashNativeLayout" or "SharedStashModalLayout").SelectMany(t=>t.Methods).Where(m=>m.HasBody))
 foreach(var call in source.Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Where(m=>m.DeclaringType.Namespace.StartsWith("UnityEngine",StringComparison.Ordinal) || m.DeclaringType.Namespace=="Il2CppTMPro"))
 {
  var target=call.Resolve();
@@ -436,7 +439,7 @@ using(var nativeMetadata=AssemblyDefinition.ReadAssembly(Path.Combine(args[3],"M
  Check(NativeBody("MeteorAoEMutator","Mutate").AsSpan().IndexOf(new byte[]{0xBA,0xC4,0x02,0,0})>=0 &&
   NativeBody("MeteorAoEMutator","Mutate").AsSpan().IndexOf(new byte[]{0x0F,0x28,0xF8,0xF3,0x0F,0x59,0x3D})>=0,
   "Heat Flux native consumer queries Frost Claw ID708 and applies its inlined mana factor to that result");
- foreach(var hook in installed.Where(t=>ladderHooks.Contains(t.Name) || meteorHooks.Contains(t.Name) || t.Name is "AggressiveMinionAcquirePatch" or "AggressiveMinionTargetPatch" or "OfflineWeaverImprintTooltipStatPatch" or "OfflineWeaverImprintTooltipInfoPatch" or "OfflineWeaverImprintLegacyValuePatch" or "OfflineWeaverImprintLegacyInfoPatch"))
+ foreach(var hook in installed.Where(t=>ladderHooks.Contains(t.Name) || meteorHooks.Contains(t.Name) || t.Name is "SharedStashLegacyConfigurationPatch" or "SharedStashConfigurationPatch" or "AggressiveMinionAcquirePatch" or "AggressiveMinionTargetPatch" or "OfflineWeaverImprintTooltipStatPatch" or "OfflineWeaverImprintTooltipInfoPatch" or "OfflineWeaverImprintLegacyValuePatch" or "OfflineWeaverImprintLegacyInfoPatch"))
  {
   var attribute=hook.CustomAttributes.Single(a=>a.AttributeType.FullName=="HarmonyLib.HarmonyPatch");
   var type=(TypeReference)attribute.ConstructorArguments[0].Value;

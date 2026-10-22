@@ -15,7 +15,9 @@ internal static class SharedStashNativeLayout
         // The cloned tab has no controller left to resize its label after a rename.
         // Measure with the native font (including rich text/margins), in local UI
         // units, before the parent lays out the icon, padding and tab background.
-        float width=label.GetPreferredValues(label.text).x;
+        label.enableWordWrapping=false;
+        label.maxVisibleCharacters=int.MaxValue;label.maxVisibleWords=int.MaxValue;label.maxVisibleLines=int.MaxValue;
+        float width=label.GetPreferredValues(label.text,float.PositiveInfinity,float.PositiveInfinity).x;
         if(float.IsFinite(width) && width>=0)
             label.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,MathF.Ceiling(width));
     }
@@ -69,7 +71,23 @@ internal static class SharedStashNativeLayout
         // Children determine preferred sizes before their parent places them.
         foreach(var fitter in artwork.GetComponentsInChildren<ContentSizeFitter>(true).Reverse())
             if(fitter.gameObject.activeInHierarchy){fitter.SetLayoutHorizontal();fitter.SetLayoutVertical();}
-        foreach(var layout in artwork.GetComponentsInChildren<SimpleLayoutGroup>(true).Reverse())layout.UpdateLayout();
+        var labels=artwork.GetComponentsInChildren<TMP_Text>(true).Where(t=>t.gameObject.activeInHierarchy).ToArray();
+        foreach(var label in labels)SizeLabel(label);
+        foreach(var layout in artwork.GetComponentsInChildren<SimpleLayoutGroup>(true).Reverse())
+        {
+            foreach(var label in labels)
+            {
+                // A cloned layout may retain parent-controlled sizing for the
+                // name. It then shrinks our measured rect back to prefab width.
+                foreach(var element in layout.Elements)
+                    if(element.RectTransformReference?.Pointer==label.rectTransform.Pointer)
+                    {element._parentControlsSize=false;element._expandAcrossAxis=false;element.LayoutGroupReference=null;}
+                if(layout._rectTransform?.Pointer==label.rectTransform.Pointer)
+                {layout._minWidth=label.rectTransform.rect.width;layout._preferredWidth=layout._minWidth;}
+            }
+            layout._adaptHorizontalSize=true;
+            layout.UpdateLayout();
+        }
     }
     internal static void PreserveHitSurface(Graphic surface,Button button,bool createdHit)
     {

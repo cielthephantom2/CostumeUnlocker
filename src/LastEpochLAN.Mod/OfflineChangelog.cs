@@ -10,7 +10,7 @@ internal static class OfflineChangelog
     private static GUIStyle bodyStyle;
     private static readonly string content=
         "<b>BONUS OFFLINE</b>\n"+
-        "• Dev.47: thêm DELETE TAB cho tab con Shared Stash bằng nút gốc; chỉ xóa ngăn rỗng, giữ ít nhất1 ngăn. Protocol44, cập nhật cả hai DLL trên mọi máy.\n"+
+        "• Dev.50: gỡ chức năng DELETE TAB cho tab con Shared Stash. Giữ Delete Category gốc và dữ liệu hòm. Tooltip Meteor sửa trực tiếp số ở dòng gốc. Protocol44.\n"+
         "• Dev.46: Meteor Extinction33% meteor lớn mỗi điểm; Heat Flux2 Frost Claw mỗi điểm, mỗi lần tiêu hao100% mana Frost Claw thay120%.\n"+
         "• Dev.45: Sealed Riches 1 điểm =12% theo tooltip gốc6%; thay mức5.8% cũ. Warlord6%; Echoing hiển thị tối đa100%, vẫn phụ thuộc điểm thưởng/Corruption. Sealed áp dụng khi vào Echo mới.\n"+
         "• Dev.43: đo lại chiều rộng tên tab/category bằng font gốc trước khi căn layout Shared Stash; sửa chữ Unique/Set/Shared bị cắt.\n"+
