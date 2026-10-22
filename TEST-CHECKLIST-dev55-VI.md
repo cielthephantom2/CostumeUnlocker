@@ -103,3 +103,14 @@ Với các tỷ lệ ngẫu nhiên, vài lần rơi chưa đủ kết luận xá
 - [ ] Tab mở: icon gốc; Tab đóng: chấm xanh dương; lặp lại không tạo icon trùng.
 - [ ] Tắt Enemy Map Dots: chấm người chơi vẫn còn; bật lại: màu và kích thước quái giữ nguyên.
 - [ ] Đổi map/Monolith, về menu rồi vào nhân vật khác: không còn marker nhân vật cũ, nhân vật mới hiện1 chấm.
+
+## Auto Pickup native trigger — bản hiện tại thay thế giới hạn5Hz/5món
+
+- [ ] Đi ngang key/material/Woven Echoes trong radius5: nhặt theo callback sau delay rơi của game, không cần đứng chờ cursor.
+- [ ] Lặp ở map nhiều gear xa và một nhóm20+ vật liệu gần; so với gold/potion thật trong cùng map.
+- [ ] Tắt nhãn/ẩn loot bằng filter: tự nhặt loại đã bật vẫn hoạt động.
+- [ ] Potion chưa đầy trong radius5 tự nhặt; potion đầy vẫn để lại. Gold/bone không bị cộng trùng.
+- [ ] Đồ ngoài5, trang bị, tutorial và loại bị tắt không bị auto vacuum. Đứng yên vẫn nhặt.
+- [ ] Túi đầy không spam xử lý; mở chỗ trống rồi nhặt lại. Click Range Pickup vẫn hoạt động.
+- [ ] Đổi map/Monolith, nhận loot đã lưu, scene UI phụ và Join/Disconnect: trigger không mất hoặc sót sang map khác.
+- [ ] Không có log pickup định kỳ; nếu có lỗi native thì kiểm tra dòng lỗi cụ thể.

@@ -28,3 +28,7 @@ Khi Start, Assist tiếp tục chạy mỗi frame khi F1/F4/menu/chat/các panel
 ## Icon người chơi trên minimap
 
 Thay bằng chấm xanh dương có viền giống NPC, lớn hơn50% đường kính trên minimap. Tab overlay giữ icon gốc. Xem [chi tiết](PLAYER-MINIMAP-DOT-dev55-VI.md).
+
+## Auto Pickup phản hồi theo trigger native
+
+Thay bộ quét5Hz/5ứng viên bằng callback trigger gold/potion native; Keys/Materials/Woven Echoes nhận qua native pickup/vacuum/storage. Giữ radius5, không đợi cursor đi qua loot xa, không yêu cầu di chuyển.44 fixture và169 audit checks đạt; chưa test physics/tốc độ trong game. [Chi tiết hiện tại](NATIVE-PICKUP-dev55-VI.md).

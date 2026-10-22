@@ -7,3 +7,5 @@ Chỉ tạo1 DMMapIcon, gắn vào ActorVisuals local; renderer native xử lý 
 Native inspection xác nhận DMMapIcon.OnDisable gọi MinimapIconManager.Remove, OnEnable gọi Add; marker mới dùng cùng cách ApplyScaling/normalization với EnemyMapDots đang có. Build Release0 warnings/errors,165 compiled/native audit checks pass. Chưa xác nhận hiển thị trong game với DLL mới; game đang chạy nên chưa thay DLL trong Steam.
 
 Giữ version1.1.0-dev.55 / protocol44. Bao gồm Combat Assist tiếp tục khi UI mở và Auto Pickup5Hz/5 ứng viên/1 lệnh, radius5, Woven Echoes, không log pickup. Cập nhật cả hai DLL bằng update.bat sau khi đóng game.
+
+Cập nhật sau: Auto Pickup đã chuyển sang trigger native, thay thế giới hạn5Hz/5ứng viên. Xem [báo cáo hiện tại](NATIVE-PICKUP-dev55-VI.md).

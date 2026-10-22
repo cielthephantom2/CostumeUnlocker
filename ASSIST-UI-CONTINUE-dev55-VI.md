@@ -9,3 +9,5 @@ Giữ kiểm tra offline, nhân vật sống/sẵn sàng, loading/transition, m�
 Release build 0 warnings/errors; 1.053 managed/TCP self-tests, 13 actual-source disconnect checks và 165 compiled/native audit checks pass. Chưa xác nhận hành vi mở từng UI trong game với DLL mới. Game đang chạy nên chưa thay DLL trong Steam.
 
 Giữ Auto Pickup 5 lượt/giây, tối đa 5 ứng viên, 1 thao tác, radius5, Woven Echoes và bỏ log pickup. Version 1.1.0-dev.55 / protocol44. Cập nhật cả Mod và Core cùng bản.
+
+Cập nhật sau: Auto Pickup đã chuyển sang trigger native, thay thế giới hạn5Hz/5ứng viên. Xem [báo cáo hiện tại](NATIVE-PICKUP-dev55-VI.md).

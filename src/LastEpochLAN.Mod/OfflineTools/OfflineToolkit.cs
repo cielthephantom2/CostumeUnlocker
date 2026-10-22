@@ -70,7 +70,6 @@ internal static class OfflineToolkit
         Safely(OfflineBuffs.Tick);
         Safely(OfflineFortune.Tick);
         Safely(OfflineWovenRanks.Tick);
-        Safely(OfflinePickup.Tick);
         Safely(OfflineForgottenKnights.Tick);
         Safely(Dps.DpsRuntime.Tick);
         Safely(()=>CameraZoom.InputTick(panel));
@@ -81,7 +80,7 @@ internal static class OfflineToolkit
         Safely(ObjectiveReveal.Tick);
         if(saveAt>=0 && Time.unscaledTime>=saveAt) Safely(Save);
     }
-    internal static void SceneChanged() {OfflinePickup.Clear();NewCharacterBoost.SceneChanged();MapFog.Clear();PlayerMapDot.Clear();EnemyMapDots.Clear();CameraZoom.Restore();ObjectiveReveal.Clear();Dps.DpsRuntime.SceneChanged();}
+    internal static void SceneChanged() {NewCharacterBoost.SceneChanged();MapFog.Clear();PlayerMapDot.Clear();EnemyMapDots.Clear();CameraZoom.Restore();ObjectiveReveal.Clear();Dps.DpsRuntime.SceneChanged();}
     internal static void Dispose() {Safely(OfflinePickup.Clear);SceneChanged();Safely(OfflineBuffs.Restore);Safely(OfflineFortune.RestoreRewards);EnemyMapDots.Dispose();MinimapZoom.Clear();if(saveAt>=0) Safely(Save);}
     internal static void Draw()
     {
@@ -116,7 +115,7 @@ internal static class OfflineToolkit
         s.CustomZoom=Toggle(s.CustomZoom,"Camera zoom: comma / period",14);
         GUI.Label(new Rect(x+14,y+414,395,23),$"Camera zoom: {s.ZoomDistance:0.0}x (0.5–5)");
         s.ZoomDistance=GUI.HorizontalSlider(new Rect(x+14,y+442,395,20),CameraZoom.Clamp(s.ZoomDistance),0.5f,5f);
-        if(GUI.changed) {ScheduleSave();MinimapZoom.ApplyCurrent();}
+        if(GUI.changed) {ScheduleSave();MinimapZoom.ApplyCurrent();Safely(OfflinePickup.Refresh);}
         GUI.changed|=previousChanged;
         GUI.Label(new Rect(x+14,y+471,395,48),NewCharacterBoost.Status);
         GUI.Label(new Rect(x+14,y+519,395,42),OfflineDensity.Status);
