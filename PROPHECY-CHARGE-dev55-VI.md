@@ -11,4 +11,4 @@ Mesembria Targets dùng charge của mỗi ProphecySlot. Giới hạn99 complete
 
 Dòng Requires at least one charge trong ảnh là điều kiện kích hoạt, không phải giới hạn lưu. Mod không patch các hàm charge này; lần thay đổi này chỉ tăng kích thước chấm minimap, không sửa charge hoặc phần thưởng Prophecy.
 
-Cập nhật sau: theo yêu cầu mới, bản mod hiện tại đã đổi thành dùng hết charge theo số lượng cơ sở từng reward. Các ngưỡng native nêu trên là hành vi gốc. Xem [bản sửa charge tuyến tính](PROPHECY-LINEAR-CHARGES-dev55-VI.md).
+Phần thử nghiệm dùng hết charge đã được gỡ theo yêu cầu. Bản hiện tại giữ cơ chế charge, helper/UI và thông báo gốc nêu trên. Các thay đổi mod có trước thử nghiệm charge vẫn giữ.

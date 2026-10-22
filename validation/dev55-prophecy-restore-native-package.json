@@ -1,0 +1,48 @@
+{
+  "version": "1.1.0-dev.55",
+  "protocol": 44,
+  "package": "local-releases\\TM-Coop-1.1.0-dev.55.zip",
+  "sha256": "3C1A54B95F189481CA0DDDB20DB771FD2E8262FDB3196D136E7A91122681BA16",
+  "size": 625346,
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1149952,
+      "sha256": "169163A4146AD321ADA5F12BC799D44AB90A44ABF5CD185F3E4529332CCF6C57"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 436224,
+      "sha256": "D0939CFDE1F46C61A87CF241EB38772C0D770E7E0CE17D95D8702423D5A64091"
+    }
+  ],
+  "packageContents": [
+    "Mods/LastEpochLAN.dll",
+    "UserLibs/LastEpochLAN.Core.dll",
+    "latest.json",
+    "README.md",
+    "update.bat",
+    "RELEASE-1.1.0-dev55-VI.md",
+    "NATIVE-PICKUP-dev55-VI.md",
+    "TEST-CHECKLIST-dev55-VI.md",
+    "FACTIONS-PICKUP-dev55-VI.md",
+    "FORGOTTEN-KNIGHTS-dev55-VI.md",
+    "TIMELINE-STABILITY-X2-dev55-VI.md",
+    "ASSIST-DISCONNECT-dev55-VI.md",
+    "ASSIST-RESPONSIVENESS-dev55-VI.md",
+    "ASSIST-UI-CONTINUE-dev55-VI.md",
+    "PLAYER-MINIMAP-DOT-dev55-VI.md",
+    "PROPHECY-CHARGE-dev55-VI.md"
+  ],
+  "checks": {
+    "compiledNativeAudit": 170
+  },
+  "customProphecyChargeCodeRemoved": true,
+  "nativeChargeUiAndNotificationsRestored": true,
+  "preChargeSourceRef": "d8723e8",
+  "sourceDiffFromPreChargeEmpty": true,
+  "buildWarnings": 0,
+  "buildErrors": 0,
+  "nativeGameplayValidated": false,
+  "steamInstallPerformed": false
+}
