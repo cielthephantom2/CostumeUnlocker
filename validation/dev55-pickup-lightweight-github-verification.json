@@ -1,0 +1,29 @@
+{
+  "releaseUrl": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.55",
+  "title": "dev.55 - Lightweight pickup and Woven Echoes",
+  "tagCommit": "e23c8a0cc42eb6d8a7edb13e2615fd6b31cde544",
+  "packageSha256": "43B33883BD7BBFA6211B0CA62CFD543C34FE913ADD20EA9E542870C7CD4BD48F",
+  "downloadedPackageAndGithubDigestMatched": true,
+  "manifestAndDllsMatched": true,
+  "checks": {
+    "actualSourcePickup": 62,
+    "audit": 163,
+    "updaterFixture": 15,
+    "updaterLive": 17
+  },
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1143808,
+      "sha256": "793A5ED01C94E3DFFA756CA96F0FBDC5BD4853704DE3E69BD717DDA1C2707AB5"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 436224,
+      "sha256": "15AC46B18683580A9CA7E5FED268ED55DD15D7B8B75B2A4B0374C06072306A14"
+    }
+  ],
+  "nativeGameplayValidated": false,
+  "fpsMeasured": false,
+  "steamInstallPerformed": false
+}
