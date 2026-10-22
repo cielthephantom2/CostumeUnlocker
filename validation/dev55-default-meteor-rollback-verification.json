@@ -1,0 +1,25 @@
+{
+  "version": "1.1.0-dev.55",
+  "protocol": 44,
+  "defaultMeteorRemoved": true,
+  "sourceRestoredToCommit": "151fa025216410bcaaee9af60f92141d63151f8e",
+  "rollbackCommit": "d5e677a96fe90c469b292220e87b5a3d0582eb24",
+  "releaseTagCommit": "d5e677a96fe90c469b292220e87b5a3d0582eb24",
+  "githubZipByteIdenticalToOriginal": true,
+  "zipSha256": "0FCDB67C55D4D0FFFE316E60BFB06AEBFE9C360F52DCF5AC70CF37D67CB5A04B",
+  "steamDllsMatchOriginalRelease": true,
+  "files": [
+    {
+      "sha256": "30D34B8C7BD2A839ED1787327732C5C205EA730840DB821DE39F8AF41A7221B3",
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1123840
+    },
+    {
+      "sha256": "0A8A322159B75A547931418A64CC9DF664DACDD3CF30E59ADF6A9581D93E6ADC",
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 435200
+    }
+  ],
+  "customSelectionMarkerFoundInUserData": false,
+  "nativeGameplayVerified": false
+}
