@@ -1,0 +1,27 @@
+{
+  "releaseUrl": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.55",
+  "title": "dev.55 - Blue player minimap dot and Assist UI continuation",
+  "tagCommit": "4bd647b3d50ecc515fad7da1448b208ff17e9707",
+  "packageSha256": "97547B43EDA0EE53D930397F4C81C5D15E872BCDB3DAAF3E30DCBC9A512C3248",
+  "downloadedPackageAndGithubDigestMatched": true,
+  "manifestAndDllsMatched": true,
+  "checks": {
+    "compiledNativeAudit": 165,
+    "updaterFixture": 15,
+    "updaterLive": 17
+  },
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1144320,
+      "sha256": "75B591B55F9B042309C84E946A6E1A358F34B790B69384CA8FD46C8D740F801D"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 436224,
+      "sha256": "54563FBF489576993C803CEB80653AA579E6F5CED00442598486A8A169CC7F0B"
+    }
+  ],
+  "nativeGameplayValidated": false,
+  "steamInstallPerformed": false
+}
