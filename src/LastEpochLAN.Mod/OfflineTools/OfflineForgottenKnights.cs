@@ -8,12 +8,12 @@ namespace LastEpochLAN.Mod.OfflineTools;
 
 internal static class ForgottenKnightsRules
 {
-    internal static float Chance(int rank)=>rank switch{1=>1f,2=>1f,5=>.5f,_=>0f};
+    internal static float Chance(int rank)=>rank switch{1=>1f,2=>.25f,5=>.5f,_=>0f};
     internal static string Description(int rank,string original)
     {
         string baseline=rank switch{1=>"40",2=>"10",5=>"20",_=>null};
         if(baseline==null || original==null)return original;
-        string replacement=rank==5?"50":"100";
+        string replacement=rank switch{2=>"25",5=>"50",_=>"100"};
         // Change only this rank's percentage, retaining +, markup, line breaks
         // and localized wording, including any other numbers in the text.
         return Regex.Replace(original,@"(?<![\d.,])"+baseline+@"(\s*)%",m=>replacement+m.Groups[1].Value+"%");

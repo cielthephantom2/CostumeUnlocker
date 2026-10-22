@@ -427,6 +427,14 @@ Check(new[]{"set_AdditionalChanceForSwappableNemesisUnique","set_DoubleStability
  "Forgotten Knights changes three native rank fields without replaying rewards, replacing RNG or unlocking ranks");
 Check(fkCalls.Any(m=>m.Name=="get_IsMember") && fkCalls.Any(m=>m.Name=="getPlayerActor") && fkCalls.Any(m=>m.Name=="RankEnabled"),
  "Forgotten Knights changes respect local membership, earned ranks and native toggle state");
+var stabilityHooks=new[]{"OfflineEchoStabilityPatch","OfflineEchoBonusStabilityScopePatch","OfflineTemporalKeystoneScopePatch","OfflineScopedStabilityAwardPatch","OfflineTemporalKeystoneRangePatch","OfflineEchoStabilityTooltipPatch","OfflineEchoStabilityBarPatch","OfflineEchoBonusStabilityDisplayPatch"};
+Check(stabilityHooks.All(n=>installed.Any(t=>t.Name==n)),"Echo reward, bonus, Keystone and matching native UI hooks are installed");
+Check(types.Single(t=>t.Name=="StabilityAwardScope").Fields.Any(f=>f.CustomAttributes.Any(a=>a.AttributeType.Name=="ThreadStaticAttribute")) &&
+ new[]{"OfflineEchoBonusStabilityScopePatch","OfflineTemporalKeystoneScopePatch"}.All(n=>types.Single(t=>t.Name==n).Methods.Any(m=>m.Name=="Finalizer")),
+ "bonus/Keystone award scaling has thread-local scopes and native exception cleanup");
+var stabilityRefs=stabilityHooks.Select(n=>types.Single(t=>t.Name==n)).SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(!stabilityRefs.Any(m=>m.Name is "AddStability" or "NextInt" or "Roll" or "TryGetKeyEntry"),
+ "Stability corrections do not replay awards, replace native RNG or consume extra Keystones");
 var arcane=types.Single(t=>t.Name=="OfflineArcaneMovementPatch");
 var arcaneCalls=arcane.Methods.Single(m=>m.Name=="Prefix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
 Check(installed.Contains(arcane) && arcaneCalls.Any(m=>m.Name=="Local") && arcaneCalls.Any(m=>m.Name=="Instantiate") && arcaneCalls.Any(m=>m.Name=="set_roots") &&
@@ -485,6 +493,13 @@ using(var nativeMetadata=AssemblyDefinition.ReadAssembly(Path.Combine(args[3],"M
   NativeBody("ArcaneAscendanceTree","updateMutator").AsSpan().IndexOf(new byte[]{0x4C,0x89,0xB3,0x28,0x01,0,0})>=0 &&
   NativeBody("ArcaneAscendanceMutator","Mutate").AsSpan().IndexOf(new byte[]{0x48,0x8B,0x97,0x28,0x01,0,0})>=0,
   "native Tranquility creates ManaRegen stat18 in statsWhileActive and actual activation consumes that same list");
+ Check(CallsNative("MonolithRestZoneManager","Initialize","MonolithRun","AddStability") &&
+  CallsNative("MonolithRun","TryUseTemporalKeystoneItemAndIncreaseStability","MonolithRun","AddStability") &&
+  !CallsNative("MonolithRun","TryUseTemporalKeystoneItemAndIncreaseStability","MonolithRun","GetStabilityRangeFromTemporalKeystone"),
+  "actual bonus and Keystone awards reach the scoped consumer; Keystone UI range is not reused by its native roll");
+ Check(CallsNative("MonolithTimelinePanelManager","SelectEcho","StabilityBar","SetCurrentStabilityGainMax") &&
+  CallsNative("TemporalKeystoneUI","OnTemporalKeystonePointerEntered","StabilityBar","SetCurrentStabilityMinMax"),
+  "Echo and Keystone previews use distinct native bar paths to avoid double-scaling Keystone ranges");
  Check(NativeBody("MonolithZoneManager","ApplyHostWeaverModifiers").AsSpan().IndexOf(new byte[]{0x8B,0x81,0x20,0x01,0,0,0x89,0x83,0x04,0x03,0,0})>=0,
   "native Echo setup copies faction cache chance at0x120 into the zone roll field at0x304");
  Check(NativeBody("OneShotCacheGameplayObject/<OpenAfterDelay>d__26","MoveNext").AsSpan().IndexOf(new byte[]{0xF3,0x0F,0x10,0x88,0x04,0x03,0,0})>=0,
