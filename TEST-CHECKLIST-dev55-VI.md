@@ -64,3 +64,10 @@ Xem hướng dẫn mới: [native pickup](NATIVE-PICKUP-dev55-VI.md).
 - [ ] Change Class đang tạm hoãn, chưa có trong bản release này; không đổi/reset class nhân vật.
 
 Với các tỷ lệ ngẫu nhiên, vài lần rơi chưa đủ kết luận xác suất đúng/sai. Khi thấy lỗi, ghi mục checklist, scene/loại Echo, số điểm node/rank, kết quả mong đợi và kết quả thực tế; ảnh hoặc đoạn log MelonLoader giúp đối chiếu.
+
+## Combat Assist sau disconnect
+
+- [ ] Assist đang Start → Join → Disconnect: F4 đóng và Assist tiếp tục trên cùng nhân vật.
+- [ ] Host tắt room/mất mạng, F2 đang mở: cleanup không giữ pause vì room.
+- [ ] Assist đang Stop vẫn Stop; F1 đang mở vẫn pause, không tự đóng F1.
+- [ ] Lặp Join/Disconnect; kiểm tra runtime report `DisconnectRefreshes`, `Armed`, `pauseReason` và log.

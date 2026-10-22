@@ -2,6 +2,8 @@
 
 Development release, protocol **44**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). The Host and every Client must update both DLLs; older protocol peers cannot join. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
 
+**Dev.55, Combat Assist disconnect fix:** Closing a room closes F4, refreshes local Assist references while preserving Start/Stop and the character profile, and isolates room teardown failures. Local Assist ticks before room polling. See [disconnect report](ASSIST-DISCONNECT-dev55-VI.md). In-game disconnect verification is pending.
+
 **Dev.55, Auto Pickup radius 5:** Pickup now checks local gameplay inventory instead of character model/network visual readiness, reads the native offline ground list directly and reports its state in F4 and `Auto Pickup:` log lines. Restored the bounded pickup sweep, with a fixed 5-world-unit horizontal radius and no movement requirement. Gold, potions, keys, materials and Ancient Bones collect while standing still. Removed the added pooled-trigger bridge. World Assist remains fully removed. Range Pickup keeps its explicit-click behavior. Version 1.1.0-dev.55 / protocol 44; install both DLLs together. See [current report](NATIVE-PICKUP-dev55-VI.md).
 
 **Faction bonuses retained:** CoF Rank7 Experimental x15, Rank8 LP x20, Rank10 boss-specific drops +300%, Rank11 Rare→Exalted 50%; The Woven Rank7 reforge 30%, Rank9 Memory Amber 50%, with matching text.

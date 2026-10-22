@@ -309,6 +309,12 @@ public sealed class LanMod : MelonMod
                 SaveRuntimeReport("marker-primitive-smoke-ok", offline);
                 LoggerInstance.Msg("Marker creation, transform, collider disabling and cleanup verified.");
             }
+            // Local Assist runs before room polling/teardown can throw.
+            // Mod Settings is a child page, drawn only while the F4 root is
+            // visible. Its remembered page flag must not pause Assist after F4
+            // hides that root (e.g. after toggling Show/Hide DPS).
+            if(supported) using (RuntimePerformance.Measure(PerformanceArea.AutoAssist)) autoPlay.Tick(panel || sharedChest.Open,
+                RoomFeaturePolicy.SharedWorldEnabled && (partyTravel.Busy || monolithParty.Busy));
             if (pendingJoin?.IsCompleted == true)
             {
                 try { session = pendingJoin.GetAwaiter().GetResult(); message = "Connected"; }
@@ -322,11 +328,6 @@ public sealed class LanMod : MelonMod
             if(Input.GetKeyDown(KeyCode.F2))sharedChest.Toggle();
             if (RoomFeaturePolicy.SharedWorldEnabled && !StartupArguments.Contains("--lelan-gift-smoke")) partyTravel.Tick(session);
             if (RoomFeaturePolicy.SharedWorldEnabled && !StartupArguments.Contains("--lelan-gift-smoke")) monolithParty.Tick(session);
-            // Mod Settings is a child page, drawn only while the F4 root is
-            // visible. Its remembered page flag must not pause Assist after F4
-            // hides that root (e.g. after toggling Show/Hide DPS).
-            if(supported) using (RuntimePerformance.Measure(PerformanceArea.AutoAssist)) autoPlay.Tick(panel || sharedChest.Open,
-                RoomFeaturePolicy.SharedWorldEnabled && (partyTravel.Busy || monolithParty.Busy));
             if (!StartupArguments.Contains("--lelan-hud-policy")) HudAuthority.Session = RoomFeaturePolicy.SharedWorldEnabled && (session?.IsHost==true || partyTravel.Participation.Enabled) ? session : null;
             lootFilters.Tick(session);
             NativeRoomLadder.Tick(session);
@@ -671,42 +672,52 @@ public sealed class LanMod : MelonMod
 
     private void StopRoom()
     {
-        pendingCancellation?.Cancel();
-        if (pendingJoin != null)
+        // Detach transport first. A stale native panel must not keep a failed
+        // session attached and repeat its exception before local Assist ticks.
+        var closingSession=session;session=null;
+        panel=false;OfflineTools.OfflineToolkit.PanelOpen=false;
+        void Clean(string name,Action cleanup)=>RoomDisconnectCleanup.Run(cleanup,
+            ex=>LoggerInstance.Warning("Room disconnect ("+name+"): "+ex.GetBaseException().Message));
+        Clean("local Assist",autoPlay.RoomDisconnected);
+        var cancellation=pendingCancellation;pendingCancellation=null;
+        var joining=pendingJoin;pendingJoin=null;
+        Clean("cancel join",()=>cancellation?.Cancel());
+        if(joining!=null)
         {
-            // A connection may complete just before cancellation. Dispose that result as well.
-            _ = pendingJoin.ContinueWith(task => { if (task.IsCompletedSuccessfully) task.Result.Dispose(); else _ = task.Exception; }, TaskScheduler.Default);
+            _=joining.ContinueWith(task=>
+            {
+                if(task.IsCompletedSuccessfully)task.Result.Dispose();else _=task.Exception;
+            },TaskScheduler.Default);
         }
-        pendingJoin = null;
-        pendingCancellation?.Dispose();
-        pendingCancellation = null;
-        worldSync.Reset();
-        encounterCatalogue.Reset();
-        guestCombat.Reset();
-        HudAuthority.Session = null;
-        gift.Disconnect();
-        sharedChest?.Disconnect();
-        partyTravel.Disconnect();
-        monolithParty.Disconnect();
-        LanDroppedItems.Reset();
-        LanHud.Reset(); nativeParty.Reset(); peerHealthBars.Reset();
-        SkillCapture.Session = null;
-        NativeSkillVisualCapture.Reset();
-        NativeVisualEvents.Reset();
-        session?.Dispose();
-        session = null;
-        lootFilters.Tick(null);
-        NativeRoomLadder.Tick(null);
-        remoteStates = Array.Empty<PlayerState>(); nextRemoteRead = 0; appliedVisualSequence.Clear();
-        foreach (var marker in markers.Values) if (marker != null) UObject.Destroy(marker);
-        markers.Clear();
-        equipmentReplicas.Clear();
-        animationReplicas.Clear();
-        foreach (var visuals in skillVisualReplicas.Values) visuals.Dispose();
-        skillVisualReplicas.Clear();
-        summonReplicas.Dispose();summonCapture.Reset();
-        equipmentRetryAt.Clear();
-        markerClasses.Clear(); classModels.Clear();
+        Clean("join cancellation",()=>cancellation?.Dispose());
+        Clean("transport",()=>closingSession?.Dispose());
+        HudAuthority.Session=null;SkillCapture.Session=null;
+        Clean("gift",gift.Disconnect);
+        Clean("shared stash",()=>sharedChest?.Disconnect());
+        Clean("travel",partyTravel.Disconnect);
+        Clean("monolith",monolithParty.Disconnect);
+        Clean("filters",()=>lootFilters.Tick(null));
+        Clean("ladder",()=>NativeRoomLadder.Tick(null));
+        if(RoomFeaturePolicy.SharedWorldEnabled)
+        {
+            Clean("world",worldSync.Reset);
+            Clean("encounters",encounterCatalogue.Reset);
+            Clean("guest combat",guestCombat.Reset);
+            Clean("drops",LanDroppedItems.Reset);
+            Clean("HUD",LanHud.Reset);
+            Clean("party",nativeParty.Reset);
+            Clean("health bars",peerHealthBars.Reset);
+            Clean("skill visuals",NativeSkillVisualCapture.Reset);
+            Clean("visual events",NativeVisualEvents.Reset);
+            foreach(var marker in markers.Values)if(marker!=null)Clean("marker",()=>UObject.Destroy(marker));
+            foreach(var visuals in skillVisualReplicas.Values)Clean("skill replica",visuals.Dispose);
+            Clean("summon replicas",summonReplicas.Dispose);
+            Clean("summon capture",summonCapture.Reset);
+        }
+        remoteStates=Array.Empty<PlayerState>();nextRemoteRead=0;appliedVisualSequence.Clear();
+        markers.Clear();equipmentReplicas.Clear();animationReplicas.Clear();skillVisualReplicas.Clear();
+        equipmentRetryAt.Clear();markerClasses.Clear();classModels.Clear();
+        nextRuntimeReport=0;
     }
 
     private void SaveRuntimeReport(string phase, bool? offlineMode)

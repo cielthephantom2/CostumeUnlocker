@@ -133,6 +133,20 @@ Check(!reachable.Any(m=>m.Name=="Tick" && m.DeclaringType.Name is "WorldSynchron
  !reachable.Any(m=>m.Name=="UpdateMarkers"), "compiled OnUpdate cannot reach shared-world/combat/map/encounter/remote rendering updates under release policy");
 Check(reachable.Any(m=>m.Name=="PublishInventoryPresence") && reachable.Any(m=>m.Name=="Tick" && m.DeclaringType.Name=="LanSharedChest") &&
  reachable.Any(m=>m.Name=="Tick" && m.DeclaringType.Name=="LanLootFilters"), "compiled OnUpdate still processes inventory presence, F2 and room filters");
+var updateCalls=lan.Methods.Single(m=>m.Name=="OnUpdate").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+int assistOrder=Array.FindIndex(updateCalls,m=>m.DeclaringType.Name=="AutoPlayRuntime" && m.Name=="Tick");
+Check(assistOrder>=0 && assistOrder<Array.FindIndex(updateCalls,m=>m.DeclaringType.Name=="LanGift" && m.Name=="Tick") && assistOrder<Array.FindIndex(updateCalls,m=>m.DeclaringType.Name=="LanSharedChest" && m.Name=="Tick"),
+ "local Assist ticks before room gift/stash polling can fail");
+var stopBody=lan.Methods.Single(m=>m.Name=="StopRoom").Body.Instructions;
+Check(stopBody.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="AutoPlayRuntime" && m.Name=="RoomDisconnected"),
+ "room disconnect refreshes local Assist without Suspend/Dispose");
+Check(!stopBody.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="AutoPlayRuntime" && m.Name is "Suspend" or "Dispose"),
+ "room disconnect never suspends or disposes local Assist");
+var refresh=types.Single(t=>t.Name=="AutoPlayRuntime").Methods.Single(m=>m.Name=="RoomDisconnected");
+Check(!refresh.Body.Instructions.Any(i=>i.OpCode.Code==Mono.Cecil.Cil.Code.Stfld && i.Operand is FieldReference f && f.Name is "Armed" or "Open" or "Settings" or "character" or "profilePath"),
+ "disconnect preserves armed/configuration/profile state");
+Check(stopBody.Any(i=>i.OpCode.Code==Mono.Cecil.Cil.Code.Stfld && i.Operand is FieldReference f && f.Name=="panel") && stopBody.Any(i=>i.Operand is FieldReference f && f.Name=="PanelOpen"),
+ "disconnect closes F4 root and its remembered Mod Settings page");
 var lateCalls=Reachable(lan.Methods.Single(m=>m.Name=="OnLateUpdate")).Select(i=>i.Operand).OfType<MethodReference>().ToArray();
 Check(lateCalls.All(m=>m.DeclaringType.Name=="RoomFeaturePolicy"),
  "compiled OnLateUpdate stops at the release policy guard");

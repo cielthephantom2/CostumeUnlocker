@@ -1,0 +1,23 @@
+using LastEpochLAN.Mod;
+using System.Text.Json;
+int checks=0;
+void Check(bool ok,string text){if(!ok)throw new Exception(text);checks++;Console.WriteLine("PASS: "+text);}
+var running=new AutoPlayRuntime{Armed=true};var settings=running.Settings;running.recovery.Failed(100,false);
+running.RoomDisconnected();
+Check(running.Armed && !running.Open,"disconnect preserves running Assist master switch");
+Check(running.Settings==settings && running.character=="saved-character" && running.profilePath=="saved-profile","disconnect preserves character profile and settings");
+Check(running.Releases==1 && running.InputReleases==1 && running.blockedInput==null,"held native channel and owned input block released");
+Check(!running.localReady && running.enemies.Count==0 && running.nearest==null && running.rareBoss==null,"stale native target references cleared");
+Check(running.nextRead==0 && running.nextScan==0 && running.nextBindings==0 && running.nextTargets==0 && running.nextBuffs==0,"native reads/bindings eligible on next local tick");
+Check(running.recovery.ReadFailures==0 && running.recovery.RetryAt==0 && running.Error=="" && running.pauseReason=="","stale recovery cooldown and panel pause cleared");
+Check(running.DisconnectRefreshes==1 && running.Status.Contains("Resuming"),"disconnect refresh observable in diagnostics");
+var stopped=new AutoPlayRuntime{Armed=false};stopped.RoomDisconnected();Check(!stopped.Armed,"disconnect never starts previously stopped Assist");
+var configuring=new AutoPlayRuntime{Armed=true,Open=true};configuring.RoomDisconnected();Check(configuring.Armed && configuring.Open && configuring.Status=="Paused - F1 open","F1 configuration stays open and continues to pause casting");
+var stale=new AutoPlayRuntime{Armed=true,ThrowRelease=true,ThrowInput=true};stale.RoomDisconnected();Check(stale.Armed && stale.blockedInput==null && stale.enemies.Count==0 && stale.recovery.ReadFailures==0,"destroyed native channel/input cannot prevent reference refresh");
+Check(MelonLoader.MelonLogger.Messages.Count==2,"native cleanup failures are reported");
+running.RoomDisconnected();Check(running.Armed && running.DisconnectRefreshes==2 && running.enemies.Count==0,"repeated disconnect refresh preserves intent");
+var errors=new List<string>();bool continued=false;
+RoomDisconnectCleanup.Run(()=>throw new InvalidOperationException("stale panel"),ex=>errors.Add(ex.Message));
+RoomDisconnectCleanup.Run(()=>continued=true,ex=>errors.Add(ex.Message));
+Check(continued && errors.SequenceEqual(new[]{"stale panel"}),"failed native room teardown does not skip remaining cleanup");
+Directory.CreateDirectory("validation");File.WriteAllText("validation/dev55-assist-disconnect-fixture.json",JsonSerializer.Serialize(new{passed=checks,actualSource=true,nativeGameplayValidated=false},new JsonSerializerOptions{WriteIndented=true}));

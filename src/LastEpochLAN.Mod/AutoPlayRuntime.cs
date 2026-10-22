@@ -57,7 +57,7 @@ internal sealed partial class AutoPlayRuntime
         if(block && input!=null && blockedInput==null)
         {blockedInput=input;previousDisableInput=input.forceDisableInput;input.forceDisableInput=true;}
     }
-    internal object Diagnostics=>new {Open,Armed,Status,LastRunStatus,pauseReason,Error,Requests,ConfirmedCasts,PotionsUsed,hp,mp,potionCharges,potionMax,
+    internal object Diagnostics=>new {Open,Armed,DisconnectRefreshes,Status,LastRunStatus,pauseReason,Error,Requests,ConfirmedCasts,PotionsUsed,hp,mp,potionCharges,potionMax,
         recovery.ReadFailures,recovery.RetryAt,
         targetScanRadius,targetCandidates,targetInRange,
         slots=Enumerable.Range(0,5).Select(i=>new {slot=i,key=keys[i],name=names[i],cooldown=cooldowns[i],charges=charges[i],status=slotStatus[i],repeatWait=schedule.WaitSeconds(i,Time.unscaledTime)}).ToArray()};
