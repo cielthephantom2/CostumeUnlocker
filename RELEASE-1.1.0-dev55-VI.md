@@ -36,3 +36,7 @@ Thay bộ quét5Hz/5ứng viên bằng callback trigger gold/potion native; Keys
 ## Chấm người chơi minimap tăng gấp đôi
 
 Scale chấm xanh dương từ0.45 lên0.90 (đường kính gấp3 chấm NPC). Giữ minimap góc màn hình, Tab icon gốc và các thay đổi trước. Tra cứu Mesembria: mỗi ô Prophecy tối đa99 completed charges; mỗi lần trigger dùng tối đa6 khi tích từ30. Không thay đổi cơ chế charge.
+
+## Prophecy dùng hết charge theo từng loại thưởng
+
+Mỗi lần trigger hợp lệ tiêu thụ toàn bộ charge, thưởng bằng charge × cơ sở của reward đang chọn (không cố định20), giữ lens/bonus/điều kiện native. UI số charge đồng bộ.195 fixture và176 audit checks đạt; chưa test loot/UI trong game. [Chi tiết](PROPHECY-LINEAR-CHARGES-dev55-VI.md).

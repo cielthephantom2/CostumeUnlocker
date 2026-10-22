@@ -114,3 +114,14 @@ Với các tỷ lệ ngẫu nhiên, vài lần rơi chưa đủ kết luận xá
 - [ ] Túi đầy không spam xử lý; mở chỗ trống rồi nhặt lại. Click Range Pickup vẫn hoạt động.
 - [ ] Đổi map/Monolith, nhận loot đã lưu, scene UI phụ và Join/Disconnect: trigger không mất hoặc sót sang map khác.
 - [ ] Không có log pickup định kỳ; nếu có lỗi native thì kiểm tra dòng lỗi cụ thể.
+
+## Prophecy dùng hết charge theo từng type
+
+- [ ] Chọn reward cơ sở20:10 charge →200 món trước double bonus, ô về0 charge.
+- [ ] Chọn reward cơ sở khác (1/2/4…): tổng bằng cơ sở riêng × charge, không bị đổi tất cả thành20.
+- [ ] Thử4/10/11/30 charge: không còn ngưỡng tiêu thụ cũ3/4/5/6; UI câu consume đúng tổng.
+- [ ] Giữ lens, double reward, quality/LP và đúng mục tiêu. Sai mục tiêu/0 charge không rơi loot, không trừ charge.
+- [ ] Sau fulfillment, kích hoạt thêm Shrine/Rift Beast không nhận lại loot đã trả cho charge cũ.
+- [ ] Kiểm tra mọi ô Prophecy, nội dung UI và nhiều loại reward; chấm minimap/pickup vẫn hoạt động.
+
+- [ ] Mở10/11/30+ charge: nhận1thông báo gốc/ô, tổng charge và số món đúng loại reward; ô0 charge không báo lại.

@@ -264,6 +264,28 @@ Check(installed.Count(t=>bloodrageUiTargets.ContainsKey(t.Name))==2 &&
  progressText.Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Where(m=>m.Name.StartsWith("set_",StringComparison.Ordinal))
  .All(m=>m.Name=="set_text"),
  "Bloodrage hunt/quest counters scale only the UI maximum; helper writes text only, no threshold/currency/save mutations");
+var prophecyHooks=new[]{"OfflineProphecyConsumeAllPatch","OfflineProphecyChargeCountPatch","OfflineProphecyChargeTextPatch","OfflineProphecyNotificationPatch"};
+Check(prophecyHooks.All(n=>installed.Any(t=>t.Name==n)),"local full-charge prophecy transaction and count/text hooks are installed");
+var prophecyPrefix=types.Single(t=>t.Name=="OfflineProphecyConsumeAllPatch").Methods.Single(m=>m.Name=="Prefix");
+var prophecyCalls=prophecyPrefix.Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(prophecyCalls.Any(m=>m.DeclaringType.Name=="ProphecySlot" && m.Name=="TryTriggerReward") &&
+ !prophecyCalls.Any(m=>m.Name is "SpawnRewardForPlayer" or "set_CompletedCharges" or "set_itemsDropped"),
+ "linear prophecy totals use native validated transactions without rewriting charge balance or per-type reward quantities");
+Check(prophecyCalls.Any(m=>m.Name=="Local") && prophecyCalls.Any(m=>m.Name=="NativeCall") && prophecyCalls.Any(m=>m.Name=="Exit") &&
+ prophecyPrefix.Body.ExceptionHandlers.Any(h=>h.HandlerType==Mono.Cecil.Cil.ExceptionHandlerType.Finally),
+ "prophecy consumption guards offline local ownership, native reentry and exception cleanup");
+var prophecyCount=types.Single(t=>t.Name=="OfflineProphecyChargeCountPatch").Methods.Single(m=>m.Name=="Postfix");
+Check(prophecyCount.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="get_CompletedCharges"),
+ "prophecy UI count reads all stored charges rather than the native threshold tier");
+var prophecyText=types.Single(t=>t.Name=="OfflineProphecyCharges");
+Check(prophecyText.Methods.Single(m=>m.Name=="ChargeText").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="Replace") &&
+ prophecyText.Fields.Single(f=>f.Name=="nativeCalls").CustomAttributes.Any(a=>a.AttributeType.Name=="ThreadStaticAttribute"),
+ "prophecy localized charge text keeps rich-text formatting and scopes native reentry per thread");
+Check(types.Single(t=>t.Name=="OfflineProphecyNotificationPatch").Methods.Single(m=>m.Name=="Prefix").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="BufferNotice"),
+ "native prophecy notifications buffer only active local full-charge scopes");
+Check(prophecyText.Methods.Single(m=>m.Name=="Exit").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="Notifications" && m.Name=="ProphecyFulfilled") &&
+ prophecyText.Methods.Single(m=>m.Name=="Exit").Body.ExceptionHandlers.Any(h=>h.HandlerType==Mono.Cecil.Cil.ExceptionHandlerType.Catch),
+ "full-charge scope flushes one native formatted total notification and contains UI failures");
 var assistRuntime=types.Single(t=>t.Name=="AutoPlayRuntime");
 var assistTick=assistRuntime.Methods.Single(m=>m.Name=="Tick");
 Check(assistTick.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="AutoPlayRecovery" && m.Name=="Failed") &&
