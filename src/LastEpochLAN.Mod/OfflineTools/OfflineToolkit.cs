@@ -65,6 +65,7 @@ internal static class OfflineToolkit
     internal static void Tick(bool panel)
     {
         Safely(OfflineOnly.Tick);
+        Safely(MeteorDefaultCosmetic.Ensure);
         Safely(NewCharacterBoost.Tick);
         Safely(OfflineBuffs.Tick);
         Safely(OfflineFortune.Tick);

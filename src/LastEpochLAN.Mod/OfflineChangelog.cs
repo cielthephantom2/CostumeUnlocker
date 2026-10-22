@@ -10,6 +10,7 @@ internal static class OfflineChangelog
     private static GUIStyle bodyStyle;
     private static readonly string content=
         "<b>BONUS OFFLINE</b>\n"+
+        "• Dev.55 bổ sung: Default Meteor trong Skill Costume ghi đè hiệu ứng từ trang bị (kể cả Vilatria), giữ chuyển đổi damage gốc.\n"+
         "• Dev.55: Tranquility của Arcane Ascendance không còn chặn hồi mana; giữ giảm mana cost và sửa cả tooltip.\n"+
         "• Dev.54: gỡ toàn bộ UI Shortcut, hotkey và xử lý mở bảng liên quan.\n"+
         "• Dev.53: chuyển hook Woven Imprint ra hàm chọn Echo bên ngoài để tránh lỗi native→managed khi chuyển Empowered sang Normal Monolith; giữ trọng số x2 và luồng chọn Echo native.\n"+

@@ -19,6 +19,7 @@ internal static class OfflineCosmeticCatalog
     private static bool Refresh()
     {
         if(!OfflineToolkit.Enabled || !OfflineToolkit.Settings.UnlockCosmetics || !GlobalAssets.CosmeticsAvailable) return false;
+        MeteorDefaultCosmetic.Ensure();
         var source=GlobalAssets.Cosmetics;
         if(source==null) return false;
         if(source.Pointer==registry && owned!=null) return true;

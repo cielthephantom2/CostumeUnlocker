@@ -419,6 +419,14 @@ Check(castCalls.Any(m=>m.Name=="Local") && castCalls.Any(m=>m.Name=="getSkillTre
 Check(tranquilityHooks.All(n=>installed.Any(t=>t.Name==n)),"all Tranquility gameplay and legacy/V2 tooltip hooks are selected for installation");
 Check(new[]{"OfflineArcaneTranquilityLegacyTooltipPatch","OfflineArcaneTranquilityTooltipPatch"}.All(n=>
  types.Single(t=>t.Name==n).Methods.Any(m=>m.Name=="Finalizer")),"Tranquility tooltip list changes have native exception cleanup");
+var meteorCostumeHooks=new[]{"OfflineMeteorDefaultRegistryPatch","OfflineMeteorDefaultFlyoutPatch","OfflineMeteorDefaultSlotsPatch","OfflineMeteorDefaultVisualPatch","OfflineMeteorDefaultLightweightPatch","OfflineMeteorDefaultIndicatorPatch"};
+Check(meteorCostumeHooks.All(n=>installed.Any(t=>t.Name==n)),"Meteor Default native registry, flyout and both presentation paths are installed");
+var meteorCostumeCalls=types.Where(t=>t.Name=="MeteorDefaultCosmetic" || meteorCostumeHooks.Contains(t.Name)).SelectMany(t=>t.Methods)
+ .Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Select(i=>i.Operand).OfType<MemberReference>().ToArray();
+Check(!meteorCostumeCalls.Any(m=>m.DeclaringType?.Name is "MeteorMutator" or "MeteorAoEMutator" or "DamageStats" or "CharacterMutator"),
+ "Meteor Default never edits conversion, damage, mutator or item gameplay fields");
+Check(meteorCostumeCalls.Any(m=>m.Name=="get_CachedCharacterEquippedCosmeticSkills") &&
+ meteorCostumeCalls.Any(m=>m.Name=="getLocalActorSync"),"Meteor Default presentation uses the selected native cosmetic and local actor identity");
 var arcane=types.Single(t=>t.Name=="OfflineArcaneMovementPatch");
 var arcaneCalls=arcane.Methods.Single(m=>m.Name=="Prefix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
 Check(installed.Contains(arcane) && arcaneCalls.Any(m=>m.Name=="Local") && arcaneCalls.Any(m=>m.Name=="Instantiate") && arcaneCalls.Any(m=>m.Name=="set_roots") &&
