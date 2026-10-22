@@ -57,17 +57,21 @@ internal static class OfflinePickup
            !(Item.isKey(visuals.itemData.itemType) || ItemList.isCraftingItem(visuals.itemData.itemType)))return;
         var pool=GroundItemManager.instance?.goldPileSubscriber;
         if(pool?.Pool?.prefabT==null)return;
-        var trigger=pool.instantiate(visuals.transform.position,Quaternion.identity,null,true);
+        // Match native gold creation: instantiate active and unparented so
+        // Unity runs BaseInteraction.Awake and binds ConditionHandler before
+        // initialise dereferences it. GroundItemVisuals can still be inactive.
+        var trigger=pool.instantiate(visuals.transform.position,Quaternion.identity,null,false);
         if(trigger==null)return;
         try
         {
             trigger.gameObject.layer=actor.gameObject.layer;
-            trigger.transform.SetParent(visuals.transform,true);
             var bridge=new Bridge(visuals,trigger,pool);
             bridges.Add(trigger.Pointer,bridge);byVisuals.Add(visuals.Pointer,bridge);
             trigger.initialise(actor,visuals.id);
             Configure(trigger);
-            trigger.gameObject.SetActive(true);
+            // Parent only after native initialization; inactive loot visuals
+            // must not suppress Awake on a newly allocated trigger.
+            trigger.transform.SetParent(visuals.transform,true);
         }
         catch {bridges.Remove(trigger.Pointer);byVisuals.Remove(visuals.Pointer);pool.Release(trigger);throw;}
     }

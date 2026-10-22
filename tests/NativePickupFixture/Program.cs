@@ -20,6 +20,7 @@ var bone=new PickupAncientBonesInteraction{player=actor};OfflinePickup.Configure
 var other=new OtherPickupInteraction{player=actor};OfflinePickup.Configure(other);Check(Radius(other)==5.6f,"XP/favor and other interactions untouched");
 GroundItemVisuals Visual(int type,uint id)=>new(){id=id,itemData=new(){itemType=type},transform=new(){position=new(30,0,40)}};
 var key=Visual(100,55);OfflinePickup.Attach(key);var trigger=m.goldPileSubscriber.Active.Single();
+Check(!m.goldPileSubscriber.LastInstantiateInactive && trigger.AwakeCompleted,"cold native trigger activates and binds ConditionHandler before initialise");
 Check(trigger.gameObject.layer==actor.gameObject.layer,"native pickup collision layer follows the local actor");
 Check(trigger.player==actor && trigger.id==55,"key borrows native actor and item id initialization");
 Check(trigger.transform.Parent==key.transform && trigger.transform.KeptWorldScale,"key trigger follows actual drop without scaling with item visuals");
@@ -40,11 +41,12 @@ var material=Visual(101,56);OfflinePickup.Attach(material);trigger=m.goldPileSub
 try{OfflinePickup.PickUp(trigger);throw new Exception("expected exception");}catch(InvalidOperationException){}
 Check(OfflinePickup.ItemPickupDepth==0,"native error restores pickup scope");m.ThrowOnItem=false;
 OfflinePickup.Attach(material);Check(m.goldPileSubscriber.Active.Count==1,"pooled visual reuse replaces old trigger");
+Check(m.goldPileSubscriber.Active.Single().AwakeCompleted,"replacement native trigger also runs Awake before initialization");
 OfflinePickup.Attach(Visual(102,57));Check(m.goldPileSubscriber.Active.Count==1,"equipment does not receive auto pickup");
 var tutorial=Visual(100,58);tutorial.itemData.Tutorial=true;OfflinePickup.Attach(tutorial);Check(m.goldPileSubscriber.Active.Count==1,"tutorial loot requires native manual interaction");
 OfflineToolkit.Enabled=false;OfflinePickup.Attach(Visual(100,59));Check(m.goldPileSubscriber.Active.Count==1,"online item never receives a trigger");OfflineToolkit.Enabled=true;
 OfflinePickup.Clear();Check(m.goldPileSubscriber.Active.Count==0,"scene cleanup returns remaining triggers to native pool");
 m.pickupItem(actor,100,StackableItemFlags.All);Check(m.VacuumCalls==1,"manual pickup retains the native vacuum");
 Check(typeof(OfflinePickup).GetMethods(System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Static).All(x=>x.Name!="Tick" && x.Name!="Moving"),"no managed frame sweep or movement sampler");
-Directory.CreateDirectory("validation");File.WriteAllText("validation/dev55-native-pickup-fixture.json",JsonSerializer.Serialize(new{passed=true,checks,actualSource="OfflinePickup.cs",nativePhysicsGameplayValidated=false},new JsonSerializerOptions{WriteIndented=true}));
+Directory.CreateDirectory("validation");File.WriteAllText("validation/dev55-pickup-awake-fixture.json",JsonSerializer.Serialize(new{passed=true,checks,actualSource="OfflinePickup.cs",nativePhysicsGameplayValidated=false},new JsonSerializerOptions{WriteIndented=true}));
 Console.WriteLine($"PASS {checks} native pickup fixture checks");

@@ -24,4 +24,10 @@ Prefab native đã được đọc trực tiếp từ `PermaLoad.bundle`: gold/p
 
 Fixture actual-source kiểm tra radius x3, không nhân dồn, reset khi tái dùng pool, ownership, collision layer, keys/materials, cleanup và exception. Audit compiled xác nhận World Assist và scanner cũ vắng mặt, các hook native mới được chọn cài đặt. **Chưa xác nhận physics/pickup thực tế hoặc FPS trong game với DLL này.**
 
-Release build: 0 warnings/errors. **34 actual-source pickup checks** và **145 compiled/native audit checks** pass (190 patch classes inspected). Bằng chứng trong `validation/dev55-native-pickup-*`.
+Release build: 0 warnings/errors. **36 actual-source pickup checks** và **145 compiled/native audit checks** pass (190 patch classes inspected). Bằng chứng trong `validation/dev55-native-pickup-*`.
+
+## Hotfix khởi tạo trigger từ lỗi MelonLoader
+
+Log 23:32:52 ngày 22/10/2026 báo `NullReferenceException` trong `PickupGroundObjectInteraction.initialise`, gọi từ `OfflinePickup.Attach`. Bản trước dùng `instantiateInactive=true`, khiến trigger mới chưa chạy `BaseInteraction.Awake`, chưa gắn `conditionHandler` mà initialise đã dùng field này.
+
+Đã sửa giống luồng gold gốc: instantiate active ở root, đặt layer và đăng ký bridge, initialise, chỉnh radius rồi mới parent vào loot visual. Visual inactive không còn ngăn Awake trước initialise. Không gọi Awake thủ công hoặc đăng ký lặp event. Fixture mới tái hiện lỗi trước sửa và pass sau sửa; 36 pickup checks, 145 audit checks, build 0 warnings/errors. Chưa chạy xác nhận bản hotfix trong game; game đang mở nên không ghi đè DLL Steam.

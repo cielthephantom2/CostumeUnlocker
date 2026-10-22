@@ -9,7 +9,7 @@ namespace UnityEngine
  public struct Vector3{public float x,y,z;public Vector3(float a,float b,float c){x=a;y=b;z=c;}public static Vector3 operator*(Vector3 v,float n)=>new(v.x*n,v.y*n,v.z*n);}
  public struct Quaternion{public static Quaternion identity=>new();}
  public class Transform{public Vector3 position;public Transform Parent;public bool KeptWorldScale;public void SetParent(Transform p,bool world){Parent=p;KeptWorldScale=world;}}
- public class GameObject{public bool Active;public int layer;public void SetActive(bool value)=>Active=value;}
+ public class GameObject{public bool Active;public int layer;public Action Activated;public void SetActive(bool value){Active=value;if(value)Activated?.Invoke();}}
  public class Collider:Il2Cpp.NativeObject{public bool isTrigger=true,enabled=true;}
  public class SphereCollider:Collider{public float radius;}
  public class CapsuleCollider:Collider{public float radius,height;}
@@ -26,10 +26,10 @@ namespace Il2Cpp
  public static class ItemList{public static bool isCraftingItem(int type)=>type==101;}
  public class PickupGroundObjectInteraction:NativeObject
  {
-  public Actor player;public uint id;public UnityEngine.Transform transform=new();public UnityEngine.GameObject gameObject=new();
+  public bool AwakeCompleted;public Actor player;public uint id;public UnityEngine.Transform transform=new();public UnityEngine.GameObject gameObject=new();
   public UnityEngine.Collider[] Colliders={new UnityEngine.SphereCollider{radius=5.6f}};
   public T[] GetComponentsInChildren<T>(bool inactive)where T:class=>Colliders.OfType<T>().ToArray();
-  public void initialise(Actor a,uint value){player=a;id=value;LastEpochLAN.Mod.OfflineTools.OfflinePickup.Configure(this);}
+  public void initialise(Actor a,uint value){if(!AwakeCompleted)throw new NullReferenceException("ConditionHandler unavailable before native Awake");player=a;id=value;LastEpochLAN.Mod.OfflineTools.OfflinePickup.Configure(this);}
  }
  public class GoldPickupInteraction:PickupGroundObjectInteraction{public void PickUp(){}}
  public class PotionPickupInteraction:PickupGroundObjectInteraction{}
@@ -40,10 +40,10 @@ namespace Il2Cpp
   public class Pool<T>where T:PickupGroundObjectInteraction,new(){public T prefabT=new();}
   public class Subscriber<T>where T:PickupGroundObjectInteraction,new()
   {
-   public Pool<T> Pool=new();public System.Collections.Generic.List<T> Active=new();public int Allocated,Released;
+   public Pool<T> Pool=new();public System.Collections.Generic.List<T> Active=new();public int Allocated,Released;public bool LastInstantiateInactive;
    public T instantiate(UnityEngine.Vector3 pos,UnityEngine.Quaternion rot,UnityEngine.Transform parent,bool inactive)
    {
-    var item=new T();item.transform.position=pos;item.transform.Parent=parent;
+    LastInstantiateInactive=inactive;var item=new T();item.gameObject.Activated=()=>item.AwakeCompleted=true;item.gameObject.SetActive(!inactive);item.transform.position=pos;item.transform.Parent=parent;
     item.Colliders=Pool.prefabT.Colliders.Select(c=>c switch{UnityEngine.SphereCollider s=>(UnityEngine.Collider)new UnityEngine.SphereCollider{radius=s.radius,isTrigger=s.isTrigger},UnityEngine.CapsuleCollider cap=>new UnityEngine.CapsuleCollider{radius=cap.radius,height=cap.height,isTrigger=cap.isTrigger},UnityEngine.BoxCollider b=>new UnityEngine.BoxCollider{size=b.size,isTrigger=b.isTrigger},_=>new UnityEngine.Collider()}).ToArray();
     Active.Add(item);Allocated++;return item;
    }

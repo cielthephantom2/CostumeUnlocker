@@ -2,7 +2,7 @@
 
 Development release, protocol **44**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). The Host and every Client must update both DLLs; older protocol peers cannot join. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
 
-**Dev.55, pickup repair:** World Assist has been removed completely, including its F4 submenu, drawing, target discovery, paths and hooks. Gold/potion/Ancient Bones use the original native pickup triggers with their radius multiplied by 3. Keys/materials reuse pooled native gold triggers and native item storage. Removed the managed ground-item sweep and movement requirement. Range Pickup remains available for explicit clicks. Version 1.1.0-dev.55 / protocol 44; install both DLLs together. See [current report](NATIVE-PICKUP-dev55-VI.md).
+**Dev.55, pickup repair:** Fixed the Keys/Materials trigger initialization crash: activate native pooled triggers before initialization, then parent them to loot visuals. World Assist has been removed completely, including its F4 submenu, drawing, target discovery, paths and hooks. Gold/potion/Ancient Bones use the original native pickup triggers with their radius multiplied by 3. Keys/materials reuse pooled native gold triggers and native item storage. Removed the managed ground-item sweep and movement requirement. Range Pickup remains available for explicit clicks. Version 1.1.0-dev.55 / protocol 44; install both DLLs together. See [current report](NATIVE-PICKUP-dev55-VI.md).
 
 **Faction bonuses retained:** CoF Rank7 Experimental x15, Rank8 LP x20, Rank10 boss-specific drops +300%, Rank11 Rare→Exalted 50%; The Woven Rank7 reforge 30%, Rank9 Memory Amber 50%, with matching text.
 

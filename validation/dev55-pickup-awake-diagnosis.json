@@ -1,0 +1,17 @@
+{
+  "log": "MelonLoader/Latest.log",
+  "observedTime": "2026-10-22 23:32:52",
+  "exception": "Il2CppException / NullReferenceException",
+  "callChain": [
+    "GroundItemVisuals.initialise postfix",
+    "OfflinePickup.Attach",
+    "PickupGroundObjectInteraction.initialise"
+  ],
+  "nativeAwake": "BaseInteraction.Awake RVA 0x185CF10 binds conditionHandler at offset 0x88",
+  "nativeInitialise": "PickupGroundObjectInteraction.initialise RVA 0x1883EB0 dereferences conditionHandler",
+  "cause": "Inactive newly allocated trigger has not run Awake before initialise",
+  "fix": "Match native gold instantiateInactive=false; parent to loot after initialization",
+  "regressionBefore": "Fixture reproduced ConditionHandler unavailable before native Awake",
+  "regressionAfter": 36,
+  "nativeGameplayValidated": false
+}

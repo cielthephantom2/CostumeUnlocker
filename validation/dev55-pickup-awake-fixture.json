@@ -1,0 +1,6 @@
+{
+  "passed": true,
+  "checks": 36,
+  "actualSource": "OfflinePickup.cs",
+  "nativePhysicsGameplayValidated": false
+}
