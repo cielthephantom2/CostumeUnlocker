@@ -1,0 +1,25 @@
+{
+  "version": "1.1.0-dev.55",
+  "protocol": 44,
+  "releaseCommit": "d14c59d634b8eb07d539a177b719e5e8bfe57871",
+  "releaseTagCommit": "d14c59d634b8eb07d539a177b719e5e8bfe57871",
+  "releaseUrl": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.55",
+  "zipSha256": "F72642676BD765D4E88F13D530B333D0898B9DC17815A5D3A2967088FC7038F0",
+  "downloadedZipAndDllsVerified": true,
+  "defaultMeteorAbsent": true,
+  "steamInstalled": false,
+  "reason": "Game process9384 was running; no loaded DLLs replaced.",
+  "files": [
+    {
+      "sha256": "1E8CA57694570A53BCF9FB1B292ABAE69FDF9A850BFAD2C0678C2041F48FB025",
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1125888
+    },
+    {
+      "sha256": "0A8A322159B75A547931418A64CC9DF664DACDD3CF30E59ADF6A9581D93E6ADC",
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 435200
+    }
+  ],
+  "nativeGameplayVerified": false
+}
