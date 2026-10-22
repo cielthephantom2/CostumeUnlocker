@@ -8,24 +8,53 @@ void Check(bool ok,string message){if(!ok)throw new Exception(message);checks.Ad
 void Call(Type patch,string name,params object[] args)=>patch.GetMethod(name,BindingFlags.NonPublic|BindingFlags.Static)!.Invoke(null,args);
 bool Near(float a,float b)=>Math.Abs(a-b)<.0001f;
 var player=new Actor{mana=new()};PlayerFinder.Player=player;
-var meteor=new MeteorMutator();var tree=new LocalTreeData{actor=player,Attached=meteor};
+var meteor=new MeteorMutator{actor=player};var allocation=new LocalTreeData.SkillTreeData();
+var tree=new LocalTreeData{actor=player,Attached=meteor,Skill=allocation};player.localTreeData=tree;
+var initialMetadata=new GlobalTreeData.TreeData();initialMetadata.Nodes[1]=new(){name=MeteorNodeRules.Extinction};initialMetadata.Nodes[2]=new(){name=MeteorNodeRules.HeatFlux};GlobalTreeData.Instance.Trees["Meteor"]=initialMetadata;
 for(int points=0;points<=4;points++)
 {
+ allocation.nodes=new(){new(){id=1,pointsAllocated=(byte)points},new(){id=2,pointsAllocated=(byte)points}};
  meteor.chanceFor100increasedArea=.1f*points;meteor.frostClawCastsOnImpact=points;
- Call(typeof(OfflineMeteorTreePatch),"Postfix",tree);
+ Call(typeof(OfflineMeteorTreePatch),"Postfix",tree,allocation);
  Check(Near(meteor.chanceFor100increasedArea,Math.Min(1,.33f*points)) && meteor.frostClawCastsOnImpact==2*points,
   "native recomputation then postfix sets33% and2 Frost Claws per point, including zero and probability cap: "+points);
 }
+allocation.nodes=new(){new(){id=1,pointsAllocated=2},new(){id=2,pointsAllocated=2}};
 for(int refresh=0;refresh<3;refresh++)
 {
- meteor.chanceFor100increasedArea=.2f;meteor.frostClawCastsOnImpact=2;Call(typeof(OfflineMeteorTreePatch),"Postfix",tree);
+ meteor.chanceFor100increasedArea=.2f;meteor.frostClawCastsOnImpact=2;Call(typeof(OfflineMeteorTreePatch),"Postfix",tree,allocation);
  Check(Near(meteor.chanceFor100increasedArea,.66f) && meteor.frostClawCastsOnImpact==4,"repeated full native refresh does not accumulate modifiers");
 }
 tree.actor=new Actor();meteor.chanceFor100increasedArea=.1f;meteor.frostClawCastsOnImpact=1;
-Call(typeof(OfflineMeteorTreePatch),"Postfix",tree);
+Call(typeof(OfflineMeteorTreePatch),"Postfix",tree,allocation);
 Check(meteor.chanceFor100increasedArea==.1f && meteor.frostClawCastsOnImpact==1,"enemy or other actor tree remains native");tree.actor=player;
-OfflineToolkit.Enabled=false;Call(typeof(OfflineMeteorTreePatch),"Postfix",tree);
+OfflineToolkit.Enabled=false;Call(typeof(OfflineMeteorTreePatch),"Postfix",tree,allocation);
 Check(meteor.chanceFor100increasedArea==.1f && meteor.frostClawCastsOnImpact==1,"online tree stays native");OfflineToolkit.Enabled=true;
+// Reproduce the live report: tree initialization before PlayerFinder is ready
+// never passes Local(), but the actual cast must still use the allocated points.
+PlayerFinder.Player=null;tree.actor=player;
+Call(typeof(OfflineMeteorTreePatch),"Postfix",tree,allocation);
+PlayerFinder.Player=player;
+for(int cast=0;cast<5;cast++)
+{
+ Call(typeof(OfflineMeteorCastPatch),"Prefix",meteor);
+ Check(Near(meteor.chanceFor100increasedArea,.66f) && meteor.frostClawCastsOnImpact==4,"cast repairs skipped loading hook without accumulating: "+cast);
+}
+allocation.nodes.Clear();Call(typeof(OfflineMeteorCastPatch),"Prefix",meteor);
+Check(meteor.chanceFor100increasedArea==0 && meteor.frostClawCastsOnImpact==0,"respec to zero clears both actual effects on next cast");
+var stockArcane=new Ailment{id=AilmentID.ArcaneAscendance,roots=true,duration=8};
+Ailment ApplyArcane(Actor actor,Ailment source){object[] a={new AilmentReceiver{actor=actor},source};Call(typeof(OfflineArcaneMovementPatch),"Prefix",a);return (Ailment)a[1];}
+var mobile=ApplyArcane(player,stockArcane);
+Check(!mobile.roots && stockArcane.roots && mobile.duration==8 && mobile.id==stockArcane.id,"local Arcane copy removes only root flag and preserves stock definition");
+Check(ReferenceEquals(mobile,ApplyArcane(player,stockArcane)),"repeated Arcane applications reuse root-free definition for symmetric removal");
+object[] arcaneDescription={new Ability{playerAbilityID="arcas"},"Toggle to prevent movement and drain 25 mana each second."};
+Call(typeof(OfflineArcaneDescriptionPatch),"Postfix",arcaneDescription);
+Check((string)arcaneDescription[1]=="Toggle to drain 25 mana each second.","Arcane description removes movement restriction while preserving mana drain");
+var root=new Ailment{id=AilmentID.Root,roots=true};
+Check(ReferenceEquals(root,ApplyArcane(player,root)) && root.roots,"enemy root ailments are preserved");
+Check(ReferenceEquals(stockArcane,ApplyArcane(new Actor(),stockArcane)),"other actors retain native Arcane root");
+OfflineToolkit.Enabled=false;
+Check(ReferenceEquals(stockArcane,ApplyArcane(player,stockArcane)),"online Arcane remains native");OfflineToolkit.Enabled=true;
 var impact=new MeteorAoEMutator{actor=player,frostClawCastsOnImpact=2};
 object Begin(MeteorAoEMutator value){object[] args={value,null};Call(typeof(OfflineMeteorImpactScopePatch),"Prefix",args);return args[1];}
 void End(object scope)=>Call(typeof(OfflineMeteorImpactScopePatch),"Finalizer",scope);

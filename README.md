@@ -1,6 +1,8 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.50
+# TM Last Epoch Co-op Mod — 1.1.0-dev.52
 
 Development release, protocol **44**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). The Host and every Client must update both DLLs; older protocol peers cannot join. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
+
+**Dev.52:** Adds F4 UI Shortcut with independent optional hotkeys for Mesembria Telescope, Mastery respec, Mastery Points respec, Champions' Gate and native Personal Stash. Repairs actual Meteor cast values (Extinction33% and Heat Flux2 Frost Claws per point), removes Arcane Ascendance's movement lock, and corrects Sorcerer Archmage refunds and text. At5points: below300 maximum mana gives+5 spell damage/35% chance to refund20% mana cost;300–999 gives+10/70%/40%;1000+ gives+15/100%/60%. Build0warnings/errors;94 Archmage,51 Meteor/Arcane,59 Shortcut fixture checks and126 compiled/native audit checks pass. Direct engine gameplay/render verification remains pending. Protocol44 and the exact Core47 binary are retained. See [release report](RELEASE-1.1.0-dev52-VI.md).
 
 **Dev.50:** Removes the added Shared Stash child-tab Delete button, its visibility/layout hooks and client deletion action at the user's request. Native Delete Category remains. Existing stash records and generation protections are retained for compatibility. Meteor tooltips replace the original values directly (Extinction33% per point; Heat Flux2 per point and100% mana), without an added bonus paragraph. Includes the latest label layout changes; the reported clipping is not confirmed fixed in-game. **Protocol44: update both DLLs on every peer.** See [release report](RELEASE-1.1.0-dev50-VI.md).
 

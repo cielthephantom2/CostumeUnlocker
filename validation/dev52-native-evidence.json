@@ -1,0 +1,54 @@
+{
+  "gameAssemblySha256": "323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464",
+  "scope": "Installed native bodies, metadata literals, and English localization assets. No engine execution.",
+  "nativeGameplayVerified": false,
+  "node": {
+    "tree": "mg-1",
+    "id": 30,
+    "name": "Archmage",
+    "internalName": "Sorc Base Spell Damage"
+  },
+  "native": {
+    "perPointSpellDamage": 1,
+    "perPointRefundChance": 0.07000000029802322,
+    "refundFraction": 0.20000000298023224,
+    "chanceMultipliers": [
+      2.0,
+      3.0
+    ],
+    "maxManaThresholds": [
+      300,
+      1000
+    ],
+    "mageTree": "0x26AA790",
+    "onAbilityUse": "0x2641220",
+    "archmageRefundCall": "0x2641C7B",
+    "spellDamageThresholdLogic": "0x261A65D",
+    "refundFunction": "0x1290FC0",
+    "refundCallsInOnAbilityUse": 1
+  },
+  "tooltip": {
+    "legacyAndV2CallLocalizationDescription": true,
+    "legacyAndV2CallLocalizationStatName": true
+  },
+  "desiredAtFivePoints": [
+    {
+      "minimumMaximumMana": 0,
+      "spellDamage": 5,
+      "chance": 0.35,
+      "refundFraction": 0.2
+    },
+    {
+      "minimumMaximumMana": 300,
+      "spellDamage": 10,
+      "chance": 0.7,
+      "refundFraction": 0.4
+    },
+    {
+      "minimumMaximumMana": 1000,
+      "spellDamage": 15,
+      "chance": 1,
+      "refundFraction": 0.6
+    }
+  ]
+}

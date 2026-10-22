@@ -1,0 +1,126 @@
+PASS: legacy encounter adapters and global Nemesis/Omen/shrine classes absent from binary
+PASS: generic callback/state-graph/object-state replay engines absent
+PASS: remaining Harmony patches exclude encounter interaction/replay except explicitly authorized local Bloodrage charge boundaries:
+PASS: legacy encounter payloads and skill-RPC model absent from Core
+PASS: NPC world snapshots have no legacy encounter side channel
+PASS: skill visual channel cannot carry legacy interaction or reward acknowledgements
+PASS: NPC animation, remote VFX and enemy replicas remain compiled
+PASS: development encounter catalogue has no Harmony patch or native gameplay mutation calls
+PASS: native encounter discovery requires explicit development switch
+PASS: Disintegrate movement, animation, root overrides and related Core helpers are absent from binary
+PASS: compiled mod has no direct references to Disintegrate/Ascendance or rotation-penalty override APIs
+PASS: Melon automatic PatchAll is disabled; release installs only selected inventory/local hooks
+PASS: compiled release shared-world policy is false with no configuration or command-line override
+PASS: selected compiled hooks retain F2 custody/projection, Loot Filter labels, local Assist and DPS
+PASS: network VFX, skill capture, enemy AI and shared Monolith hooks are not selected for installation
+PASS: runtime patch installation uses the release allowlist without a PatchAll bypass
+PASS: compiled OnUpdate cannot reach shared-world/combat/map/encounter/remote rendering updates under release policy
+PASS: compiled OnUpdate still processes inventory presence, F2 and room filters
+PASS: compiled OnLateUpdate returns before native party status, cosmetics, summon and enemy pose work
+PASS: inventory presence does not capture avatar, summons, ground items or VFX
+PASS: local glyph Forge/seal/description hooks are selected by inventory-only release policy
+PASS: Hope Forge hook checks offline local actor/slotted glyph and cleans up its scoped override in a finalizer
+PASS: Hope edits only the scoped float probability, preserving native random roll and original craft execution
+PASS: Hope RNG hook is installed only for Forge leases and removed by finalization, with no permanent native Roll hook while mapping
+PASS: Despair patches its native chance getter rather than executing a separate seal/upgrade or changing item identity
+PASS: compiled Hope override uses thread-local crafting scope instead of a process-wide RNG replacement
+PASS: linear Corruption installs real inlined EXP/rarity/LP consumers in addition to public preview helpers
+PASS: linear Corruption does not install global RNG/combat hooks or change monster power
+PASS: LP linearization changes Corruption/non-CoF inputs only; native RNG, CoF attribution and max4 remain native
+PASS: Amber hook only reads serialized asset values; no encounter state writes or additional drop execution
+PASS: Shade calculator supplies native highest-C input so catchup converges instead of x5 overshoot
+PASS: Shade completion trace reads progress only and never changes corruption/save state
+PASS: Bloodrage doubles only offline earned/display/initial-currency boundaries, without native counter writes or extra reward execution
+PASS: Bloodrage native threshold progression, per-charge spending and timer stay unpatched
+PASS: Bloodrage hunt/quest counters scale only the UI maximum; helper writes text only, no threshold/currency/save mutations
+PASS: Assist retains bounded native-read recovery and observable last-run/pause reason without new global hooks
+PASS: Assist timer diagnostics/config-change tracking keep a single local scheduler tick
+PASS: DPS Settings -> close F4 regression: Assist reads visible root panel, never stale hidden Settings page flag
+PASS: Woven reroll remains offline-only, guarded by Core LP range, and rebuilds native item serialization
+PASS: Woven native machine eligibility and craft caller are unpatched; 0 LP remains rejected, use consumption stays native
+PASS: Woven input container, crafting UI and zone/use gate remain entirely native
+PASS: all eleven narrowly selected Weaver Imprint gameplay/legacy/V2 tooltip patch classes are installed
+PASS: Imprint point refresh writes only Sealed/Warlord derived rate fields, not shared assets, points or unlock flags
+PASS: Sealed uses actual allocated-point argument and the explicit6%-to12% rate, not legacy .029 doubled to .058
+PASS: Commoner inlined probability has exception-safe numerator restoration and thread-local reentrancy guard
+PASS: Woven/Loomed scopes cover both outer island probability and final native weighted choice
+PASS: Imprint multiplier patches never roll/replay rewards or generate/mutate items directly
+PASS: Shared Sort uses native algorithm on isolated projection containers and submits only order to Host, never personal stash save
+PASS: Configure Tab reuses native V2 modal and saves result through authoritative shared Host command
+PASS: Shared tab navigation reuses native tab/control artwork with a dedicated add-tab action
+PASS: Shared tab switching is blocked during custody operations and selected view checks reply tab identity
+PASS: removed child-tab Delete UI, layout helper and client action are absent from the compiled mod
+PASS: all deposit/withdraw/ack retries retain tab generation; deleted selection falls back and native modal state is restored
+PASS: Protocol44 requires matching peers; per-tab snapshots retain the96-item transport limit
+PASS: Native shared-tab buttons create stable root hit targets; copied scroll controls disable serialized private callbacks
+PASS: Other-tab revisions do not rebuild unchanged item projections, and native Configure modal completion is polled even after F2 closes
+PASS: Legacy Stash captures its real tab prefab, add button and Sort/Configure controls instead of falling back to fabricated UI
+PASS: Shared view creates no replacement button, tab strip, page label or status overlay GameObjects
+PASS: Native button rebinding replaces serialized events so private-stash persistent callbacks cannot survive
+PASS: Original search field uses fresh events and native search on the isolated shared projection
+PASS: Legacy tabs reuse the native SimpleLayoutGroup with fresh element records and original layout settings
+PASS: Native tab layout rebuild is driven by changed tab metadata, not an unconditional per-frame rebuild
+PASS: Configure uses the original legacy or V2 modal matching the captured native Stash controls
+PASS: Every native shared tab gets a context-click handler and configuration waits for the selected Host tab snapshot
+PASS: Legacy tab tint is applied to its native background, separately from the icon
+PASS: Native modal priority values are initialized from Host metadata and serialized on confirm, without hiding priority widgets
+PASS: Category editor reuses native modal and submits settings to the authoritative Host
+PASS: Shared categories use native category artwork and add control instead of custom UI
+PASS: Native duplicate/delete callbacks are scoped to shared modal and original callback objects are restored afterwards
+PASS: removed child-tab Delete lifecycle hooks are absent
+PASS: Scoped native panel-open hook masks the source before rendering and restores its visual state
+PASS: Closing F2 hides cached projection instead of reopening/cloning the personal stash on every toggle
+PASS: Shared deposits use native priority matching and route before starting the durable custody transaction
+PASS: shared tab scrolling measures four corners through native transform bindings instead of stripped Unity bounds helper
+PASS: shared native view and geometry have no direct Unity/TMP unstripping-failure stubs:
+PASS: native layout restore preserves update mode, inactive-element policy and freshly mapped clone element records
+PASS: synthetic input hit surfaces remain transparent instead of becoming flat default Button backgrounds
+PASS: tab/category sizing uses restored native layout rather than a fixed copied width or text-padding estimate
+PASS: both shared tab/category labels resize their rect from TMP preferred text metrics before native parent layout
+PASS: extra Configure Category footer control is explicitly suppressed while category context actions remain available
+PASS: offline Imprint tooltip updates fresh native display values without granting or editing node points
+PASS: legacy NodeTooltipManager path scales only the fresh valueText before native coloring
+PASS: legacy tooltip note requests native layout refresh without editing serialized node stats or allocated points
+PASS: all eight Meteor gameplay/legacy/V2 tooltip hooks are selected
+PASS: Meteor allocation application changes only large-Meteor chance and Heat Flux count, not crit/damage stats or allocated points
+PASS: Meteor cast refresh reads local allocated tree before native object creation even if loading skipped the tree hook
+PASS: local Arcane uses a private root-free ailment definition without clearing unrelated root counters
+PASS: shortcuts request native panels and local waypoint travel while retaining native confirmation and costs
+PASS: all Archmage native, description, stat-label and legacy/V2 value hooks are installed
+PASS: Archmage correction uses a thread-local scope with native exception cleanup
+PASS: Archmage adjusts the native refund argument for its original cast ID without replaying mana effects
+PASS: Meteor mana correction is a thread-local finalizer scope and never refunds/replays a cast
+PASS: all five offline native ladder hooks are selected by the release allowlist
+PASS: shared no-op native HandleSeasonEventUI body is never detoured; season visuals are changed only while opening the concrete Ladder view
+PASS: native Echo setup copies faction cache chance at0x120 into the zone roll field at0x304
+PASS: actual cache coroutine reads zone chance at0x304 for its native RNG roll, rather than only reading tooltip stats
+PASS: native Meteor propagates Heat Flux count from its0x150 field into impact0x138
+PASS: actual large-Meteor native RNG reads chanceFor100increasedArea at0x178
+PASS: Heat Flux native consumer queries Frost Claw ID708 and applies its inlined mana factor to that result
+PASS: native hook targets a non-noop implementation: LadderUIManager::OnEnable
+PASS: native hook targets a non-noop implementation: LadderUIManager::OnDisable
+PASS: native hook targets a non-noop implementation: LadderSessionManager::GetSession
+PASS: native hook targets a non-noop implementation: LadderUIManager::UpdatePlayerRowElement
+PASS: native hook targets a non-noop implementation: LadderUIFilterPanel::get_CurrentSelection
+PASS: native hook targets a non-noop implementation: UsingAbility::activateIfEnemyInRange
+PASS: native hook targets a non-noop implementation: TargetFinder::updateTarget
+PASS: native hook targets a non-noop implementation: MeteorSkillTree::updateMutator
+PASS: native hook targets a non-noop implementation: MeteorMutator::Mutate
+PASS: native hook targets a non-noop implementation: MeteorAoEMutator::Mutate
+PASS: native hook targets a non-noop implementation: BaseMana::getManaCost
+PASS: native hook targets a non-noop implementation: LE.UI.Tooltips.NodeTooltipContentBuilder::GetModifierInfo
+PASS: native hook targets a non-noop implementation: NodeTooltipManager::BuildColoredValue
+PASS: native hook targets a non-noop implementation: LE.UI.Tooltips.NodeTooltipContentBuilder::GetNodeTooltipInfo
+PASS: native hook targets a non-noop implementation: NodeTooltipManager::setInfoForNode
+PASS: native hook targets a non-noop implementation: LE.UI.Tooltips.NodeTooltipContentBuilder::GetModifierInfo
+PASS: native hook targets a non-noop implementation: LE.UI.Tooltips.NodeTooltipContentBuilder::GetNodeTooltipInfo
+PASS: native hook targets a non-noop implementation: NodeTooltipManager::BuildColoredValue
+PASS: native hook targets a non-noop implementation: NodeTooltipManager::setInfoForNode
+PASS: inventory-only room publishes bounded character ladder data and refreshes native table
+PASS: room ladder supplies native sessions/table without online services or a custom overlay
+PASS: offline class/mode filters use loaded character cycle rather than online cycle service
+PASS: offline ladder detaches its owned filter/locale/scroll subscriptions
+PASS: aggressive minion gate checks offline environment, stance and bounded local ownership chain
+PASS: both x2 minion acquisition hooks install with finalizers restoring temporary native fields
+PASS: minion acquisition never mutates global aggro constants or executes an extra attack
+PASS: Game compatibility accepts only the old pinned SHA and inspected Steam26087601 SHA, without a wildcard bypass

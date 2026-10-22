@@ -42,6 +42,27 @@ internal static class MeteorNodeRuntime
     internal static long TreeUpdates,ManaAdjustments;
     internal static float LastLargeMeteorChance;
     internal static int LastFrostClawCount;
+    internal static long CastAttempts,CastUpdates,MissingTrees;
+    internal static bool Apply(MeteorMutator mutator,LocalTreeData.TreeData tree)
+    {
+        if(mutator==null || tree?.nodes==null)return false;
+        var global=GlobalTreeData.get()?.getTreeData(tree.treeID);if(global==null)return false;
+        int extinction=0,heat=0;
+        foreach(var node in tree.nodes)
+        {
+            if(node==null)continue;
+            var name=global.getNode(node.id)?.name;
+            if(name==MeteorNodeRules.Extinction)extinction+=node.pointsAllocated;
+            else if(name==MeteorNodeRules.HeatFlux)heat+=node.pointsAllocated;
+        }
+        // Derive absolute values from allocation; a tree refresh and repeated
+        // casts must never multiply an already modified mutator a second time.
+        mutator.chanceFor100increasedArea=Math.Min(1,.33f*extinction);
+        mutator.frostClawCastsOnImpact=MeteorNodeRules.FrostClaws(heat);
+        LastLargeMeteorChance=mutator.chanceFor100increasedArea;
+        LastFrostClawCount=mutator.frostClawCastsOnImpact;
+        return true;
+    }
     internal static bool Local(Actor actor)=>OfflineToolkit.Enabled && actor!=null &&
         actor.Pointer==PlayerFinder.getPlayerActor()?.Pointer;
     internal static string Node(SkillTreeNode node)
@@ -62,16 +83,24 @@ internal static class MeteorNodeRuntime
 [HarmonyPatch(typeof(MeteorSkillTree),nameof(MeteorSkillTree.updateMutator))]
 internal static class OfflineMeteorTreePatch
 {
-    private static void Postfix(LocalTreeData localTreeData)
+    private static void Postfix(LocalTreeData localTreeData,LocalTreeData.TreeData tree)
     {
         if(localTreeData==null || !MeteorNodeRuntime.Local(localTreeData.actor))return;
         var mutator=localTreeData.GetComponent<MeteorMutator>();if(mutator==null)return;
-        // Native recomputes both fields from the allocated points first.
-        mutator.chanceFor100increasedArea=MeteorNodeRules.LargeMeteorChance(mutator.chanceFor100increasedArea);
-        mutator.frostClawCastsOnImpact=MeteorNodeRules.FrostClaws(mutator.frostClawCastsOnImpact);
-        MeteorNodeRuntime.LastLargeMeteorChance=mutator.chanceFor100increasedArea;
-        MeteorNodeRuntime.LastFrostClawCount=mutator.frostClawCastsOnImpact;
-        MeteorNodeRuntime.TreeUpdates++;
+        if(MeteorNodeRuntime.Apply(mutator,tree))MeteorNodeRuntime.TreeUpdates++;
+    }
+}
+
+[HarmonyPatch(typeof(MeteorMutator),nameof(MeteorMutator.Mutate))]
+internal static class OfflineMeteorCastPatch
+{
+    private static void Prefix(MeteorMutator __instance)
+    {
+        if(!MeteorNodeRuntime.Local(__instance.actor))return;
+        MeteorNodeRuntime.CastAttempts++;
+        var tree=__instance.actor.localTreeData?.getSkillTreeData(Ability.getAbility(AbilityID.meteor));
+        if(MeteorNodeRuntime.Apply(__instance,tree))MeteorNodeRuntime.CastUpdates++;
+        else MeteorNodeRuntime.MissingTrees++;
     }
 }
 

@@ -1,0 +1,95 @@
+PASS: native RNG sees 35/70/100% with boundary mana 0
+PASS: native 20% refund becomes 20/40/60% at mana 0
+PASS: scope consumes only one matching Archmage refund
+PASS: native chance and scope restored at mana 0
+PASS: native RNG sees 35/70/100% with boundary mana 299
+PASS: native 20% refund becomes 20/40/60% at mana 299
+PASS: scope consumes only one matching Archmage refund
+PASS: native chance and scope restored at mana 299
+PASS: native RNG sees 35/70/100% with boundary mana 300
+PASS: native 20% refund becomes 20/40/60% at mana 300
+PASS: scope consumes only one matching Archmage refund
+PASS: native chance and scope restored at mana 300
+PASS: native RNG sees 35/70/100% with boundary mana 999
+PASS: native 20% refund becomes 20/40/60% at mana 999
+PASS: scope consumes only one matching Archmage refund
+PASS: native chance and scope restored at mana 999
+PASS: native RNG sees 35/70/100% with boundary mana 1000
+PASS: native 20% refund becomes 20/40/60% at mana 1000
+PASS: scope consumes only one matching Archmage refund
+PASS: native chance and scope restored at mana 1000
+PASS: native RNG sees 35/70/100% with boundary mana 1001
+PASS: native 20% refund becomes 20/40/60% at mana 1001
+PASS: scope consumes only one matching Archmage refund
+PASS: native chance and scope restored at mana 1001
+PASS: native RNG sees 35/70/100% with boundary mana 2147483647
+PASS: native 20% refund becomes 20/40/60% at mana 2147483647
+PASS: scope consumes only one matching Archmage refund
+PASS: native chance and scope restored at mana 2147483647
+PASS: partial allocation keeps native per-point probability: 1 points, tier 1
+PASS: refund fraction depends on mana tier rather than allocated point count
+PASS: partial allocation keeps native per-point probability: 1 points, tier 2
+PASS: refund fraction depends on mana tier rather than allocated point count
+PASS: partial allocation keeps native per-point probability: 1 points, tier 3
+PASS: refund fraction depends on mana tier rather than allocated point count
+PASS: partial allocation keeps native per-point probability: 2 points, tier 1
+PASS: refund fraction depends on mana tier rather than allocated point count
+PASS: partial allocation keeps native per-point probability: 2 points, tier 2
+PASS: refund fraction depends on mana tier rather than allocated point count
+PASS: partial allocation keeps native per-point probability: 2 points, tier 3
+PASS: refund fraction depends on mana tier rather than allocated point count
+PASS: partial allocation keeps native per-point probability: 3 points, tier 1
+PASS: refund fraction depends on mana tier rather than allocated point count
+PASS: partial allocation keeps native per-point probability: 3 points, tier 2
+PASS: refund fraction depends on mana tier rather than allocated point count
+PASS: partial allocation keeps native per-point probability: 3 points, tier 3
+PASS: refund fraction depends on mana tier rather than allocated point count
+PASS: partial allocation keeps native per-point probability: 4 points, tier 1
+PASS: refund fraction depends on mana tier rather than allocated point count
+PASS: partial allocation keeps native per-point probability: 4 points, tier 2
+PASS: refund fraction depends on mana tier rather than allocated point count
+PASS: partial allocation keeps native per-point probability: 4 points, tier 3
+PASS: refund fraction depends on mana tier rather than allocated point count
+PASS: partial allocation keeps native per-point probability: 5 points, tier 1
+PASS: refund fraction depends on mana tier rather than allocated point count
+PASS: partial allocation keeps native per-point probability: 5 points, tier 2
+PASS: refund fraction depends on mana tier rather than allocated point count
+PASS: partial allocation keeps native per-point probability: 5 points, tier 3
+PASS: refund fraction depends on mana tier rather than allocated point count
+PASS: Meteor and manual refunds outside Archmage event stay native
+PASS: scope cannot modify another actor's mana object
+PASS: unrelated refund amount does not consume correction
+PASS: new refund cast ID cannot receive an older cast's correction
+PASS: nested cast recovers original probability after outer temporary cap
+PASS: nested cast uses its own mana tier
+PASS: nested finalizer restores enclosing scope and temporary field
+PASS: enclosing cast keeps tier captured at cast time
+PASS: outer finalizer restores original probability
+PASS: native failure finalizer clears scope and restores temporary chance
+PASS: stats refresh during native callbacks owns newer probability
+PASS: zero Archmage points creates no refund scope
+PASS: zero, negative and invalid mana costs create no scope
+PASS: other actor keeps native Archmage
+PASS: online Archmage stays native
+PASS: legacy tooltip shows +5/+10/+15 spell damage for five points
+PASS: legacy tooltip shows 35/70/100% refund chance for five points
+PASS: TMP markup and per-point suffix preserved
+PASS: V2 tooltip matches legacy probability
+PASS: tooltip label shows actual 20/40/60% refund fraction
+PASS: legacy tooltip shows +5/+10/+15 spell damage for five points
+PASS: legacy tooltip shows 35/70/100% refund chance for five points
+PASS: TMP markup and per-point suffix preserved
+PASS: V2 tooltip matches legacy probability
+PASS: tooltip label shows actual 20/40/60% refund fraction
+PASS: legacy tooltip shows +5/+10/+15 spell damage for five points
+PASS: legacy tooltip shows 35/70/100% refund chance for five points
+PASS: TMP markup and per-point suffix preserved
+PASS: V2 tooltip matches legacy probability
+PASS: tooltip label shows actual 20/40/60% refund fraction
+PASS: mana thresholds are never multiplied in tooltip
+PASS: description includes all three exact totals and maximum-mana conditions
+PASS: neighboring passive tooltip remains native
+PASS: Skeleton Mage Archmage remains native
+PASS: online tooltip remains native
+PASS: online description remains native
+All 94 actual-source Archmage checks passed; native engine not exercised.

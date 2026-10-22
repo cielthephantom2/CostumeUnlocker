@@ -1,0 +1,52 @@
+PASS: native recomputation then postfix sets33% and2 Frost Claws per point, including zero and probability cap: 0
+PASS: native recomputation then postfix sets33% and2 Frost Claws per point, including zero and probability cap: 1
+PASS: native recomputation then postfix sets33% and2 Frost Claws per point, including zero and probability cap: 2
+PASS: native recomputation then postfix sets33% and2 Frost Claws per point, including zero and probability cap: 3
+PASS: native recomputation then postfix sets33% and2 Frost Claws per point, including zero and probability cap: 4
+PASS: repeated full native refresh does not accumulate modifiers
+PASS: repeated full native refresh does not accumulate modifiers
+PASS: repeated full native refresh does not accumulate modifiers
+PASS: enemy or other actor tree remains native
+PASS: online tree stays native
+PASS: cast repairs skipped loading hook without accumulating: 0
+PASS: cast repairs skipped loading hook without accumulating: 1
+PASS: cast repairs skipped loading hook without accumulating: 2
+PASS: cast repairs skipped loading hook without accumulating: 3
+PASS: cast repairs skipped loading hook without accumulating: 4
+PASS: respec to zero clears both actual effects on next cast
+PASS: local Arcane copy removes only root flag and preserves stock definition
+PASS: repeated Arcane applications reuse root-free definition for symmetric removal
+PASS: Arcane description removes movement restriction while preserving mana drain
+PASS: enemy root ailments are preserved
+PASS: other actors retain native Arcane root
+PASS: online Arcane remains native
+PASS: manual Frost Claw outside impact keeps native mana cost
+PASS: native1.2 consumer receives100% original cost after scoped correction: 0
+PASS: native1.2 consumer receives100% original cost after scoped correction: 1
+PASS: native1.2 consumer receives100% original cost after scoped correction: 10
+PASS: native1.2 consumer receives100% original cost after scoped correction: 20
+PASS: native1.2 consumer receives100% original cost after scoped correction: 250
+PASS: scope cannot alter another ability or actor's mana cost
+PASS: nested impact restores enclosing mana scope
+PASS: finalizer cleanup restores normal cost even after native failure
+PASS: no Heat Flux points means no mana scope
+PASS: another actor's impact cannot start a mana scope
+PASS: online impact cannot start a mana scope
+PASS: legacy three-point Extinction chance matches99% rather than changing crit chance
+PASS: Extinction's separate crit chance bonus is preserved
+PASS: native per-point suffix is preserved while replacing the original10%
+PASS: native TMP formatting and per-point suffix survive replacement
+PASS: per-point crit chance is left unchanged
+PASS: Heat Flux edits original count/cost lines without removing their native suffixes
+PASS: legacy Heat Flux shows2 casts/point and100% constant mana ratio
+PASS: V2 Extinction tooltip shows33%
+PASS: V2 Heat Flux tooltip shows2
+PASS: V2 Heat Flux mana shows100%
+PASS: matching name/ID in a non-Meteor tree is never modified
+PASS: V2 Heat Flux updates native prose without adding a bonus paragraph
+PASS: Extinction native description is preserved without extra commentary
+PASS: legacy description requests native layout refresh
+PASS: repeated description refresh adds no commentary
+PASS: online tooltips remain native
+PASS: invalid and overflowing inputs remain bounded
+All 51 actual-source Meteor checks passed; native execution/rendering not exercised.

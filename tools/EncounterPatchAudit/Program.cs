@@ -403,12 +403,34 @@ Check(types.Single(t=>t.Name=="OfflineWeaverImprintLegacyInfoPatch").Methods.Sin
  "legacy tooltip note requests native layout refresh without editing serialized node stats or allocated points");
 var ladder=types.Single(t=>t.Name=="NativeRoomLadder");
 var ladderHooks=new[]{"RoomLadderOpenPatch","RoomLadderClosePatch","RoomLadderSessionPatch","RoomLadderSelfRowPatch","RoomLadderFilterPatch"};
-var meteorHooks=new[]{"OfflineMeteorTreePatch","OfflineMeteorImpactScopePatch","OfflineMeteorManaCostPatch","OfflineMeteorTooltipValuePatch","OfflineMeteorLegacyValuePatch","OfflineMeteorTooltipInfoPatch","OfflineMeteorLegacyInfoPatch"};
-Check(meteorHooks.All(name=>installed.Any(t=>t.Name==name)),"all seven Meteor gameplay/legacy/V2 tooltip hooks are selected");
-var meteorTree=types.Single(t=>t.Name=="OfflineMeteorTreePatch");
-Check(meteorTree.Methods.Single(m=>m.Name=="Postfix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>()
+var meteorHooks=new[]{"OfflineMeteorTreePatch","OfflineMeteorCastPatch","OfflineMeteorImpactScopePatch","OfflineMeteorManaCostPatch","OfflineMeteorTooltipValuePatch","OfflineMeteorLegacyValuePatch","OfflineMeteorTooltipInfoPatch","OfflineMeteorLegacyInfoPatch"};
+Check(meteorHooks.All(name=>installed.Any(t=>t.Name==name)),"all eight Meteor gameplay/legacy/V2 tooltip hooks are selected");
+var meteorApply=types.Single(t=>t.Name=="MeteorNodeRuntime").Methods.Single(m=>m.Name=="Apply");
+Check(meteorApply.Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>()
  .Where(m=>m.Name.StartsWith("set_",StringComparison.Ordinal)).Select(m=>m.Name).OrderBy(n=>n).SequenceEqual(new[]{"set_chanceFor100increasedArea","set_frostClawCastsOnImpact"}),
- "Meteor native tree refresh changes only large-Meteor chance and Heat Flux count, not crit/damage stats or allocated points");
+ "Meteor allocation application changes only large-Meteor chance and Heat Flux count, not crit/damage stats or allocated points");
+var castCalls=types.Single(t=>t.Name=="OfflineMeteorCastPatch").Methods.Single(m=>m.Name=="Prefix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(castCalls.Any(m=>m.Name=="Local") && castCalls.Any(m=>m.Name=="getSkillTreeData") && castCalls.Any(m=>m.Name=="Apply"),
+ "Meteor cast refresh reads local allocated tree before native object creation even if loading skipped the tree hook");
+var arcane=types.Single(t=>t.Name=="OfflineArcaneMovementPatch");
+var arcaneCalls=arcane.Methods.Single(m=>m.Name=="Prefix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(installed.Contains(arcane) && arcaneCalls.Any(m=>m.Name=="Local") && arcaneCalls.Any(m=>m.Name=="Instantiate") && arcaneCalls.Any(m=>m.Name=="set_roots") &&
+ !arcaneCalls.Any(m=>m.Name is "set_numberOfRoots" or "DecrementNumberOfRoots"),
+ "local Arcane uses a private root-free ailment definition without clearing unrelated root counters");
+var shortcutCalls=types.Single(t=>t.Name=="UiShortcutRuntime").Methods.Single(m=>m.Name=="Execute").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(new[]{"OpenObservatoryPanel","openMasteryPanel","OpenPassivePanel","openStash","Waypoint"}.All(n=>shortcutCalls.Any(m=>m.Name==n)) &&
+ !shortcutCalls.Any(m=>m.Name is "respecAllInternal" or "resetChosenMastery" or "spendGold"),
+ "shortcuts request native panels and local waypoint travel while retaining native confirmation and costs");
+var archmageHooks=new[]{"OfflineArchmageCastPatch","OfflineArchmageRefundPatch","OfflineArchmageDescriptionPatch","OfflineArchmageStatNamePatch","OfflineArchmageTooltipValuePatch","OfflineArchmageLegacyValuePatch"};
+Check(archmageHooks.All(n=>installed.Any(t=>t.Name==n)),"all Archmage native, description, stat-label and legacy/V2 value hooks are installed");
+Check(types.Single(t=>t.Name=="OfflineArchmageCastPatch").Methods.Any(m=>m.Name=="Finalizer") &&
+ types.Single(t=>t.Name=="ArchmageCastScope").Fields.Any(f=>f.CustomAttributes.Any(a=>a.AttributeType.Name=="ThreadStaticAttribute")),
+ "Archmage correction uses a thread-local scope with native exception cleanup");
+var archmageRefund=types.Single(t=>t.Name=="OfflineArchmageRefundPatch").Methods.Single(m=>m.Name=="Prefix");
+Check(archmageRefund.Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name=="get_CurrentManaRefundCastID") &&
+ !archmageHooks.Select(n=>types.Single(t=>t.Name==n)).SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions)
+ .Select(i=>i.Operand).OfType<MethodReference>().Any(m=>m.Name is "gainMana" or "reduceMana" or "RefundManaFromMostRecentCast"),
+ "Archmage adjusts the native refund argument for its original cast ID without replaying mana effects");
 Check(types.Single(t=>t.Name=="OfflineMeteorImpactScopePatch").Methods.Any(m=>m.Name=="Finalizer") &&
  types.Single(t=>t.Name=="MeteorManaScope").Fields.Any(f=>f.CustomAttributes.Any(a=>a.AttributeType.Name=="ThreadStaticAttribute")) &&
  !meteorHooks.Select(name=>types.Single(t=>t.Name==name)).SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Any(i=>i.Operand is MethodReference m && m.Name is "reduceMana" or "UseAbility" or "CastAfterDelay"),

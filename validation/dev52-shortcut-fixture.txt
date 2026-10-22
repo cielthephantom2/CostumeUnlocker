@@ -1,0 +1,60 @@
+PASS: hotkeys default unbound
+PASS: reserved/invalid key rejected: F1
+PASS: reserved/invalid key rejected: F2
+PASS: reserved/invalid key rejected: F4
+PASS: reserved/invalid key rejected: Mouse0
+PASS: reserved/invalid key rejected: Escape
+PASS: reserved/invalid key rejected: Delete
+PASS: reserved/invalid key rejected: LeftControl
+PASS: reserved/invalid key rejected: 999
+PASS: Ctrl+A can be assigned
+PASS: duplicate chord rejected
+PASS: same key with different modifiers allowed
+PASS: bindings survive JSON roundtrip
+PASS: load filters duplicates, unknown actions, null bindings and reserved keys
+PASS: oversized config rejected
+PASS: async native panel request blocks input and pauses Assist until panel appears
+PASS: native panel appearance releases shortcut input ownership
+PASS: Telescope requests native South panel and hides shortcut UI
+PASS: async native panel request blocks input and pauses Assist until panel appears
+PASS: native panel appearance releases shortcut input ownership
+PASS: Mastery opens native respec mode
+PASS: async native panel request blocks input and pauses Assist until panel appears
+PASS: native panel appearance releases shortcut input ownership
+PASS: points open native passive respec panel
+PASS: async native panel request blocks input and pauses Assist until panel appears
+PASS: native panel appearance releases shortcut input ownership
+PASS: stash uses personal native panel
+PASS: text input blocks click
+PASS: chat blocks click
+PASS: loading blocks click
+PASS: dead actor blocks click
+PASS: cinematic blocks click
+PASS: unfocused game blocks click
+PASS: native transition blocks click
+PASS: character setup blocks click
+PASS: shared stash transaction blocks personal stash
+PASS: gift transaction blocks personal stash
+PASS: native game panel blocks overlay click
+PASS: external input block is respected
+PASS: external input block is restored
+PASS: visible shortcut UI blocks gameplay input
+PASS: F4 close restores gameplay input
+PASS: F1 releases shortcut input ownership before Assist opens
+PASS: capturing a chord never executes it on the same keypress
+PASS: Ctrl+B does not trigger with bare B
+PASS: async native panel request blocks input and pauses Assist until panel appears
+PASS: native panel appearance releases shortcut input ownership
+PASS: configured chord triggers native panel in solo mode
+PASS: Escape cancels capture
+PASS: Delete clears binding
+PASS: travel refuses mismatched scene metadata
+PASS: travel uses verified ArenaLobby waypoint gate zero
+PASS: pending travel prevents duplicate requests
+PASS: native travel result consumed once while UI closed and runtime suspended
+PASS: suspension releases input ownership
+PASS: F2 releases shortcut input ownership before Shared Stash opens
+PASS: delayed panel keeps input blocked after request
+PASS: panel timeout restores input and reports native denial / failure
+PASS: native travel error is reported and consumed exactly once
+All 59 shortcut checks passed; native engine/rendering not exercised.

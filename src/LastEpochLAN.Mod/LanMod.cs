@@ -5,7 +5,7 @@ using MelonLoader;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
-[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.50", "Local research")]
+[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.52", "Local research")]
 [assembly: HarmonyDontPatchAll]
 [assembly: MelonGame("Eleventh Hour Games", "Last Epoch")]
 
@@ -31,6 +31,7 @@ public sealed class LanMod : MelonMod
     private readonly LanMonolithParty monolithParty=new();
     private readonly LanLootFilters lootFilters = new();
     private readonly AutoPlayRuntime autoPlay=new();
+    private readonly UiShortcutRuntime shortcuts=new();
     private LanSession session;
     private Task<LanSession> pendingJoin;
     private CancellationTokenSource pendingCancellation;
@@ -120,6 +121,7 @@ public sealed class LanMod : MelonMod
         configPath = Path.Combine(runtime, "UserData", "LastEpochLAN.config.json");
         settings = new LanSettings { RoomCode = roomCode };
         OfflineTools.OfflineToolkit.Initialize();
+        shortcuts.Initialize();
         updateChecker.Check(ModVersion);
         try
         {
@@ -228,6 +230,7 @@ public sealed class LanMod : MelonMod
                     LoggerInstance.Msg("Unity update callback and GameplayEnvironment interop verified.");
                 }
             }
+            if(shortcuts.Tick(panel,autoPlay.Open || sharedChest.Open || (panel && !shortcuts.Open),supported && offline))panel=false;
             if (!offline || !supported)
             {
                 autoPlay.Suspend();
@@ -325,7 +328,7 @@ public sealed class LanMod : MelonMod
             // Mod Settings is a child page, drawn only while the F4 root is
             // visible. Its remembered page flag must not pause Assist after F4
             // hides that root (e.g. after toggling Show/Hide DPS).
-            if(supported) using (RuntimePerformance.Measure(PerformanceArea.AutoAssist)) autoPlay.Tick(panel || sharedChest.Open,
+            if(supported) using (RuntimePerformance.Measure(PerformanceArea.AutoAssist)) autoPlay.Tick(panel || sharedChest.Open || shortcuts.Busy,
                 RoomFeaturePolicy.SharedWorldEnabled && (partyTravel.Busy || monolithParty.Busy));
             if (!StartupArguments.Contains("--lelan-hud-policy")) HudAuthority.Session = RoomFeaturePolicy.SharedWorldEnabled && (session?.IsHost==true || partyTravel.Participation.Enabled) ? session : null;
             lootFilters.Tick(session);
@@ -582,9 +585,11 @@ public sealed class LanMod : MelonMod
         GUI.enabled = true;
         if(OfflineChangelog.Open) {OfflineChangelog.Draw(ModVersion);return;}
         if(OfflineTools.OfflineToolkit.PanelOpen) {OfflineTools.OfflineToolkit.Draw();return;}
+        if(shortcuts.Open) {shortcuts.Draw();return;}
         GUI.Box(new Rect(16, 16, 460, 518), "TM Last Epoch Co-op Mod v" + ModVersion + " (F4)");
         GUI.Label(new Rect(30,492,420,24),"Internet room: Shared Stash + Loot Filters + Ladder.");
-        if(GUI.Button(new Rect(30,395,420,27),"Mod Settings")) OfflineTools.OfflineToolkit.PanelOpen=true;
+        if(GUI.Button(new Rect(30,395,205,27),"Mod Settings")) OfflineTools.OfflineToolkit.PanelOpen=true;
+        if(GUI.Button(new Rect(245,395,205,27),"UI Shortcut"))shortcuts.Open=true;
         if(GUI.Button(new Rect(30,430,420,27),"Changelog")) OfflineChangelog.Show();
         updateChecker.Check(ModVersion);
         var updateStatus=updateChecker.Status;
@@ -736,12 +741,17 @@ public sealed class LanMod : MelonMod
             cosmeticErrors = equipmentReplicas.Where(pair=>pair.Value.CosmeticError!="").Select(pair=>new {playerId=pair.Key,reason=pair.Value.CosmeticError}).ToArray(),
             nativeGiftMenu = new { NativeLanGiftMenuPatch.Added, NativeLanGiftMenuPatch.Error },
             autoPlay=autoPlay.Diagnostics,
+            uiShortcuts=shortcuts.Diagnostics,
+            arcaneMovement=new {OfflineTools.OfflineArcaneMovementPatch.Applications},
+            archmage=new {OfflineTools.OfflineArchmageCastPatch.Casts,OfflineTools.OfflineArchmageRefundPatch.Refunds,
+                OfflineTools.OfflineArchmageRefundPatch.LastMaximumMana,OfflineTools.OfflineArchmageRefundPatch.LastRequestedRefund},
             lanGift = new { gift.Status, gift.Error, gift.Sent, gift.Received, gift.Pending, gift.Busy },
             sharedChest = sharedChest?.Diagnostics,
             localCharacterReadiness = new { monolithParty.GameplayReady,monolithParty.SharedWorldReady,monolithParty.GuestSession },
             roomLadder = new { NativeRoomLadder.Error },
             weaverImprints = OfflineTools.WeaverImprintDiagnostics.Snapshot(),
-            meteorNodes = new { OfflineTools.MeteorNodeRuntime.TreeUpdates, OfflineTools.MeteorNodeRuntime.ManaAdjustments,
+            meteorNodes = new { OfflineTools.MeteorNodeRuntime.TreeUpdates, OfflineTools.MeteorNodeRuntime.CastAttempts, OfflineTools.MeteorNodeRuntime.CastUpdates,
+                OfflineTools.MeteorNodeRuntime.MissingTrees, OfflineTools.MeteorNodeRuntime.ManaAdjustments,
                 OfflineTools.MeteorNodeRuntime.LastLargeMeteorChance, OfflineTools.MeteorNodeRuntime.LastFrostClawCount },
             aggressiveMinions = new { OfflineTools.AggressiveMinionRange.ExpandedAcquisitions, OfflineTools.AggressiveMinionRange.ExpandedTargetSearches },
             avatarCaptureError = ClassVisualReplica.CaptureError,
@@ -817,7 +827,7 @@ public sealed class LanMod : MelonMod
     }
 
     public override void OnSceneWasLoaded(int buildIndex,string sceneName) => OfflineTools.OfflineToolkit.SceneChanged();
-    public override void OnDeinitializeMelon() { autoPlay.Dispose();updateChecker.Dispose();OfflineTools.OfflineToolkit.Dispose(); nativeSessionProbe?.Dispose(); nativeAssetProbe?.Dispose(); StopRoom();reportWriter.Dispose(); }
+    public override void OnDeinitializeMelon() { shortcuts.Suspend();autoPlay.Dispose();updateChecker.Dispose();OfflineTools.OfflineToolkit.Dispose(); nativeSessionProbe?.Dispose(); nativeAssetProbe?.Dispose(); StopRoom();reportWriter.Dispose(); }
 }
 
 public sealed class LanSettings

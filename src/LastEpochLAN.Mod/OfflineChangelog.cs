@@ -10,6 +10,8 @@ internal static class OfflineChangelog
     private static GUIStyle bodyStyle;
     private static readonly string content=
         "<b>BONUS OFFLINE</b>\n"+
+        "• Dev.52: Archmage (5 điểm): dưới300 max mana +5 spell damage,35% hoàn20%; từ300 +10,70% hoàn40%; từ1000 +15,100% hoàn60%. Sửa cả text và số tooltip theo max mana hiện tại.\n"+
+        "• Dev.51: áp dụng Extinction33%/điểm và Heat Flux2 Frost Claw/điểm ngay khi cast Meteor; Arcane Ascendance cho phép di chuyển. Thêm UI Shortcut trong F4, hotkey riêng cho Telescope, Respec, Champions' Gate và Personal Stash.\n"+
         "• Dev.50: gỡ chức năng DELETE TAB cho tab con Shared Stash. Giữ Delete Category gốc và dữ liệu hòm. Tooltip Meteor sửa trực tiếp số ở dòng gốc. Protocol44.\n"+
         "• Dev.46: Meteor Extinction33% meteor lớn mỗi điểm; Heat Flux2 Frost Claw mỗi điểm, mỗi lần tiêu hao100% mana Frost Claw thay120%.\n"+
         "• Dev.45: Sealed Riches 1 điểm =12% theo tooltip gốc6%; thay mức5.8% cũ. Warlord6%; Echoing hiển thị tối đa100%, vẫn phụ thuộc điểm thưởng/Corruption. Sealed áp dụng khi vào Echo mới.\n"+
