@@ -1,0 +1,30 @@
+{
+  "releaseUrl": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.55",
+  "title": "dev.55 - Full-charge rewards with native notifications unchanged",
+  "tagCommit": "2eaae1d02f3aa120302d09465c410fc3d2b32fa7",
+  "packageSha256": "8B84CE3A289C16D93AC09A6D7112DB407A4F2E31CBE199D3CEAF697733BB222C",
+  "downloadedPackageAndGithubDigestMatched": true,
+  "manifestAndDllsMatched": true,
+  "checks": {
+    "actualSourceProphecy": 194,
+    "compiledNativeAudit": 175,
+    "updaterFixture": 15,
+    "updaterLive": 17
+  },
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1152000,
+      "sha256": "63A51FBB96EDDD42D43EA28FF1B0D9E6199C9C0D641F9C1E6DE1F47DEAC1D71E"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 436224,
+      "sha256": "4127CCA6C4C09FFEAA359064E0060EAE6F5DC77C06EA066664F083E0333EF25F"
+    }
+  ],
+  "nativeNotificationCodeUnchanged": true,
+  "notificationAggregationRemoved": true,
+  "nativeGameplayValidated": false,
+  "steamInstallPerformed": false
+}
