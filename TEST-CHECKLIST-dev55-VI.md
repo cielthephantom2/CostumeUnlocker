@@ -95,3 +95,11 @@ Với các tỷ lệ ngẫu nhiên, vài lần rơi chưa đủ kết luận xá
 - [ ] Giữ channel rồi mở từng UI: không bị nhả chỉ vì UI; kỹ năng interval vẫn được ưu tiên khi đủ điều kiện.
 - [ ] Stop khi F1 mở: dừng ngay và không tự Start khi đóng UI.
 - [ ] Mất focus, chết/loading, cinematic và game time pause: không cast; trở lại trạng thái hợp lệ thì tiếp tục nếu còn Start.
+
+## Icon người chơi trên minimap
+
+- [ ] Icon vàng cũ trên minimap góc màn hình được thay bằng1 chấm xanh dương có viền, lớn hơn chấm NPC50% đường kính.
+- [ ] Di chuyển, đổi hướng, đổi class/model, +/- zoom: chấm theo đúng vị trí, giữ kích thước tương đối; không đổi kích thước nhân vật.
+- [ ] Tab mở: icon gốc; Tab đóng: chấm xanh dương; lặp lại không tạo icon trùng.
+- [ ] Tắt Enemy Map Dots: chấm người chơi vẫn còn; bật lại: màu và kích thước quái giữ nguyên.
+- [ ] Đổi map/Monolith, về menu rồi vào nhân vật khác: không còn marker nhân vật cũ, nhân vật mới hiện1 chấm.

@@ -18,7 +18,7 @@ internal static class EnemyMapDots
     }
     private static readonly Dictionary<int,Entry> byId=new();
     private static readonly List<Entry> entries=new();
-    private static readonly Sprite[] sprites=new Sprite[3];
+    private static readonly Sprite[] sprites=new Sprite[4];
     private static Texture2D atlas;
     private static ActorManager registry;
     private static IconManager manager;
@@ -80,7 +80,7 @@ internal static class EnemyMapDots
                 entry.Icon.ChangeIcon(sprites[kind]);
 
             }
-            ApplySize(entry);
+            ApplySize(entry.Anchor);
             if(entry.Icon.img!=null) entry.Icon.img.raycastTarget=false;
             updateIndex++;
         }
@@ -106,31 +106,32 @@ internal static class EnemyMapDots
         icon.overrideGlobalScaleMode=true;icon.ignoreGlobalScale=true;
         icon.rotate=false;icon.rotateWithMap=false;icon.useDirectionIndicator=false;
         icon.useCompositeDirectionIndicator=false;icon.WorldScale=false;
-        icon.ApplyScaling=true;icon.SinScale=false;ApplySize(entry);
+        icon.ApplyScaling=true;icon.SinScale=false;ApplySize(entry.Anchor);
         anchor.SetActive(true);entry.Kind=-1;
     }
-    private static void ApplySize(Entry entry)
+    internal static void ApplySize(GameObject anchor,float multiplier=1f)
     {
         // MinimapIconManager.LateUpdate uses min(abs(icon.transform.lossyScale))
         // when ApplyScaling is enabled. BaseDMMapIcon.scaleMultiplier is ignored
         // on this renderer. Normalize the parent so monster prefab size cannot
         // enlarge the dot; the large Tab overlay keeps the original UI scale.
-        float desired=UIBase.instance?.overlayMapOpen==true?1f:0.3f;
-        var parent=entry.Anchor.transform.parent;
+        float desired=(UIBase.instance?.overlayMapOpen==true?1f:0.3f)*multiplier;
+        var parent=anchor.transform.parent;
         var inherited=parent!=null?parent.lossyScale:Vector3.one;
         float minimum=Mathf.Min(Mathf.Abs(inherited.x),Mathf.Abs(inherited.y),Mathf.Abs(inherited.z));
         float scale=float.IsFinite(minimum) && minimum>0.0001f?desired/minimum:desired;
-        var current=entry.Anchor.transform.localScale;
+        var current=anchor.transform.localScale;
         if(!Mathf.Approximately(current.x,scale) || !Mathf.Approximately(current.y,scale) || !Mathf.Approximately(current.z,scale))
-            entry.Anchor.transform.localScale=Vector3.one*scale;
+            anchor.transform.localScale=Vector3.one*scale;
     }
+    internal static Sprite PlayerSprite {get {EnsureSprites();return sprites[3];}}
     private static void EnsureSprites()
     {
         if(atlas!=null) return;
-        atlas=new Texture2D(48,16,TextureFormat.RGBA32,false);
+        atlas=new Texture2D(64,16,TextureFormat.RGBA32,false);
         atlas.name="TM Enemy minimap dots";atlas.wrapMode=TextureWrapMode.Clamp;atlas.filterMode=FilterMode.Bilinear;
-        var colors=new[]{new Color(1f,0.08f,0.06f),new Color(1f,0.82f,0.05f),new Color(1f,0.38f,0.02f)};
-        for(int kind=0;kind<3;kind++)
+        var colors=new[]{new Color(1f,0.08f,0.06f),new Color(1f,0.82f,0.05f),new Color(1f,0.38f,0.02f),new Color(0.1f,0.5f,1f)};
+        for(int kind=0;kind<sprites.Length;kind++)
             for(int y=0;y<16;y++) for(int x=0;x<16;x++)
             {
                 float radius=Mathf.Sqrt((x-7.5f)*(x-7.5f)+(y-7.5f)*(y-7.5f));
@@ -141,8 +142,8 @@ internal static class EnemyMapDots
                 atlas.SetPixel(kind*16+x,y,color);
             }
         atlas.Apply(false,true);
-        for(int kind=0;kind<3;kind++)
-        {sprites[kind]=Sprite.Create(atlas,new Rect(kind*16,0,16,16),new Vector2(0.5f,0.5f),100f);sprites[kind].name="TM Enemy dot "+kind;}
+        for(int kind=0;kind<sprites.Length;kind++)
+        {sprites[kind]=Sprite.Create(atlas,new Rect(kind*16,0,16,16),new Vector2(0.5f,0.5f),100f);sprites[kind].name=kind==3?"TM Player blue dot":"TM Enemy dot "+kind;}
     }
     private static void Remove(Entry entry)
     {

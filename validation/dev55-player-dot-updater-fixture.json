@@ -1,0 +1,38 @@
+﻿{
+    "passed":  15,
+    "live":  false,
+    "fixture":  "D:\\New folder\\CostumeUnlocker-Publish\\research\\public-updater-fixture-ea501f6138f0449d9637a55b22092752",
+    "checks":  [
+                   "verified paired install: Mods/LastEpochLAN.dll",
+                   "verified paired install: UserLibs/LastEpochLAN.Core.dll",
+                   "release lookup uses no GitHub REST API",
+                   "manifest and both DLLs use exactly one pinned commit",
+                   "already-current install accepts text advertisement and skips both DLL downloads",
+                   "malformed, truncated, missing or duplicate branch advertisement rejected",
+                   "malformed, truncated, missing or duplicate branch advertisement rejected",
+                   "malformed, truncated, missing or duplicate branch advertisement rejected",
+                   "malformed, truncated, missing or duplicate branch advertisement rejected",
+                   "malformed, truncated, missing or duplicate branch advertisement rejected",
+                   "corrupt downloaded DLL rejected",
+                   "download failure preserves installed files",
+                   "running game rejected before network or writes",
+                   "running-game guard performs no network requests",
+                   "only inactive fixture paths were used; no game launched"
+               ],
+    "requests":  [
+                     "https://github.com/cielthephantom2/CostumeUnlocker.git/info/refs?service=git-upload-pack",
+                     "https://raw.githubusercontent.com/cielthephantom2/CostumeUnlocker/0123456789abcdef0123456789abcdef01234567/latest.json",
+                     "https://raw.githubusercontent.com/cielthephantom2/CostumeUnlocker/0123456789abcdef0123456789abcdef01234567/Mods/LastEpochLAN.dll",
+                     "https://raw.githubusercontent.com/cielthephantom2/CostumeUnlocker/0123456789abcdef0123456789abcdef01234567/UserLibs/LastEpochLAN.Core.dll",
+                     "https://github.com/cielthephantom2/CostumeUnlocker.git/info/refs?service=git-upload-pack",
+                     "https://raw.githubusercontent.com/cielthephantom2/CostumeUnlocker/0123456789abcdef0123456789abcdef01234567/latest.json",
+                     "https://github.com/cielthephantom2/CostumeUnlocker.git/info/refs?service=git-upload-pack",
+                     "https://github.com/cielthephantom2/CostumeUnlocker.git/info/refs?service=git-upload-pack",
+                     "https://github.com/cielthephantom2/CostumeUnlocker.git/info/refs?service=git-upload-pack",
+                     "https://github.com/cielthephantom2/CostumeUnlocker.git/info/refs?service=git-upload-pack",
+                     "https://github.com/cielthephantom2/CostumeUnlocker.git/info/refs?service=git-upload-pack",
+                     "https://github.com/cielthephantom2/CostumeUnlocker.git/info/refs?service=git-upload-pack",
+                     "https://raw.githubusercontent.com/cielthephantom2/CostumeUnlocker/0123456789abcdef0123456789abcdef01234567/latest.json",
+                     "https://raw.githubusercontent.com/cielthephantom2/CostumeUnlocker/0123456789abcdef0123456789abcdef01234567/Mods/LastEpochLAN.dll"
+                 ]
+}

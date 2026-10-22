@@ -77,10 +77,11 @@ internal static class OfflineToolkit
         Safely(CameraZoom.ApplyCurrent);
         Safely(MapFog.Tick);
         Safely(EnemyMapDots.Tick);
+        Safely(PlayerMapDot.Tick);
         Safely(ObjectiveReveal.Tick);
         if(saveAt>=0 && Time.unscaledTime>=saveAt) Safely(Save);
     }
-    internal static void SceneChanged() {OfflinePickup.Clear();NewCharacterBoost.SceneChanged();MapFog.Clear();EnemyMapDots.Clear();CameraZoom.Restore();ObjectiveReveal.Clear();Dps.DpsRuntime.SceneChanged();}
+    internal static void SceneChanged() {OfflinePickup.Clear();NewCharacterBoost.SceneChanged();MapFog.Clear();PlayerMapDot.Clear();EnemyMapDots.Clear();CameraZoom.Restore();ObjectiveReveal.Clear();Dps.DpsRuntime.SceneChanged();}
     internal static void Dispose() {Safely(OfflinePickup.Clear);SceneChanged();Safely(OfflineBuffs.Restore);Safely(OfflineFortune.RestoreRewards);EnemyMapDots.Dispose();MinimapZoom.Clear();if(saveAt>=0) Safely(Save);}
     internal static void Draw()
     {

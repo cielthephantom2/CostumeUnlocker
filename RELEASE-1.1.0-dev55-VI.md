@@ -24,3 +24,7 @@ Sửa pickup và gỡ World Assist: xem [báo cáo hiện tại](NATIVE-PICKUP-d
 ## Combat Assist khi mở UI
 
 Khi Start, Assist tiếp tục chạy mỗi frame khi F1/F4/menu/chat/các panel mở, không tự nhả channel do UI và F1 không khóa input toàn game. Xem [chi tiết và kiểm chứng](ASSIST-UI-CONTINUE-dev55-VI.md). Giữ Auto Pickup nhẹ 5Hz/5 ứng viên/1 lệnh, Woven Echoes và bỏ log. Version/protocol không đổi.
+
+## Icon người chơi trên minimap
+
+Thay bằng chấm xanh dương có viền giống NPC, lớn hơn50% đường kính trên minimap. Tab overlay giữ icon gốc. Xem [chi tiết](PLAYER-MINIMAP-DOT-dev55-VI.md).
