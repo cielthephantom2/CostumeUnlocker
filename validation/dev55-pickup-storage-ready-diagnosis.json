@@ -1,0 +1,23 @@
+{
+  "observedModSha256": "73179BD11C420C35A21D20AF5BA4564871ABDB9686B5FC39D753002364EE1900",
+  "oldVersionCorrectlyLoaded": true,
+  "pickupSettingsEnabled": true,
+  "latestLogExceptions": false,
+  "issue": "Pickup used OfflineToolkit.Ready requiring actorVisuals.HasBeenInitialized and character data",
+  "change": "Use offline local actor with itemContainersManager; direct offlineItems; cursor correction; runtime diagnostics",
+  "nativeTypes": {
+    "key": 104,
+    "crafting": [
+      101,
+      102,
+      103
+    ]
+  },
+  "actualNativeBoundaries": {
+    "Item.isKey": "0x12303A0",
+    "ItemList.isCraftingItem": "0x122DED0",
+    "GroundItemManager.TryGetGroundItemList": "0x11E0520"
+  },
+  "runtimeReadinessValueAtFailureKnown": false,
+  "nativeGameplayValidated": false
+}

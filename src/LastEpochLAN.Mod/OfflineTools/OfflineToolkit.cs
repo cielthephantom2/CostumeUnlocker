@@ -94,6 +94,7 @@ internal static class OfflineToolkit
         if(GUI.Button(new Rect(x+463,y+117,132,25),Dps.DamageMeterOverlay.IsPaused?"Resume DPS":"Pause DPS")) Dps.DamageMeterOverlay.TogglePause();
         if(GUI.Button(new Rect(x+606,y+117,140,25),Settings.DpsVisible?"Hide DPS":"Show DPS"))
         {Settings.DpsVisible=!Settings.DpsVisible;ScheduleSave();}
+        GUI.Label(new Rect(x+449,y+177,310,75),"Auto Pickup: "+OfflinePickup.Status);
         bool Toggle(bool value,string label,int row)=>GUI.Toggle(new Rect(x+14,y+35+row*25,395,23),value,label);
         var s=Settings;
         bool previousChanged=GUI.changed;GUI.changed=false;

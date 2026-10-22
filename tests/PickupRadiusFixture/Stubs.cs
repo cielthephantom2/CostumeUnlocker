@@ -1,4 +1,5 @@
 using System.Reflection;
+namespace MelonLoader{public static class MelonLogger{public static System.Collections.Generic.List<string> Messages=new();public static void Msg(string text)=>Messages.Add(text);}}
 namespace HarmonyLib
 {
  [AttributeUsage(AttributeTargets.Class)]public class HarmonyPatch:Attribute{public HarmonyPatch(Type t,string m){}}
@@ -17,14 +18,14 @@ namespace Il2Cpp
  public class NativeObject{static int n;public IntPtr Pointer=(IntPtr)Interlocked.Increment(ref n);public T TryCast<T>()where T:class=>this as T;}
  public class Actor:NativeObject
  {
-  public UnityEngine.Vector3 Position;public HealthPotion Potion=new();public UnityEngine.Vector3 position()=>Position;
+  public object itemContainersManager=new();public UnityEngine.Vector3 Position;public HealthPotion Potion=new();public UnityEngine.Vector3 position()=>Position;
   public T GetComponent<T>()where T:class=>Potion as T;
  }
  public static class PlayerFinder{public static Actor Player=new();public static Actor getPlayerActor()=>Player;}
  public class HealthPotion{public int currentCharges,maxCharges=3;}
  public class ItemData:NativeObject{public int itemType;public bool Tutorial;public bool isTutorialItem()=>Tutorial;}
- public static class Item{public static bool isKey(int type)=>type==100;}
- public static class ItemList{public static bool isCraftingItem(int type)=>type==101;}
+ public static class Item{public static bool isKey(int type)=>type==104;}
+ public static class ItemList{public static bool isCraftingItem(int type)=>type is >=101 and <=103;}
  public class PickupGroundObjectInteraction:NativeObject
  {public Actor player;public uint id;public float index=1,delay=.2f;public bool isActiveAndEnabled=true;public UnityEngine.Transform transform=new();public void OnUpdateTick(){}}
  public class GoldPickupInteraction:PickupGroundObjectInteraction{public int amount=10;}
@@ -52,7 +53,7 @@ namespace Il2Cpp
   {
    if(ThrowOnItem)throw new InvalidOperationException("native test failure");
    var entry=offlineItems.items.FirstOrDefault(x=>x.id==id);if(entry==null)return;
-   if(entry.itemData.itemType==100)Keys++;else if(entry.itemData.itemType==101)Materials++;else Equipment++;
+   if(entry.itemData.itemType==104)Keys++;else if(entry.itemData.itemType is >=101 and <=103)Materials++;else Equipment++;
    offlineItems.items.Remove(entry);
    var allow=(bool)typeof(LastEpochLAN.Mod.OfflineTools.OfflineAutoPickupVacuumGatePatch).GetMethod("Prefix",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,null);
    if(allow)vacuumNearbyStackableItems();
@@ -63,6 +64,6 @@ namespace Il2Cpp
 namespace LastEpochLAN.Mod.OfflineTools
 {
  internal class Settings{public bool Keys=true,Gold=true,Potions=true,Materials=true,Bones=true,RangePickup=true;}
- internal static class OfflineToolkit{public static bool Ready=true;public static Settings Settings=new();}
+ internal static class OfflineToolkit{public static bool Ready=true,Enabled=true;public static Settings Settings=new();}
  internal static class OfflineEconomy{internal static float GoldMultiplier()=>1;}
 }

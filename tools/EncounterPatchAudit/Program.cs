@@ -145,6 +145,11 @@ Check(types.Single(t=>t.Name=="OfflineGoldPickupPatch").Methods.Single(m=>m.Name
 var pickup=types.Single(t=>t.Name=="OfflinePickup");
 Check(!pickup.Methods.Any(m=>m.Name is "Moving" or "Attach" or "Configure") && !types.Any(t=>t.Name.StartsWith("OfflineNativeItem") || t.Name=="OfflineNativePickupRadiusPatch"),
  "movement gate and pooled trigger bridge are removed");
+var localPickupCalls=pickup.Methods.Single(m=>m.Name=="Local").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(localPickupCalls.Any(m=>m.Name=="get_Enabled") && localPickupCalls.Any(m=>m.Name=="get_itemContainersManager") && !localPickupCalls.Any(m=>m.Name=="get_Ready"),
+ "pickup requires offline local inventory without model/network visual readiness");
+Check(pickup.Methods.Single(m=>m.Name=="Tick").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="get_offlineItems"),
+ "offline pickup reads native offline ground list directly");
 var pickupTickCalls=Reachable(pickup.Methods.Single(m=>m.Name=="Tick")).Select(i=>i.Operand).OfType<MethodReference>().ToArray();
 Check(pickupTickCalls.Any(m=>m.Name=="CanAutoPick") && pickupTickCalls.Any(m=>m.Name=="pickupItem") &&
  !pickupTickCalls.Any(m=>m.Name is "modifyGold" or "modifyAncientBones" or "set_currentCharges" or "set_location"),
