@@ -1,0 +1,29 @@
+{
+  "releaseUrl": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.55",
+  "title": "dev.55 - Combat Assist continues with UI open",
+  "tagCommit": "5f58b7eacd7298358b4b4f11539f62c5516bd7a8",
+  "packageSha256": "606AE8E8F0F07883712C46022CE9CBA10E742BB91CA90DCC90F0A597D34EDB36",
+  "downloadedPackageAndGithubDigestMatched": true,
+  "manifestAndDllsMatched": true,
+  "checks": {
+    "selfTests": 1053,
+    "actualSourceDisconnect": 13,
+    "compiledNativeAudit": 165,
+    "updaterFixture": 15,
+    "updaterLive": 17
+  },
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1142784,
+      "sha256": "978C5FE1880F99219F83801840F7CC270F9454BFE269A87967A25FFDD2E9DAA0"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 436224,
+      "sha256": "5B989395CBEA065DCBB869D5F91ECD694F0C31AE8A6100F98BAB3D44763435B5"
+    }
+  ],
+  "nativeGameplayValidated": false,
+  "steamInstallPerformed": false
+}
