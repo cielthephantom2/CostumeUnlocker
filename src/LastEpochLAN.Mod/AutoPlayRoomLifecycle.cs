@@ -11,7 +11,7 @@ internal sealed partial class AutoPlayRuntime
         catch(Exception ex) {MelonLoader.MelonLogger.Warning("Assist disconnect release: "+ex.GetBaseException().Message);}
         try {InputBlock(null,false);}
         catch(Exception ex) {blockedInput=null;MelonLoader.MelonLogger.Warning("Assist disconnect input: "+ex.GetBaseException().Message);}
-        localReady=false;enemies.Clear();nearest=rareBoss=null;
+        localReady=false;prioritySlot=-1;enemies.Clear();nearest=rareBoss=null;
         nextRead=nextScan=nextBindings=nextTargets=nextBuffs=0;
         recovery.Reset();pauseReason="";Error="";DisconnectRefreshes++;
         Status=Open?"Paused - F1 open":Armed?"Resuming local Assist after room disconnect":"Stopped - F1 to configure";

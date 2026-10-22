@@ -20,6 +20,12 @@ internal sealed partial class AutoPlayRuntime
     internal string LastRunStatus="Stopped - F1 to configure";
     private string pauseReason="";
     private readonly Ability[] abilities=new Ability[5];
+    private readonly IntPtr[] barPointers=new IntPtr[5];
+    private readonly string[] abilityIds=new string[5];
+    private float nextLabels;
+    private bool manaKnown,wardKnown;
+    private int prioritySlot=-1;
+    internal long ChannelYields;
     private readonly string[] keys=Enumerable.Repeat("?",5).ToArray();
     private readonly string[] names=Enumerable.Repeat("No skill",5).ToArray();
     private readonly float[] cooldowns=new float[5];
@@ -57,7 +63,7 @@ internal sealed partial class AutoPlayRuntime
         if(block && input!=null && blockedInput==null)
         {blockedInput=input;previousDisableInput=input.forceDisableInput;input.forceDisableInput=true;}
     }
-    internal object Diagnostics=>new {Open,Armed,DisconnectRefreshes,Status,LastRunStatus,pauseReason,Error,Requests,ConfirmedCasts,PotionsUsed,hp,mp,potionCharges,potionMax,
+    internal object Diagnostics=>new {Open,Armed,DisconnectRefreshes,ChannelYields,prioritySlot,Status,LastRunStatus,pauseReason,Error,Requests,ConfirmedCasts,PotionsUsed,hp,mp,potionCharges,potionMax,
         recovery.ReadFailures,recovery.RetryAt,
         targetScanRadius,targetCandidates,targetInRange,
         slots=Enumerable.Range(0,5).Select(i=>new {slot=i,key=keys[i],name=names[i],cooldown=cooldowns[i],charges=charges[i],status=slotStatus[i],repeatWait=schedule.WaitSeconds(i,Time.unscaledTime)}).ToArray()};
@@ -77,7 +83,7 @@ internal sealed partial class AutoPlayRuntime
     private void Profile(string id)
     {
         if(character==id)return;
-        ReleaseHeld();Save();character=id;Armed=false;schedule.Reset();recovery.Reset();nextPotion=0;
+        ReleaseHeld();Save();character=id;Armed=false;prioritySlot=-1;schedule.Reset();recovery.Reset();nextPotion=0;
         profilePath=Path.Combine(Root,Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(id)))+".json");
         Settings=new();
         try
@@ -136,34 +142,39 @@ internal sealed partial class AutoPlayRuntime
             Profile(id);
             string nowScene=SceneList.GetCurrentSceneDetails()?.Name??"";
             if(actorPointer!=actor.Pointer || scene!=nowScene)
-            {ReleaseHeld();actorPointer=actor.Pointer;scene=nowScene;enemies.Clear();nearest=rareBoss=null;nextScan=nextRead=nextTargets=nextBuffs=0;schedule.Reset();}
+            {ReleaseHeld();prioritySlot=-1;actorPointer=actor.Pointer;scene=nowScene;enemies.Clear();nearest=rareBoss=null;nextScan=nextRead=nextTargets=nextBuffs=0;schedule.Reset();}
             if(Time.unscaledTime<recovery.RetryAt){Status="Paused - refreshing native character data";return;}
-            if(Time.unscaledTime<nextRead)return;
-            nextRead=Time.unscaledTime+(Open?0.1f:0.025f);
+            if(!AutoPlayCadence.ReadFrameDue(Open,Time.unscaledTime,nextRead))return;
+            nextRead=Time.unscaledTime+AutoPlayCadence.PanelReadInterval;
             var ui=UIBase.instance;
             pauseReason=Open?"F1 open":otherPanel?"Mod panel / Shared Stash open":!Application.isFocused?"Game unfocused":Time.timeScale<=0?"Game time paused":
                 input==null?"Input unavailable":input.forceDisableInput?"Game input disabled":input.cinematicActive?"Cinematic":
                 input.IsInputFieldActive?"Text input focused":input.ButtonPressBlocked?"Game buttons blocked":ui==null?"Game UI unavailable":
                 ui.menuOpen?"Game menu open":ui.IsChatInputFocused?"Chat focused":ui.AnyPanelOpened()?"Game panel open":"";
             bool paused=pauseReason!="";
-            // The panel shows target conditions while configuring. Closed and
-            // paused automation needs neither a scene walk nor target reads.
-            bool needTargets=AutoPlayRules.RequiresTargetScan(Settings,Open,Armed,paused);
-            if(needTargets && Time.unscaledTime>=nextScan){Scan();nextScan=Time.unscaledTime+0.15f;}
-            if(!needTargets)
-            {enemies.Clear();nearest=rareBoss=null;enemyDistance=rareDistance=float.PositiveInfinity;nextScan=nextTargets=0;targetScanRadius=0;targetCandidates=targetInRange=0;}
-            Read(actor,input,needTargets);
-            if(recovery.ReadFailures>0){recovery.Reset();Error="";}
-            if(!Armed){Status="Stopped - configure skills, then Start";return;}
-            if(paused){Status="Paused - "+pauseReason;return;}
-            var potion=actor.GetComponent<HealthPotion>();
+            // Critical HP/potion state is read before target walks, buff lists
+            // or skill metadata. Running Assist reaches this on every frame.
+            var potion=ReadVitals(actor);
             double now=Time.unscaledTime;
-            if(AutoPlayRules.Drink(Settings.Potion,localReady,hp,potionCharges,potionCost,now,nextPotion) && potion!=null)
+            if(Armed && !paused && AutoPlayRules.Drink(Settings.Potion,localReady,hp,potionCharges,potionCost,now,nextPotion) && potion!=null)
             {
                 actionAttempted=true;
-                TryPotion(potion,now);
-                return;
+                TryPotion(potion,now);return;
             }
+            if(paused && !Open)
+            {
+                prioritySlot=-1;enemies.Clear();nearest=rareBoss=null;
+                enemyDistance=rareDistance=float.PositiveInfinity;nextScan=nextTargets=0;
+                Status="Paused - "+pauseReason;return;
+            }
+            bool needTargets=AutoPlayRules.RequiresTargetScan(Settings,Open,Armed,paused);
+            if(needTargets && Time.unscaledTime>=nextScan){Scan();nextScan=Time.unscaledTime+AutoPlayCadence.RegistryInterval;nextTargets=0;}
+            if(!needTargets)
+            {enemies.Clear();nearest=rareBoss=null;enemyDistance=rareDistance=float.PositiveInfinity;nextScan=nextTargets=0;targetScanRadius=0;targetCandidates=targetInRange=0;}
+            ReadSkills(actor,input,needTargets);
+            if(recovery.ReadFailures>0){recovery.Reset();Error="";}
+            if(!Armed){prioritySlot=-1;Status="Stopped - configure skills, then Start";return;}
+            if(paused){prioritySlot=-1;Status="Paused - "+pauseReason;return;}
             if(heldSlot>=0)
             {
                 var rule=Settings.Skills[heldSlot];
@@ -174,6 +185,15 @@ internal sealed partial class AutoPlayRuntime
                     now-heldRequestedAt<1 && AutoPlayRules.ContinueHold(rule,contexts[heldSlot]) && !input.IsHoldingAbilityButton())
                 {Status="Starting: "+names[heldSlot];return;}
                 bool same=ownsCast && heldUse.isUsingChannelledAbility();
+                if(same && !heldUse.isAbilityUseRestricted && !input.IsHoldingAbilityButton())
+                {
+                    int ready=schedule.SelectWhileHolding(Settings,contexts,now,heldSlot);
+                    if(ready>=0)
+                    {
+                        actionAttempted=true;ReleaseHeld();prioritySlot=ready;ChannelYields++;
+                        Status="Yielding channel for: "+names[ready];return;
+                    }
+                }
                 if(same && !heldUse.isAbilityUseRestricted && AutoPlayRules.ContinueHold(rule,contexts[heldSlot]) && !input.IsHoldingAbilityButton())
                 {
                     var target=rule.TargetRareBoss?rareBoss:nearest;
@@ -186,7 +206,8 @@ internal sealed partial class AutoPlayRuntime
             var use=state?.usingAbility?.TryCast<UsingAbilityPlayer>();
             if(use==null || use.isAbilityUseRestricted || (!state.IsIdle && !state.IsMoving) || input.IsHoldingAbilityButton())
             {Status="Waiting - manual skill / cast / control state";return;}
-            int slot=schedule.Select(Settings,contexts,now);
+            int slot=prioritySlot>=0 && schedule.Ready(Settings,contexts,now,prioritySlot)?prioritySlot:schedule.Select(Settings,contexts,now);
+            prioritySlot=-1;
             if(slot<0){Status="Running - waiting for skill conditions";return;}
             actionAttempted=true;TryCast(actor,use,slot,now);
         }
@@ -195,7 +216,7 @@ internal sealed partial class AutoPlayRuntime
             try{InputBlock(null,false);}catch{blockedInput=null;}
             bool retry=recovery.Failed(Time.unscaledTime,actionAttempted);
             if(!retry)Armed=false;
-            localReady=false;enemies.Clear();nearest=rareBoss=null;
+            localReady=false;prioritySlot=-1;enemies.Clear();nearest=rareBoss=null;
             nextScan=nextRead=nextTargets=nextBuffs=0;
             Status=retry?"Paused - native read retry "+recovery.ReadFailures+"/3":
                 actionAttempted?"Stopped - native action failed; F1 to restart":"Stopped - repeated native read failure; F1 to restart";
@@ -261,16 +282,22 @@ internal sealed partial class AutoPlayRuntime
     private static bool EnemyAlive(ActorVisuals v,Alignment local)=>v!=null && v.isActiveAndEnabled && !v.isPlayer && !v.dead && !v.isCorpse &&
         v.actorSync?.IsDead!=true && v.alignment!=null && local!=null && v.alignment.IsFoe(local);
     private void Read(Actor actor,EpochInputManager input,bool needTargets=true)
+    {ReadVitals(actor);ReadSkills(actor,input,needTargets);}
+    private HealthPotion ReadVitals(Actor actor)
     {
         hp=100*Mathf.Clamp01(actor.health.currentHealth/actor.health.maxHealth);
-        bool manaKnown=actor.mana!=null && actor.mana.maxMana>0;
+        manaKnown=actor.mana!=null && actor.mana.maxMana>0;
         mp=manaKnown?100*Mathf.Clamp01(actor.mana.currentMana/actor.mana.maxMana):0;
-        var protection=actor.GetComponent<ProtectionClass>();ward=protection?.CurrentWard??0;
+        var protection=actor.GetComponent<ProtectionClass>();ward=protection?.CurrentWard??0;wardKnown=protection!=null;
         var potion=actor.GetComponent<HealthPotion>();potionCharges=potion?.currentCharges??0;potionMax=potion?.maxCharges??0;potionCost=potion?.chargeCost??1;
+        return potion;
+    }
+    private void ReadSkills(Actor actor,EpochInputManager input,bool needTargets)
+    {
         if(needTargets && Time.unscaledTime>=nextTargets)
         {
             using var performance = RuntimePerformance.Measure(PerformanceArea.AutoTargets);
-            nextTargets=Time.unscaledTime+0.05f;nearest=rareBoss=null;enemyDistance=rareDistance=float.PositiveInfinity;
+            nextTargets=Time.unscaledTime+AutoPlayCadence.TargetInterval;nearest=rareBoss=null;enemyDistance=rareDistance=float.PositiveInfinity;
             var local=actor.GetActorSync()?.actorVisuals?.alignment;var origin=actor.position();var actorScene=actor.gameObject.scene;
             targetScanRadius=AutoPlayRules.TargetScanRadius(Settings);
             targetCandidates=targetInRange=0;
@@ -282,7 +309,7 @@ internal sealed partial class AutoPlayRuntime
                 float squared=(v.transform.position-origin).sqrMagnitude;
                 // Reject distant visuals before native health/alignment/scene
                 // and rarity reads. Keep the full registry cache so enemies
-                // entering range are noticed on the existing 50 ms cadence.
+                // entering range are noticed on the 25 ms selection cadence.
                 if(!AutoPlayRules.WithinTargetRadiusSquared(squared,targetScanRadius))continue;
                 targetInRange++;
                 if(!EnemyAlive(v,local) || v.gameObject.scene!=actorScene)continue;
@@ -302,18 +329,27 @@ internal sealed partial class AutoPlayRuntime
             if(buffs!=null)foreach(var buff in buffs)if(buff!=null && buff.remainingDuration>0 && !string.IsNullOrWhiteSpace(buff.name) && !buffNames.Contains(buff.name))buffNames.Add(buff.name);
         }
         var use=actor.stateController?.usingAbility?.TryCast<UsingAbilityPlayer>();
+        bool labelsDue=Time.unscaledTime>=nextLabels;
+        if(labelsDue)nextLabels=Time.unscaledTime+AutoPlayCadence.MetadataInterval;
         for(int i=0;i<5;i++)
         {
             var a=use?.GetNonBufferableAbility(BufferableAbilityType.Bar,i);
-            if(a!=null && (string.Equals(a.name,"NullAbility",StringComparison.OrdinalIgnoreCase) || string.Equals(a.abilityName,"NullAbility",StringComparison.OrdinalIgnoreCase)))a=null;
+            var pointer=a?.Pointer??IntPtr.Zero;
+            if(pointer!=barPointers[i] || labelsDue)
+            {
+                barPointers[i]=pointer;
+                string id=a?.name??"",label=a?.abilityName??"";
+                bool empty=a==null || string.Equals(id,"NullAbility",StringComparison.OrdinalIgnoreCase) || string.Equals(label,"NullAbility",StringComparison.OrdinalIgnoreCase);
+                abilityIds[i]=empty?"":id;names[i]=empty?"No skill":string.IsNullOrWhiteSpace(label)?id:label;
+            }
+            if(string.IsNullOrEmpty(abilityIds[i]))a=null;
             abilities[i]=a;
-            names[i]=a==null?"No skill":string.IsNullOrWhiteSpace(a.abilityName)?a.name:a.abilityName;
             cooldowns[i]=a==null?0:actor.chargeManager?.remainingCooldown(a)??0;
             charges[i]=a==null?0:actor.chargeManager?.getCharges(a)??0;
             var rule=Settings.Skills[i];bool buffKnown=buffs!=null;
             bool hasBuff=buffNames.Any(n=>string.Equals(n,rule.BuffName,StringComparison.OrdinalIgnoreCase));
-            contexts[i]=new(a?.name??"",hp,mp,manaKnown,enemyDistance,rareDistance,
-                a!=null && actor.chargeManager!=null && !actor.chargeManager.onCoooldown(a),buffKnown,hasBuff,ward,protection!=null);
+            contexts[i]=new(abilityIds[i]??"",hp,mp,manaKnown,enemyDistance,rareDistance,
+                a!=null && actor.chargeManager!=null && !actor.chargeManager.onCoooldown(a),buffKnown,hasBuff,ward,wardKnown);
             slotStatus[i]=a==null?"No skill":AutoPlayRules.Blocked(rule,contexts[i]);
             if(slotStatus[i]=="")
             {double wait=schedule.WaitSeconds(i,Time.unscaledTime);slotStatus[i]=wait>0?$"Repeat interval: {wait:0.00}s":"Ready";}

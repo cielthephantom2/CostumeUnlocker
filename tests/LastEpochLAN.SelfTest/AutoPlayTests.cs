@@ -83,6 +83,43 @@ internal static class AutoPlayTests
         check(schedule.WaitSeconds(0,11)==119,"Assist diagnostics distinguish configured repeat delay from blocked skill conditions");
         settings.Skills[0].Interval=0;
         check(schedule.Select(settings,contexts,11)==0,"changing repeat interval 120s to Hold immediately clears old per-skill timer");
+        check(AutoPlayCadence.ReadFrameDue(false,10.001,10.025) && AutoPlayCadence.ReadFrameDue(false,10.008,10.025),
+            "running Assist reads vitals/cooldowns every frame before old25ms deadline");
+        check(!AutoPlayCadence.ReadFrameDue(true,10.001,10.1) && AutoPlayCadence.ReadFrameDue(true,10.1,10.1),
+            "open F1 retains100ms configuration refresh");
+        check(!AutoPlayCadence.ReadFrameDue(false,double.NaN,0) && !AutoPlayCadence.ReadFrameDue(false,double.PositiveInfinity,0),
+            "invalid frame time never dispatches reads");
+        check(AutoPlayCadence.RegistryInterval<.15f && AutoPlayCadence.TargetInterval<.05f,
+            "registry and target selection cadences improve without per-frame registry scans");
+        var channelSettings=new AutoPlaySettings();
+        channelSettings.Skills[0]=new(){Enabled=true,Ability="buff",Interval=0};
+        channelSettings.Skills[1]=new(){Enabled=true,Ability="buff",Interval=0};
+        channelSettings.Skills[2]=new(){Enabled=true,Ability="buff",Interval=2,LowHealth=true,HealthPercent=50};
+        var channelContexts=Enumerable.Repeat(c with {HealthPercent=40},5).ToArray();var channels=new AutoPlaySchedule();
+        channels.Requested(0,10,0,true);
+        check(channels.SelectWhileHolding(channelSettings,channelContexts,10.01,0)==-1,
+            "channel priority preserves native dispatch spacing");
+        check(channels.SelectWhileHolding(channelSettings,channelContexts,10.03,0)==2,
+            "ready periodic defensive skill can yield an owned channel");
+        channelContexts[2]=channelContexts[2] with {CooldownReady=false};
+        check(channels.SelectWhileHolding(channelSettings,channelContexts,10.03,0)==-1,
+            "cooldown prevents channel interruption and other Hold slots do not compete");
+        channelContexts[2]=channelContexts[2] with {CooldownReady=true,HealthPercent=80};
+        check(channels.SelectWhileHolding(channelSettings,channelContexts,10.03,0)==-1,
+            "unmet defensive conditions do not interrupt channel");
+        channelContexts[2]=channelContexts[2] with {HealthPercent=40};
+        check(channels.Ready(channelSettings,channelContexts,10.03,2),
+            "queued channel priority is revalidated before native cast");
+        channels.Requested(2,10.03,2,true);channels.Observed(2,10.04,2);
+        check(channels.SelectWhileHolding(channelSettings,channelContexts,11,0)==-1 && channels.SelectWhileHolding(channelSettings,channelContexts,12.05,0)==2,
+            "periodic skill respects confirmed repeat timer while channel continues");
+        channelSettings.Skills[2].Enabled=false;
+        check(!channels.Ready(channelSettings,channelContexts,12.05,2),
+            "disabling queued skill discards priority without bypassing user choice");
+        check(!channels.Ready(channelSettings,channelContexts,12.05,-1) && !channels.Ready(channelSettings,channelContexts,12.05,5),
+            "invalid queued slot is rejected");
+        check(channels.Select(channelSettings,channelContexts,12.05)==0,
+            "normal scheduler can resume zero-interval channel after periodic cast");
         var recovery=new AutoPlayRecovery();
         check(recovery.Failed(10,false) && recovery.ReadFailures==1 && recovery.RetryAt==10.25,
             "one transient native read failure retries with bounded delay instead of disarming Assist");

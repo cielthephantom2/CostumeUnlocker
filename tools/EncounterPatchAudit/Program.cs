@@ -249,6 +249,16 @@ var assistTick=assistRuntime.Methods.Single(m=>m.Name=="Tick");
 Check(assistTick.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="AutoPlayRecovery" && m.Name=="Failed") &&
  assistRuntime.Fields.Any(f=>f.Name=="LastRunStatus") && assistRuntime.Fields.Any(f=>f.Name=="pauseReason"),
  "Assist retains bounded native-read recovery and observable last-run/pause reason without new global hooks");
+var assistCalls=assistTick.Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+int vitalsAt=Array.FindIndex(assistCalls,m=>m.Name=="ReadVitals"),potionAt=Array.FindIndex(assistCalls,m=>m.Name=="TryPotion");
+Check(vitalsAt>=0 && vitalsAt<potionAt && potionAt<Array.FindIndex(assistCalls,m=>m.Name=="Scan") && potionAt<Array.FindIndex(assistCalls,m=>m.Name=="ReadSkills"),
+ "Assist checks native potion before target registry walks and five-slot reads");
+Check(assistCalls.Any(m=>m.DeclaringType.Name=="AutoPlayCadence" && m.Name=="ReadFrameDue"),
+ "running Assist uses per-frame read policy with UI-only throttling");
+Check(assistCalls.Any(m=>m.DeclaringType.Name=="AutoPlaySchedule" && m.Name=="SelectWhileHolding") && assistCalls.Any(m=>m.DeclaringType.Name=="AutoPlaySchedule" && m.Name=="Ready"),
+ "owned channel yields to eligible periodic slot and revalidates queued conditions");
+Check(!assistCalls.Any(m=>m.DeclaringType.Namespace.StartsWith("System.Threading") || m.Name=="StartCoroutine"),
+ "Assist native reads and actions remain on its single Unity callback thread");
 var assistSchedule=Walk(core.MainModule.Types).Single(t=>t.Name=="AutoPlaySchedule");
 Check(assistSchedule.Fields.Any(f=>f.Name=="intervals") && assistSchedule.Methods.Any(m=>m.Name=="WaitSeconds") &&
  types.Single(t=>t.Name=="LanMod").Methods.Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Count(i=>

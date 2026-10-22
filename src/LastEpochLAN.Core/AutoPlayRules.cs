@@ -127,16 +127,23 @@ public sealed class AutoPlaySchedule
     private int cursor;
     private double globalNext;
     public void Reset(){Array.Clear(next,0,next.Length);Array.Clear(identities,0,identities.Length);cursor=0;globalNext=0;}
-    public int Select(AutoPlaySettings settings,IReadOnlyList<AutoSkillContext> contexts,double now)
+    public int Select(AutoPlaySettings settings,IReadOnlyList<AutoSkillContext> contexts,double now)=>SelectCore(settings,contexts,now,-1,false);
+    public int SelectWhileHolding(AutoPlaySettings settings,IReadOnlyList<AutoSkillContext> contexts,double now,int heldSlot)=>
+        SelectCore(settings,contexts,now,heldSlot,true);
+    public bool Ready(AutoPlaySettings settings,IReadOnlyList<AutoSkillContext> contexts,double now,int slot)
     {
-        if(!double.IsFinite(now) || now<globalNext)return -1;
+        if(!double.IsFinite(now) || now<globalNext || slot<0 || slot>=5 || slot>=settings.Skills.Length || slot>=contexts.Count)return false;
+        if(identities[slot]!=contexts[slot].Ability || intervals[slot]!=settings.Skills[slot].Interval)
+        {identities[slot]=contexts[slot].Ability;intervals[slot]=settings.Skills[slot].Interval;next[slot]=0;}
+        return now>=next[slot] && AutoPlayRules.Blocked(settings.Skills[slot],contexts[slot])=="";
+    }
+    private int SelectCore(AutoPlaySettings settings,IReadOnlyList<AutoSkillContext> contexts,double now,int excluded,bool periodicOnly)
+    {
         for(int n=0;n<5;n++)
         {
             int i=(cursor+n)%5;
-            if(i>=settings.Skills.Length || i>=contexts.Count)continue;
-            if(identities[i]!=contexts[i].Ability || intervals[i]!=settings.Skills[i].Interval)
-            {identities[i]=contexts[i].Ability;intervals[i]=settings.Skills[i].Interval;next[i]=0;}
-            if(now>=next[i] && AutoPlayRules.Blocked(settings.Skills[i],contexts[i])=="")return i;
+            if(i==excluded || i>=settings.Skills.Length || periodicOnly && settings.Skills[i].Interval<=0)continue;
+            if(Ready(settings,contexts,now,i))return i;
         }
         return -1;
     }
@@ -151,4 +158,11 @@ public sealed class AutoPlaySchedule
         intervals[slot]=interval;next[slot]=now+Math.Max(0,interval);
     }
     public double WaitSeconds(int slot,double now)=>Math.Max(0,Math.Max(next[slot],globalNext)-now);
+}
+
+public static class AutoPlayCadence
+{
+    public const float PanelReadInterval=.1f, RegistryInterval=.1f, TargetInterval=.025f, MetadataInterval=.5f;
+    public static bool ReadFrameDue(bool panelOpen,double now,double nextPanelRead)=>
+        double.IsFinite(now) && (!panelOpen || now>=nextPanelRead);
 }

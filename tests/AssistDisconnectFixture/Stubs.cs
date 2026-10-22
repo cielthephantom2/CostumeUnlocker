@@ -5,6 +5,7 @@ internal sealed partial class AutoPlayRuntime
 {
     internal bool Open,Armed,localReady=true,ThrowRelease,ThrowInput;
     internal int Releases,InputReleases;
+    internal int prioritySlot=3;
     internal object blockedInput=new(),nearest=new(),rareBoss=new(),Settings=new();
     internal List<object> enemies=new(){new()};
     internal float nextRead=10,nextScan=10,nextBindings=10,nextTargets=10,nextBuffs=10;

@@ -71,3 +71,11 @@ Với các tỷ lệ ngẫu nhiên, vài lần rơi chưa đủ kết luận xá
 - [ ] Host tắt room/mất mạng, F2 đang mở: cleanup không giữ pause vì room.
 - [ ] Assist đang Stop vẫn Stop; F1 đang mở vẫn pause, không tự đóng F1.
 - [ ] Lặp Join/Disconnect; kiểm tra runtime report `DisconnectRefreshes`, `Armed`, `pauseReason` và log.
+
+## Combat Assist phản ứng theo frame
+
+- [ ] Potion tại ngưỡng HP vẫn ưu tiên khi đang channel; giữ reserve và interval.
+- [ ] Slot interval>0 đã bật/đến lượt làm channel nhường, cast khi game cho phép; sau đó channel có thể tiếp tục.
+- [ ] Hai slotHold0 không liên tục cắt channel của nhau; cooldown/MP/điều kiện vẫn chặn đúng.
+- [ ] F1/F4/menu/mất focus vẫn pause; Join→Disconnect giữ Start/Stop.
+- [ ] Kiểm tra FPS và diagnostics ChannelYields/prioritySlot; bản này chưa có xác nhận native gameplay.

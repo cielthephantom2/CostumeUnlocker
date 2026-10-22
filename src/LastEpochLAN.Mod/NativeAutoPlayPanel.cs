@@ -329,7 +329,7 @@ internal sealed partial class AutoPlayRuntime
         private void Help()
         {
             Title("Quick setup","Local character only - no LAN room required");
-            var guide=Label(details.transform,0,78,530,157,()=>"1  Confirm a skill, enable it, then choose conditions.\n2  Press Start and close F1 / F4 to resume.\n0 s / Hold key: repeat casts or sustain a channel.\nLow ward uses absolute Ward, not a percentage.\nMP required before cast: minimum current MP %.\nCooldown and normal game restrictions still apply.\nManual casting takes priority. Start is not saved.",13,true,detailUpdates);guide.enableWordWrapping=true;
+            var guide=Label(details.transform,0,78,530,157,()=>"1  Confirm a skill, enable it, then choose conditions.\n2  Press Start and close F1 / F4 to resume.\n0 s / Hold: yields to due skills with interval > 0.\nLow ward uses absolute Ward, not a percentage.\nMP required before cast: minimum current MP %.\nCooldown/game restrictions apply; potion checked each running frame.\nManual casting takes priority. Start is not saved.",13,true,detailUpdates);guide.enableWordWrapping=true;
             Label(details.transform,0,245,530,42,()=>$"Enemy: {Distance(owner.enemyDistance)}   /   Rare or boss: {Distance(owner.rareDistance)}\nRequests {owner.Requests}   /   Observed casts {owner.ConfirmedCasts}",12,true,detailUpdates).enableWordWrapping=true;
             var buffs=Label(details.transform,0,310,530,65,()=>"ACTIVE STAT BUFFS\n"+(owner.buffNames.Count>0?string.Join(", ",owner.buffNames.Take(8)):"Cast your buff once to detect its name. Keep toggle auras manual if no active stat-buff name is readable."),12,true,detailUpdates);buffs.enableWordWrapping=true;
         }
