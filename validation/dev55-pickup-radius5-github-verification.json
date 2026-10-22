@@ -1,0 +1,30 @@
+{
+  "releaseUrl": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.55",
+  "title": "dev.55 - Auto Pickup radius 5, no movement required",
+  "tagCommit": "09c2868375f21b733add7f6e8d9560d30d5db63b",
+  "packageSha256": "C55B9DEA3A61CB86E35DA47786CD4870BAF3E40E9C064075D5B918B236E12536",
+  "downloadedPackageAndGithubDigestMatched": true,
+  "manifestAndDllsMatched": true,
+  "radius": 5,
+  "requiresMovement": false,
+  "checks": {
+    "pickup": 30,
+    "audit": 146,
+    "updaterFixture": 15,
+    "updaterLive": 17
+  },
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1137152,
+      "sha256": "73179BD11C420C35A21D20AF5BA4564871ABDB9686B5FC39D753002364EE1900"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 435712,
+      "sha256": "94945331EEC51DBCE8AA667A7111B2383807E8C969B5FC86D2A2BB2CBA4D8A1E"
+    }
+  ],
+  "nativeGameplayValidated": false,
+  "steamInstallPerformed": false
+}
