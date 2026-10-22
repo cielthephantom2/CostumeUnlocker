@@ -37,12 +37,12 @@ internal sealed class LanSharedChest
     internal SharedStashTab[] StashTabs=>stashTabs;
     private ChestCommand pendingTabEdit;
     private readonly SharedStashPriorityRouting priorityRouting=new();
-    private (uint NativeId,bool Cursor,int Tab,string Chest)? pendingPriorityDeposit;
+    private (uint NativeId,bool Cursor,int Tab,int Generation,string Chest)? pendingPriorityDeposit;
     internal bool TabControlsReady=>!Busy && !identity.Busy && view!=null && view.Tab==SelectedTab && session?.Connected==true;
     internal void SelectTab(int tab)
     {
         if(tab==SelectedTab)return;
-        if(tab<0 || tab>=stashTabs.Length || !TabControlsReady){Status="Finish the pending transfer before changing tabs";return;}
+        if(tab<0 || tab>=stashTabs.Length || stashTabs[tab].Deleted || !TabControlsReady){Status="Finish the pending transfer before changing tabs";return;}
         SelectedTab=tab;view=null;selected=null;dragged="";nextPoll=0;previews.Clear();
         Status="Loading shared tab "+(tab+1)+"...";
     }
@@ -51,6 +51,7 @@ internal sealed class LanSharedChest
     internal void ConfigureTab(SharedStashTab settings)=>SendTabEdit("configure-tab",settings);
     internal void SortTab(string[] order)=>SendTabEdit("sort-tab",null,order);
     internal void DuplicateTab()=>SendTabEdit("duplicate-tab");
+    internal void DeleteTab()=>SendTabEdit("delete-tab");
     internal void AddCategory()=>SendTabEdit("add-category",category:new(0,"New Category"));
     internal void ConfigureCategory(SharedStashCategory category,int[] moveTabs=null)=>SendTabEdit("configure-category",category:category,moveTabs:moveTabs);
     internal void DeleteCategory(SharedStashCategory category)=>SendTabEdit("delete-category",category:category);
@@ -169,7 +170,7 @@ internal sealed class LanSharedChest
             if(pendingPriorityDeposit is { } route && Open && TabControlsReady)
             {
                 pendingPriorityDeposit=null;
-                if(route.Tab==SelectedTab && view.ChestId==route.Chest)
+                if(route.Tab==SelectedTab && stashTabs[SelectedTab].Generation==route.Generation && view.ChestId==route.Chest)
                 {
                     var entry=(route.Cursor?Manager.cursor.GetContent():Manager.inventory.GetContent()).ToArray()
                         .FirstOrDefault(e=>e.data?.individualID==route.NativeId);
@@ -185,9 +186,9 @@ internal sealed class LanSharedChest
             foreach(var tx in journal.Records.Where(t=>t.Stage is "Removed" or "Waiting" or "Added").Take(4))
             {
                 if(view?.HostIdentity!=tx.Host || view.ChestId!=tx.ChestId){Status="Item held: reconnect to the original Host to finish";continue;}
-                if(tx.Kind=="deposit")room.SendChest(new(){Kind="deposit",Tab=tx.Tab,ChestId=tx.ChestId,Operation=tx.Id,Item=tx.Item,Ticket=tx.Ticket});
-                else if(tx.Stage=="Added")room.SendChest(new(){Kind="ack",Tab=tx.Tab,ChestId=tx.ChestId,Operation=tx.Id,ItemId=tx.ItemId});
-                else room.SendChest(new(){Kind="withdraw",Tab=tx.Tab,ChestId=tx.ChestId,Operation=tx.Id,ItemId=tx.ItemId});
+                if(tx.Kind=="deposit")room.SendChest(new(){Kind="deposit",Tab=tx.Tab,TabGeneration=tx.TabGeneration,ChestId=tx.ChestId,Operation=tx.Id,Item=tx.Item,Ticket=tx.Ticket});
+                else if(tx.Stage=="Added")room.SendChest(new(){Kind="ack",Tab=tx.Tab,TabGeneration=tx.TabGeneration,ChestId=tx.ChestId,Operation=tx.Id,ItemId=tx.ItemId});
+                else room.SendChest(new(){Kind="withdraw",Tab=tx.Tab,TabGeneration=tx.TabGeneration,ChestId=tx.ChestId,Operation=tx.Id,ItemId=tx.ItemId});
             }
         }
         catch(Exception ex){Status="Stash transaction held: "+ex.Message;MelonLoader.MelonLogger.Warning(Status);}
@@ -262,13 +263,22 @@ internal sealed class LanSharedChest
         if(reply.Error!=""){if(pendingTabEdit?.Operation==reply.Operation)pendingTabEdit=null;hostError=reply.Error;Status="Host: "+hostError;return;}
         hostError="";
         if(reply.Tab==SelectedTab && (view==null || view.ChestId!=reply.ChestId || reply.Revision>=view.Revision))
-        {view=reply;stashTabs=reply.Tabs;stashCategories=reply.Categories;}
+        {
+            view=reply;stashTabs=reply.Tabs;stashCategories=reply.Categories;
+            if(stashTabs[SelectedTab].Deleted)
+            {
+                nativeView?.InvalidateConfiguration();SelectedTab=stashTabs.First(t=>!t.Deleted).Id;
+                view=null;selected=null;dragged="";previews.Clear();pendingPriorityDeposit=null;nextPoll=0;
+            }
+        }
         if(pendingTabEdit?.Operation==reply.Operation)
         {
             pendingTabEdit=null;
             if(reply.Status=="category-added" && reply.ChangedCategory>=0)nativeView?.SelectSharedCategory(reply.ChangedCategory);
             if(reply.Status=="tab-added"){Status="Shared tab created";SelectTab(reply.ChangedTab);}
             else Status=reply.Status switch {"configured"=>"Shared tab settings saved","sorted"=>"Shared tab sorted",
+                "tab-deleted"=>"Shared tab deleted","tab-not-empty"=>"Empty the tab and finish its pending withdrawals before deleting",
+                "last-tab"=>"Keep at least one shared tab",
                 "category-added"=>"Shared category created","category-configured"=>"Shared category settings saved",
                 "category-deleted"=>"Shared category deleted; tabs moved to General",
                 "conflict"=>"Stash changed during editing; refreshed. Try again.","full"=>"Shared tab or journal limit reached",_=>"Shared tab update rejected"};
@@ -277,6 +287,8 @@ internal sealed class LanSharedChest
         if(reply.Operation=="" || journal==null)return;
         var tx=journal.Find(reply.Operation);
         if(tx==null || tx.ChestId!=reply.ChestId || tx.Host!=reply.HostIdentity || tx.Tab!=reply.Tab || tx.Stage is "Done" or "Cancelled")return;
+        if(reply.Status=="tab-replaced")
+        {Put(tx with{Stage=tx.Kind=="withdraw" && tx.Stage=="Waiting" && tx.Item==null?"Cancelled":"Held"});Status="Original tab was deleted or replaced; transfer held for review, no item was deposited elsewhere";return;}
         if(reply.Status=="stored" && tx.Kind=="deposit" && tx.Stage=="Removed")
         {Put(tx with{Stage="Done"});Status="Item stored on Host";return;}
         if(reply.Status=="done" && tx.Kind=="withdraw" && tx.Stage=="Added")
@@ -330,7 +342,7 @@ internal sealed class LanSharedChest
             if(target!=SelectedTab)
             {
                 string chest=view.ChestId;SelectTab(target);
-                if(SelectedTab==target)pendingPriorityDeposit=(entry.data.individualID,cursor,target,chest);
+                if(SelectedTab==target)pendingPriorityDeposit=(entry.data.individualID,cursor,target,stashTabs[target].Generation,chest);
                 return;
             }
         }
@@ -342,7 +354,7 @@ internal sealed class LanSharedChest
         if(view.Items.Length>=SharedStashRules.ItemsPerTab){Status="Stash full";return;}
         string id=item.Id;
         string ticket=journal.Records.Where(t=>t.Kind=="withdraw" && t.Stage=="Done" && t.ChestId==view.ChestId && t.Item?.NativeId==item.NativeId).OrderBy(t=>t.CompletedRevision).LastOrDefault()?.Id??"";
-        var tx=new ChestLocalTransaction{Tab=SelectedTab,Id=id,ChestId=view.ChestId,Host=view.HostIdentity,Kind="deposit",ItemId=id,Item=item,Stage="Preparing",Before=count,Ticket=ticket};
+        var tx=new ChestLocalTransaction{Tab=SelectedTab,TabGeneration=stashTabs[SelectedTab].Generation,Id=id,ChestId=view.ChestId,Host=view.HostIdentity,Kind="deposit",ItemId=id,Item=item,Stage="Preparing",Before=count,Ticket=ticket};
         Put(tx);nativeScope++;bool removed;
         try{removed=cursor?Manager.cursor.TryRemoveItem(entry,1,Context.GIFTING):Manager.inventory.TryRemoveItem(entry,1,Context.GIFTING);}finally{nativeScope--;}
         if(!removed){Put(tx with{Stage="Cancelled"});Status="Could not remove item from inventory";return;}
@@ -351,7 +363,7 @@ internal sealed class LanSharedChest
     private void Withdraw(ChestItem item)
     {
         if(!BeginTransfer())return;
-        var tx=new ChestLocalTransaction{Tab=SelectedTab,Id=Guid.NewGuid().ToString("N"),ChestId=view.ChestId,Host=view.HostIdentity,Kind="withdraw",ItemId=item.Id,Stage="Waiting"};
+        var tx=new ChestLocalTransaction{Tab=SelectedTab,TabGeneration=stashTabs[SelectedTab].Generation,Id=Guid.NewGuid().ToString("N"),ChestId=view.ChestId,Host=view.HostIdentity,Kind="withdraw",ItemId=item.Id,Stage="Waiting"};
         Put(tx);nextPoll=0;Status="Reserving item on Host";
     }
     internal ChestReply QaView=>view;

@@ -15,7 +15,7 @@ internal sealed partial class SharedStashPriorityRouting
             if(!decoded.TryGetValue(rule,out var native)){native=SharedStashPriorityCodec.Decode(rule);decoded.Add(rule,native);}
             return native.HasValue() && native.Match(item,level);
         }
-        bool Room(SharedStashTab tab)=>counts.Length!=tabs.Length || counts[tab.Id]<SharedStashRules.ItemsPerTab;
+        bool Room(SharedStashTab tab)=>!tab.Deleted && (counts.Length!=tabs.Length || counts[tab.Id]<SharedStashRules.ItemsPerTab);
         // A tab-specific match takes precedence over an inherited folder rule.
         foreach(var tab in tabs.Where(Room))if(Match(tab.Priority))return tab.Id;
         foreach(var tab in tabs.Where(Room))

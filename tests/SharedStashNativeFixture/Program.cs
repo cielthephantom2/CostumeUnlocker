@@ -21,6 +21,8 @@ string match=Encode(new SharedStashPriority{Rarity=8}),other=Encode(new SharedSt
 var categories=new[]{new SharedStashCategory(0,"General",Priority:match),new SharedStashCategory(1,"Other")};
 var tabs=new[]{new SharedStashTab(0,"A"),new SharedStashTab(1,"B"){Priority=match},new SharedStashTab(2,"C"){Priority=other}};
 var item=new ItemDataUnpacked{Rarity=8};
+var removed=tabs.Select(t=>t.Id==1?t with{Deleted=true}:t).ToArray();
+Check(routing.Choose(removed,categories,new[]{0,0,0},0,item,75)==0,"deleted tab is never a destination even when its priority matches");
 Check(routing.Choose(tabs,categories,new[]{0,0,0},2,item,75)==1,"tab-specific match takes precedence over a General category rule");
 Check(StashPriority.LastLevel==75,"actual routing passes the local character level into native Match");
 Check(routing.Choose(tabs,categories,new[]{0,96,0},2,item,75)==0,"full priority tab is skipped; native category rule routes to a non-full tab");

@@ -1,0 +1,35 @@
+PASS: native recomputation then postfix sets33% and2 Frost Claws per point, including zero and probability cap: 0
+PASS: native recomputation then postfix sets33% and2 Frost Claws per point, including zero and probability cap: 1
+PASS: native recomputation then postfix sets33% and2 Frost Claws per point, including zero and probability cap: 2
+PASS: native recomputation then postfix sets33% and2 Frost Claws per point, including zero and probability cap: 3
+PASS: native recomputation then postfix sets33% and2 Frost Claws per point, including zero and probability cap: 4
+PASS: repeated full native refresh does not accumulate modifiers
+PASS: repeated full native refresh does not accumulate modifiers
+PASS: repeated full native refresh does not accumulate modifiers
+PASS: enemy or other actor tree remains native
+PASS: online tree stays native
+PASS: manual Frost Claw outside impact keeps native mana cost
+PASS: native1.2 consumer receives100% original cost after scoped correction: 0
+PASS: native1.2 consumer receives100% original cost after scoped correction: 1
+PASS: native1.2 consumer receives100% original cost after scoped correction: 10
+PASS: native1.2 consumer receives100% original cost after scoped correction: 20
+PASS: native1.2 consumer receives100% original cost after scoped correction: 250
+PASS: scope cannot alter another ability or actor's mana cost
+PASS: nested impact restores enclosing mana scope
+PASS: finalizer cleanup restores normal cost even after native failure
+PASS: no Heat Flux points means no mana scope
+PASS: another actor's impact cannot start a mana scope
+PASS: online impact cannot start a mana scope
+PASS: legacy three-point Extinction chance matches99% rather than changing crit chance
+PASS: Extinction's separate crit chance bonus is preserved
+PASS: legacy Heat Flux shows2 casts/point and100% constant mana ratio
+PASS: V2 Extinction tooltip shows33%
+PASS: V2 Heat Flux tooltip shows2
+PASS: V2 Heat Flux mana shows100%
+PASS: matching name/ID in a non-Meteor tree is never modified
+PASS: V2 Heat Flux prose and bonus note agree with new mechanics
+PASS: legacy description requests native layout refresh
+PASS: description notes do not accumulate on repeated refresh
+PASS: online tooltips remain native
+PASS: invalid and overflowing inputs remain bounded
+All 34 actual-source Meteor checks passed; native execution/rendering not exercised.

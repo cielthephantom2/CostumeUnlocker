@@ -1,0 +1,19 @@
+PASS: native spacing/minimum/adaptive/update settings survive cloning
+PASS: layout element rects point to clone artwork, never source UI
+PASS: nested group references and parent sizing flags are preserved
+PASS: inactive icon policy is retained; stale cache/delegates are removed
+PASS: restoring clone never alters personal stash layout or callbacks
+PASS: restoring/reflowing does not accumulate duplicate layout components or elements
+PASS: preferred child sizes are refreshed before parent placement
+PASS: new hit Image cannot be tinted into an opaque white/colored rectangle
+PASS: original artwork color and button transitions remain native
+PASS: existing native target retains hover tint while separate hit surface stays invisible
+PASS: label width follows native preferred measurement after rename: Unique
+PASS: label width follows native preferred measurement after rename: Set
+PASS: label width follows native preferred measurement after rename: Exalted
+PASS: label width follows native preferred measurement after rename: Shared 1
+PASS: label width follows native preferred measurement after rename: A long renamed stash tab
+PASS: label width follows native preferred measurement after rename: i
+PASS: label measures current font metrics instead of a fixed pixels-per-character estimate
+PASS: shared label resizing leaves the source personal label untouched
+All 18 actual-source layout stub checks passed; Unity rendering not exercised.

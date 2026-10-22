@@ -271,9 +271,17 @@ var sharedClient=types.Single(t=>t.Name=="LanSharedChest");
 Check(sharedClient.Methods.Single(m=>m.Name=="Receive").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="ChestReply" && m.Name=="get_Tab") &&
  sharedClient.Methods.Single(m=>m.Name=="SelectTab").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="get_TabControlsReady"),
  "Shared tab switching is blocked during custody operations and selected view checks reply tab identity");
-Check(core.MainModule.Types.Single(t=>t.Name=="LanProtocol").Fields.Single(f=>f.Name=="Version").Constant is int sharedProtocol && sharedProtocol==43 &&
+Check(sharedClient.Methods.Single(m=>m.Name=="DeleteTab").Body.Instructions.Any(i=>Equals(i.Operand,"delete-tab")) &&
+ sharedView.Methods.Single(m=>m.Name=="PollTabConfiguration").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="DeleteTab") &&
+ sharedView.Methods.Single(m=>m.Name=="RebindDeleteButton").Body.Instructions.Any(i=>Equals(i.Operand,"DELETE TAB")),
+ "child-tab deletion is wired to the existing native Delete action and an explicit DELETE TAB label");
+Check(sharedClient.Methods.Single(m=>m.Name=="Tick").Body.Instructions.Count(i=>i.Operand is MethodReference m && m.Name=="set_TabGeneration")>=3 &&
+ sharedClient.Methods.Single(m=>m.Name=="Receive").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="get_Deleted") &&
+ sharedView.Methods.Single(m=>m.Name=="RestoreSharedModalActions").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="set_interactable"),
+ "all deposit/withdraw/ack retries retain tab generation; deleted selection falls back and native modal state is restored");
+Check(core.MainModule.Types.Single(t=>t.Name=="LanProtocol").Fields.Single(f=>f.Name=="Version").Constant is int sharedProtocol && sharedProtocol==44 &&
  core.MainModule.Types.Single(t=>t.Name=="SharedStashRules").Fields.Single(f=>f.Name=="ItemsPerTab").Constant is int perTab && perTab==96,
- "Protocol43 requires matching peers; per-tab snapshots retain the96-item transport limit");
+ "Protocol44 requires matching peers; per-tab snapshots retain the96-item transport limit");
 Check(sharedView.Methods.Single(m=>m.Name=="BindArtwork").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="set_raycastTarget") &&
  sharedView.Methods.Single(m=>m.Name=="BuildSharedTabControls").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="SetPersistentListenerState"),
  "Native shared-tab buttons create stable root hit targets; copied scroll controls disable serialized private callbacks");
@@ -392,6 +400,16 @@ Check(types.Single(t=>t.Name=="OfflineWeaverImprintLegacyInfoPatch").Methods.Sin
  "legacy tooltip note requests native layout refresh without editing serialized node stats or allocated points");
 var ladder=types.Single(t=>t.Name=="NativeRoomLadder");
 var ladderHooks=new[]{"RoomLadderOpenPatch","RoomLadderClosePatch","RoomLadderSessionPatch","RoomLadderSelfRowPatch","RoomLadderFilterPatch"};
+var meteorHooks=new[]{"OfflineMeteorTreePatch","OfflineMeteorImpactScopePatch","OfflineMeteorManaCostPatch","OfflineMeteorTooltipValuePatch","OfflineMeteorLegacyValuePatch","OfflineMeteorTooltipInfoPatch","OfflineMeteorLegacyInfoPatch"};
+Check(meteorHooks.All(name=>installed.Any(t=>t.Name==name)),"all seven Meteor gameplay/legacy/V2 tooltip hooks are selected");
+var meteorTree=types.Single(t=>t.Name=="OfflineMeteorTreePatch");
+Check(meteorTree.Methods.Single(m=>m.Name=="Postfix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>()
+ .Where(m=>m.Name.StartsWith("set_",StringComparison.Ordinal)).Select(m=>m.Name).OrderBy(n=>n).SequenceEqual(new[]{"set_chanceFor100increasedArea","set_frostClawCastsOnImpact"}),
+ "Meteor native tree refresh changes only large-Meteor chance and Heat Flux count, not crit/damage stats or allocated points");
+Check(types.Single(t=>t.Name=="OfflineMeteorImpactScopePatch").Methods.Any(m=>m.Name=="Finalizer") &&
+ types.Single(t=>t.Name=="MeteorManaScope").Fields.Any(f=>f.CustomAttributes.Any(a=>a.AttributeType.Name=="ThreadStaticAttribute")) &&
+ !meteorHooks.Select(name=>types.Single(t=>t.Name==name)).SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Any(i=>i.Operand is MethodReference m && m.Name is "reduceMana" or "UseAbility" or "CastAfterDelay"),
+ "Meteor mana correction is a thread-local finalizer scope and never refunds/replays a cast");
 Check(ladderHooks.All(name=>installed.Any(t=>t.Name==name)),"all five offline native ladder hooks are selected by the release allowlist");
 Check(!patches.Any(t=>t.Name=="RoomLadderSeasonPatch") &&
  !patches.SelectMany(t=>t.CustomAttributes).Where(a=>a.AttributeType.FullName=="HarmonyLib.HarmonyPatch").SelectMany(a=>a.ConstructorArguments).Any(a=>Equals(a.Value,"HandleSeasonEventUI")),
@@ -411,13 +429,25 @@ using(var nativeMetadata=AssemblyDefinition.ReadAssembly(Path.Combine(args[3],"M
   "native Echo setup copies faction cache chance at0x120 into the zone roll field at0x304");
  Check(NativeBody("OneShotCacheGameplayObject/<OpenAfterDelay>d__26","MoveNext").AsSpan().IndexOf(new byte[]{0xF3,0x0F,0x10,0x88,0x04,0x03,0,0})>=0,
   "actual cache coroutine reads zone chance at0x304 for its native RNG roll, rather than only reading tooltip stats");
- foreach(var hook in installed.Where(t=>ladderHooks.Contains(t.Name) || t.Name is "AggressiveMinionAcquirePatch" or "AggressiveMinionTargetPatch" or "OfflineWeaverImprintTooltipStatPatch" or "OfflineWeaverImprintTooltipInfoPatch" or "OfflineWeaverImprintLegacyValuePatch" or "OfflineWeaverImprintLegacyInfoPatch"))
+ Check(NativeBody("MeteorMutator","Mutate").AsSpan().IndexOf(new byte[]{0x8B,0x8F,0x50,0x01,0,0,0x89,0x88,0x38,0x01,0,0})>=0,
+  "native Meteor propagates Heat Flux count from its0x150 field into impact0x138");
+ Check(NativeBody("MeteorMutator","Mutate").AsSpan().IndexOf(new byte[]{0xF3,0x0F,0x10,0x8F,0x78,0x01,0,0})>=0,
+  "actual large-Meteor native RNG reads chanceFor100increasedArea at0x178");
+ Check(NativeBody("MeteorAoEMutator","Mutate").AsSpan().IndexOf(new byte[]{0xBA,0xC4,0x02,0,0})>=0 &&
+  NativeBody("MeteorAoEMutator","Mutate").AsSpan().IndexOf(new byte[]{0x0F,0x28,0xF8,0xF3,0x0F,0x59,0x3D})>=0,
+  "Heat Flux native consumer queries Frost Claw ID708 and applies its inlined mana factor to that result");
+ foreach(var hook in installed.Where(t=>ladderHooks.Contains(t.Name) || meteorHooks.Contains(t.Name) || t.Name is "AggressiveMinionAcquirePatch" or "AggressiveMinionTargetPatch" or "OfflineWeaverImprintTooltipStatPatch" or "OfflineWeaverImprintTooltipInfoPatch" or "OfflineWeaverImprintLegacyValuePatch" or "OfflineWeaverImprintLegacyInfoPatch"))
  {
   var attribute=hook.CustomAttributes.Single(a=>a.AttributeType.FullName=="HarmonyLib.HarmonyPatch");
   var type=(TypeReference)attribute.ConstructorArguments[0].Value;
   string name=type.FullName.StartsWith("Il2Cpp.",StringComparison.Ordinal)?type.FullName[7..]:type.FullName[6..];
   string methodName=(string)attribute.ConstructorArguments[1].Value;
-  var method=nativeTypes[name].Methods.Single(m=>m.Name==methodName);
+  string NativeType(TypeReference t)=>t.FullName.StartsWith("Il2Cpp.",StringComparison.Ordinal)?t.FullName[7..]:
+   t.FullName.StartsWith("Il2CppLE.",StringComparison.Ordinal)?t.FullName[6..]:t.FullName;
+  var candidates=nativeTypes[name].Methods.Where(m=>m.Name==methodName);
+  if(attribute.ConstructorArguments.Count>=3 && attribute.ConstructorArguments[2].Value is CustomAttributeArgument[] overload)
+   candidates=candidates.Where(m=>m.Parameters.Select(p=>p.ParameterType.FullName).SequenceEqual(overload.Select(a=>NativeType((TypeReference)a.Value))));
+  var method=candidates.Single();
   var address=method.CustomAttributes.Single(a=>a.AttributeType.Name=="AddressAttribute");
   int offset=Convert.ToInt32(address.Fields.Single(f=>f.Name=="Offset").Argument.Value.ToString()!.Replace("0x",""),16);
   Check(image[offset] is not (0xC3 or 0xC2 or 0xCC),"native hook targets a non-noop implementation: "+name+"::"+methodName);

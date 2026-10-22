@@ -1,6 +1,8 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.45
+# TM Last Epoch Co-op Mod — 1.1.0-dev.47
 
-Development release, protocol **43**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). The Host and every Client must update both DLLs; older protocol peers cannot join. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
+Development release, protocol **44**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). The Host and every Client must update both DLLs; older protocol peers cannot join. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
+
+**Dev.47:** Meteor Extinction33% large-Meteor chance per point; Heat Flux2 Frost Claws per point, each consuming100% of normal Frost Claw mana cost. Legacy/V2 tooltips match. Adds native DELETE TAB for empty Shared Stash child tabs, preserving stable IDs and using generations to reject delayed transfers into a replacement slot. Keep at least one tab; pending withdrawals block deletion. **Protocol44: update both DLLs on every peer.** Includes all dev45 features. Build0warnings/errors;1,037 managed/TCP and118 compiled/native audits pass; native UI/combat acceptance remains pending. See [release report](RELEASE-1.1.0-dev47-VI.md).
 
 **Dev.45:** Native Shared Stash configuration/categories/priorities, label/layout fixes, Room Ladder and aggressive local minion detection x2. Imprint correction: Sealed12% from the user-verified stock6% tooltip, Warlord6%, Echoing displayed maximum100% with its underlying formula doubled. Enter a new Echo for the Sealed map roll rate. Includes the shared-stub startup crash fix. All peers must update both DLLs. Build0warnings/errors;1,014 managed/TCP,103 compiled/native and43 Weaver fixture checks pass; gameplay/render acceptance remains pending. See [release report](RELEASE-1.1.0-dev45-VI.md).
 

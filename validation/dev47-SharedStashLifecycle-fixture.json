@@ -1,0 +1,17 @@
+{
+  "passed": 11,
+  "checks": [
+    "actual lifecycle masks every source CanvasGroup and Canvas before shared source preparation",
+    "hidden source cannot intercept input or ignore its hidden parent group",
+    "native base/V2 repeated open hooks preserve one original state per component",
+    "projection clone receives original visual states rather than hidden preparation values",
+    "restoring clone never reveals the still-open personal source",
+    "source close restores exact original alpha, input, parent-group and Canvas states",
+    "source visibility records are released after source restoration",
+    "F2 close hides the cached projection",
+    "opening personal stash later is unaffected once a shared projection already exists",
+    "canceling F2 during preparation closes hidden source and restores state without starting a game",
+    "closing a failed shared view allows a fresh F2 preparation attempt"
+  ],
+  "scope": "actual lifecycle source with Unity-state stubs; no rendered/native UI acceptance"
+}

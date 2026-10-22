@@ -1,0 +1,18 @@
+{
+  "passed": 12,
+  "checks": [
+    "actual codec roundtrips all eight native condition messages, ranges and selections",
+    "WW, Weaver Touch and FP fields preserve exact native message positions",
+    "empty configuration retains no priority",
+    "actual codec rejects malformed data before calling native deserializers",
+    "deleted tab is never a destination even when its priority matches",
+    "tab-specific match takes precedence over a General category rule",
+    "actual routing passes the local character level into native Match",
+    "full priority tab is skipped; native category rule routes to a non-full tab",
+    "Ignore Folder Priority suppresses inherited routing and keeps selected tab when no own rule matches",
+    "no eligible non-full priority destination leaves the selected-tab transaction policy in control",
+    "nonmatching item is not forced into a priority tab",
+    "bounded native rule cache preserves routing across more than96 distinct edited configurations"
+  ],
+  "scope": "actual priority codec/routing source with native-message stubs; no engine/UI acceptance"
+}

@@ -21,6 +21,7 @@ internal sealed partial class NativeSharedStashView
     private SharedStashCategory[] renderedCategories=Array.Empty<SharedStashCategory>();
     private int selectedCategory;
     private int shownCategoryTab=-1,layoutCategory=-1;
+    private int shownTabGeneration=-1;
     private void ScrollCategories(int direction)
     {
         var ids=owner.StashCategories.Select(c=>c.Id).ToArray();
@@ -94,7 +95,7 @@ internal sealed partial class NativeSharedStashView
     {
         if(!owner.TabControlsReady || Configuring)return;
         selectedCategory=id;
-        var first=owner.StashTabs.FirstOrDefault(t=>t.Category==id);
+        var first=owner.StashTabs.FirstOrDefault(t=>!t.Deleted && t.Category==id);
         if(first!=null)owner.SelectTab(first.Id);
     }
     private void RefreshSharedCategories(ChestReply snapshot)
@@ -174,7 +175,7 @@ internal sealed partial class NativeSharedStashView
             if(layout!=null)
             {
                 layout.Elements=new Il2CppSystem.Collections.Generic.List<SimpleLayoutGroup.SimpleLayoutElement>();
-                foreach(var tab in sharedTabVisuals.Where(v=>v.transform.parent.Pointer==holder.Pointer)){SharedStashNativeLayout.Reflow(tab);layout.AddElement(tab);}
+                foreach(var tab in sharedTabVisuals.Where(v=>v.activeSelf && v.transform.parent.Pointer==holder.Pointer)){SharedStashNativeLayout.Reflow(tab);layout.AddElement(tab);}
                 layout.UpdateLayout();
             }
         }
@@ -197,6 +198,6 @@ internal sealed partial class NativeSharedStashView
         categoryVisuals.Clear();categoryTabHolders.Clear();renderedCategories=Array.Empty<SharedStashCategory>();
         categoryNamePath=categoryIconPath=categoryImagePath=categoryOrnamentPath=modernSelectedPath=modernCategoryTabsPath=null;
         categoryActive=categoryInactive=null;selectedCategory=0;
-        shownCategoryTab=layoutCategory=-1;
+        shownCategoryTab=layoutCategory=shownTabGeneration=-1;
     }
 }

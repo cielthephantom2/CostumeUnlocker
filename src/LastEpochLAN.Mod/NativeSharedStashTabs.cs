@@ -162,7 +162,8 @@ internal sealed partial class NativeSharedStashView
     }
     private void RefreshSharedTabs(ChestReply snapshot)
     {
-        if(shownCategoryTab!=snapshot.Tab){selectedCategory=snapshot.Tabs[snapshot.Tab].Category;shownCategoryTab=snapshot.Tab;}
+        if(shownCategoryTab!=snapshot.Tab || shownTabGeneration!=snapshot.Tabs[snapshot.Tab].Generation)
+        {selectedCategory=snapshot.Tabs[snapshot.Tab].Category;shownCategoryTab=snapshot.Tab;shownTabGeneration=snapshot.Tabs[snapshot.Tab].Generation;}
         RefreshSharedCategories(snapshot);
         var activeTab=snapshot.Tabs[snapshot.Tab];
         if(sharedTabTitle!=null)sharedTabTitle.text=activeTab.Name;
@@ -210,7 +211,7 @@ internal sealed partial class NativeSharedStashView
         {
             var selected=tabArtwork!=null?At(sharedTabVisuals[i].transform,tabSelectionPath)?.gameObject:null;
             if(selected!=null)selected.SetActive(i==owner.SelectedTab);
-            if(modernCategoryTabsPath==null)sharedTabVisuals[i].SetActive(renderedTabs[i].Category==selectedCategory);
+            sharedTabVisuals[i].SetActive(!renderedTabs[i].Deleted && (modernCategoryTabsPath!=null || renderedTabs[i].Category==selectedCategory));
             RefreshLegacyTabSelection(sharedTabVisuals[i],i==owner.SelectedTab);
             var button=sharedTabVisuals[i].GetComponent<UnityEngine.UI.Button>();if(button!=null)button.interactable=owner.TabControlsReady;
         }
@@ -223,7 +224,7 @@ internal sealed partial class NativeSharedStashView
         }
         if(sortButton!=null)sortButton.interactable=owner.TabControlsReady;
         if(configureButton!=null)configureButton.interactable=owner.TabControlsReady;
-        if(addButton!=null)addButton.interactable=owner.TabControlsReady && renderedTabs.Length<SharedStashRules.MaxTabs;
+        if(addButton!=null)addButton.interactable=owner.TabControlsReady && renderedTabs.Count(t=>!t.Deleted)<SharedStashRules.MaxTabs;
         if(configureRequestedTab>=0 && owner.SelectedTab==configureRequestedTab && owner.TabControlsReady)
         {configureRequestedTab=-1;ConfigureSharedTab();}
     }
@@ -277,13 +278,13 @@ internal sealed partial class NativeSharedStashView
         var folder=owner.StashCategories.Single(c=>c.Id==tab.Category);
         var availableNames=new Il2CppSystem.Collections.Generic.List<string>();
         var availableIds=new Il2CppSystem.Collections.Generic.List<int>();
-        foreach(var candidate in owner.StashTabs){availableNames.Add(candidate.Name);availableIds.Add(candidate.Id);}
-        var data=new StashConfigureTabModalOpenData(tab.Icon,tab.Color,tab.Name,tab.Id,tab.Category,names,ids,false,
+        foreach(var candidate in owner.StashTabs.Where(t=>!t.Deleted)){availableNames.Add(candidate.Name);availableIds.Add(candidate.Id);}
+        var data=new StashConfigureTabModalOpenData(tab.Icon,tab.Color,tab.Name,tab.Id,tab.Category,names,ids,CanDeleteSharedTab(tab.Id),
             SharedStashPriorityCodec.Decode(tab.Priority),false,tab.IgnoreFolderPriority,
             SharedStashPriorityCodec.Decode(folder.Priority),availableNames,availableIds);
         OpenSharedConfiguration(data);
         configureCategory=-1;
-        configureTab=tab.Id;configureChestId=owner.QaView?.ChestId??"";Configuring=true;
+        configureTab=tab.Id;configureGeneration=tab.Generation;configureChestId=owner.QaView?.ChestId??"";Configuring=true;
     }
     internal void InvalidateConfiguration()=>configureChestId="";
     internal void PollTabConfiguration()
@@ -295,19 +296,20 @@ internal sealed partial class NativeSharedStashView
         {
             var result=configureAwaiter.GetResult();Configuring=false;
             if(!owner.Open || configureTab!=owner.SelectedTab || owner.QaView?.ChestId!=configureChestId)return;
+            if(configureCategory<0 && (owner.StashTabs[configureTab].Deleted || owner.StashTabs[configureTab].Generation!=configureGeneration))return;
             if(forcedModalAction.HasValue)
             {
                 if(forcedModalAction==StashConfigureResult.Duplicate)
                 {if(configureCategory>=0)DuplicateCategory();else owner.DuplicateTab();}
-                else if(forcedModalAction==StashConfigureResult.Delete && configureCategory>=0)
-                    owner.DeleteCategory(owner.StashCategories.Single(c=>c.Id==configureCategory));
+                else if(forcedModalAction==StashConfigureResult.Delete)
+                {if(configureCategory>=0)owner.DeleteCategory(owner.StashCategories.Single(c=>c.Id==configureCategory));else owner.DeleteTab();}
                 return;
             }
             if(result==null)return;
             if(result.Action==StashConfigureResult.Duplicate)
             {if(configureCategory>=0)DuplicateCategory();else owner.DuplicateTab();return;}
-            if(result.Action==StashConfigureResult.Delete && configureCategory>=0)
-            {owner.DeleteCategory(owner.StashCategories.Single(c=>c.Id==configureCategory));return;}
+            if(result.Action==StashConfigureResult.Delete)
+            {if(configureCategory>=0)owner.DeleteCategory(owner.StashCategories.Single(c=>c.Id==configureCategory));else owner.DeleteTab();return;}
             if(result.Action!=StashConfigureResult.Save)return;
             if(configureCategory>=0)
                 owner.ConfigureCategory(new(configureCategory,result.TabName.Trim(),result.SelectedColorId,result.SelectedIconId,
@@ -315,7 +317,7 @@ internal sealed partial class NativeSharedStashView
             else
             {
                 owner.ConfigureTab(new(configureTab,result.TabName.Trim(),result.SelectedColorId,result.SelectedIconId){
-                    Category=result.SelectedParentId,Priority=SharedStashPriorityCodec.Encode(result.TabPriority),IgnoreFolderPriority=result.IgnoreFolderPriority});
+                    Generation=configureGeneration,Category=result.SelectedParentId,Priority=SharedStashPriorityCodec.Encode(result.TabPriority),IgnoreFolderPriority=result.IgnoreFolderPriority});
                 selectedCategory=result.SelectedParentId;
             }
         }

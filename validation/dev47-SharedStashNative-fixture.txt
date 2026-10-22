@@ -1,0 +1,13 @@
+PASS: actual codec roundtrips all eight native condition messages, ranges and selections
+PASS: WW, Weaver Touch and FP fields preserve exact native message positions
+PASS: empty configuration retains no priority
+PASS: actual codec rejects malformed data before calling native deserializers
+PASS: deleted tab is never a destination even when its priority matches
+PASS: tab-specific match takes precedence over a General category rule
+PASS: actual routing passes the local character level into native Match
+PASS: full priority tab is skipped; native category rule routes to a non-full tab
+PASS: Ignore Folder Priority suppresses inherited routing and keeps selected tab when no own rule matches
+PASS: no eligible non-full priority destination leaves the selected-tab transaction policy in control
+PASS: nonmatching item is not forced into a priority tab
+PASS: bounded native rule cache preserves routing across more than96 distinct edited configurations
+All 12 native priority fixture checks passed.

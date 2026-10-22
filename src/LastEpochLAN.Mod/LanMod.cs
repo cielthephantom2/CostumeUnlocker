@@ -5,7 +5,7 @@ using MelonLoader;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
-[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.45", "Local research")]
+[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.47", "Local research")]
 [assembly: HarmonyDontPatchAll]
 [assembly: MelonGame("Eleventh Hour Games", "Last Epoch")]
 
@@ -741,6 +741,8 @@ public sealed class LanMod : MelonMod
             localCharacterReadiness = new { monolithParty.GameplayReady,monolithParty.SharedWorldReady,monolithParty.GuestSession },
             roomLadder = new { NativeRoomLadder.Error },
             weaverImprints = OfflineTools.WeaverImprintDiagnostics.Snapshot(),
+            meteorNodes = new { OfflineTools.MeteorNodeRuntime.TreeUpdates, OfflineTools.MeteorNodeRuntime.ManaAdjustments,
+                OfflineTools.MeteorNodeRuntime.LastLargeMeteorChance, OfflineTools.MeteorNodeRuntime.LastFrostClawCount },
             aggressiveMinions = new { OfflineTools.AggressiveMinionRange.ExpandedAcquisitions, OfflineTools.AggressiveMinionRange.ExpandedTargetSearches },
             avatarCaptureError = ClassVisualReplica.CaptureError,
             summons=new {local=summonCapture.Count,omitted=summonCapture.Omitted,captureError=summonCapture.Error,remote=summonReplicas.Count,renderError=summonReplicas.Error},

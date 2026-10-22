@@ -6,16 +6,20 @@ public static class SharedStashRules
     public static bool ValidTabIndex(int tab)=>tab>=0 && tab<MaxTabs;
     public static SharedStashTab[] InitialTabs()=>Enumerable.Range(0,InitialTabCount).Select(i=>new SharedStashTab(i,"Shared "+(i+1))).ToArray();
     public static bool ValidTabs(SharedStashTab[]? tabs)=>tabs is {Length:>0 and <=MaxTabs} &&
-        tabs.Select((tab,index)=>tab!=null && tab.Id==index && tab.Valid()).All(ok=>ok);
+        tabs.Select((tab,index)=>tab!=null && tab.Id==index && tab.Valid()).All(ok=>ok) && tabs.Any(t=>!t.Deleted);
 }
 public sealed record SharedStashTab(int Id,string Name,int Color=0,int Icon=0)
 {
     public int Category {get;init;}
+    // Stable slots keep all existing item/journal IDs. Reuse increments the
+    // generation so a delayed deposit cannot enter an unrelated replacement.
+    public bool Deleted {get;init;}
+    public int Generation {get;init;}
     public bool IgnoreFolderPriority {get;init;}
     public string Priority {get;init;}="";
     public bool Valid()=>SharedStashRules.ValidTabIndex(Id) && Name is {Length:>0 and <=32} && Name.Trim()==Name &&
         !Name.Any(c=>char.IsControl(c) || c is '<' or '>') && Color is >=0 and <=1023 && Icon is >=0 and <=1023 &&
-        Category is >=0 and <24 && SharedStashPriority.ValidJson(Priority);
+        Category is >=0 and <24 && Generation>=0 && SharedStashPriority.ValidJson(Priority);
 }
 public sealed record SharedStashCategory(int Id,string Name,int Color=0,int Icon=0,string Priority="")
 {
@@ -55,5 +59,5 @@ public sealed record SharedStashEdit(string Id,string Owner,string Payload,strin
 {
     public int ChangedCategory {get;init;}=-1;
     public bool Valid(int tabs)=>Guid.TryParseExact(Id,"N",out _) && Owner is {Length:>0 and <=256} &&
-        Payload is {Length:64} && Payload.All(Uri.IsHexDigit) && Status is "tab-added" or "configured" or "sorted" or "category-added" or "category-configured" or "category-deleted" && ChangedTab>=0 && ChangedTab<tabs && ChangedCategory is >=-1 and <24;
+        Payload is {Length:64} && Payload.All(Uri.IsHexDigit) && Status is "tab-added" or "tab-deleted" or "configured" or "sorted" or "category-added" or "category-configured" or "category-deleted" && ChangedTab>=0 && ChangedTab<tabs && ChangedCategory is >=-1 and <24;
 }
