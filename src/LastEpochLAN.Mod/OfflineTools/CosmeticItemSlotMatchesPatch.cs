@@ -12,8 +12,6 @@ public class CosmeticItemSlotMatchesPatch
     [HarmonyPostfix]
     private static void Postfix(Cosmetic c, ref bool __result)
     {
-        if(MeteorDefaultCosmetic.IsDefault(c))
-        {__result=__result && MeteorDefaultCosmetic.Enabled;return;}
         if (GameplayEnvironment.IsOnlinePlay || !OfflineToolkit.Settings.UnlockCosmetics || !__result || c == null)
         {
             return;
