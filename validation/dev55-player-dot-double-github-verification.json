@@ -1,0 +1,27 @@
+{
+  "releaseUrl": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.55",
+  "title": "dev.55 - Larger blue player minimap dot",
+  "tagCommit": "d8723e826a9b0423bef5955ad27a8ced80d25fe3",
+  "packageSha256": "A39179C8E1849DD224D815ABCF094B14127AB3939F9CDF5E8BB6DE5ABFDAA115",
+  "downloadedPackageAndGithubDigestMatched": true,
+  "manifestAndDllsMatched": true,
+  "checks": {
+    "compiledNativeAudit": 169,
+    "updaterFixture": 15,
+    "updaterLive": 17
+  },
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1149952,
+      "sha256": "87FF95609A1F4C1C6216D58A0840B2A676A75C6865A660843AEFEB83EA4E7075"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 436224,
+      "sha256": "E69AA7349B9230B801D0D9E8BC9442ABBAB3E13CFC4C731C941FDCE541F83F32"
+    }
+  ],
+  "nativeGameplayValidated": false,
+  "steamInstallPerformed": false
+}
