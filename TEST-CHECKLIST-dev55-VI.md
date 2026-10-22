@@ -24,20 +24,20 @@ Bản release vừa đăng: https://github.com/cielthephantom2/CostumeUnlocker/r
 
 Mở F4 → Mod Settings và bật các loại muốn thử: Gold, Keys, Potions, Materials, Ancient Bones.
 
-- [ ] Gold/potion/Ancient Bones dùng phạm vi native x3, không phụ thuộc chuyển động.
-- [ ] Keys/Materials dùng trigger gốc của gold với bán kính x3; nhặt đúng một lần và lưu vào storage native.
+- [ ] Gold/potion/Ancient Bones dùng bán kính cố định5, không phụ thuộc chuyển động.
+- [ ] Keys/Materials dùng bộ quét cũ với bán kính5; nhặt đúng một lần và lưu vào storage native.
 - [ ] Potion đầy charges vẫn nằm lại; equipment/tutorial item không tự nhặt.
-- [ ] Tắt enhancement gold/potion/bones trả về phạm vi gốc; tắt Keys/Materials ngừng tự nhặt các loại đó.
-- [ ] Đổi zone/echo rồi quay lại loot còn trên đất; trigger vẫn hoạt động và không báo lỗi pool.
+- [ ] Tắt từng loại để kiểm tra bộ quét bỏ qua loại đó; equipment/tutorial không được tự nhặt.
+- [ ] Đổi zone/echo rồi quay lại loot còn trên đất; pickup vẫn hoạt động, không còn gọi Attach/initialise trigger bổ sung.
 - [ ] Click thủ công / Range Pickup vẫn hoạt động.
 
 Phạm vi sửa lần này là5nhóm trên. Không thêm auto pickup XP/Favor/Memory Amber.
 
-## 4. World Assist đã gỡ / native pickup x3
+## 4. World Assist đã gỡ / pickup radius5
 
 - [ ] F4 không còn World Assist; không còn danger rings, marker hoặc đường đi của tính năng này.
-- [ ] Gold/potion/Ancient Bones nhặt trong phạm vi native x3; potion đầy nằm lại.
-- [ ] Keys/Materials tự nhặt khi chạm phạm vi, kể cả đứng yên; storage tăng đúng, equipment không tự nhặt.
+- [ ] Gold/potion/Ancient Bones nhặt trong bán kính5; potion đầy nằm lại.
+- [ ] Keys/Materials tự nhặt trong vòng5, kể cả đứng yên; storage tăng đúng, equipment không tự nhặt.
 - [ ] Tắt từng loại và đổi zone/echo; kiểm tra FPS và log.
 - [ ] Range Pickup vẫn hoạt động khi click thủ công.
 

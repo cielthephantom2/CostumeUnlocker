@@ -121,7 +121,7 @@ internal static class OfflineToolkitSmoke
         ground.dropItemForPlayer(actor,material,actor.position()+UnityEngine.Vector3.right*40,false);
         if(CountKeys(manager)!=keysBefore || (manager.materials.shattering.content?.Quantity??0)!=materialBefore)
             throw new InvalidOperationException("Far key/material must remain on the ground.");
-        PickupObservations=new {farDropBoundaryValidated=true,nativeTriggerGameplayValidated=false,nativeRangeMultiplier=OfflinePickup.RangeMultiplier};
+        PickupObservations=new {farDropBoundaryValidated=true,nearPickupGameplayValidated=false,radius=PickupRules.Radius,requiresMovement=false};
         return true;
     }
     private static int CountKeys(ItemContainersManager items)

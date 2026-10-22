@@ -69,6 +69,7 @@ internal static class OfflineToolkit
         Safely(OfflineBuffs.Tick);
         Safely(OfflineFortune.Tick);
         Safely(OfflineWovenRanks.Tick);
+        Safely(OfflinePickup.Tick);
         Safely(OfflineForgottenKnights.Tick);
         Safely(Dps.DpsRuntime.Tick);
         Safely(()=>CameraZoom.InputTick(panel));
@@ -78,7 +79,7 @@ internal static class OfflineToolkit
         Safely(ObjectiveReveal.Tick);
         if(saveAt>=0 && Time.unscaledTime>=saveAt) Safely(Save);
     }
-    internal static void SceneChanged() {NewCharacterBoost.SceneChanged();MapFog.Clear();EnemyMapDots.Clear();CameraZoom.Restore();ObjectiveReveal.Clear();Dps.DpsRuntime.SceneChanged();}
+    internal static void SceneChanged() {OfflinePickup.Clear();NewCharacterBoost.SceneChanged();MapFog.Clear();EnemyMapDots.Clear();CameraZoom.Restore();ObjectiveReveal.Clear();Dps.DpsRuntime.SceneChanged();}
     internal static void Dispose() {Safely(OfflinePickup.Clear);SceneChanged();Safely(OfflineBuffs.Restore);Safely(OfflineFortune.RestoreRewards);EnemyMapDots.Dispose();MinimapZoom.Clear();if(saveAt>=0) Safely(Save);}
     internal static void Draw()
     {
@@ -99,11 +100,11 @@ internal static class OfflineToolkit
         s.AutoCompleteNewCharacter=Toggle(s.AutoCompleteNewCharacter,"New character: quests + level 58 + End of Time",0);
         GUI.Label(new Rect(x+14,y+62,395,23),"Offline mode enforced; existing characters kept.");
         s.UnlockCosmetics=Toggle(s.UnlockCosmetics,"Unlock native cosmetic selection",2);
-        s.Gold=Toggle(s.Gold,"Auto Gold: native pickup range x3",3);
-        s.Keys=Toggle(s.Keys,"Auto Keys: native pickup range x3",4);
-        s.Potions=Toggle(s.Potions,"Auto Potions: native range x3, charges have room",5);
-        s.Materials=Toggle(s.Materials,"Auto Materials: native pickup range x3",6);
-        s.Bones=Toggle(s.Bones,"Auto Bones: native pickup range x3",7);
+        s.Gold=Toggle(s.Gold,"Auto Gold: radius 5, including while standing",3);
+        s.Keys=Toggle(s.Keys,"Auto Keys: radius 5, including while standing",4);
+        s.Potions=Toggle(s.Potions,"Auto Potions: radius 5, charges have room",5);
+        s.Materials=Toggle(s.Materials,"Auto Materials: radius 5, including while standing",6);
+        s.Bones=Toggle(s.Bones,"Auto Bones: radius 5, including while standing",7);
         s.RangePickup=Toggle(s.RangePickup,"Range Pickup: click loot without walking to it",8);
         s.RevealObjectives=Toggle(s.RevealObjectives,"Reveal Monolith / Dungeon objectives",9);
         s.EnemyMapDots=Toggle(s.EnemyMapDots,"Enemy minimap dots",10);
@@ -112,7 +113,7 @@ internal static class OfflineToolkit
         s.CustomZoom=Toggle(s.CustomZoom,"Camera zoom: comma / period",13);
         GUI.Label(new Rect(x+14,y+389,395,23),$"Camera zoom: {s.ZoomDistance:0.0}x (0.5–5)");
         s.ZoomDistance=GUI.HorizontalSlider(new Rect(x+14,y+417,395,20),CameraZoom.Clamp(s.ZoomDistance),0.5f,5f);
-        if(GUI.changed) {ScheduleSave();MinimapZoom.ApplyCurrent();Safely(OfflinePickup.Refresh);}
+        if(GUI.changed) {ScheduleSave();MinimapZoom.ApplyCurrent();}
         GUI.changed|=previousChanged;
         GUI.Label(new Rect(x+14,y+446,395,48),NewCharacterBoost.Status);
         GUI.Label(new Rect(x+14,y+494,395,42),OfflineDensity.Status);

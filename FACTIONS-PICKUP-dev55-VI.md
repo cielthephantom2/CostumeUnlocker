@@ -20,6 +20,6 @@ Gán giá trị tuyệt đối vào field native và refresh khi bật rank/đ�
 
 ## Auto pickup hiện tại
 
-Cơ chế quét đồ và điều kiện di chuyển của bản trước đã được thay thế. Xem [báo cáo hiện tại](NATIVE-PICKUP-dev55-VI.md): dùng trigger native, phạm vi gốc x3, thêm Keys/Materials qua tương tác nhặt gốc. World Assist đã được gỡ toàn bộ.
+Đã quay lại bộ quét pickup cũ với bán kính cố định5, bỏ điều kiện di chuyển. Không dùng trigger bổ sung hoặc hệ số x3. Xem [báo cáo hiện tại](NATIVE-PICKUP-dev55-VI.md). World Assist vẫn được gỡ toàn bộ.
 
-Đóng game rồi chạy `update.bat` để nhận cặp DLL của release dev.55.
+Đóng game rồi chạy `update.bat` để nhận cặp DLL dev.55 mới.

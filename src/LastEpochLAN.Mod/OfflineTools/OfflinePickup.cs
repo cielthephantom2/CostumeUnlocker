@@ -1,136 +1,81 @@
 using HarmonyLib;
 using Il2Cpp;
 using UnityEngine;
+using NVec=System.Numerics.Vector3;
 
 namespace LastEpochLAN.Mod.OfflineTools;
 
-// Reuse the game's pooled gold trigger for stackable items. No managed Update,
-// movement sampler, ground-list sweep, direct inventory grant or loot relocation.
+// Read actual ground drops after placement. Never grant at spawn or move a drop
+// to the player. Native pickup handles storage, pooling, charges and objectives.
 internal static class OfflinePickup
 {
-    internal const float RangeMultiplier=3;
-    private sealed record Bridge(GroundItemVisuals Visuals,GoldPickupInteraction Trigger,AutoPool.Subscriber<GoldPickupInteraction> Pool);
-    private static readonly Dictionary<IntPtr,Bridge> bridges=new();
-    private static readonly Dictionary<IntPtr,Bridge> byVisuals=new();
-    [ThreadStatic] internal static int ItemPickupDepth;
+    private static int goldCursor,potionCursor,boneCursor,itemCursor;
+    private static float nextSweep;
     internal static bool Local(Actor actor)=>OfflineToolkit.Ready && actor!=null && actor.Pointer==PlayerFinder.getPlayerActor()?.Pointer;
-    private static bool Owned(Actor actor)=>OfflineToolkit.Enabled && actor!=null && actor.Pointer==PlayerFinder.getPlayerActor()?.Pointer;
     internal static bool Special(ItemData item)=>item!=null && !item.isTutorialItem() &&
         (OfflineToolkit.Settings.Keys && Item.isKey(item.itemType) || OfflineToolkit.Settings.Materials && ItemList.isCraftingItem(item.itemType));
-    internal static void Configure(PickupGroundObjectInteraction interaction)
+    internal static bool CanAutoPick(Actor actor,Vector3 location)
     {
-        if(interaction==null)return;
-        bool owned=Owned(interaction.player);
-        var manager=GroundItemManager.instance;
-        if(manager==null)return;
-        PickupGroundObjectInteraction prefab=null;bool enabled=false;
-        if(interaction.TryCast<GoldPickupInteraction>()!=null)
-        {
-            prefab=manager.goldPileSubscriber?.Pool?.prefabT;
-            enabled=owned && (bridges.TryGetValue(interaction.Pointer,out var bridge)?Special(bridge.Visuals.itemData):OfflineToolkit.Settings.Gold);
-        }
-        else if(interaction.TryCast<PotionPickupInteraction>()!=null)
-        {prefab=manager.potionSubscriber?.Pool?.prefabT;enabled=owned && OfflineToolkit.Settings.Potions;}
-        else if(interaction.TryCast<PickupAncientBonesInteraction>()!=null)
-        {prefab=manager.ancientBoneSubscriber?.Pool?.prefabT;enabled=owned && OfflineToolkit.Settings.Bones;}
-        if(prefab==null)return;
-        var original=prefab.GetComponentsInChildren<Collider>(true);
-        var current=interaction.GetComponentsInChildren<Collider>(true);
-        for(int i=0;i<Math.Min(original.Length,current.Length);i++)
-        {
-            var a=original[i];var b=current[i];if(a==null || b==null || !a.isTrigger)continue;
-            float scale=enabled?RangeMultiplier:1;
-            if(a.TryCast<SphereCollider>() is {} sphere && b.TryCast<SphereCollider>() is {} targetSphere)targetSphere.radius=sphere.radius*scale;
-            else if(a.TryCast<CapsuleCollider>() is {} capsule && b.TryCast<CapsuleCollider>() is {} targetCapsule)
-            {targetCapsule.radius=capsule.radius*scale;targetCapsule.height=capsule.height*scale;}
-            else if(a.TryCast<BoxCollider>() is {} box && b.TryCast<BoxCollider>() is {} targetBox)targetBox.size=box.size*scale;
-            // Special-item triggers are optional. Gold/potion/bones retain native
-            // pickup at their original radius when the enhancement is disabled.
-            b.enabled=!bridges.ContainsKey(interaction.Pointer) || enabled;
-        }
+        if(!Local(actor))return false;
+        var p=actor.position();
+        return PickupRules.Within(new NVec(p.x,p.y,p.z),new NVec(location.x,location.y,location.z));
     }
-    internal static void Attach(GroundItemVisuals visuals)
+    internal static bool Managed(PickupGroundObjectInteraction pickup)=>pickup!=null &&
+        (OfflineToolkit.Settings.Gold && pickup.TryCast<GoldPickupInteraction>()!=null ||
+        OfflineToolkit.Settings.Potions && pickup.TryCast<PotionPickupInteraction>()!=null ||
+        OfflineToolkit.Settings.Bones && pickup.TryCast<PickupAncientBonesInteraction>()!=null);
+    internal static void Tick()
     {
-        Detach(visuals);
         var actor=PlayerFinder.getPlayerActor();
-        if(!Owned(actor) || visuals.itemData==null || visuals.itemData.isTutorialItem() ||
-           !(Item.isKey(visuals.itemData.itemType) || ItemList.isCraftingItem(visuals.itemData.itemType)))return;
-        var pool=GroundItemManager.instance?.goldPileSubscriber;
-        if(pool?.Pool?.prefabT==null)return;
-        // Match native gold creation: instantiate active and unparented so
-        // Unity runs BaseInteraction.Awake and binds ConditionHandler before
-        // initialise dereferences it. GroundItemVisuals can still be inactive.
-        var trigger=pool.instantiate(visuals.transform.position,Quaternion.identity,null,false);
-        if(trigger==null)return;
-        try
+        if(!Local(actor) || Time.unscaledTime<nextSweep)return;
+        nextSweep=Time.unscaledTime+.05f;
+        var manager=GroundItemManager.instance;
+        if(manager==null || !manager.TryGetGroundItemList(actor,out var list) || list==null)return;
+        int remaining=8;
+        void Visit<T>(Il2CppSystem.Collections.Generic.List<T> entries,ref int cursor,Action<T> pickup) where T:PickupGroundObjectInteraction
         {
-            trigger.gameObject.layer=actor.gameObject.layer;
-            var bridge=new Bridge(visuals,trigger,pool);
-            bridges.Add(trigger.Pointer,bridge);byVisuals.Add(visuals.Pointer,bridge);
-            trigger.initialise(actor,visuals.id);
-            Configure(trigger);
-            // Parent only after native initialization; inactive loot visuals
-            // must not suppress Awake on a newly allocated trigger.
-            trigger.transform.SetParent(visuals.transform,true);
+            if(entries==null)return;
+            int visits=Math.Min(32,entries.Count);
+            for(int i=0;i<visits && entries.Count>0 && remaining>0;i++)
+            {
+                if(cursor>=entries.Count)cursor=0;
+                var entry=entries[cursor++];
+                if(entry==null || !entry.isActiveAndEnabled || !Local(entry.player) || entry.index<entry.delay || !CanAutoPick(actor,entry.transform.position))continue;
+                pickup(entry);remaining--;
+            }
         }
-        catch {bridges.Remove(trigger.Pointer);byVisuals.Remove(visuals.Pointer);pool.Release(trigger);throw;}
+        if(OfflineToolkit.Settings.Gold)Visit(manager.activeGoldPiles,ref goldCursor,p=>manager.pickupGold(actor,p.id,p));
+        if(OfflineToolkit.Settings.Potions)
+        {
+            var potion=actor.GetComponent<HealthPotion>();
+            if(potion!=null && potion.currentCharges<potion.maxCharges)
+                Visit(manager.activePotions,ref potionCursor,p=>{if(potion.currentCharges<potion.maxCharges)manager.pickupPotion(actor,p.id,p);});
+        }
+        if(OfflineToolkit.Settings.Bones)Visit(manager.activeAncientBones,ref boneCursor,p=>manager.pickupAncientBone(actor,p.id,p));
+        var items=list.items;
+        if(items==null)return;
+        int count=Math.Min(64,items.Count);
+        for(int i=0;i<count && items.Count>0 && remaining>0;i++)
+        {
+            if(itemCursor>=items.Count)itemCursor=0;
+            var item=items[itemCursor++];
+            if(item==null || !Special(item.itemData) || !CanAutoPick(actor,item.location))continue;
+            // Native pickup normally vacuums other stackables in a wider radius.
+            // Disable that secondary sweep only for this automatic operation;
+            // each eligible ground item is checked against the player's 5-unit circle.
+            using(var scope=new AutomaticPickupScope())manager.pickupItem(actor,item.id,StackableItemFlags.All);
+            remaining--;
+        }
     }
-    internal static bool PickUp(GoldPickupInteraction interaction)
-    {
-        if(!bridges.TryGetValue(interaction.Pointer,out var bridge))return true;
-        if(!Owned(interaction.player) || !Special(bridge.Visuals.itemData))return false;
-        // Each item has its own native trigger. Avoid the native secondary
-        // vacuum reaching beyond those triggers or collecting disabled types.
-        ItemPickupDepth++;
-        try {GroundItemManager.instance.pickupItem(interaction.player,bridge.Visuals.id,StackableItemFlags.All);}
-        finally {ItemPickupDepth--;}
-        return false;
-    }
-    internal static void Detach(GroundItemVisuals visuals)
-    {
-        if(byVisuals.TryGetValue(visuals.Pointer,out var bridge))Release(bridge);
-    }
-    private static void Release(Bridge bridge)
-    {bridges.Remove(bridge.Trigger.Pointer);byVisuals.Remove(bridge.Visuals.Pointer);if(bridge.Trigger!=null)bridge.Pool.Release(bridge.Trigger);}
     internal static void Clear()
-    {foreach(var bridge in bridges.Values.ToArray())Release(bridge);}
-    internal static void Refresh()
-    {
-        var manager=GroundItemManager.instance;if(manager==null || !OfflineToolkit.Ready)return;
-        if(manager.activeGoldPiles!=null)foreach(var x in manager.activeGoldPiles)Configure(x);
-        if(manager.activePotions!=null)foreach(var x in manager.activePotions)Configure(x);
-        if(manager.activeAncientBones!=null)foreach(var x in manager.activeAncientBones)Configure(x);
-        foreach(var b in bridges.Values)Configure(b.Trigger);
-    }
+    {nextSweep=0;goldCursor=potionCursor=boneCursor=itemCursor=0;}
 }
-[HarmonyPatch(typeof(GroundItemManager),nameof(GroundItemManager.BeforeSceneUnloaded))]
-internal static class OfflineNativePickupScenePatch
-{private static void Prefix()=>OfflinePickup.Clear();}
-[HarmonyPatch(typeof(GroundItemManager),nameof(GroundItemManager.ChangeZone))]
-internal static class OfflineNativePickupZonePatch
-{private static void Prefix()=>OfflinePickup.Clear();}
-[HarmonyPatch(typeof(GroundItemManager),nameof(GroundItemManager.OnDestroy))]
-internal static class OfflineNativePickupDisposePatch
-{private static void Prefix()=>OfflinePickup.Clear();}
-[HarmonyPatch(typeof(PickupGroundObjectInteraction),nameof(PickupGroundObjectInteraction.initialise))]
-internal static class OfflineNativePickupRadiusPatch
-{private static void Postfix(PickupGroundObjectInteraction __instance)=>OfflinePickup.Configure(__instance);}
-[HarmonyPatch(typeof(GroundItemVisuals),nameof(GroundItemVisuals.initialise))]
-internal static class OfflineNativeItemTriggerPatch
-{private static void Postfix(GroundItemVisuals __instance)=>OfflinePickup.Attach(__instance);}
-[HarmonyPatch(typeof(GroundItemVisuals),nameof(GroundItemVisuals.beforePooling))]
-internal static class OfflineNativeItemPoolPatch
-{private static void Prefix(GroundItemVisuals __instance)=>OfflinePickup.Detach(__instance);}
-[HarmonyPatch(typeof(GroundItemVisuals),nameof(GroundItemVisuals.OnDestroy))]
-internal static class OfflineNativeItemDestroyPatch
-{private static void Prefix(GroundItemVisuals __instance)=>OfflinePickup.Detach(__instance);}
-[HarmonyPatch(typeof(GoldPickupInteraction),nameof(GoldPickupInteraction.PickUp))]
-internal static class OfflineNativeItemPickupPatch
-{private static bool Prefix(GoldPickupInteraction __instance)=>OfflinePickup.PickUp(__instance);}
-[HarmonyPatch(typeof(GroundItemManager),nameof(GroundItemManager.vacuumNearbyStackableItems))]
-internal static class OfflineNativeItemVacuumPatch
-{private static bool Prefix()=>OfflinePickup.ItemPickupDepth==0;}
-
+internal sealed class AutomaticPickupScope:IDisposable
+{
+    [ThreadStatic] internal static int Depth;
+    internal AutomaticPickupScope()=>Depth++;
+    public void Dispose()=>Depth--;
+}
 [HarmonyPatch(typeof(GroundItemManager),nameof(GroundItemManager.dropGoldForPlayer))]
 internal static class OfflineGoldPickupPatch
 {
@@ -141,8 +86,19 @@ internal static class OfflineGoldPickupPatch
             __1=LastEpochLAN.Core.OfflineBonusRules.GoldAmount(__1,OfflineEconomy.GoldMultiplier());
     }
 }
+[HarmonyPatch(typeof(PickupGroundObjectInteraction),nameof(PickupGroundObjectInteraction.OnUpdateTick))]
+internal static class OfflineNativeAutoPickupGatePatch
+{
+    private static bool Prefix(PickupGroundObjectInteraction __instance)=>
+        !OfflinePickup.Local(__instance.player) || !OfflinePickup.Managed(__instance) ||
+        OfflinePickup.CanAutoPick(__instance.player,__instance.transform.position);
+}
+[HarmonyPatch(typeof(GroundItemManager),nameof(GroundItemManager.vacuumNearbyStackableItems))]
+internal static class OfflineAutoPickupVacuumGatePatch
+{private static bool Prefix()=>AutomaticPickupScope.Depth==0;}
 
-// Explicit click pickup retains its existing behavior.
+// Explicit clicks retain their existing behavior. Automatic pickup has a
+// fixed 5-unit radius and works while standing still.
 [HarmonyPatch(typeof(GroundItemLabel),nameof(GroundItemLabel.ClickedItem))]
 internal static class OfflineRangePickupPatch
 {

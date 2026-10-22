@@ -17,6 +17,6 @@ Bổ sung x2 cả hai dòng Stability trong Echo Rewards mọi loại Echo và x
 Đóng game rồi chạy update.bat để cập nhật cả hai DLL. Game đang chạy khi đóng gói nên chưa ghi đè DLL trong Steam.
 
 
-Bổ sung faction/pickup: CoF Rank7 x15 Experimental, Rank10 +300% boss loot riêng, Rank11 Rare→Exalted50%; The Woven Rank7 reforge30%, Rank9 Memory Amber50%. Auto pickup đã chuyển sang trigger native, bán kính gốc x3 và bỏ điều kiện di chuyển; World Assist đã gỡ toàn bộ. Xem [báo cáo](FACTIONS-PICKUP-dev55-VI.md).
+Bổ sung faction/pickup: CoF Rank7 x15 Experimental, Rank10 +300% boss loot riêng, Rank11 Rare→Exalted50%; The Woven Rank7 reforge30%, Rank9 Memory Amber50%. Auto pickup quay lại bộ quét cũ với bán kính cố định5, nhặt cả khi đứng yên; bỏ trigger bổ sung. World Assist đã gỡ toàn bộ. Xem [báo cáo](FACTIONS-PICKUP-dev55-VI.md).
 
 Sửa pickup và gỡ World Assist: xem [báo cáo hiện tại](NATIVE-PICKUP-dev55-VI.md).
