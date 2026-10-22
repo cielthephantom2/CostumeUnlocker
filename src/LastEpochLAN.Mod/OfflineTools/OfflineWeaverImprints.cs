@@ -109,11 +109,16 @@ internal static class OfflineWeaverWovenImprintScopePatch
 {
     private static IEnumerable<MethodBase> TargetMethods()
     {
-        // Include the actual outer island weighting consumer: multiplying only
-        // the final selection weights of both slots cancels after normalization.
+        // Scope the outer selection rather than detouring the six-argument
+        // IncreaseChanceForSpecificEchoTypes boundary (which includes ref float).
+        // That bridge raised native->managed NullReferenceExceptions during
+        // Empowered -> Normal changes. The native caller validates its timeline
+        // and calls IncreaseChance inside this outer scope, preserving x2 at
+        // the actual island-weight consumer without intercepting that boundary.
+        yield return AccessTools.Method(typeof(EchoWeb),nameof(EchoWeb.getIslandTypeForNewIsland)) ??
+            throw new MissingMethodException(typeof(EchoWeb).FullName,nameof(EchoWeb.getIslandTypeForNewIsland));
         foreach (string name in new[] { nameof(WeaverTreeNodesExtensions.OverrideEchoTypes),
             nameof(WeaverTreeNodesExtensions.CanSpawnSpecialEchoesNaturally),
-            nameof(WeaverTreeNodesExtensions.IncreaseChanceForSpecificEchoTypes),
             nameof(WeaverTreeNodesExtensions.SetNaturalSpawnedWovenEchoIslandData) })
             yield return AccessTools.Method(typeof(WeaverTreeNodesExtensions), name) ??
                 throw new MissingMethodException(typeof(WeaverTreeNodesExtensions).FullName, name);

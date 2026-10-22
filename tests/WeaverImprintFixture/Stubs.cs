@@ -7,6 +7,12 @@ namespace HarmonyLib
 }
 namespace Il2Cpp
 {
+    public class EchoWeb
+    {
+        public enum ChainStatus {Normal}
+        public enum IslandType {Normal,Woven}
+        public IslandType getIslandTypeForNewIsland(int tier,HashSet<IslandType> surroundingIslandTypes,int chainType,ChainStatus chainStatus,int wovenEchoTypeIfForced)=>IslandType.Normal;
+    }
     public class SkillTreeNode {public T TryCast<T>()where T:class=>this as T;}
     public class NodeTooltipManager
     {

@@ -61,7 +61,20 @@ using(var echo=new WeaverImprintCallScope(true,false))
 }
 Check(WeaverImprintCallScope.Current==null,"All Imprint contexts cleared after operation");
 var targets=(IEnumerable<MethodBase>)Call(typeof(OfflineWeaverWovenImprintScopePatch),"TargetMethods");
-Check(targets.Count()==4 && targets.Any(m=>m.Name=="IncreaseChanceForSpecificEchoTypes"),"Woven scope includes outer Monolith spawn-weight consumer, not only final normalized selection");
+Check(targets.Count()==4 && targets.Any(m=>m.DeclaringType==typeof(EchoWeb) && m.Name=="getIslandTypeForNewIsland"),"Woven scope wraps outer Monolith selection including native spawn-weight consumer");
+Check(!targets.Any(m=>m.Name=="IncreaseChanceForSpecificEchoTypes"),"Empowered-to-Normal ref-float trampoline boundary is never detoured");
+Check(targets.Single(m=>m.Name=="getIslandTypeForNewIsland").GetParameters().All(p=>!p.ParameterType.IsByRef),"replacement outer boundary contains no by-reference arguments");
+foreach(bool empowered in new[]{true,false,true,false})
+{
+    object[] state={null};Call(typeof(OfflineWeaverWovenImprintScopePatch),"Prefix",state);
+    Check(Chance(wovenWeight,0)==0,"zero/disabled native echo weighting stays zero during mode switch: "+empowered);
+    Check(Chance(wovenWeight,.05f)==.1f,"outer selection retains Woven weighting x2 during mode switch: "+empowered);
+    object[] nestedState={null};Call(typeof(OfflineWeaverWovenImprintScopePatch),"Prefix",nestedState);
+    Check(Chance(wovenWeight,.05f)==.1f,"nested native selection scales once during mode switch");
+    Call(typeof(OfflineWeaverWovenImprintScopePatch),"Finalizer",nestedState[0]);
+    try{throw new InvalidOperationException("simulated selection failure");}catch(InvalidOperationException){Call(typeof(OfflineWeaverWovenImprintScopePatch),"Finalizer",state[0]);}
+    Check(WeaverImprintCallScope.Current==null && Chance(wovenWeight,.05f)==.05f,"selection failure restores native weighting context between timelines");
+}
 OfflineToolkit.Enabled=false;
 var disabled=Begin(zone);End(zone,disabled);
 Check(zone.totalSpawners==75.25f && Chance(typeof(OfflineWeaverCommonerChancePatch),.02f,zone)==.02f,"Online mode does not modify Commoner data or helper");

@@ -249,7 +249,8 @@ Check(commonerImprints.Methods.Single(m=>m.Name=="Finalizer").Body.Instructions.
 var wovenImprints=imprintPatches.Single(t=>t.Name=="OfflineWeaverWovenImprintScopePatch");
 var wovenTargets=Walk(new[]{wovenImprints}).SelectMany(t=>t.Methods).Where(m=>m.HasBody)
  .SelectMany(m=>m.Body.Instructions).Where(i=>i.OpCode.Code==Mono.Cecil.Cil.Code.Ldstr).Select(i=>i.Operand as string).ToArray();
-Check(new[]{"IncreaseChanceForSpecificEchoTypes","SetNaturalSpawnedWovenEchoIslandData","OverrideEchoTypes","CanSpawnSpecialEchoesNaturally"}.All(wovenTargets.Contains),
+Check(new[]{"getIslandTypeForNewIsland","SetNaturalSpawnedWovenEchoIslandData","OverrideEchoTypes","CanSpawnSpecialEchoesNaturally"}.All(wovenTargets.Contains) &&
+ !wovenTargets.Contains("IncreaseChanceForSpecificEchoTypes"),
  "Woven/Loomed scopes cover both outer island probability and final native weighted choice");
 Check(!imprintPatches.SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Select(i=>i.Operand).OfType<MethodReference>()
  .Any(m=>m.DeclaringType.Name=="RngElement" || m.Name.Contains("DropAfterDelay") || m.Name=="RebuildID"),
@@ -417,10 +418,11 @@ var arcaneCalls=arcane.Methods.Single(m=>m.Name=="Prefix").Body.Instructions.Sel
 Check(installed.Contains(arcane) && arcaneCalls.Any(m=>m.Name=="Local") && arcaneCalls.Any(m=>m.Name=="Instantiate") && arcaneCalls.Any(m=>m.Name=="set_roots") &&
  !arcaneCalls.Any(m=>m.Name is "set_numberOfRoots" or "DecrementNumberOfRoots"),
  "local Arcane uses a private root-free ailment definition without clearing unrelated root counters");
-var shortcutCalls=types.Single(t=>t.Name=="UiShortcutRuntime").Methods.Single(m=>m.Name=="Execute").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
-Check(new[]{"OpenObservatoryPanel","openMasteryPanel","OpenPassivePanel","openStash","Waypoint"}.All(n=>shortcutCalls.Any(m=>m.Name==n)) &&
- !shortcutCalls.Any(m=>m.Name is "respecAllInternal" or "resetChosenMastery" or "spendGold"),
- "shortcuts request native panels and local waypoint travel while retaining native confirmation and costs");
+Check(!types.Any(t=>t.Name.StartsWith("UiShortcut") || t.Name is "ShortcutAction" or "ShortcutBinding"),
+ "removed Shortcut runtime, rules, actions and bindings are absent from the release assembly");
+Check(!types.Single(t=>t.Name=="LanMod").Methods.Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions)
+ .Any(i=>i.Operand is string s && s=="UI Shortcut"),
+ "F4 no longer advertises the removed UI Shortcut feature");
 var archmageHooks=new[]{"OfflineArchmageCastPatch","OfflineArchmageRefundPatch","OfflineArchmageDescriptionPatch","OfflineArchmageStatNamePatch","OfflineArchmageTooltipValuePatch","OfflineArchmageLegacyValuePatch"};
 Check(archmageHooks.All(n=>installed.Any(t=>t.Name==n)),"all Archmage native, description, stat-label and legacy/V2 value hooks are installed");
 Check(types.Single(t=>t.Name=="OfflineArchmageCastPatch").Methods.Any(m=>m.Name=="Finalizer") &&
@@ -450,6 +452,21 @@ using(var nativeMetadata=AssemblyDefinition.ReadAssembly(Path.Combine(args[3],"M
   int Read(string field)=>Convert.ToInt32(address.Fields.Single(f=>f.Name==field).Argument.Value.ToString()!.Replace("0x",""),16);
   return image.AsSpan(Read("Offset"),Read("Length")).ToArray();
  }
+ ulong NativeRva(string type,string name)
+ {
+  var address=nativeTypes[type].Methods.Single(m=>m.Name==name).CustomAttributes.Single(a=>a.AttributeType.Name=="AddressAttribute");
+  return Convert.ToUInt64(address.Fields.Single(f=>f.Name=="RVA").Argument.Value.ToString()!.Replace("0x",""),16);
+ }
+ bool CallsNative(string owner,string method,string targetOwner,string targetMethod)
+ {
+  var body=NativeBody(owner,method);long start=(long)NativeRva(owner,method),target=(long)NativeRva(targetOwner,targetMethod);
+  for(int i=0;i+5<=body.Length;i++)if(body[i]==0xE8 && start+i+5+BitConverter.ToInt32(body,i+1)==target)return true;
+  return false;
+ }
+ Check(nativeTypes["EchoWeb"].Methods.Single(m=>m.Name=="getIslandTypeForNewIsland").Parameters.All(p=>p.ParameterType is not ByReferenceType) &&
+  CallsNative("EchoWeb","getIslandTypeForNewIsland","LE.Factions.WeaverTreeNodesExtensions","IncreaseChanceForSpecificEchoTypes") &&
+  CallsNative("LE.Factions.WeaverTreeNodesExtensions","IncreaseChanceForSpecificEchoTypes","WovenEchoData","GetTotalNaturalSpawnWeighting"),
+  "replacement Woven scope has no by-ref parameters and encloses the actual native Imprint weighting helper");
  Check(NativeBody("MonolithZoneManager","ApplyHostWeaverModifiers").AsSpan().IndexOf(new byte[]{0x8B,0x81,0x20,0x01,0,0,0x89,0x83,0x04,0x03,0,0})>=0,
   "native Echo setup copies faction cache chance at0x120 into the zone roll field at0x304");
  Check(NativeBody("OneShotCacheGameplayObject/<OpenAfterDelay>d__26","MoveNext").AsSpan().IndexOf(new byte[]{0xF3,0x0F,0x10,0x88,0x04,0x03,0,0})>=0,
