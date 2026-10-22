@@ -1,0 +1,29 @@
+{
+  "releaseUrl": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.55",
+  "title": "dev.55 - Original prophecy charge behavior restored",
+  "tagCommit": "94b01e3081b8329cec1b5ed7dbc2903dea3656fb",
+  "packageSha256": "3C1A54B95F189481CA0DDDB20DB771FD2E8262FDB3196D136E7A91122681BA16",
+  "downloadedPackageAndGithubDigestMatched": true,
+  "manifestAndDllsMatched": true,
+  "checks": {
+    "compiledNativeAudit": 170,
+    "updaterFixture": 15,
+    "updaterLive": 17
+  },
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1149952,
+      "sha256": "169163A4146AD321ADA5F12BC799D44AB90A44ABF5CD185F3E4529332CCF6C57"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 436224,
+      "sha256": "D0939CFDE1F46C61A87CF241EB38772C0D770E7E0CE17D95D8702423D5A64091"
+    }
+  ],
+  "customChargeCodeRemoved": true,
+  "sourceMatchesPreChargeVersion": true,
+  "nativeGameplayValidated": false,
+  "steamInstallPerformed": false
+}
