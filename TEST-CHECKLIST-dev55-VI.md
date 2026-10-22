@@ -124,4 +124,4 @@ Với các tỷ lệ ngẫu nhiên, vài lần rơi chưa đủ kết luận xá
 - [ ] Sau fulfillment, kích hoạt thêm Shrine/Rift Beast không nhận lại loot đã trả cho charge cũ.
 - [ ] Kiểm tra mọi ô Prophecy, nội dung UI và nhiều loại reward; chấm minimap/pickup vẫn hoạt động.
 
-- [ ] Mở10/11/30+ charge: nhận1thông báo gốc/ô, tổng charge và số món đúng loại reward; ô0 charge không báo lại.
+- [ ] Mở4–10/11/30+ charge: vẫn phát thông báo gốc theo từng transaction; tổng loot theo cơ sở từng loại. Không gom thông báo; ô0 charge không báo lại.

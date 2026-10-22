@@ -39,4 +39,6 @@ Scale chấm xanh dương từ0.45 lên0.90 (đường kính gấp3 chấm NPC).
 
 ## Prophecy dùng hết charge theo từng loại thưởng
 
-Mỗi lần trigger hợp lệ tiêu thụ toàn bộ charge, thưởng bằng charge × cơ sở của reward đang chọn (không cố định20), giữ lens/bonus/điều kiện native. UI số charge đồng bộ.195 fixture và176 audit checks đạt; chưa test loot/UI trong game. [Chi tiết](PROPHECY-LINEAR-CHARGES-dev55-VI.md).
+Mỗi lần trigger hợp lệ tiêu thụ toàn bộ charge, thưởng bằng charge × cơ sở của reward đang chọn (không cố định20), giữ lens/bonus/điều kiện native. UI số charge đồng bộ.194 fixture và175 audit checks đạt; chưa test loot/UI trong game. [Chi tiết](PROPHECY-LINEAR-CHARGES-dev55-VI.md).
+
+Thông báo Prophecy giữ nguyên code/callback gốc. Đã gỡ riêng phần gom thông báo thêm nhầm; tính thưởng dùng hết charge theo cơ sở từng loại vẫn giữ.

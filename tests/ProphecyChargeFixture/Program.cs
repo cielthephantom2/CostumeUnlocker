@@ -15,8 +15,8 @@ foreach(int quantity in new[]{1,2,4,7,20})
    $"base{quantity} x{charge} charges: native per-type loot and consumed total agree, no residual charges");
   Check(!slot.TryTriggerReward(slot.Target,false,PlayerFinder.Player,out spent) && spent==0 && slot.Items==quantity*charge,
    "repeating the same target after spending all charges cannot duplicate loot");
-  Check(charge==0?Notifications.Messages.Count==0:Notifications.Messages.Count==1 && Notifications.Messages[0].Charges==charge && Notifications.Messages[0].Items==quantity*charge,
-   "one native notification reports the total spent charges and this reward type quantity, including above10");
+  Check(charge==0?Notifications.Messages.Count==0:Notifications.Messages.Count==slot.Events && Notifications.Messages.Sum(m=>m.Charges)==charge && Notifications.Messages.Sum(m=>m.Items)==quantity*charge,
+   "unchanged native notifications follow original transactions and their per-type quantities sum correctly, including above10");
  }
 var doubled=new ProphecySlot{CompletedCharges=10,BaseQuantity=4};doubled.TryTriggerReward(doubled.Target,true,PlayerFinder.Player,out int used);
 Check(used==10 && doubled.Items==80,"native double-reward bonus retained independently from charge consumption");
@@ -41,9 +41,7 @@ var inner=new ProphecySlot{CompletedCharges=4,BaseQuantity=2};var outer=new Prop
 outer.OnFulfilled=()=>{if(inner.CompletedCharges>0)inner.TryTriggerReward(inner.Target,false,PlayerFinder.Player,out int unused);};
 outer.TryTriggerReward(outer.Target,false,PlayerFinder.Player,out used);
 Check(used==4 && outer.Items==28 && inner.Items==8 && !OfflineProphecyCharges.NativeCall(inner) && !OfflineProphecyCharges.NativeCall(outer),"nested different slots retain independent native reentry guards");
-Check(Notifications.Messages.Count==2 && Notifications.Messages.Any(m=>m.Slot==inner.Pointer && m.Charges==4 && m.Items==8) && Notifications.Messages.Any(m=>m.Slot==outer.Pointer && m.Charges==4 && m.Items==28),"nested slots keep their own aggregate notifications");
-Notifications.Throw=true;var missingUi=new ProphecySlot{CompletedCharges=10,BaseQuantity=4};missingUi.TryTriggerReward(missingUi.Target,false,PlayerFinder.Player,out used);Notifications.Throw=false;
-Check(used==10 && missingUi.Items==40 && missingUi.CompletedCharges==0 && !OfflineProphecyCharges.NativeCall(missingUi),"notification UI failure cannot repeat, undo or interrupt successful reward transactions");
+Check(Notifications.Messages.Where(m=>m.Slot==inner.Pointer).Sum(m=>m.Items)==8 && Notifications.Messages.Where(m=>m.Slot==outer.Pointer).Sum(m=>m.Items)==28,"nested slots retain their original native notification callbacks");
 var preview=new ProphecySlot{CompletedCharges=10,BaseQuantity=7};
 Check(preview.GetChargesToUseWhenTriggered()==10 && preview.GetChargesToUseWhenTriggeredUIString()=="<color=#808080>Consumes 10 charges</color>","UI count and localized rich-text sentence show all charges, preserving numeric color tags");
 Check(OfflineProphecyCharges.ChargeText("<size=12><color=#112233>Use 3 charges</color></size>",99)=="<size=12><color=#112233>Use 99 charges</color></size>","charge text never changes tag attributes or color codes");

@@ -8,32 +8,12 @@ namespace LastEpochLAN.Mod.OfflineTools;
 
 internal static class OfflineProphecyCharges
 {
-    private sealed class Notice
-    {
-        internal int Charges;
-        internal ProphecyTargetType Target;
-    }
-    [ThreadStatic] private static Dictionary<IntPtr,Notice> nativeCalls;
+    [ThreadStatic] private static HashSet<IntPtr> nativeCalls;
     internal static bool Local(Actor actor)=>OfflineToolkit.Enabled && actor!=null &&
         actor.Pointer==PlayerFinder.getPlayerActor()?.Pointer;
-    internal static bool Enter(ProphecySlot slot)=>(nativeCalls??=new()).TryAdd(slot.Pointer,new());
-    internal static bool NativeCall(ProphecySlot slot)=>slot!=null && nativeCalls?.ContainsKey(slot.Pointer)==true;
-    internal static bool BufferNotice(ProphecySlot slot,int charges,ProphecyTargetType target)
-    {
-        if(slot==null || nativeCalls==null || !nativeCalls.TryGetValue(slot.Pointer,out var notice))return false;
-        if(charges>0){notice.Charges+=charges;notice.Target=target;}
-        return true;
-    }
-    internal static void Exit(ProphecySlot slot)
-    {
-        if(nativeCalls==null || !nativeCalls.Remove(slot.Pointer,out var notice))return;
-        // Coalesce presentation only. All native gameplay/faction events already
-        // ran normally; the original notification formats this reward's own
-        // quantity and localized text using the total successfully spent charges.
-        if(notice.Charges<=0)return;
-        try{Notifications.ProphecyFulfilled(slot,notice.Charges,notice.Target);}
-        catch(Exception ex){MelonLoader.MelonLogger.Warning("Prophecy notification: "+ex.GetBaseException().Message);}
-    }
+    internal static bool Enter(ProphecySlot slot)=>(nativeCalls??=new()).Add(slot.Pointer);
+    internal static void Exit(ProphecySlot slot)=>nativeCalls?.Remove(slot.Pointer);
+    internal static bool NativeCall(ProphecySlot slot)=>slot!=null && nativeCalls?.Contains(slot.Pointer)==true;
     // Preserve the native localized sentence and rich-text tags. Only its visible
     // numeric charge count changes; reward quantities remain owned by each type.
     private static readonly Regex visibleNumbers=new(@"(<[^>]*>)|\d+",RegexOptions.CultureInvariant);
@@ -89,11 +69,4 @@ internal static class OfflineProphecyChargeTextPatch
 {
     private static void Postfix(ProphecySlot __instance,ref string __result)
     {if(OfflineToolkit.Enabled && __instance!=null)__result=OfflineProphecyCharges.ChargeText(__result,__instance.CompletedCharges);}
-}
-
-[HarmonyPatch(typeof(Notifications),nameof(Notifications.ProphecyFulfilled))]
-internal static class OfflineProphecyNotificationPatch
-{
-    private static bool Prefix(ProphecySlot __0,int __1,ProphecyTargetType __2)=>
-        !OfflineProphecyCharges.BufferNotice(__0,__1,__2);
 }

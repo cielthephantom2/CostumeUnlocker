@@ -1,5 +1,4 @@
 using System.Reflection;
-namespace MelonLoader{public static class MelonLogger{public static List<string> Errors=new();public static void Warning(string text)=>Errors.Add(text);}}
 namespace HarmonyLib
 {
  [AttributeUsage(AttributeTargets.Class)]public class HarmonyPatch:Attribute{public HarmonyPatch(Type type,string method){}}
@@ -9,11 +8,10 @@ namespace Il2Cpp
  public class Actor{static int next;public IntPtr Pointer=(IntPtr)Interlocked.Increment(ref next);}
  public static class Notifications
  {
-  public static List<(IntPtr Slot,int Charges,int Items)> Messages=new();public static bool Throw;
+  public static List<(IntPtr Slot,int Charges,int Items)> Messages=new();
   public static void ProphecyFulfilled(Il2CppLE.Factions.ProphecySlot slot,int charges,Il2CppLE.Factions.ProphecyTargetType target)
   {
-   bool run=(bool)typeof(LastEpochLAN.Mod.OfflineTools.OfflineProphecyNotificationPatch).GetMethod("Prefix",BindingFlags.NonPublic|BindingFlags.Static).Invoke(null,new object[]{slot,charges,target});
-   if(!run)return;if(Throw)throw new InvalidOperationException("UI destroyed");Messages.Add((slot.Pointer,charges,charges*slot.BaseQuantity));
+   Messages.Add((slot.Pointer,charges,charges*slot.BaseQuantity));
   }
  }
  public static class PlayerFinder{public static Actor Player=new();public static Actor getPlayerActor()=>Player;}

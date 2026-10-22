@@ -1,0 +1,47 @@
+{
+  "gameAssemblySha256": "323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464",
+  "nativeNotificationRva": "0x17829C0",
+  "notificationEntryRva": "0x1782940",
+  "rewardItemsRva": "0x20C45D0",
+  "acceptsIntegerChargeCount": true,
+  "clampsAtThree": false,
+  "baseQuantityComesFromRewardType": true,
+  "nativeTransactionsForStoredCharges": {
+    "4": [
+      3,
+      1
+    ],
+    "5": [
+      3,
+      2
+    ],
+    "6": [
+      3,
+      3
+    ],
+    "7": [
+      3,
+      3,
+      1
+    ],
+    "8": [
+      3,
+      3,
+      2
+    ],
+    "9": [
+      3,
+      3,
+      3
+    ],
+    "10": [
+      3,
+      3,
+      3,
+      1
+    ]
+  },
+  "notificationCodeModified": false,
+  "notificationAggregationRemoved": true,
+  "nativeUiGameplayValidated": false
+}

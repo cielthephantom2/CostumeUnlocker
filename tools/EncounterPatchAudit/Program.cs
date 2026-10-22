@@ -264,7 +264,7 @@ Check(installed.Count(t=>bloodrageUiTargets.ContainsKey(t.Name))==2 &&
  progressText.Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Where(m=>m.Name.StartsWith("set_",StringComparison.Ordinal))
  .All(m=>m.Name=="set_text"),
  "Bloodrage hunt/quest counters scale only the UI maximum; helper writes text only, no threshold/currency/save mutations");
-var prophecyHooks=new[]{"OfflineProphecyConsumeAllPatch","OfflineProphecyChargeCountPatch","OfflineProphecyChargeTextPatch","OfflineProphecyNotificationPatch"};
+var prophecyHooks=new[]{"OfflineProphecyConsumeAllPatch","OfflineProphecyChargeCountPatch","OfflineProphecyChargeTextPatch"};
 Check(prophecyHooks.All(n=>installed.Any(t=>t.Name==n)),"local full-charge prophecy transaction and count/text hooks are installed");
 var prophecyPrefix=types.Single(t=>t.Name=="OfflineProphecyConsumeAllPatch").Methods.Single(m=>m.Name=="Prefix");
 var prophecyCalls=prophecyPrefix.Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
@@ -281,11 +281,9 @@ var prophecyText=types.Single(t=>t.Name=="OfflineProphecyCharges");
 Check(prophecyText.Methods.Single(m=>m.Name=="ChargeText").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="Replace") &&
  prophecyText.Fields.Single(f=>f.Name=="nativeCalls").CustomAttributes.Any(a=>a.AttributeType.Name=="ThreadStaticAttribute"),
  "prophecy localized charge text keeps rich-text formatting and scopes native reentry per thread");
-Check(types.Single(t=>t.Name=="OfflineProphecyNotificationPatch").Methods.Single(m=>m.Name=="Prefix").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="BufferNotice"),
- "native prophecy notifications buffer only active local full-charge scopes");
-Check(prophecyText.Methods.Single(m=>m.Name=="Exit").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="Notifications" && m.Name=="ProphecyFulfilled") &&
- prophecyText.Methods.Single(m=>m.Name=="Exit").Body.ExceptionHandlers.Any(h=>h.HandlerType==Mono.Cecil.Cil.ExceptionHandlerType.Catch),
- "full-charge scope flushes one native formatted total notification and contains UI failures");
+Check(!types.Any(t=>t.Name=="OfflineProphecyNotificationPatch") &&
+ !types.Single(t=>t.Name=="OfflineProphecyCharges").Methods.Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="Notifications"),
+ "prophecy notifications retain the native callback with no aggregation patch or custom notification dispatch");
 var assistRuntime=types.Single(t=>t.Name=="AutoPlayRuntime");
 var assistTick=assistRuntime.Methods.Single(m=>m.Name=="Tick");
 Check(assistTick.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="AutoPlayRecovery" && m.Name=="Failed") &&
