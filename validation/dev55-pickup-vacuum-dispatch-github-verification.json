@@ -1,0 +1,28 @@
+{
+  "releaseUrl": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.55",
+  "title": "dev.55 - Fix native key/material pickup dispatch",
+  "tagCommit": "2e3d74846d64513b3977a17cd67b9271de90f192",
+  "packageSha256": "D7A73F57E5A49B2C1DD32CDDA995A6A0BD38926D772E99D7442BB43AEE50F7E0",
+  "downloadedPackageAndGithubDigestMatched": true,
+  "manifestAndDllsMatched": true,
+  "checks": {
+    "actualSourcePickup": 39,
+    "audit": 155,
+    "updaterFixture": 15,
+    "updaterLive": 17
+  },
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1144320,
+      "sha256": "9E774E72E125E79914044121BABA11F129C7302A211AF8896907EF0BC5114D45"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 435712,
+      "sha256": "19606D93719C62D626226DFF45EE1FF66E9A3CFBAFC85710481AC87E007DD295"
+    }
+  ],
+  "nativeGameplayValidated": false,
+  "steamInstallPerformed": false
+}
