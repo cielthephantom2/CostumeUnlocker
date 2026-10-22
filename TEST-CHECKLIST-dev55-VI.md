@@ -79,3 +79,11 @@ Với các tỷ lệ ngẫu nhiên, vài lần rơi chưa đủ kết luận xá
 - [ ] Hai slotHold0 không liên tục cắt channel của nhau; cooldown/MP/điều kiện vẫn chặn đúng.
 - [ ] F1/F4/menu/mất focus vẫn pause; Join→Disconnect giữ Start/Stop.
 - [ ] Kiểm tra FPS và diagnostics ChannelYields/prioritySlot; bản này chưa có xác nhận native gameplay.
+
+## Auto Pickup giảm tải + Woven Echoes
+
+- [ ] Tick tối đa5lượt/giây; mỗi lượt tối đa5ứng viên và1lệnh native, có thể lấy nhóm món đã duyệt.
+- [ ] Woven Echoes được nhặt/lưu vào tab gốc trong radius5; tắt riêng Woven thì để lại.
+- [ ] Bên ngoài5, equipment/tutorial và loại bị tắt không bị hút theo.
+- [ ] F4 không còn debug pickup hoặc chữ including while standing; log không còn Auto Pickup diagnostic.
+- [ ] Kiểm tra potion đầy, Range Pickup, đổi zone và map nhiều loot/FPS.

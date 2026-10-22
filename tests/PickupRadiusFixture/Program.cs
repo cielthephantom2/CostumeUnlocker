@@ -8,65 +8,58 @@ using Time=UnityEngine.Time;
 var checks=new List<string>();
 void Check(bool ok,string text){if(!ok)throw new Exception("FAIL: "+text);checks.Add(text);Console.WriteLine("PASS: "+text);}
 object Prefix(Type t,params object[] args)=>t.GetMethod("Prefix",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,args);
-Check(PickupRules.Within(Vector3.Zero,new Vector3(5,0,0)),"radius includes exactly5");
-Check(!PickupRules.Within(Vector3.Zero,new Vector3(5.001f,0,0)),"radius excludes beyond5");
-Check(PickupRules.Within(Vector3.Zero,new Vector3(3,0,4)),"diagonal 3-4-5 boundary included");
-Check(!PickupRules.Within(Vector3.Zero,new Vector3(4,0,4)),"circle excludes diagonal outside5");
-Check(PickupRules.Within(Vector3.Zero,new Vector3(0,30,2)),"distance uses horizontal circle");
-Check(PickupRules.Within(Vector3.Zero,Vector3.Zero),"underfoot drop eligible without movement");
-Check(!PickupRules.Within(Vector3.Zero,new Vector3(float.NaN,0,0)),"nonfinite location rejected");
-var actor=PlayerFinder.Player;var manager=GroundItemManager.instance;
-OfflineToolkit.Ready=false;
-Check(OfflinePickup.Local(actor),"gameplay inventory can pick up before model/network visuals report ready");
-OfflineToolkit.Enabled=false;Check(!OfflinePickup.Local(actor),"online play remains excluded");OfflineToolkit.Enabled=true;
-var inventory=actor.itemContainersManager;actor.itemContainersManager=null;Check(!OfflinePickup.Local(actor),"inventory must exist");actor.itemContainersManager=inventory;
-void Frame(float step=0,double dt=.1){Time.frameCount++;Time.realtimeSinceStartupAsDouble+=dt;Time.unscaledTime=(float)Time.realtimeSinceStartupAsDouble;actor.Position=new UVec(actor.Position.x+step,0,0);OfflinePickup.Tick();}
-T Ground<T>(float x,uint id)where T:PickupGroundObjectInteraction,new()=>new(){player=actor,id=id,transform=new UnityEngine.Transform{position=new UVec(x,0,0)}};
-GroundItemManager.GroundItem ItemAt(int type,float x,uint id,bool tutorial=false)=>new(){id=id,itemData=new ItemData{itemType=type,Tutorial=tutorial},location=new UVec(x,0,0)};
-manager.activeGoldPiles.Add(Ground<GoldPickupInteraction>(4.9f,1));manager.activeGoldPiles.Add(Ground<GoldPickupInteraction>(5.1f,2));
-manager.activePotions.Add(Ground<PotionPickupInteraction>(4.9f,1));manager.activeAncientBones.Add(Ground<PickupAncientBonesInteraction>(4.9f,1));
-manager.offlineItems.items.AddRange(new[]{ItemAt(104,4.9f,1),ItemAt(101,4.9f,2),ItemAt(104,5.1f,3),ItemAt(1,2,4),ItemAt(104,2,5,true)});
-Frame();
-Check(manager.Gold==10 && manager.Bones==3 && actor.Potion.currentCharges==1,"standing character picks gold,potion,bones within5");
-Check(manager.Keys==1 && manager.Materials==1,"standing character picks keys/materials within5");
-Check(OfflinePickup.ItemCollections==2 && OfflinePickup.ItemAttempts==2,"native ground removal counted for keys/materials");
-Check(MelonLoader.MelonLogger.Messages.Any(x=>x.Contains("active: radius 5")) && MelonLoader.MelonLogger.Messages.Any(x=>x.Contains("attempts=")),"runtime traces show active scanner and native pickup result");
-manager.offlineItems.items.AddRange(new[]{ItemAt(102,2,90),ItemAt(103,2,91)});Frame();
-Check(manager.Materials==3,"native crafting types101/102/103 include shards,runes,glyphs; key type104");
-Check(manager.activeGoldPiles.Count==1 && manager.activeGoldPiles[0].id==2 && manager.offlineItems.items.Any(i=>i.id==3),"gold/keys outside5 remain on ground");
-Check(manager.Equipment==0 && manager.offlineItems.items.Any(i=>i.id==4),"equipment never auto-picked");
-Check(manager.offlineItems.items.Any(i=>i.id==5),"tutorial key never auto-picked");
-Check(manager.VacuumCalls>0 && AutomaticPickupScope.Depth==0,"native vacuum collects selected item and leaves outside5 loot untouched");
-var gate=typeof(OfflineNativeAutoPickupGatePatch);
-Check(!(bool)Prefix(gate,manager.activeGoldPiles[0]),"native trigger cannot bypass5 radius");
-Check((bool)Prefix(gate,Ground<GoldPickupInteraction>(2,99)),"native trigger works near stationary character");
-Check((bool)Prefix(gate,Ground<OtherPickupInteraction>(2,99)),"unrelated pickup types retain native trigger");
-manager.offlineItems.items.Add(ItemAt(104,2,6));Frame();Check(manager.Keys==2,"new drop collected while still standing");
-OfflineToolkit.Settings.Keys=false;manager.offlineItems.items.Add(ItemAt(104,2,7));Frame();Check(manager.Keys==2,"key toggle disables sweep");OfflineToolkit.Settings.Keys=true;
-actor.Potion.currentCharges=actor.Potion.maxCharges;manager.activePotions.Add(Ground<PotionPickupInteraction>(2,2));Frame();Check(manager.activePotions.Count==1 && actor.Potion.currentCharges==actor.Potion.maxCharges,"full potion left on ground");
-var remote=Ground<GoldPickupInteraction>(2,3);remote.player=new Actor();manager.activeGoldPiles.Add(remote);Frame();Check(manager.activeGoldPiles.Contains(remote),"another actor's private gold untouched");
-var delayed=Ground<GoldPickupInteraction>(2,4);delayed.index=0;delayed.delay=1;manager.activeGoldPiles.Add(delayed);Frame();Check(manager.activeGoldPiles.Contains(delayed),"native pickup delay respected");
-manager.offlineItems.items.Add(ItemAt(104,2,8));manager.ThrowOnItem=true;try{Frame();}catch(InvalidOperationException){}Check(AutomaticPickupScope.Depth==0,"native exception restores vacuum scope");manager.ThrowOnItem=false;
-using(var scope=new AutomaticPickupScope()){using(var nested=new AutomaticPickupScope())Check(AutomaticPickupScope.Depth==2,"nested vacuum scope");Check(AutomaticPickupScope.Depth==1,"nested scope restores parent");}
-Check(AutomaticPickupScope.Allows(new ItemData()),"native classification unchanged outside automatic scope");
-int before=manager.Keys;OfflineToolkit.Enabled=false;Frame();Check(manager.Keys==before && !OfflinePickup.CanAutoPick(actor,new UVec(2,0,0)),"inactive toolkit does not collect");OfflineToolkit.Enabled=true;
-OfflinePickup.Clear();Frame();Check(manager.Keys==before+1,"scene reset allows stationary pickup without motion sampling");
-var data=manager.offlineItems.items.Single(i=>i.id==4).itemData;Check(!(bool)Prefix(typeof(OfflineRangePickupPatch),new GroundItemLabel{Data=data}) && manager.Equipment==1,"explicit range click still picks equipment");
-manager.offlineItems.items.AddRange(Enumerable.Range(100,20).Select(i=>ItemAt(104,2,(uint)i)));before=manager.Keys;Frame();Check(manager.Keys-before<=8 && manager.Keys>before,"sweep bounded to8 operations");
-Check(typeof(OfflinePickup).GetMethods(BindingFlags.NonPublic|BindingFlags.Static).All(m=>m.Name!="Moving" && m.Name!="Attach"),"no movement gate or trigger bridge");
-// A selected key must not pull a disabled material or another enabled key.
-OfflinePickup.Clear();manager.offlineItems.items.Clear();
-var chosen=ItemAt(104,1,900);var disabledMaterial=ItemAt(102,1,901);var secondKey=ItemAt(104,1,902);var farKey=ItemAt(104,5.1f,903);
-manager.offlineItems.items.AddRange(new[]{chosen,disabledMaterial,secondKey,farKey});
-OfflineToolkit.Settings.Materials=false;
-using(var scope=new AutomaticPickupScope(chosen,manager.offlineItems))
+GroundItemManager manager;Actor actor;
+void Reset()
 {
- Check(AutomaticPickupScope.Allows(chosen.itemData) && !AutomaticPickupScope.Allows(secondKey.itemData),"scope allows only selected ground data");
- manager.pickupItem(actor,chosen.id,StackableItemFlags.All);
+ OfflinePickup.Clear();manager=GroundItemManager.instance=new();actor=PlayerFinder.Player=new();
+ OfflineToolkit.Enabled=true;OfflineToolkit.Ready=false;OfflineToolkit.Settings=new();Time.unscaledTime=0;PickupProbe.Reads=0;
 }
-Check(!manager.offlineItems.items.Contains(chosen) && manager.offlineItems.items.Contains(secondKey) && manager.offlineItems.items.Contains(disabledMaterial) && manager.offlineItems.items.Contains(farKey),"native All/vacuum dispatch collects target without collateral or disabled loot");
-var shared=ItemAt(104,1,904);shared.itemData=secondKey.itemData;manager.offlineItems.items.Add(shared);
-using(var scope=new AutomaticPickupScope(secondKey,manager.offlineItems))Check(!AutomaticPickupScope.Allows(secondKey.itemData),"ambiguous shared ItemData cannot bypass ground-id isolation");
-OfflineToolkit.Settings.Materials=true;
-Console.WriteLine($"All {checks.Count} actual-source pickup checks passed; native gameplay not exercised.");
-Directory.CreateDirectory("validation");File.WriteAllText("validation/dev55-pickup-vacuum-dispatch-fixture.json",JsonSerializer.Serialize(new{passed=checks.Count,checks,radius=5,requiresMovement=false,nativeGameplayValidated=false},new JsonSerializerOptions{WriteIndented=true}));
+int Pass(float elapsed=.21f)
+{
+ Time.unscaledTime+=elapsed;PickupProbe.Reads=0;int before=manager.Operations;OfflinePickup.Tick();
+ Check(PickupProbe.Reads<=5,"one shared candidate budget never exceeds5 across all types");
+ Check(manager.Operations-before<=1,"one pass never sends more than1 native pickup action");
+ return manager.Operations-before;
+}
+GroundItemManager.GroundItem ItemAt(int type,float x,uint id,bool tutorial=false)=>new(){id=id,itemData=new ItemData{itemType=type,Tutorial=tutorial},location=new UVec(x,0,0)};
+T Ground<T>(float x,uint id)where T:PickupGroundObjectInteraction,new()=>new(){player=actor,id=id,transform=new(){position=new UVec(x,0,0)}};
+Reset();
+Check(PickupRules.SweepInterval==.2f && PickupRules.MaximumVisits==5 && PickupRules.MaximumOperations==1,"5Hz/5 candidates/1 action policy");
+Check(PickupRules.Within(Vector3.Zero,new(5,30,0)) && !PickupRules.Within(Vector3.Zero,new(5.001f,0,0)),"horizontal radius5 boundary unchanged");
+Check(OfflinePickup.Local(actor),"gameplay inventory works without model/network Ready");
+Check(OfflinePickup.Special(new ItemData{itemType=107}),"Woven Echo type107 eligible");
+manager.offlineItems.items.AddRange(new[]{ItemAt(104,1,1),ItemAt(102,2,2),ItemAt(107,3,3),ItemAt(104,5.1f,4),ItemAt(1,2,5)});
+Check(Pass()==1 && manager.Keys==1 && manager.Materials==1 && manager.WovenEchoes==1 && manager.VacuumCalls==1,"one native All/vacuum action collects approved surrounding key/material/Woven batch");
+Check(manager.offlineItems.items.Any(x=>x.id==4) && manager.Equipment==0,"outside5 and equipment remain on ground");
+manager.offlineItems.items.Add(ItemAt(104,1,6));
+Check(Pass(.05f)==0 && PickupProbe.Reads==0,"no candidate reads50ms after previous pass");
+Check(Pass(.149f)==0 && PickupProbe.Reads==0,"no candidate reads before200ms deadline");
+Check(Pass(.002f)==1 && manager.Keys==2,"stationary pickup resumes at200ms deadline");
+Check(MelonLoader.MelonLogger.Messages.Count==0,"pickup emits no diagnostic logs");
+Reset();manager.activeGoldPiles.Add(Ground<GoldPickupInteraction>(1,1));manager.activePotions.Add(Ground<PotionPickupInteraction>(1,1));manager.activeAncientBones.Add(Ground<PickupAncientBonesInteraction>(1,1));manager.offlineItems.items.Add(ItemAt(107,1,1));
+Pass();Check(manager.Gold==10 && manager.Bones==0 && manager.WovenEchoes==0,"first category performs only gold operation");
+Pass();Check(actor.Potion.currentCharges==1,"next pass rotates to potion");
+Pass();Check(manager.Bones==3,"next pass rotates to bones");
+Pass();Check(manager.WovenEchoes==1,"next pass rotates to special items");
+Reset();for(int i=0;i<20;i++)manager.activeGoldPiles.Add(Ground<GoldPickupInteraction>(50,(uint)i));manager.offlineItems.items.Add(ItemAt(107,1,1));
+Check(Pass()==0 && PickupProbe.Reads==5,"far-gold search stops at5 entries");
+Check(Pass()==1 && manager.WovenEchoes==1,"far gold cannot starve Woven pickup next pass");
+Reset();OfflineToolkit.Settings.Materials=OfflineToolkit.Settings.WovenEchoes=false;
+manager.offlineItems.items.AddRange(new[]{ItemAt(104,1,1),ItemAt(102,1,2),ItemAt(107,1,3),ItemAt(104,1,4,true)});
+Pass();Check(manager.Keys==1 && manager.Materials==0 && manager.WovenEchoes==0 && manager.offlineItems.items.Any(x=>x.id==4),"batch respects per-type toggles and tutorial exclusions");
+OfflineToolkit.Settings.WovenEchoes=true;Pass();Check(manager.WovenEchoes==1 && manager.Materials==0,"Woven can be enabled separately from materials");
+Reset();manager.offlineItems.items.AddRange(Enumerable.Range(1,12).Select(i=>ItemAt(104,1,(uint)i)));
+Pass();Check(manager.Keys==5 && manager.offlineItems.items.Count==7,"native batch includes only the5 approved scanner candidates");
+Reset();var first=ItemAt(104,1,1);var far=ItemAt(104,8,2);far.itemData=first.itemData;manager.offlineItems.items.AddRange(new[]{first,far});Pass();Check(manager.Keys==0,"shared ItemData cannot admit an unapproved far ground id");
+Reset();manager.offlineItems.items.Add(ItemAt(104,1,1));manager.ThrowOnItem=true;
+try{Pass();}catch(InvalidOperationException){}
+Check(AutomaticPickupScope.Depth==0 && AutomaticPickupScope.Allows(new ItemData()),"native exception restores classification scope");manager.ThrowOnItem=false;
+using(var outer=new AutomaticPickupScope()){using(var inner=new AutomaticPickupScope())Check(AutomaticPickupScope.Depth==2,"nested scope retained");Check(AutomaticPickupScope.Depth==1,"nested scope restored");}
+Reset();OfflineToolkit.Enabled=false;manager.offlineItems.items.Add(ItemAt(107,1,1));Check(Pass()==0 && manager.WovenEchoes==0,"online mode remains excluded");
+Reset();actor.Potion.currentCharges=actor.Potion.maxCharges;manager.activePotions.Add(Ground<PotionPickupInteraction>(1,1));Pass();Check(manager.activePotions.Count==1,"full potion remains on ground");
+var remote=Ground<GoldPickupInteraction>(1,2);remote.player=new Actor();manager.activeGoldPiles.Add(remote);Pass();Check(manager.activeGoldPiles.Contains(remote),"remote actor gold remains private");
+Reset();var equipment=ItemAt(1,20,1);manager.offlineItems.items.Add(equipment);
+Check(!(bool)Prefix(typeof(OfflineRangePickupPatch),new GroundItemLabel{Data=equipment.itemData}) && manager.Equipment==1,"manual Range Pickup unaffected");
+Check(AutomaticPickupScope.Allows(new ItemData()),"manual native classification unaffected outside auto scope");
+Directory.CreateDirectory("validation");File.WriteAllText("validation/dev55-pickup-lightweight-fixture.json",JsonSerializer.Serialize(new{passed=checks.Count,checks,scanHz=5,maxCandidates=5,maxActions=1,radius=5,nativeGameplayValidated=false},new JsonSerializerOptions{WriteIndented=true}));
+Console.WriteLine($"All {checks.Count} pickup checks passed.");

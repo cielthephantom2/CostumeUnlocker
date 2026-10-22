@@ -175,6 +175,15 @@ Check(pickupTickCalls.Any(m=>m.Name=="CanAutoPick") && pickupTickCalls.Any(m=>m.
  "bounded sweep checks player radius before native pickup without direct grants or teleportation");
 Check((float)types.Single(t=>t.Name=="PickupRules").Fields.Single(f=>f.Name=="Radius").Constant==5,
  "automatic pickup radius is exactly 5 world units");
+var pickupPolicy=types.Single(t=>t.Name=="PickupRules");
+Check((float)pickupPolicy.Fields.Single(f=>f.Name=="SweepInterval").Constant==.2f && (int)pickupPolicy.Fields.Single(f=>f.Name=="MaximumVisits").Constant==5 && (int)pickupPolicy.Fields.Single(f=>f.Name=="MaximumOperations").Constant==1,
+ "pickup policy is5Hz,5 shared candidates and1 native action per pass");
+Check(!pickup.Methods.Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="MelonLogger"),
+ "pickup diagnostic log calls are removed");
+Check(pickup.Methods.Single(m=>m.Name=="Special").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="isWovenEcho") && types.Single(t=>t.Name=="ToolkitSettings").Properties.Any(p=>p.Name=="WovenEchoes"),
+ "Woven Echo native item classification and separate settings toggle are compiled");
+Check(!types.Single(t=>t.Name=="OfflineToolkit").Methods.Single(m=>m.Name=="Draw").Body.Instructions.Any(i=>i.Operand is string value && value.Contains("including while standing")),
+ "pickup toggle labels omit including-while-standing suffix");
 var presenceCalls=lan.Methods.Single(m=>m.Name=="PublishInventoryPresence").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
 Check(!presenceCalls.Any(m=>m.DeclaringType.Name is "ClassVisualReplica" or "NativeSummonCapture" or "LanDroppedItems" or "NativeSkillVisualCapture"),
  "inventory presence does not capture avatar, summons, ground items or VFX");

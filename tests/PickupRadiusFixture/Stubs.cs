@@ -12,7 +12,8 @@ namespace UnityEngine
  public static class Time{public static int frameCount;public static float unscaledTime;public static double realtimeSinceStartupAsDouble;}
  public class Transform{public Vector3 position;}
 }
-namespace Il2CppSystem.Collections.Generic{public class List<T>:System.Collections.Generic.List<T>{}}
+internal static class PickupProbe{public static int Reads;}
+namespace Il2CppSystem.Collections.Generic{public class List<T>:System.Collections.Generic.List<T>{public new T this[int index]{get{PickupProbe.Reads++;return base[index];}set=>base[index]=value;}}}
 namespace Il2Cpp
 {
  public class NativeObject{static int n;public IntPtr Pointer=(IntPtr)Interlocked.Increment(ref n);public T TryCast<T>()where T:class=>this as T;}
@@ -24,11 +25,11 @@ namespace Il2Cpp
  public static class PlayerFinder{public static Actor Player=new();public static Actor getPlayerActor()=>Player;}
  public class HealthPotion{public int currentCharges,maxCharges=3;}
  public class ItemData:NativeObject{public int itemType;public bool Tutorial;public bool isTutorialItem()=>Tutorial;}
- public static class Item{public static bool isKey(int type)=>type==104;}
+ public static class Item{public static bool isKey(int type)=>type==104;public static bool isWovenEcho(int type)=>type==107;}
  public static class ItemList
  {
   public static bool isCraftingItem(int type)=>type is >=101 and <=103;
-  public static bool IsStackableItem(ItemData data)=>data.itemType is >=101 and <=104;
+  public static bool IsStackableItem(ItemData data)=>data.itemType is >=101 and <=104 or 107;
  }
  public class PickupGroundObjectInteraction:NativeObject
  {public Actor player;public uint id;public float index=1,delay=.2f;public bool isActiveAndEnabled=true;public UnityEngine.Transform transform=new();public void OnUpdateTick(){}}
@@ -47,15 +48,15 @@ namespace Il2Cpp
   public Il2CppSystem.Collections.Generic.List<GoldPickupInteraction> activeGoldPiles=new();
   public Il2CppSystem.Collections.Generic.List<PotionPickupInteraction> activePotions=new();
   public Il2CppSystem.Collections.Generic.List<PickupAncientBonesInteraction> activeAncientBones=new();
-  public int Gold,Bones,Keys,Materials,Equipment,VacuumCalls;public bool ThrowOnItem;
+  public int Gold,Bones,Keys,Materials,WovenEchoes,Equipment,VacuumCalls,Operations;public bool ThrowOnItem;
   public bool TryGetGroundItemList(Actor a,out GroundItemList list){list=offlineItems;return true;}
   public void dropGoldForPlayer(){}
-  public void pickupGold(Actor a,uint id,GoldPickupInteraction p){Gold+=p.amount;activeGoldPiles.Remove(p);}
-  public bool pickupPotion(Actor a,uint id,PotionPickupInteraction p){if(a.Potion.currentCharges>=a.Potion.maxCharges)return false;a.Potion.currentCharges++;activePotions.Remove(p);return true;}
-  public void pickupAncientBone(Actor a,uint id,PickupAncientBonesInteraction p){Bones+=p.amount;activeAncientBones.Remove(p);}
+  public void pickupGold(Actor a,uint id,GoldPickupInteraction p){Operations++;Gold+=p.amount;activeGoldPiles.Remove(p);}
+  public bool pickupPotion(Actor a,uint id,PotionPickupInteraction p){Operations++;if(a.Potion.currentCharges>=a.Potion.maxCharges)return false;a.Potion.currentCharges++;activePotions.Remove(p);return true;}
+  public void pickupAncientBone(Actor a,uint id,PickupAncientBonesInteraction p){Operations++;Bones+=p.amount;activeAncientBones.Remove(p);}
   public void pickupItem(Actor a,uint id,StackableItemFlags flags)
   {
-   if(ThrowOnItem)throw new InvalidOperationException("native test failure");
+   Operations++;if(ThrowOnItem)throw new InvalidOperationException("native test failure");
    var entry=offlineItems.items.FirstOrDefault(x=>x.id==id);if(entry==null)return;
    // Actual native dispatch: All skips the direct inventory path for stackables.
    // The primary item itself is collected by vacuum, not before it.
@@ -66,7 +67,7 @@ namespace Il2Cpp
   }
   private void Collect(GroundItem entry)
   {
-   if(entry.itemData.itemType==104)Keys++;else if(entry.itemData.itemType is >=101 and <=103)Materials++;else Equipment++;
+   if(entry.itemData.itemType==104)Keys++;else if(entry.itemData.itemType is >=101 and <=103)Materials++;else if(entry.itemData.itemType==107)WovenEchoes++;else Equipment++;
    offlineItems.items.Remove(entry);
   }
   public void vacuumNearbyStackableItems(Actor a,UnityEngine.Vector3 origin)
@@ -88,7 +89,7 @@ namespace Il2Cpp
 }
 namespace LastEpochLAN.Mod.OfflineTools
 {
- internal class Settings{public bool Keys=true,Gold=true,Potions=true,Materials=true,Bones=true,RangePickup=true;}
+ internal class Settings{public bool Keys=true,Gold=true,Potions=true,Materials=true,Bones=true,WovenEchoes=true,RangePickup=true;}
  internal static class OfflineToolkit{public static bool Ready=true,Enabled=true;public static Settings Settings=new();}
  internal static class OfflineEconomy{internal static float GoldMultiplier()=>1;}
 }

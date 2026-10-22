@@ -737,7 +737,6 @@ public sealed class LanMod : MelonMod
             monolithParty=new {monolithParty.Entries,monolithParty.Restores,monolithParty.RewardGrants,monolithParty.Busy,monolithParty.Borrowing,monolithParty.Message,monolithParty.Error,monolithParty.ObjectiveError},
             fortuneSmoke=OfflineTools.OfflineToolkitSmoke.FortuneObservations,
             pickupBoundarySmoke=OfflineTools.OfflineToolkitSmoke.PickupObservations,
-            autoPickup=new {OfflineTools.OfflinePickup.Status,OfflineTools.OfflinePickup.ItemAttempts,OfflineTools.OfflinePickup.ItemCollections},
             characterSetup = OfflineTools.NewCharacterBoost.Diagnostics,
             partyHealthScaling = false,
             encounterDiagnostics=worldSync.EncounterDiagnostics,encounterDevelopment=encounterCatalogue.Diagnostics,sharedStatus=NativePartyStatus.Diagnostics,

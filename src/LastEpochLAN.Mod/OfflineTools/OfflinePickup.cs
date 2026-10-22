@@ -9,23 +9,15 @@ namespace LastEpochLAN.Mod.OfflineTools;
 // to the player. Native pickup handles storage, pooling, charges and objectives.
 internal static class OfflinePickup
 {
-    private static int goldCursor,potionCursor,boneCursor,itemCursor;
+    private static int goldCursor,potionCursor,boneCursor,itemCursor,nextKind;
     private static float nextSweep;
-    private static float nextTrace;
-    private static string lastState;
-    internal static string Status="Waiting for local inventory";
-    internal static int ItemAttempts,ItemCollections;
     // Pickup needs gameplay storage, not character model/network visual readiness.
     internal static bool Local(Actor actor)=>OfflineToolkit.Enabled && actor!=null &&
         actor.Pointer==PlayerFinder.getPlayerActor()?.Pointer && actor.itemContainersManager!=null;
-    private static void State(string state)
-    {
-        Status=state;
-        if(state==lastState)return;
-        lastState=state;MelonLoader.MelonLogger.Msg("Auto Pickup: "+state);
-    }
     internal static bool Special(ItemData item)=>item!=null && !item.isTutorialItem() &&
-        (OfflineToolkit.Settings.Keys && Item.isKey(item.itemType) || OfflineToolkit.Settings.Materials && ItemList.isCraftingItem(item.itemType));
+        (OfflineToolkit.Settings.Keys && Item.isKey(item.itemType) ||
+         OfflineToolkit.Settings.Materials && ItemList.isCraftingItem(item.itemType) ||
+         OfflineToolkit.Settings.WovenEchoes && Item.isWovenEcho(item.itemType));
     internal static bool CanAutoPick(Actor actor,Vector3 location)
     {
         if(!Local(actor))return false;
@@ -38,93 +30,97 @@ internal static class OfflinePickup
         OfflineToolkit.Settings.Bones && pickup.TryCast<PickupAncientBonesInteraction>()!=null);
     internal static void Tick()
     {
-        var actor=PlayerFinder.getPlayerActor();
-        if(!OfflineToolkit.Enabled){State("waiting: offline play required");return;}
-        if(actor==null){State("waiting: local actor unavailable");return;}
-        if(actor.itemContainersManager==null){State("waiting: local inventory unavailable");return;}
         if(Time.unscaledTime<nextSweep)return;
-        nextSweep=Time.unscaledTime+.05f;
-        var manager=GroundItemManager.instance;
-        if(manager==null){State("waiting: ground item manager unavailable");return;}
-        // Offline-only operation: use the same list as native offline pickup.
-        // Avoid the network-dependent list selector and its out-object marshalling.
-        var list=manager.offlineItems;
-        if(list==null){State("waiting: offline ground item list unavailable");return;}
-        State("active: radius 5, stationary pickup enabled");
-        int remaining=8;
-        void Visit<T>(Il2CppSystem.Collections.Generic.List<T> entries,ref int cursor,Action<T> pickup) where T:PickupGroundObjectInteraction
+        nextSweep=Time.unscaledTime+PickupRules.SweepInterval;
+        var actor=PlayerFinder.getPlayerActor();if(!Local(actor))return;
+        var manager=GroundItemManager.instance;var list=manager?.offlineItems;if(list==null)return;
+        int visits=PickupRules.MaximumVisits;
+        bool Visit<T>(Il2CppSystem.Collections.Generic.List<T> entries,ref int cursor,Action<T> pickup) where T:PickupGroundObjectInteraction
         {
-            if(entries==null)return;
-            int visits=Math.Min(32,entries.Count);
-            for(int i=0;i<visits && entries.Count>0 && remaining>0;i++)
+            if(entries==null)return false;
+            int count=Math.Min(visits,entries.Count);
+            for(int i=0;i<count && entries.Count>0;i++)
             {
                 if(cursor>=entries.Count)cursor=0;
-                var entry=entries[cursor++];
+                var entry=entries[cursor++];visits--;
                 if(entry==null || !entry.isActiveAndEnabled || !Local(entry.player) || entry.index<entry.delay || !CanAutoPick(actor,entry.transform.position))continue;
-                pickup(entry);remaining--;
+                pickup(entry);return true;
             }
+            return false;
         }
-        if(OfflineToolkit.Settings.Gold)Visit(manager.activeGoldPiles,ref goldCursor,p=>manager.pickupGold(actor,p.id,p));
-        if(OfflineToolkit.Settings.Potions)
+        // Rotate the starting category so a long list of far gold cannot starve
+        // keys/materials, or the reverse. One shared budget across all lists.
+        int start=nextKind;
+        for(int offset=0;offset<4 && visits>0;offset++)
         {
-            var potion=actor.GetComponent<HealthPotion>();
-            if(potion!=null && potion.currentCharges<potion.maxCharges)
-                Visit(manager.activePotions,ref potionCursor,p=>{if(potion.currentCharges<potion.maxCharges)manager.pickupPotion(actor,p.id,p);});
-        }
-        if(OfflineToolkit.Settings.Bones)Visit(manager.activeAncientBones,ref boneCursor,p=>manager.pickupAncientBone(actor,p.id,p));
-        var items=list.items;
-        if(items==null)return;
-        int count=Math.Min(64,items.Count),specialSeen=0;
-        float nearestSquared=float.PositiveInfinity;
-        for(int i=0;i<count && items.Count>0 && remaining>0;i++)
-        {
-            if(itemCursor>=items.Count)itemCursor=0;
-            var item=items[itemCursor++];
-            if(item==null || !Special(item.itemData))continue;
-            specialSeen++;
-            var position=actor.position();float dx=position.x-item.location.x,dz=position.z-item.location.z;
-            nearestSquared=Math.Min(nearestSquared,dx*dx+dz*dz);
-            if(!CanAutoPick(actor,item.location))continue;
-            // Native All flags collect the primary item THROUGH vacuum.
-            // Keep that native path, restricting its stackable candidates to
-            // this selected ground item instead of blocking vacuum itself.
-            int before=items.Count;ItemAttempts++;
-            using(var scope=new AutomaticPickupScope(item,list))manager.pickupItem(actor,item.id,StackableItemFlags.All);
-            if(items.Count<before){ItemCollections++;itemCursor=Math.Max(0,itemCursor-1);}
-            remaining--;
-        }
-        if(items.Count>0 && Time.unscaledTime>=nextTrace)
-        {
-            nextTrace=Time.unscaledTime+5;
-            MelonLoader.MelonLogger.Msg($"Auto Pickup: ground={items.Count}, specialSeen={specialSeen}, nearestSquared={nearestSquared}, attempts={ItemAttempts}, collected={ItemCollections}, keys={OfflineToolkit.Settings.Keys}, materials={OfflineToolkit.Settings.Materials}");
+            int kind=(start+offset)%4;nextKind=(kind+1)%4;
+            if(kind==0 && OfflineToolkit.Settings.Gold && Visit(manager.activeGoldPiles,ref goldCursor,p=>manager.pickupGold(actor,p.id,p)))return;
+            if(kind==1 && OfflineToolkit.Settings.Potions)
+            {
+                var potion=actor.GetComponent<HealthPotion>();
+                if(potion!=null && potion.currentCharges<potion.maxCharges && Visit(manager.activePotions,ref potionCursor,p=>manager.pickupPotion(actor,p.id,p)))return;
+            }
+            if(kind==2 && OfflineToolkit.Settings.Bones && Visit(manager.activeAncientBones,ref boneCursor,p=>manager.pickupAncientBone(actor,p.id,p)))return;
+            if(kind!=3 || list.items==null)continue;
+            var items=list.items;int count=Math.Min(visits,items.Count);
+            var batch=new List<GroundItemManager.GroundItem>(PickupRules.MaximumVisits);
+            for(int i=0;i<count && items.Count>0;i++)
+            {
+                if(itemCursor>=items.Count)itemCursor=0;
+                var item=items[itemCursor++];visits--;
+                if(item!=null && Special(item.itemData) && CanAutoPick(actor,item.location))batch.Add(item);
+            }
+            if(batch.Count==0)continue;
+            // All flags store stackables THROUGH native vacuum. Permit the
+            // nearby candidates already approved within this pass's budget,
+            // so one native action can collect the surrounding batch.
+            using(var scope=new AutomaticPickupScope(batch,list))
+            {
+                var primary=scope.Primary;if(primary==null)continue;
+                int before=items.Count;
+                manager.pickupItem(actor,primary.id,StackableItemFlags.All);
+                itemCursor=Math.Max(0,itemCursor-(before-items.Count));
+            }
+            return;
         }
     }
-
     internal static void Clear()
-    {nextSweep=nextTrace=0;goldCursor=potionCursor=boneCursor=itemCursor=0;lastState=null;Status="Waiting for local inventory";ItemAttempts=ItemCollections=0;}
+    {nextSweep=0;goldCursor=potionCursor=boneCursor=itemCursor=nextKind=0;}
 }
 internal sealed class AutomaticPickupScope:IDisposable
 {
     [ThreadStatic] internal static int Depth;
-    [ThreadStatic] private static GroundItemManager.GroundItem selected;
-    [ThreadStatic] private static GroundItemManager.GroundItemList source;
-    private readonly GroundItemManager.GroundItem previous;
-    private readonly GroundItemManager.GroundItemList previousSource;
-    internal AutomaticPickupScope(GroundItemManager.GroundItem item=null,GroundItemManager.GroundItemList list=null)
-    {previous=selected;previousSource=source;selected=item;source=list;Depth++;}
-    internal static bool Allows(ItemData item)
+    [ThreadStatic] private static HashSet<IntPtr> allowed;
+    private readonly HashSet<IntPtr> previous;
+    internal readonly GroundItemManager.GroundItem Primary;
+    internal AutomaticPickupScope(IReadOnlyList<GroundItemManager.GroundItem> batch=null,GroundItemManager.GroundItemList source=null)
     {
-        if(Depth==0)return true;
-        if(item==null || selected?.itemData==null || item.Pointer!=selected.itemData.Pointer)return false;
-        // Native filtering receives ItemData rather than a ground id. If two
-        // drops share that object, do not accidentally collect the other id.
-        if(source?.items!=null)
-            foreach(var entry in source.items)
-                if(entry?.itemData?.Pointer==item.Pointer && entry.id!=selected.id)return false;
-        return true;
+        var permitted=new HashSet<IntPtr>();
+        if(batch!=null)
+        {
+            var identities=new Dictionary<IntPtr,HashSet<uint>>();
+            foreach(var entry in batch)
+            {
+                if(entry?.itemData==null)continue;
+                var pointer=entry.itemData.Pointer;
+                if(!identities.TryGetValue(pointer,out var ids))identities.Add(pointer,ids=new());
+                ids.Add(entry.id);permitted.Add(pointer);
+            }
+            // Native classification receives ItemData, not a ground id. One
+            // identity pass prevents shared data from admitting unapproved ids.
+            if(source?.items!=null)foreach(var entry in source.items)
+                if(entry?.itemData!=null && identities.TryGetValue(entry.itemData.Pointer,out var ids) && !ids.Contains(entry.id))permitted.Remove(entry.itemData.Pointer);
+            Primary=batch.FirstOrDefault(entry=>entry?.itemData!=null && permitted.Contains(entry.itemData.Pointer));
+        }
+        // Publish scope only after validation; constructor failure cannot leave
+        // the native classifier stuck inside an automatic pickup scope.
+        previous=allowed;allowed=permitted;Depth++;
     }
-    public void Dispose(){selected=previous;source=previousSource;Depth--;}
+
+    internal static bool Allows(ItemData item)=>Depth==0 || item!=null && allowed?.Contains(item.Pointer)==true;
+    public void Dispose(){allowed=previous;Depth--;}
 }
+
 [HarmonyPatch(typeof(GroundItemManager),nameof(GroundItemManager.dropGoldForPlayer))]
 internal static class OfflineGoldPickupPatch
 {

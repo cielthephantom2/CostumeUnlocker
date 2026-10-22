@@ -13,6 +13,7 @@ internal sealed class ToolkitSettings
     public bool Potions {get;set;}=true;
     public bool Materials {get;set;}=true;
     public bool Bones {get;set;}=true;
+    public bool WovenEchoes {get;set;}=true;
     public bool RangePickup {get;set;}=true;
     public bool RevealObjectives {get;set;}=true;
     public bool EnemyMapDots {get;set;}=true;
@@ -84,7 +85,7 @@ internal static class OfflineToolkit
     internal static void Draw()
     {
         float x=16,y=16;
-        GUI.Box(new Rect(x,y,425,610),"Mod Settings");
+        GUI.Box(new Rect(x,y,425,635),"Mod Settings");
         GUI.Box(new Rect(x+449,y,310,150),"DPS Tracker (offline local damage)");
         GUI.Label(new Rect(x+463,y+27,282,22),$"HUD scale: {Dps.DpsSettings.damageMeterScale:0.00}x");
         Dps.DpsSettings.damageMeterScale=GUI.HorizontalSlider(new Rect(x+463,y+55,282,20),Dps.DpsSettings.damageMeterScale,0.5f,2);
@@ -94,32 +95,32 @@ internal static class OfflineToolkit
         if(GUI.Button(new Rect(x+463,y+117,132,25),Dps.DamageMeterOverlay.IsPaused?"Resume DPS":"Pause DPS")) Dps.DamageMeterOverlay.TogglePause();
         if(GUI.Button(new Rect(x+606,y+117,140,25),Settings.DpsVisible?"Hide DPS":"Show DPS"))
         {Settings.DpsVisible=!Settings.DpsVisible;ScheduleSave();}
-        GUI.Label(new Rect(x+449,y+177,310,75),"Auto Pickup: "+OfflinePickup.Status);
         bool Toggle(bool value,string label,int row)=>GUI.Toggle(new Rect(x+14,y+35+row*25,395,23),value,label);
         var s=Settings;
         bool previousChanged=GUI.changed;GUI.changed=false;
         s.AutoCompleteNewCharacter=Toggle(s.AutoCompleteNewCharacter,"New character: quests + level 58 + End of Time",0);
         GUI.Label(new Rect(x+14,y+62,395,23),"Offline mode enforced; existing characters kept.");
         s.UnlockCosmetics=Toggle(s.UnlockCosmetics,"Unlock native cosmetic selection",2);
-        s.Gold=Toggle(s.Gold,"Auto Gold: radius 5, including while standing",3);
-        s.Keys=Toggle(s.Keys,"Auto Keys: radius 5, including while standing",4);
+        s.Gold=Toggle(s.Gold,"Auto Gold: radius 5",3);
+        s.Keys=Toggle(s.Keys,"Auto Keys: radius 5",4);
         s.Potions=Toggle(s.Potions,"Auto Potions: radius 5, charges have room",5);
-        s.Materials=Toggle(s.Materials,"Auto Materials: radius 5, including while standing",6);
-        s.Bones=Toggle(s.Bones,"Auto Bones: radius 5, including while standing",7);
-        s.RangePickup=Toggle(s.RangePickup,"Range Pickup: click loot without walking to it",8);
-        s.RevealObjectives=Toggle(s.RevealObjectives,"Reveal Monolith / Dungeon objectives",9);
-        s.EnemyMapDots=Toggle(s.EnemyMapDots,"Enemy minimap dots",10);
-        s.RemoveFog=Toggle(s.RemoveFog,"Reveal unexplored map (gray)",11);
-        s.WideMinimapZoom=Toggle(s.WideMinimapZoom,"Extended minimap +/-",12);
-        s.CustomZoom=Toggle(s.CustomZoom,"Camera zoom: comma / period",13);
-        GUI.Label(new Rect(x+14,y+389,395,23),$"Camera zoom: {s.ZoomDistance:0.0}x (0.5–5)");
-        s.ZoomDistance=GUI.HorizontalSlider(new Rect(x+14,y+417,395,20),CameraZoom.Clamp(s.ZoomDistance),0.5f,5f);
+        s.Materials=Toggle(s.Materials,"Auto Materials: radius 5",6);
+        s.Bones=Toggle(s.Bones,"Auto Bones: radius 5",7);
+        s.WovenEchoes=Toggle(s.WovenEchoes,"Auto Woven Echoes: radius 5",8);
+        s.RangePickup=Toggle(s.RangePickup,"Range Pickup: click loot without walking to it",9);
+        s.RevealObjectives=Toggle(s.RevealObjectives,"Reveal Monolith / Dungeon objectives",10);
+        s.EnemyMapDots=Toggle(s.EnemyMapDots,"Enemy minimap dots",11);
+        s.RemoveFog=Toggle(s.RemoveFog,"Reveal unexplored map (gray)",12);
+        s.WideMinimapZoom=Toggle(s.WideMinimapZoom,"Extended minimap +/-",13);
+        s.CustomZoom=Toggle(s.CustomZoom,"Camera zoom: comma / period",14);
+        GUI.Label(new Rect(x+14,y+414,395,23),$"Camera zoom: {s.ZoomDistance:0.0}x (0.5–5)");
+        s.ZoomDistance=GUI.HorizontalSlider(new Rect(x+14,y+442,395,20),CameraZoom.Clamp(s.ZoomDistance),0.5f,5f);
         if(GUI.changed) {ScheduleSave();MinimapZoom.ApplyCurrent();}
         GUI.changed|=previousChanged;
-        GUI.Label(new Rect(x+14,y+446,395,48),NewCharacterBoost.Status);
-        GUI.Label(new Rect(x+14,y+494,395,42),OfflineDensity.Status);
-        if(Error!="") GUI.Label(new Rect(x+14,y+539,395,34),Error);
-        if(GUI.Button(new Rect(x+14,y+575,240,25),"Back to Co-op")) PanelOpen=false;
+        GUI.Label(new Rect(x+14,y+471,395,48),NewCharacterBoost.Status);
+        GUI.Label(new Rect(x+14,y+519,395,42),OfflineDensity.Status);
+        if(Error!="") GUI.Label(new Rect(x+14,y+564,395,34),Error);
+        if(GUI.Button(new Rect(x+14,y+600,240,25),"Back to Co-op")) PanelOpen=false;
         if(!string.IsNullOrEmpty(GUI.tooltip)) GUI.Label(new Rect(x+449,y+395,310,60),GUI.tooltip);
     }
 }

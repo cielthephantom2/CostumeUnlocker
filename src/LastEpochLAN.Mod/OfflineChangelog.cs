@@ -10,7 +10,7 @@ internal static class OfflineChangelog
     private static GUIStyle bodyStyle;
     private static readonly string content=
         "<b>BONUS OFFLINE</b>\n"+
-        "• Dev.55 faction/pickup: CoF Rank7 x15, Rank10 boss loot +300%, Rank11 Rare→Exalted50%; The Woven Rank7 reforge30%, Rank9 Amber50%. Đã gỡ World Assist. Auto pickup dùng bộ quét cũ, bán kính5, nhặt cả khi đứng yên.\n"+
+        "• Dev.55 faction/pickup: CoF Rank7 x15, Rank10 boss loot +300%, Rank11 Rare→Exalted50%; The Woven Rank7 reforge30%, Rank9 Amber50%. Đã gỡ World Assist. Auto pickup bán kính5, thêm Woven Echoes;5 lượt/giây, tối đa5 món xét và1 thao tác/lượt.\n"+
         "• Dev.55 Stability: x2 cả Timeline Stability và Bonus Stability trong Echo Rewards mọi loại; Temporal Keystone x2, đồng bộ số hiển thị.\n"+
         "• Dev.55 bổ sung: Forgotten Knights Rank1 Egg of the Forgotten100%, Rank2 x2 Stability25%, Rank5 Temporal Keystone50%; sửa cả mô tả.\n"+
         "• Dev.55: Tranquility của Arcane Ascendance không còn chặn hồi mana; giữ giảm mana cost và sửa cả tooltip.\n"+
