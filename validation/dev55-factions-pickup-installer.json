@@ -1,0 +1,20 @@
+{
+    "passed":  13,
+    "checks":  [
+                   "running game blocks installer",
+                   "blocked install keeps old mod",
+                   "blocked install creates no backup or user data",
+                   "paired installed SHA256: Mods/LastEpochLAN.dll",
+                   "paired installed SHA256: UserLibs/LastEpochLAN.Core.dll",
+                   "one backup directory created",
+                   "backup contains old mod",
+                   "backup contains old core",
+                   "tampered candidate refused before destination writes",
+                   "invalid package creates no extra backup",
+                   "invalid package leaves installed DLL unchanged: Mods/LastEpochLAN.dll",
+                   "invalid package leaves installed DLL unchanged: UserLibs/LastEpochLAN.Core.dll",
+                   "wrong version manifest refused"
+               ],
+    "actualGameModified":  false,
+    "fixtureRoot":  "D:\\New folder\\CostumeUnlocker-Publish\\research\\world-assist-installer-20261022-223050-477"
+}

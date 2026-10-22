@@ -19,7 +19,7 @@ internal static class OfflineFortune
 
     internal static void ApplyRank(CircleOfFortune faction,int rank,bool enabled)
     {
-        if(!OfflineToolkit.Enabled || faction==null || !enabled) return;
+        if(!enabled || !EnabledAt(faction,rank) || faction.CachedPlayerActor==null || faction.CachedPlayerActor.Pointer!=PlayerFinder.getPlayerActor()?.Pointer) return;
         switch(rank)
         {
             case 1: faction.ChanceForDoubleEnemyRewards0To1=FortuneRules.EnemyDoubleChance;break;
@@ -30,6 +30,10 @@ internal static class OfflineFortune
             case 5: faction.ChanceForDoubleEchoRewards0To1=FortuneRules.EchoDoubleChance;break;
             case 6: faction.ChanceToForceExaltedMultiplier=FortuneRules.ExaltedMultiplier;break;
             case 8: faction.UniquesLPRollMultiplier=FortuneRules.LpMultiplier;break;
+            case 10: faction.IncreasedChanceToDropBossSpecificLoot=FortuneRules.BossSpecificLootIncrease;break;
+            case 11:
+                if(faction.CachedPlayerActor.generateItems!=null)faction.CachedPlayerActor.generateItems.ChanceForRareItemsToBecomeExalted0To1=FortuneRules.RareToExaltedChance;
+                break;
         }
     }
     internal static void ScaleRewards(ProphecyData data)
@@ -62,7 +66,7 @@ internal static class OfflineFortune
         ScaleRewards(ProphecyData.Data);
         var faction=Fortune(PlayerFinder.getPlayerActor()?.FactionInfo);
         if(faction==null) return;
-        foreach(int rank in new[]{1,3,5,6,8}) if(EnabledAt(faction,rank)) ApplyRank(faction,rank,true);
+        foreach(int rank in new[]{1,3,5,6,8,10,11}) if(EnabledAt(faction,rank)) ApplyRank(faction,rank,true);
     }
     internal static object NativeSmoke()
     {
@@ -78,7 +82,7 @@ internal static class OfflineFortune
             int boosted,unchanged;
             using(var scope=new MageLootScope(rng.Pointer) {Pending=true,Eligible=true})
             {boosted=rng.StochasticRound(2);unchanged=rng.StochasticRound(2);}
-            if(boosted!=3 || unchanged!=2 || MageLootScope.Current!=null) throw new InvalidOperationException("Native scoped mage quantity did not replace x2 with x3 exactly once.");
+            if(boosted!=15 || unchanged!=2 || MageLootScope.Current!=null) throw new InvalidOperationException("Native scoped mage quantity did not replace x2 with x15 exactly once.");
             return new {nativeProphecyItems=20,nativeThreeChargeItems=60,nativeMageQuantity=boosted,nextNativeRound=unchanged,
                 nativeLootGameplayValidated=false,nativeUiRendered=false};
         }

@@ -1,0 +1,45 @@
+{
+  "version": "1.1.0-dev.55",
+  "protocol": 44,
+  "package": "local-releases\\TM-Coop-1.1.0-dev.55.zip",
+  "sha256": "8866E19EA07EB7CBDAAA32DB40486333D582CF05DE03D1D5D7C92B431156A384",
+  "size": 632657,
+  "files": [
+    {
+      "sha256": "68FF8964D917DA7B3903EDEF35AA3D1830E5FF026FF5745717D7DCE36FC2FCA5",
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1185280
+    },
+    {
+      "sha256": "650B53AF67B7BA477BA4219E9B513D17AA16CDDB3789110FBB976D1FAFE2248C",
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 435712
+    }
+  ],
+  "packageContents": [
+    "Mods/LastEpochLAN.dll",
+    "UserLibs/LastEpochLAN.Core.dll",
+    "latest.json",
+    "README.md",
+    "update.bat",
+    "Install-WorldAssist-Candidate.ps1",
+    "RELEASE-1.1.0-dev55-VI.md",
+    "WORLD-ASSIST-dev55-VI.md",
+    "FACTIONS-PICKUP-dev55-VI.md",
+    "FORGOTTEN-KNIGHTS-dev55-VI.md",
+    "TIMELINE-STABILITY-X2-dev55-VI.md"
+  ],
+  "buildWarnings": 0,
+  "buildErrors": 0,
+  "checks": {
+    "faction": 40,
+    "pickup": 32,
+    "selftest": 1038,
+    "worldAssist": 65,
+    "compiledNativeAudit": 144,
+    "directInstaller": 13
+  },
+  "changeClassIncluded": false,
+  "nativeGameplayValidated": false,
+  "nativeRenderingValidated": false
+}

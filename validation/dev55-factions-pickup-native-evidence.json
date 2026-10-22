@@ -1,0 +1,42 @@
+{
+  "nativeImageSha256": "323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464",
+  "nativeGameplayValidated": false,
+  "getters": {
+    "CoF rank10 boss loot": {
+      "getterRva": "0xa77c30",
+      "fieldOffset": "0xc0",
+      "bytes": "f30f1081c0000000c3"
+    },
+    "CoF rank11 rare to exalted": {
+      "getterRva": "0x5ebfe0",
+      "fieldOffset": "0x7c",
+      "bytes": "f30f10417cc3cccccc"
+    },
+    "Woven rank7 idol reforge": {
+      "getterRva": "0x20e4920",
+      "fieldOffset": "0x1f4",
+      "bytes": "f30f1081f4010000c3"
+    },
+    "Woven rank9 memory amber": {
+      "getterRva": "0x69c520",
+      "fieldOffset": "0x1f8",
+      "bytes": "f30f1081f8010000c3"
+    }
+  },
+  "nativeRankConstants": {
+    "cof10": 1.5,
+    "cof11": 0.25,
+    "woven7": 0.3100000023841858,
+    "woven9": 0.30000001192092896
+  },
+  "requested": {
+    "cof7TotalMageMultiplier": 15,
+    "cof10IncreasedBossSpecificLoot": 3,
+    "cof11RareToExaltedChance": 0.5,
+    "woven7IncreasedSecondWeaverAffixChance": 0.3,
+    "woven9MoreMemoryAmber": 0.5,
+    "autoPickupRadius": 3,
+    "movingOnly": true
+  },
+  "note": "Woven English rank7/rank9 text says10%, while installed native constants are31%/30%. Absolute assignments use requested30%/50% and matching text."
+}

@@ -10,6 +10,8 @@ internal static class OfflineChangelog
     private static GUIStyle bodyStyle;
     private static readonly string content=
         "<b>BONUS OFFLINE</b>\n"+
+        "• Dev.55 faction/pickup: CoF Rank7 x15, Rank10 boss loot +300%, Rank11 Rare→Exalted50%; The Woven Rank7 reforge30%, Rank9 Amber50%. Auto pickup chỉ trong bán kính3 và khi đang di chuyển.\n"+
+        "• Dev.55 World Assist: vùng nguy hiểm của địch,14 loại mục tiêu, đường NavMesh ở world/Tab/minimap và vẽ mượt. F4 → Mod Settings → World Assist.\n"+
         "• Dev.55 Stability: x2 cả Timeline Stability và Bonus Stability trong Echo Rewards mọi loại; Temporal Keystone x2, đồng bộ số hiển thị.\n"+
         "• Dev.55 bổ sung: Forgotten Knights Rank1 Egg of the Forgotten100%, Rank2 x2 Stability25%, Rank5 Temporal Keystone50%; sửa cả mô tả.\n"+
         "• Dev.55: Tranquility của Arcane Ascendance không còn chặn hồi mana; giữ giảm mana cost và sửa cả tooltip.\n"+
@@ -57,8 +59,10 @@ internal static class OfflineChangelog
         $"• Rank 3: khi Idol rơi, có {FortuneRules.IdolExtraChance*100:0}% xác suất rơi thêm {FortuneRules.AdditionalIdols} Idol.\n"+
         $"• Rank 5: {FortuneRules.EchoDoubleChance*100:0}% xác suất nhận gấp đôi phần thưởng vật phẩm Monolith Echo.\n"+
         $"• Rank 6: tăng {(FortuneRules.ExaltedMultiplier-1)*100:0}% xác suất item trở thành Exalted.\n"+
-        "• Rank 7: Exiled Mage rơi gấp 3 số vật phẩm Experimental.\n"+
+        "• Rank 7: Exiled Mage rơi gấp 15 số vật phẩm Experimental.\n"+
         $"• Rank 8: hệ số xác suất roll LP gốc của Unique là x{FortuneRules.LpMultiplier:0}; vẫn giữ tối thiểu 1 LP như trên.\n"+
+        $"• Rank 10: boss tăng {FortuneRules.BossSpecificLootIncrease*100:0}% tỷ lệ rơi phần thưởng riêng.\n"+
+        $"• Rank 11: đồ Rare có {FortuneRules.RareToExaltedChance*100:0}% cơ hội thành Exalted.\n"+
         "• Cần là thành viên CoF và mở rank tương ứng. Các rank khác giữ nguyên.\n\n"+
         "<b>PROPHECY</b>\n"+
         $"• Toàn bộ số lượng thưởng cơ sở x2: Rare x10 → x{FortuneRules.ProphecyCount(10)}, Unique x2 → x{FortuneRules.ProphecyCount(2)}…\n"+
@@ -68,6 +72,7 @@ internal static class OfflineChangelog
         "• Nhân vật mới: tự hoàn thành campaign, lên ít nhất cấp 58 và đến End of Time khi bật tùy chọn. Nhân vật cũ được giữ nguyên.\n"+
         "• Đã bỏ nút và chức năng Retry character setup.\n"+
         "• Có thể bật/tắt: mở khóa lựa chọn cosmetic; tự nhặt vàng, key, potion, nguyên liệu và Ancient Bones.\n"+
+        "• Auto pickup chỉ trong vòng tròn bán kính3 world units, cùng đơn vị Combat Assist, và chỉ khi nhân vật đang di chuyển.\n"+
         "• Nhặt đồ từ xa bằng cách bấm vào loot; hiện mục tiêu, chấm quái trên minimap, mở sương mù và mở rộng zoom minimap.\n"+
         "• Zoom camera: phím dấu phẩy / dấu chấm, phạm vi 0,5–5x.\n\n"+
         "<b>DPS TRACKER & GIAO DIỆN</b>\n"+

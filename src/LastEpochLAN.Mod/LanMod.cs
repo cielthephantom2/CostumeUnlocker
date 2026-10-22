@@ -454,6 +454,7 @@ public sealed class LanMod : MelonMod
 
     public override void OnLateUpdate()
     {
+        OfflineTools.WorldAssist.WorldAssistRuntime.Guard(OfflineTools.WorldAssist.WorldAssistRuntime.LateUpdate);
         if (!RoomFeaturePolicy.SharedWorldEnabled) return;
         long started=System.Diagnostics.Stopwatch.GetTimestamp(),allocated=GC.GetAllocatedBytesForCurrentThread();
         try
@@ -570,6 +571,7 @@ public sealed class LanMod : MelonMod
         try { DrawCoopUi(); }
         finally
         {
+            OfflineTools.WorldAssist.WorldAssistRuntime.Guard(OfflineTools.WorldAssist.WorldAssistRuntime.Draw);
             OfflineTools.Dps.DpsRuntime.Draw();sharedChest?.Draw();nativeCampaignProbe?.DrawChest();
             if(StartupArguments.Contains("--lelan-chest-ui-smoke") && nativeAssetProbe?.Passed==true)
             {chestUiProbe??=new();chestUiProbe.Draw();}
@@ -725,6 +727,8 @@ public sealed class LanMod : MelonMod
             partyTravel = new { partyTravel.Completed, partyTravel.Busy, partyTravel.Message, partyTravel.Error },
             monolithParty=new {monolithParty.Entries,monolithParty.Restores,monolithParty.RewardGrants,monolithParty.Busy,monolithParty.Borrowing,monolithParty.Message,monolithParty.Error,monolithParty.ObjectiveError},
             fortuneSmoke=OfflineTools.OfflineToolkitSmoke.FortuneObservations,
+            pickupBoundarySmoke=OfflineTools.OfflineToolkitSmoke.PickupObservations,
+            worldAssist=OfflineTools.WorldAssist.WorldAssistRuntime.Diagnostics,
             characterSetup = OfflineTools.NewCharacterBoost.Diagnostics,
             partyHealthScaling = false,
             encounterDiagnostics=worldSync.EncounterDiagnostics,encounterDevelopment=encounterCatalogue.Diagnostics,sharedStatus=NativePartyStatus.Diagnostics,

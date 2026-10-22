@@ -8,10 +8,14 @@ Native audit xác nhận node tạo ManaRegen property18 với more=-1 trong sta
 
 Build Release0warnings/errors.79 kiểm tra actual-source Meteor/Arcane (gồm28 kiểm tra Tranquility mới),94 Archmage và132 compiled/native audit đạt. Chưa xác nhận gameplay/render trực tiếp trong game.
 
-Bao gồm toàn bộ dev.54: đã gỡ UI Shortcut, giữ các sửa Meteor, Arcane movement, Archmage/text và hook Monolith. Protocol44, giữ nguyên Core47.
+Bao gồm toàn bộ dev.54: đã gỡ UI Shortcut, giữ các sửa Meteor, Arcane movement, Archmage/text và hook Monolith. Protocol44. Bản bổ sung CoF x20 dùng Core mới; cập nhật cả hai DLL theo manifest hiện tại.
 
 Bổ sung Forgotten Knights: Rank1 100%, Rank2 25%, Rank5 50%, đồng bộ mô tả. Xem [báo cáo](FORGOTTEN-KNIGHTS-dev55-VI.md). Default Meteor đã gỡ.
 
 Bổ sung x2 cả hai dòng Stability trong Echo Rewards mọi loại Echo và x2 Temporal Keystone, đồng bộ tooltip/thanh Stability. Xem [báo cáo Stability](TIMELINE-STABILITY-X2-dev55-VI.md).
 
 Đóng game rồi chạy update.bat để cập nhật cả hai DLL. Game đang chạy khi đóng gói nên chưa ghi đè DLL trong Steam.
+
+Bản World Assist: thêm danger areas,14 loại world targets, đường NavMesh ở world/Tab/minimap, dự đoán vị trí theo thời gian vẽ. CoF Rank8 x20 và text đồng bộ. Giữ version1.1.0-dev.55/protocol44. Đã đóng gói vào cùng bản dev.55; cập nhật cả hai DLL. Xem [hướng dẫn và giới hạn kiểm chứng](WORLD-ASSIST-dev55-VI.md).
+
+Bổ sung faction/pickup: CoF Rank7 x15 Experimental, Rank10 +300% boss loot riêng, Rank11 Rare→Exalted50%; The Woven Rank7 reforge30%, Rank9 Memory Amber50%. Auto pickup vàng/key/potion/material/bones chỉ khi di chuyển thực tế và trong bán kính3, đồng bộ text. Xem [báo cáo](FACTIONS-PICKUP-dev55-VI.md).

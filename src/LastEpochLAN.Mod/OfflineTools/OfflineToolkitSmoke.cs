@@ -6,9 +6,7 @@ namespace LastEpochLAN.Mod.OfflineTools;
 internal static class OfflineToolkitSmoke
 {
     internal static int PatchClasses;
-    private static bool specialsStarted;
-    private static int keysBefore,materialBefore;
-    private static float pickupDeadline;
+    internal static object PickupObservations;
     internal static object BonusObservations;
     internal static object FortuneObservations;
     private static Dps.DpsNativeSmoke dps;
@@ -88,18 +86,11 @@ internal static class OfflineToolkitSmoke
     internal static bool VerifyPrivatePickups(Actor actor)
     {
         if(!Environment.GetCommandLineArgs().Contains("--lelan-offline-tools-smoke")) throw new InvalidOperationException("Private pickup QA flag required.");
-        if(specialsStarted)
-        {
-            var items=actor.itemContainersManager;
-            bool complete=CountKeys(items)>keysBefore && (items.materials.shattering.content?.Quantity??0)>materialBefore;
-            if(!complete && UnityEngine.Time.unscaledTime>pickupDeadline) throw new InvalidOperationException("Native key/material auto-pickup did not reach storage.");
-            return complete;
-        }
         var ground=GroundItemManager.instance;
         if(ground==null || actor.goldTracker==null) throw new InvalidOperationException("Private pickup QA requires native ground/gold tracker.");
         int gold=actor.goldTracker.value;
         ground.dropGoldForPlayer(actor,7,actor.position()+UnityEngine.Vector3.right*40,false);
-        if(actor.goldTracker.value!=gold+7) throw new InvalidOperationException("Native offline auto-gold did not grant exactly once.");
+        if(actor.goldTracker.value!=gold) throw new InvalidOperationException("Far gold must remain on the ground.");
         var potion=actor.GetComponent<HealthPotion>();
         if(potion==null || potion.maxCharges<=0) throw new InvalidOperationException("Private pickup QA requires a native health potion.");
         int charges=potion.currentCharges;
@@ -107,7 +98,7 @@ internal static class OfflineToolkitSmoke
         {
             potion.currentCharges=potion.maxCharges-1;
             ground.dropPotionForPlayer(actor,actor.position()+UnityEngine.Vector3.right*40,false);
-            if(potion.currentCharges!=potion.maxCharges) throw new InvalidOperationException("Native offline auto-potion did not refill one charge.");
+            if(potion.currentCharges!=potion.maxCharges-1) throw new InvalidOperationException("Far potion must remain on the ground.");
         }
         finally {potion.currentCharges=charges;}
         var bones=actor.ancientBonesTracker;
@@ -115,21 +106,23 @@ internal static class OfflineToolkitSmoke
         {
             int count=bones.value;
             ground.dropAncientBoneForPlayer(actor,3,actor.position()+UnityEngine.Vector3.right*40,false,false);
-            if(bones.value!=count+3) throw new InvalidOperationException("Native offline auto-bones did not grant exactly once.");
+            if(bones.value!=count) throw new InvalidOperationException("Far bones must remain on the ground.");
         }
         var manager=actor.itemContainersManager;
         if(manager?.keys==null || manager.materials?.shattering==null) throw new InvalidOperationException("Native key/material storage is unavailable.");
         int keyType=-1;
         for(int type=0;type<256;type++) if(Item.isKey(type)) {keyType=type;break;}
         if(keyType<0) throw new InvalidOperationException("Native key item type unavailable.");
-        keysBefore=CountKeys(manager);materialBefore=manager.materials.shattering.content?.Quantity??0;
+        int keysBefore=CountKeys(manager),materialBefore=manager.materials.shattering.content?.Quantity??0;
         var key=ItemData.DummyData((byte)keyType,0,0);key.RebuildID();
         var storage=manager.materials.shattering;
         var material=ItemData.DummyData((byte)storage.allowedBaseType[0],(ushort)storage.allowedSubID,0);material.RebuildID();
-        specialsStarted=true;pickupDeadline=UnityEngine.Time.unscaledTime+10;
         ground.dropItemForPlayer(actor,key,actor.position()+UnityEngine.Vector3.right*40,false);
         ground.dropItemForPlayer(actor,material,actor.position()+UnityEngine.Vector3.right*40,false);
-        return false;
+        if(CountKeys(manager)!=keysBefore || (manager.materials.shattering.content?.Quantity??0)!=materialBefore)
+            throw new InvalidOperationException("Far key/material must remain on the ground.");
+        PickupObservations=new {farDropBoundaryValidated=true,nearMovingPickupValidated=false,radius=PickupRules.Radius};
+        return true;
     }
     private static int CountKeys(ItemContainersManager items)
     {
