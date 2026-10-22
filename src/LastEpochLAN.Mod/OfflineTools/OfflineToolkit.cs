@@ -71,6 +71,7 @@ internal static class OfflineToolkit
         Safely(OfflineFortune.Tick);
         Safely(OfflineWovenRanks.Tick);
         Safely(OfflineForgottenKnights.Tick);
+        Safely(OfflinePickup.Tick);
         Safely(Dps.DpsRuntime.Tick);
         Safely(()=>CameraZoom.InputTick(panel));
         Safely(CameraZoom.ApplyCurrent);
@@ -101,12 +102,12 @@ internal static class OfflineToolkit
         s.AutoCompleteNewCharacter=Toggle(s.AutoCompleteNewCharacter,"New character: quests + level 58 + End of Time",0);
         GUI.Label(new Rect(x+14,y+62,395,23),"Offline mode enforced; existing characters kept.");
         s.UnlockCosmetics=Toggle(s.UnlockCosmetics,"Unlock native cosmetic selection",2);
-        s.Gold=Toggle(s.Gold,"Auto Gold: radius 5",3);
-        s.Keys=Toggle(s.Keys,"Auto Keys: radius 5",4);
-        s.Potions=Toggle(s.Potions,"Auto Potions: radius 5, charges have room",5);
-        s.Materials=Toggle(s.Materials,"Auto Materials: radius 5",6);
-        s.Bones=Toggle(s.Bones,"Auto Bones: radius 5",7);
-        s.WovenEchoes=Toggle(s.WovenEchoes,"Auto Woven Echoes: radius 5",8);
+        s.Gold=Toggle(s.Gold,"Auto Gold: all map, 0.5 s delay",3);
+        s.Keys=Toggle(s.Keys,"Auto Keys: all map, 0.5 s delay",4);
+        s.Potions=Toggle(s.Potions,"Auto Potions: all map, 0.5 s, if not full",5);
+        s.Materials=Toggle(s.Materials,"Auto Materials: all map, 0.5 s delay",6);
+        s.Bones=Toggle(s.Bones,"Auto Bones: all map, 0.5 s delay",7);
+        s.WovenEchoes=Toggle(s.WovenEchoes,"Auto Woven Echoes: all map, 0.5 s delay",8);
         s.RangePickup=Toggle(s.RangePickup,"Range Pickup: click loot without walking to it",9);
         s.RevealObjectives=Toggle(s.RevealObjectives,"Reveal Monolith / Dungeon objectives",10);
         s.EnemyMapDots=Toggle(s.EnemyMapDots,"Enemy minimap dots",11);
@@ -115,7 +116,7 @@ internal static class OfflineToolkit
         s.CustomZoom=Toggle(s.CustomZoom,"Camera zoom: comma / period",14);
         GUI.Label(new Rect(x+14,y+414,395,23),$"Camera zoom: {s.ZoomDistance:0.0}x (0.5–5)");
         s.ZoomDistance=GUI.HorizontalSlider(new Rect(x+14,y+442,395,20),CameraZoom.Clamp(s.ZoomDistance),0.5f,5f);
-        if(GUI.changed) {ScheduleSave();MinimapZoom.ApplyCurrent();Safely(OfflinePickup.Refresh);}
+        if(GUI.changed) {ScheduleSave();MinimapZoom.ApplyCurrent();}
         GUI.changed|=previousChanged;
         GUI.Label(new Rect(x+14,y+471,395,48),NewCharacterBoost.Status);
         GUI.Label(new Rect(x+14,y+519,395,42),OfflineDensity.Status);

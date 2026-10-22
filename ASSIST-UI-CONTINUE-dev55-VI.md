@@ -11,3 +11,5 @@ Release build 0 warnings/errors; 1.053 managed/TCP self-tests, 13 actual-source 
 Giữ Auto Pickup 5 lượt/giây, tối đa 5 ứng viên, 1 thao tác, radius5, Woven Echoes và bỏ log pickup. Version 1.1.0-dev.55 / protocol44. Cập nhật cả Mod và Core cùng bản.
 
 Cập nhật sau: Auto Pickup đã chuyển sang trigger native, thay thế giới hạn5Hz/5ứng viên. Xem [báo cáo hiện tại](NATIVE-PICKUP-dev55-VI.md).
+
+Cập nhật pickup hiện tại: đã trở về cách cũ tự nhận đồ mới rơi toàn map với delay0,5s, thay phần radius/trigger trước. Xem [báo cáo hiện tại](NATIVE-PICKUP-dev55-VI.md).

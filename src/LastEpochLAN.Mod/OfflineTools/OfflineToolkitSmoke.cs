@@ -120,8 +120,8 @@ internal static class OfflineToolkitSmoke
         ground.dropItemForPlayer(actor,key,actor.position()+UnityEngine.Vector3.right*40,false);
         ground.dropItemForPlayer(actor,material,actor.position()+UnityEngine.Vector3.right*40,false);
         if(CountKeys(manager)!=keysBefore || (manager.materials.shattering.content?.Quantity??0)!=materialBefore)
-            throw new InvalidOperationException("Far key/material must remain on the ground.");
-        PickupObservations=new {farDropBoundaryValidated=true,nearPickupGameplayValidated=false,radius=PickupRules.Radius,requiresMovement=false};
+            throw new InvalidOperationException("Delayed key/material pickup must not execute during the drop callback.");
+        PickupObservations=new {dropCallbackDelayValidated=true,delayedPickupGameplayValidated=false,delaySeconds=PickupRules.Delay,requiresMovement=false};
         return true;
     }
     private static int CountKeys(ItemContainersManager items)

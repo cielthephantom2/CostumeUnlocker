@@ -71,7 +71,7 @@ internal static class OfflineChangelog
         "• Nhân vật mới: tự hoàn thành campaign, lên ít nhất cấp 58 và đến End of Time khi bật tùy chọn. Nhân vật cũ được giữ nguyên.\n"+
         "• Đã bỏ nút và chức năng Retry character setup.\n"+
         "• Có thể bật/tắt: mở khóa lựa chọn cosmetic; tự nhặt vàng, key, potion, nguyên liệu và Ancient Bones.\n"+
-        "• Auto pickup vàng/potion/Ancient Bones/key/material trong bán kính5 world units, nhặt cả khi đứng yên; bỏ cơ chế trigger thêm vào trước đó.\n"+
+        "• Auto pickup vàng/potion/Ancient Bones/key/material/Woven Echoes mới rơi trên toàn map sau0,5 giây; không yêu cầu di chuyển. Potion đầy vẫn để lại.\n"+
         "• Nhặt đồ từ xa bằng cách bấm vào loot; hiện mục tiêu, chấm quái trên minimap, mở sương mù và mở rộng zoom minimap.\n"+
         "• Zoom camera: phím dấu phẩy / dấu chấm, phạm vi 0,5–5x.\n\n"+
         "<b>DPS TRACKER & GIAO DIỆN</b>\n"+

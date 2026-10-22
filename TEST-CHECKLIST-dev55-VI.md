@@ -20,28 +20,21 @@ Bản release vừa đăng: https://github.com/cielthephantom2/CostumeUnlocker/r
 - [ ] Rank9 vẫn +2Weaver Tree points và mở2Woven Echoes.
 - [ ] Rank10 The Woven giữ nguyên +3Weaver Tree points và mở3Woven Echoes. Mức300% ở trên thuộc CoF Rank10.
 
-## 3. Auto pickup — thay đổi mới
+## 3. Auto Pickup hiện tại — cách cũ +0,5giây
 
-Mở F4 → Mod Settings và bật các loại muốn thử: Gold, Keys, Potions, Materials, Ancient Bones.
+- [ ] F4 bật các loại Gold/Keys/Potions/Materials/Ancient Bones/Woven Echoes, text all map /0,5s.
+- [ ] Đồ mới rơi từ nguồn xa vẫn tự nhận sau khoảng0,5s; không cần tới gần hoặc di chuyển.
+- [ ] Hai nhóm rơi cách nhau0,2s phải có deadline riêng; nhóm sau không bị vacuum sớm.
+- [ ] Gold/bones không cộng trùng; potion đầy để lại; inventory/storage tăng đúng.
+- [ ] Equipment/tutorial và loại bị tắt không bị auto pickup. Click Range Pickup vẫn ngay lập tức.
+- [ ] Thử đi xa sau khi drop, nhặt tay trước deadline, đổi map/nhân vật trong0,5s và túi đầy.
+- [ ] Quan sát FPS khi loot nhiều; chưa có số đo FPS cho bản này.
 
-- [ ] Gold/potion/Ancient Bones dùng bán kính cố định5, không phụ thuộc chuyển động.
-- [ ] Keys/Materials dùng bộ quét cũ với bán kính5; nhặt đúng một lần và lưu vào storage native.
-- [ ] Potion đầy charges vẫn nằm lại; equipment/tutorial item không tự nhặt.
-- [ ] Tắt từng loại để kiểm tra bộ quét bỏ qua loại đó; equipment/tutorial không được tự nhặt.
-- [ ] Đổi zone/echo rồi quay lại loot còn trên đất; pickup vẫn hoạt động, không còn gọi Attach/initialise trigger bổ sung.
-- [ ] Click thủ công / Range Pickup vẫn hoạt động.
+## 4. World Assist đã gỡ
 
-Phạm vi sửa lần này là5nhóm trên. Không thêm auto pickup XP/Favor/Memory Amber.
+- [ ] F4 không còn World Assist, danger rings, marker hoặc đường đi của tính năng đó.
 
-## 4. World Assist đã gỡ / pickup radius5
-
-- [ ] F4 không còn World Assist; không còn danger rings, marker hoặc đường đi của tính năng này.
-- [ ] Gold/potion/Ancient Bones nhặt trong bán kính5; potion đầy nằm lại.
-- [ ] Keys/Materials tự nhặt trong vòng5, kể cả đứng yên; storage tăng đúng, equipment không tự nhặt.
-- [ ] Tắt từng loại và đổi zone/echo; kiểm tra FPS và log.
-- [ ] Range Pickup vẫn hoạt động khi click thủ công.
-
-Xem hướng dẫn mới: [native pickup](NATIVE-PICKUP-dev55-VI.md).
+Xem [pickup hiện tại](NATIVE-PICKUP-dev55-VI.md). Các checklist pickup cũ phía dưới chỉ là lịch sử; bản hiện tại dùng toàn map +0,5s.
 
 ## 5. Các sửa gần đây đã nằm trong bản này — kiểm tra lại
 
@@ -120,3 +113,9 @@ Với các tỷ lệ ngẫu nhiên, vài lần rơi chưa đủ kết luận xá
 - [ ] Có9 charge: một lần kích hoạt hợp lệ dùng3, còn6. Không tự xả hết charge.
 - [ ] Số charge tiêu thụ trên UI và thông báo vẫn theo game gốc.
 - [ ] Minimap chấm xanh scale0.90, Auto Pickup native-trigger và Combat Assist vẫn hoạt động.
+
+## Auto Pickup toàn map +0,5s — kiểm tra cuối
+
+- [ ] Không còn radius5 hoặc trigger bridge mới. Mỗi món chờ0,5s riêng; không thêm giới hạn chia lượt.
+- [ ] Kiểm tra Keys/Materials/Woven Echoes với loot filter ẩn nhãn, nguồn rơi xa và nhiều món đồng thời.
+- [ ] Prophecy giữ charge gốc; Combat Assist/minimap vẫn hoạt động.

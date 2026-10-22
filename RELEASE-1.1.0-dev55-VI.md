@@ -40,3 +40,7 @@ Scale chấm xanh dương từ0.45 lên0.90 (đường kính gấp3 chấm NPC).
 ## Khôi phục cơ chế charge Prophecy gốc
 
 Đã gỡ hoàn toàn code dùng hết charge, sửa helper/UI charge và phần thử nghiệm thông báo. Prophecy dùng lại ngưỡng tiêu thụ và thông báo gốc của game. Giữ các thay đổi mod có trước phần charge. Build0 warnings/errors;170 compiled/native audit checks pass.
+
+## Auto Pickup cách cũ + delay0,5s
+
+Tự nhận đồ mới rơi toàn map sau0,5giây, giữ6loại đã bật và potion đầy để lại; bỏ radius5/native trigger bridge, không thêm chia lượt. F4/changelog đồng bộ.35 fixture và169 audit checks đạt; chưa đoFPS hoặc xác nhận gameplay mới. [Chi tiết](NATIVE-PICKUP-dev55-VI.md).

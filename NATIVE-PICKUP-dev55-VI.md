@@ -1,16 +1,15 @@
-# Auto Pickup hiện tại — dev.55 / protocol44
+# Auto Pickup hiện tại — toàn map, delay0,5s — dev.55
 
-Bỏ bộ quét5Hz/5ứng viên gây chậm: nó phải đi qua trang bị và đồ ở xa trước khi tới món cạnh người chơi. Bản này dùng callback trigger và condition handler native của gold/potion thay cho việc quét theo cursor mỗi200ms.
+Khôi phục hành vi tự nhận các loại đã bật trên toàn map khi đồ mới rơi, thêm chờ0,5 giây trước khi thực thi. Không còn radius5, điều kiện di chuyển, bộ quét5ứng viên hoặc giới hạn số món/lượt. Mỗi món có deadline riêng; đây không phải chỉ chạy2lượt/giây. Mọi yêu cầu đã đủ0,5s được xử lý trong lượt Unity hiện tại.
 
-- Gold/Potion/Ancient Bones giữ đường tự nhặt native. Collider potion được mở đủ để phát hiện radius5; khoảng cáchXZ cuối cùng vẫn được kiểm tra trước hành động.
-- Keys, Materials, Woven Echoes dùng trigger gold lấy từ pool của game, đổi dispatch sang pickupItem(All) → vacuum → storage native. Không ghi thẳng inventory/currency, không dịch chuyển loot và không cấp vật phẩm khi spawn.
-- Không còn hạn mức5ứng viên hoặc5món mỗi batch. Khi trigger hợp lệ kích hoạt, batch phê duyệt mọi stackable đã bật trong radius5. Giữ bộ lọc đã hoạt động để không vacuum đồ xa/loại bị tắt; shared ItemData với ground id chưa phê duyệt vẫn bị loại.
-- Tối đa1lệnh item pickup mỗi frame, không thêm cooldown khi thành công. Gold/potion/bones dùng lịch callback của game. Giữ thời gian chờ rơi/physics của game; không cam kết đo được latency bằng gold khi chưa test trong game.
-- Nếu storage từ chối (ví dụ túi đầy), thử lại sau250ms; lỗi native backoff500ms. Không quét/cast liên tục mỗi frame khi nhặt thất bại.
-- Trigger mới được active và không parent trước initialise để native Awake gắn ConditionHandler. Giữ độc lập với item visuals bị loot filter ẩn/tắt; pooling/destroy/unload/zone hooks trả trigger về pool. Additive scene-loaded không xóa trigger đang sống.
-- Kiểm tra gameplay inventory, không yêu cầu model/network Ready. Không yêu cầu di chuyển. Toggle từng loại, tutorial exclusion, online ownership guard và Range Pickup giữ hành vi hiện có.
-- Không log mỗi lần nhặt; chỉ báo lỗi native một lần khi nội dung lỗi thay đổi.
+Gold/Potion/Ancient Bones: giữ ground record/gameplay object native, xếp ID khi initialise và gọi pickup gốc sau deadline. Không cộng tiền, xương hoặc potion trực tiếp vào tracker. Nếu potion đầy lúc đến hạn thì để lại theo game. Native auto interaction không được vượt deadline của món đang chờ.
 
-Kiểm chứng: Release build0 warnings/errors;44 actual-source fixture checks và169 compiled/native audit checks pass (191 patch classes inspected). Fixture có512 trang bị xa trước key gần,20 vật liệu cùng batch, không đợi200ms, init trước inventory ready, visual inactive, lỗi/pooling/cleanup/toggle/radius. Native inspection xác nhận SpawnGroundItem đặt vị trí trước GroundItemVisuals.initialise; callback OnUpdateTick giữ delay/collision và gọi PickUp. Fixture không chạy physics/gameplay thật. Chưa đo FPS hoặc xác nhận tốc độ trong game với DLL mới.
+Keys/Materials/Woven Echoes: như code cũ, hook dropItemForPlayer đặt vị trí drop tại vị trí người chơi, giữ sound flag cũ; sau khi native tạo ground record thì xếp đúng ID/pointer/source list vào hàng chờ. Khi đủ0,5s gọi pickupItem(All) → vacuum → storage native. Scope chỉ cho các món đã đủ delay và đúng toggle đi qua vacuum, nên món mới rơi sau không bị nhặt sớm nhờ món cũ. Loot có từ trước mà không đi qua hook drop không được quét toàn map để bổ sung, đúng tính chất drop-driven của bản cũ.
 
-Giữ Combat Assist chạy khi UI mở, chấm người chơi xanh dương lớn hơn50% trên minimap và các bonus trước. Version1.1.0-dev.55/protocol44; đóng game rồi chạy update.bat để nhận cả hai DLL. Game đang chạy nên chưa thay DLL Steam.
+Giữ multiplier gold hiện có, toggles riêng (kể cả Woven Echoes), loại trừ equipment/tutorial item và offline/local ownership. Range Pickup click vẫn thực hiện ngay. Không thêm chia lượt hoặc retry theo timer. Nhặt tay trước deadline không nhận lại món/currency; pool/ID reuse, đổi nhân vật/manager/zone có guard. Pre-unload/zone/dispose hủy hàng chờ; native ground data vẫn thuộc lifecycle của game. Túi không nhận được món thì món còn trên đất, không cộng bù hoặc replay lệnh lỗi.
+
+F4 Mod Settings và changelog cập nhật thành all map /0,5s. Không log từng lần pickup; chỉ báo lỗi native nếu gặp lỗi.
+
+Kiểm chứng: Release build0 warnings/errors;35 actual-source checks và169 compiled/native audit checks pass,188 patch classes inspected. Kiểm tra mốc499/500ms, deadline riêng, vacuum không lấy món mới sớm, đi xa1000units,25món cùng lúc không cap, gold/potion/bones ngoài400units, potion đầy, toggles, duplicate/manual pickup, storage readiness, pool/ID reuse, đổi nhân vật/manager/zone, exception và scope cleanup. Chưa xác nhận gameplay mới trong game và chưa đo FPS. Delay đơn thuần không được báo cáo như một cải thiện FPS đã đo.
+
+Giữ version1.1.0-dev.55 / protocol44. Combat Assist, minimap chấm xanh scale0.90 và các bonus khác giữ nguyên; Prophecy vẫn là cơ chế charge gốc. Đóng game rồi chạy update.bat để nhận cả hai DLL.

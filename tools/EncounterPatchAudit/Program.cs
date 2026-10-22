@@ -152,49 +152,49 @@ Check(lateCalls.All(m=>m.DeclaringType.Name=="RoomFeaturePolicy"),
  "compiled OnLateUpdate stops at the release policy guard");
 Check(!types.Any(t=>t.Namespace.Contains("WorldAssist") || t.Name is "AssistAbilityEnabledPatch" or "AssistMapFramePatch"),
  "World Assist runtime, drawing, settings, routes and hooks are absent from the binary");
-var balanceHooks=new[]{"OfflineWovenRankPatch","OfflineWovenRankDescriptionPatch","OfflineNativeAutoPickupGatePatch","OfflineAutoPickupItemFilterPatch"};
-Check(balanceHooks.All(n=>installed.Any(t=>t.Name==n)),"Woven and bounded pickup hooks are selected for installation");
+var balanceHooks=new[]{"OfflineWovenRankPatch","OfflineWovenRankDescriptionPatch","OfflineNativeAutoPickupGatePatch","OfflineAutoPickupItemFilterPatch","OfflineDelayedPickupInteractionPatch","OfflineSpecialPickupPatch"};
+Check(balanceHooks.All(n=>installed.Any(t=>t.Name==n)),"Woven and delayed map-wide pickup hooks are selected for installation");
 Check(types.Single(t=>t.Name=="OfflineGoldPickupPatch").Methods.Single(m=>m.Name=="Prefix").ReturnType.FullName=="System.Void",
- "gold bonus retains native ground placement");
+ "gold bonus scales once before native ground placement");
 var pickup=types.Single(t=>t.Name=="OfflinePickup");
-Check(!pickup.Methods.Any(m=>m.Name is "Moving" or "Tick") && new[]{"Attach","Configure","PickUp","Detach"}.All(name=>pickup.Methods.Any(m=>m.Name==name)),
- "native item proximity triggers replace the timed cursor sweep and retain no movement gate");
-Check(!types.Any(t=>t.Name=="OfflineAutoPickupVacuumGatePatch"),
- "automatic pickup no longer blocks the native primary stackable storage path");
+Check(pickup.Methods.Any(m=>m.Name=="Tick") && !pickup.Methods.Any(m=>m.Name is "Moving" or "Attach" or "Configure" or "CanAutoPick") &&
+ !types.Any(t=>t.Name is "OfflineNativeItemTriggerPatch" or "OfflineNativePickupRadiusPatch" or "OfflineNativeItemPickupPatch"),
+ "drop-driven delayed pickup removes proximity bridges, movement gates and radius checks");
+Check(!types.Any(t=>t.Name=="OfflineAutoPickupVacuumGatePatch"),"delayed pickup retains native primary stackable vacuum/storage dispatch");
 var itemFilter=types.Single(t=>t.Name=="OfflineAutoPickupItemFilterPatch");
 Check(itemFilter.CustomAttributes.Any(a=>a.AttributeType.FullName=="HarmonyLib.HarmonyPatch" && a.ConstructorArguments.Any(c=>c.Value is TypeReference t && t.Name=="ItemList")),
- "automatic scope filters native IsStackableItem candidates instead of suppressing vacuum");
+ "automatic item scope prevents native vacuum from collecting unapproved/newer drops before deadline");
 var localPickupCalls=pickup.Methods.Where(m=>m.Name is "Local" or "Owned").SelectMany(m=>m.Body.Instructions).Select(i=>i.Operand).OfType<MethodReference>().ToArray();
 Check(localPickupCalls.Any(m=>m.Name=="get_Enabled") && localPickupCalls.Any(m=>m.Name=="get_itemContainersManager") && !localPickupCalls.Any(m=>m.Name=="get_Ready"),
- "pickup requires offline local inventory without model/network visual readiness");
-Check(pickup.Methods.Single(m=>m.Name=="PickUp").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="get_offlineItems"),
- "native proximity dispatch batches from offline ground list only when a trigger fires");
-var pickupTickCalls=Reachable(pickup.Methods.Single(m=>m.Name=="PickUp")).Select(i=>i.Operand).OfType<MethodReference>().ToArray();
-Check(pickupTickCalls.Any(m=>m.Name=="CanAutoPick") && pickupTickCalls.Any(m=>m.Name=="pickupItem") &&
- !pickupTickCalls.Any(m=>m.Name is "modifyGold" or "modifyAncientBones" or "set_currentCharges" or "set_location"),
- "native trigger dispatch checks player radius before native pickup without direct grants or teleportation");
-Check((float)types.Single(t=>t.Name=="PickupRules").Fields.Single(f=>f.Name=="Radius").Constant==5,
- "automatic pickup radius is exactly 5 world units");
+ "pickup requires offline local storage without model/network visual readiness");
+var pickupTickCalls=pickup.Methods.Single(m=>m.Name=="Tick").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(new[]{"pickupItem","pickupGold","pickupPotion","pickupAncientBone"}.All(name=>pickupTickCalls.Any(m=>m.Name==name)) &&
+ !pickupTickCalls.Any(m=>m.Name is "modifyGold" or "modifyAncientBones" or "set_currentCharges"),
+ "all delayed pickups use native storage/currency methods without direct grants");
 var pickupPolicy=types.Single(t=>t.Name=="PickupRules");
-Check(!pickupPolicy.Fields.Any(f=>f.Name is "SweepInterval" or "MaximumVisits") && pickup.Fields.Any(f=>f.Name=="lastItemFrame"),
- "pickup removes200ms/five-entry throttles and limits native item actions by frame");
-var nativePickupHooks=new[]{"OfflineNativePickupRadiusPatch","OfflineNativeItemTriggerPatch","OfflineNativeItemPoolPatch","OfflineNativeItemDestroyPatch","OfflineNativeItemPickupPatch","OfflineNativePickupScenePatch","OfflineNativePickupZonePatch","OfflineNativePickupDisposePatch"};
-Check(nativePickupHooks.All(n=>installed.Any(t=>t.Name==n)),"native pickup trigger creation, dispatch, pooling and scene cleanup hooks are installed");
-var attachCalls=pickup.Methods.Single(m=>m.Name=="Attach").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
-Check(attachCalls.Any(m=>m.Name=="instantiate") && attachCalls.Any(m=>m.Name=="initialise") && !attachCalls.Any(m=>m.Name=="SetParent"),
- "borrowed native trigger initializes active and stays independent from inactive/filtered loot visuals");
+Check((float)pickupPolicy.Fields.Single(f=>f.Name=="Delay").Constant==.5f && !pickupPolicy.Fields.Any(f=>f.Name is "Radius" or "SweepInterval" or "MaximumVisits"),
+ "fixed500ms per-drop delay replaces radius and polling/count limits");
+Check(pickupTickCalls.Any(m=>m.Name=="TryPeek") && pickupTickCalls.Any(m=>m.Name=="Dequeue") &&
+ types.Single(t=>t.Name=="OfflineToolkit").Methods.Single(m=>m.Name=="Tick").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="OfflinePickup" && m.Name=="Tick"),
+ "Unity callback processes the deadline queue, without per-drop tasks or new native trigger objects");
+var prepareCalls=pickup.Methods.Single(m=>m.Name=="Prepare").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(prepareCalls.Any(m=>m.Name=="position") && prepareCalls.Any(m=>m.Name=="Special") &&
+ pickup.Methods.Single(m=>m.Name=="Dropped").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="get_itemData"),
+ "old special-drop placement is restored and actual native ground IDs/data are queued after drop");
+var cleanupHooks=new[]{"OfflineNativePickupScenePatch","OfflineNativePickupZonePatch","OfflineNativePickupDisposePatch"};
+Check(cleanupHooks.All(n=>installed.Any(t=>t.Name==n)),"native pre-unload/zone/dispose cleanup cancels queued work before ground IDs can be reused");
 Check(!types.Single(t=>t.Name=="OfflineToolkit").Methods.Single(m=>m.Name=="SceneChanged").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="OfflinePickup" && m.Name=="Clear"),
- "additive scene-loaded notifications cannot remove live native item triggers");
+ "additive scene-loaded notifications cannot cancel a live pickup delay");
 var nativePickupGate=types.Single(t=>t.Name=="OfflineNativeAutoPickupGatePatch");
-var gateNames=Walk(new[]{nativePickupGate}).SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Select(i=>i.Operand).OfType<string>().ToArray();
-Check(gateNames.Contains("PickUp") && !gateNames.Contains("OnUpdateTick"),
- "radius gate targets final PickUp, preserving native spawn-delay/collision updates");
-Check(!pickup.Methods.Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="MelonLogger"),
- "pickup diagnostic log calls are removed");
+Check(nativePickupGate.Methods.Single(m=>m.Name=="Prefix").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="AllowNative"),
+ "native automatic interaction action checks its queued deadline");
+Check(!pickup.Methods.Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="MelonLogger" && m.Name is "Msg" or "Log"),
+ "pickup emits no per-drop diagnostic logs; native errors remain observable");
 Check(pickup.Methods.Single(m=>m.Name=="Special").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="isWovenEcho") && types.Single(t=>t.Name=="ToolkitSettings").Properties.Any(p=>p.Name=="WovenEchoes"),
- "Woven Echo native item classification and separate settings toggle are compiled");
-Check(!types.Single(t=>t.Name=="OfflineToolkit").Methods.Single(m=>m.Name=="Draw").Body.Instructions.Any(i=>i.Operand is string value && value.Contains("including while standing")),
- "pickup toggle labels omit including-while-standing suffix");
+ "Woven Echo eligibility and independent toggle remain");
+var pickupLabels=types.Single(t=>t.Name=="OfflineToolkit").Methods.Single(m=>m.Name=="Draw").Body.Instructions.Select(i=>i.Operand).OfType<string>().ToArray();
+Check(pickupLabels.Count(value=>value.Contains("all map, 0.5 s"))==6 && !pickupLabels.Any(value=>value.Contains("Auto ") && value.Contains("radius 5")),
+ "all six pickup labels show map-wide500ms behavior rather than obsolete radius5");
 var presenceCalls=lan.Methods.Single(m=>m.Name=="PublishInventoryPresence").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
 Check(!presenceCalls.Any(m=>m.DeclaringType.Name is "ClassVisualReplica" or "NativeSummonCapture" or "LanDroppedItems" or "NativeSkillVisualCapture"),
  "inventory presence does not capture avatar, summons, ground items or VFX");

@@ -11,3 +11,5 @@ Giữ version1.1.0-dev.55 / protocol44. Bao gồm Combat Assist tiếp tục khi
 Cập nhật sau: Auto Pickup đã chuyển sang trigger native, thay thế giới hạn5Hz/5ứng viên. Xem [báo cáo hiện tại](NATIVE-PICKUP-dev55-VI.md).
 
 Cập nhật kích thước: tăng gấp đôi chấm người chơi theo yêu cầu; cùng màu xanh dương và sprite. Build0 warnings/errors và169 compiled/native audit checks pass; chưa xác nhận hiển thị mới trong game.
+
+Cập nhật pickup hiện tại: đã trở về cách cũ tự nhận đồ mới rơi toàn map với delay0,5s, thay phần radius/trigger trước. Xem [báo cáo hiện tại](NATIVE-PICKUP-dev55-VI.md).

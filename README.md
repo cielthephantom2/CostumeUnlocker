@@ -11,7 +11,7 @@ Development release, protocol **44**. Close the game and run `update.bat` from t
 
 **Dev.55, Combat Assist disconnect fix:** Closing a room closes F4, refreshes local Assist references while preserving Start/Stop and the character profile, and isolates room teardown failures. Local Assist ticks before room polling. See [disconnect report](ASSIST-DISCONNECT-dev55-VI.md). In-game disconnect verification is pending.
 
-**Dev.55, Auto Pickup radius 5:** Replaced the slow 5Hz/five-entry cursor sweep with native gold pickup triggers for keys/materials/Woven Echoes. Gold/potion/bones use their native callbacks. Nearby stackables are batched through the working native vacuum/storage path, at most one item action per frame. Preserves radius5, toggles, tutorial/online guards and Range Pickup. Includes failure backoff and pooled-trigger cleanup. See [current pickup report](NATIVE-PICKUP-dev55-VI.md); live physics/speed acceptance is pending.
+**Dev.55, map-wide pickup with 0.5s delay:** Restores drop-driven pickup anywhere on the map for enabled gold/potion/bones/keys/materials/Woven Echoes. Each new drop waits500ms; no radius, movement gate or per-frame count cap. Native storage/currency methods handle collection; pending IDs are guarded against duplicate pickup, reuse and character/zone changes. Full potions remain. Settings/changelog match the new behavior. See [current pickup report](NATIVE-PICKUP-dev55-VI.md). Gameplay/FPS acceptance is pending.
 
 **Faction bonuses retained:** CoF Rank7 Experimental x15, Rank8 LP x20, Rank10 boss-specific drops +300%, Rank11 Rare→Exalted 50%; The Woven Rank7 reforge 30%, Rank9 Memory Amber 50%, with matching text.
 

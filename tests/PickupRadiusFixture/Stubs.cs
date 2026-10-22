@@ -41,7 +41,7 @@ namespace Il2Cpp
   public UnityEngine.GameObject gameObject=new();public bool AwakeCompleted,canPickup;
   public UnityEngine.Collider[] Colliders={new UnityEngine.SphereCollider()};
   public T[] GetComponentsInChildren<T>(bool inactive)where T:class=>Colliders.OfType<T>().ToArray();
-  public void initialise(Actor actor,uint value){if(!AwakeCompleted)throw new NullReferenceException("Awake must bind ConditionHandler first");player=actor;id=value;LastEpochLAN.Mod.OfflineTools.OfflinePickup.Configure(this);}
+  public void initialise(Actor actor,uint value){if(!AwakeCompleted)throw new NullReferenceException("Awake must bind ConditionHandler first");player=actor;id=value;LastEpochLAN.Mod.OfflineTools.OfflinePickup.Enqueue(this);}
   public void OnUpdateTick(){}}
  public class GoldPickupInteraction:PickupGroundObjectInteraction{public int amount=10;public void PickUp(){}}
  public class PotionPickupInteraction:PickupGroundObjectInteraction{public void PickUp(){}}
@@ -70,11 +70,11 @@ namespace Il2Cpp
  }
  public enum StackableItemFlags{All=255}
  public class GroundItemLabel{public ItemData Data;public ItemData getItemData()=>Data;public void ClickedItem(){}}
- public class GroundItemManager
+ public class GroundItemManager:NativeObject
  {
   public static GroundItemManager instance=new();
-  public class GroundItem{public ItemData itemData;public UnityEngine.Vector3 location;public uint id;}
-  public class GroundItemList{public Il2CppSystem.Collections.Generic.List<GroundItem> items=new();}
+  public class GroundItem:NativeObject{public ItemData itemData;public UnityEngine.Vector3 location;public uint id;}
+  public class GroundItemList:NativeObject{public Il2CppSystem.Collections.Generic.List<GroundItem> items=new();}
   public GroundItemList offlineItems=new();
   public AutoPool.Subscriber<GoldPickupInteraction> goldPileSubscriber=new();
   public AutoPool.Subscriber<PotionPickupInteraction> potionSubscriber=new();
@@ -86,10 +86,10 @@ namespace Il2Cpp
   public Il2CppSystem.Collections.Generic.List<PickupAncientBonesInteraction> activeAncientBones=new();
   public int Gold,Bones,Keys,Materials,WovenEchoes,Equipment,VacuumCalls,Operations;public bool ThrowOnItem,RefuseItem;
   public bool TryGetGroundItemList(Actor a,out GroundItemList list){list=offlineItems;return true;}
-  public void dropGoldForPlayer(){}
-  public void pickupGold(Actor a,uint id,GoldPickupInteraction p){Operations++;Gold+=p.amount;activeGoldPiles.Remove(p);}
-  public bool pickupPotion(Actor a,uint id,PotionPickupInteraction p){Operations++;if(a.Potion.currentCharges>=a.Potion.maxCharges)return false;a.Potion.currentCharges++;activePotions.Remove(p);return true;}
-  public void pickupAncientBone(Actor a,uint id,PickupAncientBonesInteraction p){Operations++;Bones+=p.amount;activeAncientBones.Remove(p);}
+  public void dropGoldForPlayer(){}public void dropItemForPlayer(){}
+  public void pickupGold(Actor a,uint id,GoldPickupInteraction p){Operations++;if(!activeGoldPiles.Remove(p))return;Gold+=p.amount;p.isActiveAndEnabled=false;}
+  public bool pickupPotion(Actor a,uint id,PotionPickupInteraction p){Operations++;if(a.Potion.currentCharges>=a.Potion.maxCharges)return false;if(!activePotions.Remove(p))return false;a.Potion.currentCharges++;p.isActiveAndEnabled=false;return true;}
+  public void pickupAncientBone(Actor a,uint id,PickupAncientBonesInteraction p){Operations++;if(!activeAncientBones.Remove(p))return;Bones+=p.amount;p.isActiveAndEnabled=false;}
   public void pickupItem(Actor a,uint id,StackableItemFlags flags)
   {
    Operations++;if(ThrowOnItem)throw new InvalidOperationException("native test failure");
