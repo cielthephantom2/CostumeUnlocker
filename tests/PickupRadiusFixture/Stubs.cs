@@ -2,7 +2,7 @@ using System.Reflection;
 namespace MelonLoader{public static class MelonLogger{public static System.Collections.Generic.List<string> Messages=new();public static void Msg(string text)=>Messages.Add(text);}}
 namespace HarmonyLib
 {
- [AttributeUsage(AttributeTargets.Class)]public class HarmonyPatch:Attribute{public HarmonyPatch(Type t,string m){}}
+ [AttributeUsage(AttributeTargets.Class)]public class HarmonyPatch:Attribute{public HarmonyPatch(Type t,string m){}public HarmonyPatch(Type t,string m,Type[] args){}}
  [AttributeUsage(AttributeTargets.Method)]public class HarmonyPriority:Attribute{public HarmonyPriority(int p){}}
  public static class Priority{public const int First=1;}
 }
@@ -25,7 +25,11 @@ namespace Il2Cpp
  public class HealthPotion{public int currentCharges,maxCharges=3;}
  public class ItemData:NativeObject{public int itemType;public bool Tutorial;public bool isTutorialItem()=>Tutorial;}
  public static class Item{public static bool isKey(int type)=>type==104;}
- public static class ItemList{public static bool isCraftingItem(int type)=>type is >=101 and <=103;}
+ public static class ItemList
+ {
+  public static bool isCraftingItem(int type)=>type is >=101 and <=103;
+  public static bool IsStackableItem(ItemData data)=>data.itemType is >=101 and <=104;
+ }
  public class PickupGroundObjectInteraction:NativeObject
  {public Actor player;public uint id;public float index=1,delay=.2f;public bool isActiveAndEnabled=true;public UnityEngine.Transform transform=new();public void OnUpdateTick(){}}
  public class GoldPickupInteraction:PickupGroundObjectInteraction{public int amount=10;}
@@ -53,12 +57,33 @@ namespace Il2Cpp
   {
    if(ThrowOnItem)throw new InvalidOperationException("native test failure");
    var entry=offlineItems.items.FirstOrDefault(x=>x.id==id);if(entry==null)return;
+   // Actual native dispatch: All skips the direct inventory path for stackables.
+   // The primary item itself is collected by vacuum, not before it.
+   if(ItemList.IsStackableItem(entry.itemData) && flags==StackableItemFlags.All)
+   {vacuumNearbyStackableItems(a,entry.location);return;}
+   Collect(entry);
+   if(ItemList.IsStackableItem(entry.itemData))vacuumNearbyStackableItems(a,entry.location);
+  }
+  private void Collect(GroundItem entry)
+  {
    if(entry.itemData.itemType==104)Keys++;else if(entry.itemData.itemType is >=101 and <=103)Materials++;else Equipment++;
    offlineItems.items.Remove(entry);
-   var allow=(bool)typeof(LastEpochLAN.Mod.OfflineTools.OfflineAutoPickupVacuumGatePatch).GetMethod("Prefix",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,null);
-   if(allow)vacuumNearbyStackableItems();
   }
-  public void vacuumNearbyStackableItems(){VacuumCalls++;}
+  public void vacuumNearbyStackableItems(Actor a,UnityEngine.Vector3 origin)
+  {
+   VacuumCalls++;
+   var gate=typeof(LastEpochLAN.Mod.OfflineTools.OfflinePickup).Assembly.GetType("LastEpochLAN.Mod.OfflineTools.OfflineAutoPickupVacuumGatePatch");
+   if(gate!=null && !(bool)gate.GetMethod("Prefix",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,null))return;
+   foreach(var entry in offlineItems.items.ToArray())
+   {
+    bool allowed=ItemList.IsStackableItem(entry.itemData);
+    var filter=typeof(LastEpochLAN.Mod.OfflineTools.OfflinePickup).Assembly.GetType("LastEpochLAN.Mod.OfflineTools.OfflineAutoPickupItemFilterPatch");
+    if(filter!=null){object[] args={entry.itemData,allowed};filter.GetMethod("Postfix",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,args);allowed=(bool)args[1];}
+    float x=entry.location.x-origin.x,z=entry.location.z-origin.z;
+    if(allowed && x*x+z*z<7.5f*7.5f)Collect(entry);
+   }
+  }
+
  }
 }
 namespace LastEpochLAN.Mod.OfflineTools

@@ -85,11 +85,11 @@ internal static class OfflinePickup
             var position=actor.position();float dx=position.x-item.location.x,dz=position.z-item.location.z;
             nearestSquared=Math.Min(nearestSquared,dx*dx+dz*dz);
             if(!CanAutoPick(actor,item.location))continue;
-            // Native pickup normally vacuums other stackables in a wider radius.
-            // Disable that secondary sweep only for this automatic operation;
-            // each eligible ground item is checked against the player's 5-unit circle.
+            // Native All flags collect the primary item THROUGH vacuum.
+            // Keep that native path, restricting its stackable candidates to
+            // this selected ground item instead of blocking vacuum itself.
             int before=items.Count;ItemAttempts++;
-            using(var scope=new AutomaticPickupScope())manager.pickupItem(actor,item.id,StackableItemFlags.All);
+            using(var scope=new AutomaticPickupScope(item,list))manager.pickupItem(actor,item.id,StackableItemFlags.All);
             if(items.Count<before){ItemCollections++;itemCursor=Math.Max(0,itemCursor-1);}
             remaining--;
         }
@@ -106,8 +106,24 @@ internal static class OfflinePickup
 internal sealed class AutomaticPickupScope:IDisposable
 {
     [ThreadStatic] internal static int Depth;
-    internal AutomaticPickupScope()=>Depth++;
-    public void Dispose()=>Depth--;
+    [ThreadStatic] private static GroundItemManager.GroundItem selected;
+    [ThreadStatic] private static GroundItemManager.GroundItemList source;
+    private readonly GroundItemManager.GroundItem previous;
+    private readonly GroundItemManager.GroundItemList previousSource;
+    internal AutomaticPickupScope(GroundItemManager.GroundItem item=null,GroundItemManager.GroundItemList list=null)
+    {previous=selected;previousSource=source;selected=item;source=list;Depth++;}
+    internal static bool Allows(ItemData item)
+    {
+        if(Depth==0)return true;
+        if(item==null || selected?.itemData==null || item.Pointer!=selected.itemData.Pointer)return false;
+        // Native filtering receives ItemData rather than a ground id. If two
+        // drops share that object, do not accidentally collect the other id.
+        if(source?.items!=null)
+            foreach(var entry in source.items)
+                if(entry?.itemData?.Pointer==item.Pointer && entry.id!=selected.id)return false;
+        return true;
+    }
+    public void Dispose(){selected=previous;source=previousSource;Depth--;}
 }
 [HarmonyPatch(typeof(GroundItemManager),nameof(GroundItemManager.dropGoldForPlayer))]
 internal static class OfflineGoldPickupPatch
@@ -126,9 +142,12 @@ internal static class OfflineNativeAutoPickupGatePatch
         !OfflinePickup.Local(__instance.player) || !OfflinePickup.Managed(__instance) ||
         OfflinePickup.CanAutoPick(__instance.player,__instance.transform.position);
 }
-[HarmonyPatch(typeof(GroundItemManager),nameof(GroundItemManager.vacuumNearbyStackableItems))]
-internal static class OfflineAutoPickupVacuumGatePatch
-{private static bool Prefix()=>AutomaticPickupScope.Depth==0;}
+[HarmonyPatch(typeof(ItemList),nameof(ItemList.IsStackableItem),new[]{typeof(ItemData)})]
+internal static class OfflineAutoPickupItemFilterPatch
+{
+    private static void Postfix(ItemData __0,ref bool __result)
+    {if(__result && AutomaticPickupScope.Depth>0)__result=AutomaticPickupScope.Allows(__0);}
+}
 
 // Explicit clicks retain their existing behavior. Automatic pickup has a
 // fixed 5-unit radius and works while standing still.

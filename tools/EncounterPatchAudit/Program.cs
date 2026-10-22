@@ -152,13 +152,18 @@ Check(lateCalls.All(m=>m.DeclaringType.Name=="RoomFeaturePolicy"),
  "compiled OnLateUpdate stops at the release policy guard");
 Check(!types.Any(t=>t.Namespace.Contains("WorldAssist") || t.Name is "AssistAbilityEnabledPatch" or "AssistMapFramePatch"),
  "World Assist runtime, drawing, settings, routes and hooks are absent from the binary");
-var balanceHooks=new[]{"OfflineWovenRankPatch","OfflineWovenRankDescriptionPatch","OfflineNativeAutoPickupGatePatch","OfflineAutoPickupVacuumGatePatch"};
+var balanceHooks=new[]{"OfflineWovenRankPatch","OfflineWovenRankDescriptionPatch","OfflineNativeAutoPickupGatePatch","OfflineAutoPickupItemFilterPatch"};
 Check(balanceHooks.All(n=>installed.Any(t=>t.Name==n)),"Woven and bounded pickup hooks are selected for installation");
 Check(types.Single(t=>t.Name=="OfflineGoldPickupPatch").Methods.Single(m=>m.Name=="Prefix").ReturnType.FullName=="System.Void",
  "gold bonus retains native ground placement");
 var pickup=types.Single(t=>t.Name=="OfflinePickup");
 Check(!pickup.Methods.Any(m=>m.Name is "Moving" or "Attach" or "Configure") && !types.Any(t=>t.Name.StartsWith("OfflineNativeItem") || t.Name=="OfflineNativePickupRadiusPatch"),
  "movement gate and pooled trigger bridge are removed");
+Check(!types.Any(t=>t.Name=="OfflineAutoPickupVacuumGatePatch"),
+ "automatic pickup no longer blocks the native primary stackable storage path");
+var itemFilter=types.Single(t=>t.Name=="OfflineAutoPickupItemFilterPatch");
+Check(itemFilter.CustomAttributes.Any(a=>a.AttributeType.FullName=="HarmonyLib.HarmonyPatch" && a.ConstructorArguments.Any(c=>c.Value is TypeReference t && t.Name=="ItemList")),
+ "automatic scope filters native IsStackableItem candidates instead of suppressing vacuum");
 var localPickupCalls=pickup.Methods.Single(m=>m.Name=="Local").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
 Check(localPickupCalls.Any(m=>m.Name=="get_Enabled") && localPickupCalls.Any(m=>m.Name=="get_itemContainersManager") && !localPickupCalls.Any(m=>m.Name=="get_Ready"),
  "pickup requires offline local inventory without model/network visual readiness");

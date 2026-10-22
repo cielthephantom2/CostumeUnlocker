@@ -36,7 +36,7 @@ Check(manager.Materials==3,"native crafting types101/102/103 include shards,rune
 Check(manager.activeGoldPiles.Count==1 && manager.activeGoldPiles[0].id==2 && manager.offlineItems.items.Any(i=>i.id==3),"gold/keys outside5 remain on ground");
 Check(manager.Equipment==0 && manager.offlineItems.items.Any(i=>i.id==4),"equipment never auto-picked");
 Check(manager.offlineItems.items.Any(i=>i.id==5),"tutorial key never auto-picked");
-Check(manager.VacuumCalls==0 && AutomaticPickupScope.Depth==0,"automatic item pickup cannot vacuum beyond5");
+Check(manager.VacuumCalls>0 && AutomaticPickupScope.Depth==0,"native vacuum collects selected item and leaves outside5 loot untouched");
 var gate=typeof(OfflineNativeAutoPickupGatePatch);
 Check(!(bool)Prefix(gate,manager.activeGoldPiles[0]),"native trigger cannot bypass5 radius");
 Check((bool)Prefix(gate,Ground<GoldPickupInteraction>(2,99)),"native trigger works near stationary character");
@@ -48,11 +48,25 @@ var remote=Ground<GoldPickupInteraction>(2,3);remote.player=new Actor();manager.
 var delayed=Ground<GoldPickupInteraction>(2,4);delayed.index=0;delayed.delay=1;manager.activeGoldPiles.Add(delayed);Frame();Check(manager.activeGoldPiles.Contains(delayed),"native pickup delay respected");
 manager.offlineItems.items.Add(ItemAt(104,2,8));manager.ThrowOnItem=true;try{Frame();}catch(InvalidOperationException){}Check(AutomaticPickupScope.Depth==0,"native exception restores vacuum scope");manager.ThrowOnItem=false;
 using(var scope=new AutomaticPickupScope()){using(var nested=new AutomaticPickupScope())Check(AutomaticPickupScope.Depth==2,"nested vacuum scope");Check(AutomaticPickupScope.Depth==1,"nested scope restores parent");}
-Check((bool)Prefix(typeof(OfflineAutoPickupVacuumGatePatch)),"manual vacuum available outside sweep");
+Check(AutomaticPickupScope.Allows(new ItemData()),"native classification unchanged outside automatic scope");
 int before=manager.Keys;OfflineToolkit.Enabled=false;Frame();Check(manager.Keys==before && !OfflinePickup.CanAutoPick(actor,new UVec(2,0,0)),"inactive toolkit does not collect");OfflineToolkit.Enabled=true;
 OfflinePickup.Clear();Frame();Check(manager.Keys==before+1,"scene reset allows stationary pickup without motion sampling");
 var data=manager.offlineItems.items.Single(i=>i.id==4).itemData;Check(!(bool)Prefix(typeof(OfflineRangePickupPatch),new GroundItemLabel{Data=data}) && manager.Equipment==1,"explicit range click still picks equipment");
 manager.offlineItems.items.AddRange(Enumerable.Range(100,20).Select(i=>ItemAt(104,2,(uint)i)));before=manager.Keys;Frame();Check(manager.Keys-before<=8 && manager.Keys>before,"sweep bounded to8 operations");
 Check(typeof(OfflinePickup).GetMethods(BindingFlags.NonPublic|BindingFlags.Static).All(m=>m.Name!="Moving" && m.Name!="Attach"),"no movement gate or trigger bridge");
+// A selected key must not pull a disabled material or another enabled key.
+OfflinePickup.Clear();manager.offlineItems.items.Clear();
+var chosen=ItemAt(104,1,900);var disabledMaterial=ItemAt(102,1,901);var secondKey=ItemAt(104,1,902);var farKey=ItemAt(104,5.1f,903);
+manager.offlineItems.items.AddRange(new[]{chosen,disabledMaterial,secondKey,farKey});
+OfflineToolkit.Settings.Materials=false;
+using(var scope=new AutomaticPickupScope(chosen,manager.offlineItems))
+{
+ Check(AutomaticPickupScope.Allows(chosen.itemData) && !AutomaticPickupScope.Allows(secondKey.itemData),"scope allows only selected ground data");
+ manager.pickupItem(actor,chosen.id,StackableItemFlags.All);
+}
+Check(!manager.offlineItems.items.Contains(chosen) && manager.offlineItems.items.Contains(secondKey) && manager.offlineItems.items.Contains(disabledMaterial) && manager.offlineItems.items.Contains(farKey),"native All/vacuum dispatch collects target without collateral or disabled loot");
+var shared=ItemAt(104,1,904);shared.itemData=secondKey.itemData;manager.offlineItems.items.Add(shared);
+using(var scope=new AutomaticPickupScope(secondKey,manager.offlineItems))Check(!AutomaticPickupScope.Allows(secondKey.itemData),"ambiguous shared ItemData cannot bypass ground-id isolation");
+OfflineToolkit.Settings.Materials=true;
 Console.WriteLine($"All {checks.Count} actual-source pickup checks passed; native gameplay not exercised.");
-Directory.CreateDirectory("validation");File.WriteAllText("validation/dev55-pickup-storage-ready-fixture.json",JsonSerializer.Serialize(new{passed=checks.Count,checks,radius=5,requiresMovement=false,nativeGameplayValidated=false},new JsonSerializerOptions{WriteIndented=true}));
+Directory.CreateDirectory("validation");File.WriteAllText("validation/dev55-pickup-vacuum-dispatch-fixture.json",JsonSerializer.Serialize(new{passed=checks.Count,checks,radius=5,requiresMovement=false,nativeGameplayValidated=false},new JsonSerializerOptions{WriteIndented=true}));

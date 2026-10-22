@@ -1,0 +1,22 @@
+{
+  "logEvidence": {
+    "attempts": 624,
+    "collected": 0,
+    "nearestSquaredExamples": [
+      0.71053797,
+      5.116051
+    ],
+    "keys": true,
+    "materials": true
+  },
+  "cause": "All flags route primary stackable item through vacuum; automatic vacuum gate suppressed the primary collection",
+  "nativeBoundaries": {
+    "pickupItem": "0x11E4380: MatchesStackableItemFlags at0x11E456B branches to vacuum at0x11E48D9",
+    "vacuum": "0x11E6530: IsStackableItem(ItemData) at0x11E67B4 before storage/removal",
+    "IsStackableItem(ItemData)": "0x122A940"
+  },
+  "fix": "Remove vacuum gate; scoped ItemData candidate filter preserves primary storage path",
+  "regressionBefore": "Corrected native dispatch substitute reproduces no pickup with old gate",
+  "regressionAfter": 39,
+  "nativeGameplayValidated": false
+}
