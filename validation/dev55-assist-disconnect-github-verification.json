@@ -1,0 +1,28 @@
+{
+  "releaseUrl": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.55",
+  "title": "dev.55 - Combat Assist disconnect recovery",
+  "tagCommit": "7c798beb07c2460da729e8a9e9b6b0cf31f2d423",
+  "packageSha256": "1DF268A4ABA7842E3F2A7D9203CAA7091E88AA3589021792EEF7EF5ADCC5EAAE",
+  "downloadedPackageAndGithubDigestMatched": true,
+  "manifestAndDllsMatched": true,
+  "checks": {
+    "assistLifecycle": 13,
+    "audit": 153,
+    "updaterFixture": 15,
+    "updaterLive": 17
+  },
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1143808,
+      "sha256": "A3EE51AF51E5E8DB245780FDE5C8052EDE5E18AE74CD95BD271D0C0506ED95D3"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 435712,
+      "sha256": "13632724084C5E8A59294AC1937051B8D200426F0B5B63C372979748F05215C2"
+    }
+  ],
+  "nativeDisconnectGameplayValidated": false,
+  "steamInstallPerformed": false
+}
