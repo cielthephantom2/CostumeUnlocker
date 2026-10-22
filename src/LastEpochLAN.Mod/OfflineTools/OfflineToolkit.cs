@@ -6,7 +6,6 @@ namespace LastEpochLAN.Mod.OfflineTools;
 
 internal sealed class ToolkitSettings
 {
-    public WorldAssist.WorldAssistSettings WorldAssist {get;set;}=new();
     public bool AutoCompleteNewCharacter {get;set;}=true;
     public bool UnlockCosmetics {get;set;}=true;
     public bool Gold {get;set;}=true;
@@ -50,7 +49,6 @@ internal static class OfflineToolkit
                 Settings.DpsOffsetX=0;Settings.DpsBottomOffset=0;Settings.DpsTopOffset=0;
                 Settings.DpsPositionVersion=1;saveAt=0;
             }
-            Settings.WorldAssist??=new();Settings.WorldAssist.Normalize();
             NewCharacterBoost.Load();
         }
         catch(Exception ex) {Error=ex.GetBaseException().Message;MelonLoader.MelonLogger.Warning("Offline tools settings: "+Error);}
@@ -71,7 +69,6 @@ internal static class OfflineToolkit
         Safely(OfflineBuffs.Tick);
         Safely(OfflineFortune.Tick);
         Safely(OfflineWovenRanks.Tick);
-        Safely(OfflinePickup.Tick);
         Safely(OfflineForgottenKnights.Tick);
         Safely(Dps.DpsRuntime.Tick);
         Safely(()=>CameraZoom.InputTick(panel));
@@ -79,14 +76,12 @@ internal static class OfflineToolkit
         Safely(MapFog.Tick);
         Safely(EnemyMapDots.Tick);
         Safely(ObjectiveReveal.Tick);
-        Safely(WorldAssist.WorldAssistRuntime.Tick);
         if(saveAt>=0 && Time.unscaledTime>=saveAt) Safely(Save);
     }
-    internal static void SceneChanged() {OfflinePickup.Clear();WorldAssist.WorldAssistRuntime.Clear();NewCharacterBoost.SceneChanged();MapFog.Clear();EnemyMapDots.Clear();CameraZoom.Restore();ObjectiveReveal.Clear();Dps.DpsRuntime.SceneChanged();}
-    internal static void Dispose() {SceneChanged();Safely(OfflineBuffs.Restore);Safely(OfflineFortune.RestoreRewards);EnemyMapDots.Dispose();WorldAssist.WorldAssistRuntime.Dispose();MinimapZoom.Clear();if(saveAt>=0) Safely(Save);}
+    internal static void SceneChanged() {NewCharacterBoost.SceneChanged();MapFog.Clear();EnemyMapDots.Clear();CameraZoom.Restore();ObjectiveReveal.Clear();Dps.DpsRuntime.SceneChanged();}
+    internal static void Dispose() {Safely(OfflinePickup.Clear);SceneChanged();Safely(OfflineBuffs.Restore);Safely(OfflineFortune.RestoreRewards);EnemyMapDots.Dispose();MinimapZoom.Clear();if(saveAt>=0) Safely(Save);}
     internal static void Draw()
     {
-        if(WorldAssist.WorldAssistRuntime.SettingsOpen){WorldAssist.WorldAssistRuntime.DrawSettings();return;}
         float x=16,y=16;
         GUI.Box(new Rect(x,y,425,610),"Mod Settings");
         GUI.Box(new Rect(x+449,y,310,150),"DPS Tracker (offline local damage)");
@@ -98,19 +93,17 @@ internal static class OfflineToolkit
         if(GUI.Button(new Rect(x+463,y+117,132,25),Dps.DamageMeterOverlay.IsPaused?"Resume DPS":"Pause DPS")) Dps.DamageMeterOverlay.TogglePause();
         if(GUI.Button(new Rect(x+606,y+117,140,25),Settings.DpsVisible?"Hide DPS":"Show DPS"))
         {Settings.DpsVisible=!Settings.DpsVisible;ScheduleSave();}
-        if(GUI.Button(new Rect(x+449,y+177,310,30),"World Assist: danger / targets / paths")) WorldAssist.WorldAssistRuntime.SettingsOpen=true;
-        GUI.Label(new Rect(x+449,y+215,310,55),WorldAssist.WorldAssistRuntime.Status);
         bool Toggle(bool value,string label,int row)=>GUI.Toggle(new Rect(x+14,y+35+row*25,395,23),value,label);
         var s=Settings;
         bool previousChanged=GUI.changed;GUI.changed=false;
         s.AutoCompleteNewCharacter=Toggle(s.AutoCompleteNewCharacter,"New character: quests + level 58 + End of Time",0);
         GUI.Label(new Rect(x+14,y+62,395,23),"Offline mode enforced; existing characters kept.");
         s.UnlockCosmetics=Toggle(s.UnlockCosmetics,"Unlock native cosmetic selection",2);
-        s.Gold=Toggle(s.Gold,"Auto Gold: radius 3, while moving",3);
-        s.Keys=Toggle(s.Keys,"Auto Keys: radius 3, while moving",4);
-        s.Potions=Toggle(s.Potions,"Auto Potions: radius 3, moving, charges have room",5);
-        s.Materials=Toggle(s.Materials,"Auto Materials: radius 3, while moving",6);
-        s.Bones=Toggle(s.Bones,"Auto Bones: radius 3, while moving",7);
+        s.Gold=Toggle(s.Gold,"Auto Gold: native pickup range x3",3);
+        s.Keys=Toggle(s.Keys,"Auto Keys: native pickup range x3",4);
+        s.Potions=Toggle(s.Potions,"Auto Potions: native range x3, charges have room",5);
+        s.Materials=Toggle(s.Materials,"Auto Materials: native pickup range x3",6);
+        s.Bones=Toggle(s.Bones,"Auto Bones: native pickup range x3",7);
         s.RangePickup=Toggle(s.RangePickup,"Range Pickup: click loot without walking to it",8);
         s.RevealObjectives=Toggle(s.RevealObjectives,"Reveal Monolith / Dungeon objectives",9);
         s.EnemyMapDots=Toggle(s.EnemyMapDots,"Enemy minimap dots",10);
@@ -119,7 +112,7 @@ internal static class OfflineToolkit
         s.CustomZoom=Toggle(s.CustomZoom,"Camera zoom: comma / period",13);
         GUI.Label(new Rect(x+14,y+389,395,23),$"Camera zoom: {s.ZoomDistance:0.0}x (0.5–5)");
         s.ZoomDistance=GUI.HorizontalSlider(new Rect(x+14,y+417,395,20),CameraZoom.Clamp(s.ZoomDistance),0.5f,5f);
-        if(GUI.changed) {ScheduleSave();MinimapZoom.ApplyCurrent();}
+        if(GUI.changed) {ScheduleSave();MinimapZoom.ApplyCurrent();Safely(OfflinePickup.Refresh);}
         GUI.changed|=previousChanged;
         GUI.Label(new Rect(x+14,y+446,395,48),NewCharacterBoost.Status);
         GUI.Label(new Rect(x+14,y+494,395,42),OfflineDensity.Status);

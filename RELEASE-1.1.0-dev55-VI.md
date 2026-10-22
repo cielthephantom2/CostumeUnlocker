@@ -16,6 +16,7 @@ Bổ sung x2 cả hai dòng Stability trong Echo Rewards mọi loại Echo và x
 
 Đóng game rồi chạy update.bat để cập nhật cả hai DLL. Game đang chạy khi đóng gói nên chưa ghi đè DLL trong Steam.
 
-Bản World Assist: thêm danger areas,14 loại world targets, đường NavMesh ở world/Tab/minimap, dự đoán vị trí theo thời gian vẽ. CoF Rank8 x20 và text đồng bộ. Giữ version1.1.0-dev.55/protocol44. Đã đóng gói vào cùng bản dev.55; cập nhật cả hai DLL. Xem [hướng dẫn và giới hạn kiểm chứng](WORLD-ASSIST-dev55-VI.md).
 
-Bổ sung faction/pickup: CoF Rank7 x15 Experimental, Rank10 +300% boss loot riêng, Rank11 Rare→Exalted50%; The Woven Rank7 reforge30%, Rank9 Memory Amber50%. Auto pickup vàng/key/potion/material/bones chỉ khi di chuyển thực tế và trong bán kính3, đồng bộ text. Xem [báo cáo](FACTIONS-PICKUP-dev55-VI.md).
+Bổ sung faction/pickup: CoF Rank7 x15 Experimental, Rank10 +300% boss loot riêng, Rank11 Rare→Exalted50%; The Woven Rank7 reforge30%, Rank9 Memory Amber50%. Auto pickup đã chuyển sang trigger native, bán kính gốc x3 và bỏ điều kiện di chuyển; World Assist đã gỡ toàn bộ. Xem [báo cáo](FACTIONS-PICKUP-dev55-VI.md).
+
+Sửa pickup và gỡ World Assist: xem [báo cáo hiện tại](NATIVE-PICKUP-dev55-VI.md).

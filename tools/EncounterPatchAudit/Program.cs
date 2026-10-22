@@ -134,21 +134,20 @@ Check(!reachable.Any(m=>m.Name=="Tick" && m.DeclaringType.Name is "WorldSynchron
 Check(reachable.Any(m=>m.Name=="PublishInventoryPresence") && reachable.Any(m=>m.Name=="Tick" && m.DeclaringType.Name=="LanSharedChest") &&
  reachable.Any(m=>m.Name=="Tick" && m.DeclaringType.Name=="LanLootFilters"), "compiled OnUpdate still processes inventory presence, F2 and room filters");
 var lateCalls=Reachable(lan.Methods.Single(m=>m.Name=="OnLateUpdate")).Select(i=>i.Operand).OfType<MethodReference>().ToArray();
-Check(lateCalls.All(m=>m.DeclaringType.Name=="RoomFeaturePolicy" ||
- m.DeclaringType.FullName=="LastEpochLAN.Mod.OfflineTools.WorldAssist.WorldAssistRuntime" && m.Name is "Guard" or "LateUpdate" ||
- m.DeclaringType.FullName=="System.Action" && m.Name==".ctor"),
- "compiled OnLateUpdate permits only local World Assist before the guard; native party status, cosmetics, summons and enemy poses remain unreachable");
-Check(installed.Any(t=>t.Name=="AssistAbilityEnabledPatch") && installed.Any(t=>t.Name=="AssistMapFramePatch"),
- "local World Assist ability registration and native map projection hooks are selected for installation");
-var balanceHooks=new[]{"OfflineWovenRankPatch","OfflineWovenRankDescriptionPatch","OfflineNativeAutoPickupGatePatch","OfflineAutoPickupVacuumGatePatch"};
-Check(balanceHooks.All(n=>installed.Any(t=>t.Name==n)),"Woven rank and movement/radius pickup hooks are selected for installation");
-Check(types.Single(t=>t.Name=="OfflineGoldPickupPatch").Methods.Single(m=>m.Name=="Prefix").ReturnType.FullName=="System.Void" &&
- !types.Any(t=>t.Name is "OfflinePotionPickupPatch" or "OfflineBonePickupPatch" or "OfflineSpecialPickupPatch"),
- "gold retains native ground placement; potion,bones and special-item spawn bypasses are removed");
-var pickupTickCalls=types.Single(t=>t.Name=="OfflinePickup").Methods.Single(m=>m.Name=="Tick").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
-Check(pickupTickCalls.Any(m=>m.Name=="Moving") && pickupTickCalls.Any(m=>m.Name=="CanAutoPick") && pickupTickCalls.Any(m=>m.Name=="pickupItem") &&
- !pickupTickCalls.Any(m=>m.Name is "modifyGold" or "modifyAncientBones" or "set_currentCharges" or "set_location"),
- "automatic sweep requires movement and radius before native item pickup without direct grants or loot teleportation");
+Check(lateCalls.All(m=>m.DeclaringType.Name=="RoomFeaturePolicy"),
+ "compiled OnLateUpdate stops at the release policy guard");
+Check(!types.Any(t=>t.Namespace.Contains("WorldAssist") || t.Name is "AssistAbilityEnabledPatch" or "AssistMapFramePatch"),
+ "World Assist runtime, drawing, settings, routes and hooks are absent from the binary");
+var balanceHooks=new[]{"OfflineWovenRankPatch","OfflineWovenRankDescriptionPatch","OfflineNativePickupRadiusPatch","OfflineNativeItemTriggerPatch","OfflineNativeItemPoolPatch","OfflineNativeItemDestroyPatch","OfflineNativeItemPickupPatch","OfflineNativeItemVacuumPatch","OfflineNativePickupScenePatch","OfflineNativePickupZonePatch","OfflineNativePickupDisposePatch"};
+Check(balanceHooks.All(n=>installed.Any(t=>t.Name==n)),"Woven and native pickup trigger hooks are selected for installation");
+Check(types.Single(t=>t.Name=="OfflineGoldPickupPatch").Methods.Single(m=>m.Name=="Prefix").ReturnType.FullName=="System.Void",
+ "gold bonus retains native ground placement");
+var pickup=types.Single(t=>t.Name=="OfflinePickup");
+Check(!pickup.Methods.Any(m=>m.Name is "Tick" or "Moving" or "CanAutoPick") && !types.Any(t=>t.Name is "PickupRules" or "OfflineNativeAutoPickupGatePatch" or "OfflineAutoPickupVacuumGatePatch"),
+ "custom pickup sweep, motion sampler and native pickup blocker are removed");
+var attachCalls=pickup.Methods.Single(m=>m.Name=="Attach").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(attachCalls.Any(m=>m.Name=="instantiate") && attachCalls.Any(m=>m.Name=="initialise") && attachCalls.Any(m=>m.Name=="Configure"),
+ "keys/materials reuse native pooled gold pickup interactions and radius configuration");
 var presenceCalls=lan.Methods.Single(m=>m.Name=="PublishInventoryPresence").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
 Check(!presenceCalls.Any(m=>m.DeclaringType.Name is "ClassVisualReplica" or "NativeSummonCapture" or "LanDroppedItems" or "NativeSkillVisualCapture"),
  "inventory presence does not capture avatar, summons, ground items or VFX");

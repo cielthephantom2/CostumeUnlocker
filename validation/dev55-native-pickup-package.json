@@ -1,0 +1,41 @@
+{
+  "version": "1.1.0-dev.55",
+  "protocol": 44,
+  "package": "local-releases\\TM-Coop-1.1.0-dev.55.zip",
+  "sha256": "7209D08488031196B6F7FCC6B2B78CCEFE7AB55DBE181E043BE9DEEAD44A4707",
+  "size": 612614,
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1141248,
+      "sha256": "64E6386287B775F816174F68E981D01BF1044FAFD8F13FBD6BDDDBE10B899A4A"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 435712,
+      "sha256": "FAF67FB0EB15411C6DE0127FABB3DF8DADDF58BC2411A70971B8B9E02035340D"
+    }
+  ],
+  "packageContents": [
+    "Mods/LastEpochLAN.dll",
+    "UserLibs/LastEpochLAN.Core.dll",
+    "latest.json",
+    "README.md",
+    "update.bat",
+    "RELEASE-1.1.0-dev55-VI.md",
+    "NATIVE-PICKUP-dev55-VI.md",
+    "TEST-CHECKLIST-dev55-VI.md",
+    "FACTIONS-PICKUP-dev55-VI.md",
+    "FORGOTTEN-KNIGHTS-dev55-VI.md",
+    "TIMELINE-STABILITY-X2-dev55-VI.md"
+  ],
+  "worldAssistIncluded": false,
+  "customPickupSweepIncluded": false,
+  "buildWarnings": 0,
+  "buildErrors": 0,
+  "checks": {
+    "actualSourcePickup": 34,
+    "compiledNativeAudit": 145
+  },
+  "nativePhysicsGameplayValidated": false
+}

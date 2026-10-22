@@ -1,0 +1,56 @@
+{
+  "gameAssemblySha256": "323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464",
+  "assetBundle": "PermaLoad.bundle",
+  "prefabs": [
+    {
+      "name": "Ancient Bone Ground Gameplay Object",
+      "localScale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "sphereRadius": 5.599999904632568,
+      "isTrigger": true,
+      "listener": "WorldAreaEnterListener",
+      "triggerTags": [
+        "Player"
+      ]
+    },
+    {
+      "name": "Gold Pile Gameplay Object",
+      "localScale": {
+        "x": 0.5,
+        "y": 0.5,
+        "z": 0.5
+      },
+      "sphereRadius": 5.599999904632568,
+      "isTrigger": true,
+      "listener": "WorldAreaEnterListener",
+      "triggerTags": [
+        "Player"
+      ]
+    },
+    {
+      "name": "Potion Ground Gameplay Object",
+      "localScale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "sphereRadius": 1.0,
+      "isTrigger": true,
+      "listener": "WorldAreaEnterListener",
+      "triggerTags": [
+        "Player"
+      ]
+    }
+  ],
+  "nativeBoundaries": {
+    "GroundItemManager.createGoldPileGameplayObject": "0x11E10F0: pooled instantiate, actor layer, initialise",
+    "WorldAreaEnterListener.OnTriggerEnter": "0x18A5FD0: native tag/condition interaction",
+    "PickupGroundObjectInteraction.OnUpdateTick": "0x1883D50: original native delay and virtual PickUp",
+    "GoldPickupInteraction.PickUp": "0x187C340: ordinary gold retains original method; bridged items call pickupItem",
+    "GroundItemManager.pickupItem(Actor,uint,StackableItemFlags)": "0x11E4120: native item pickup/storage"
+  },
+  "physicsExecutionValidated": false
+}

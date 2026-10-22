@@ -2,9 +2,10 @@
 
 Development release, protocol **44**. Close the game and run `update.bat` from the game folder (or pass that folder as its first argument). The Host and every Client must update both DLLs; older protocol peers cannot join. The updater verifies the exact DLL pair and keeps backups. Use **Play Offline**.
 
-**Dev.55, faction / pickup update:** Circle of Fortune Rank7 Experimental drops x15, Rank10 boss-specific drop rate +300%, Rank11 Rare→Exalted chance50%. The Woven Rank7 idol reforge bonus30%, Rank9 more Memory Amber50%, with matching rank text. Auto gold/keys/potions/materials/bones require actual movement and a3-unit horizontal radius, using the same world units as the Combat Assist circle. Includes World Assist and Rank8 LP x20. Version1.1.0-dev.55/protocol44; install both DLLs together. See [faction and pickup report](FACTIONS-PICKUP-dev55-VI.md).
+**Dev.55, pickup repair:** World Assist has been removed completely, including its F4 submenu, drawing, target discovery, paths and hooks. Gold/potion/Ancient Bones use the original native pickup triggers with their radius multiplied by 3. Keys/materials reuse pooled native gold triggers and native item storage. Removed the managed ground-item sweep and movement requirement. Range Pickup remains available for explicit clicks. Version 1.1.0-dev.55 / protocol 44; install both DLLs together. See [current report](NATIVE-PICKUP-dev55-VI.md).
 
-**Dev.55, World Assist update:** Enemy danger rings/cones/projectile paths,14 target types with separate colours/symbols/arrows/map controls, native NavMesh routes and frame-time position prediction. Open **F4 → Mod Settings → World Assist**. Build and automated checks pass; in-game rendering is pending. Close the game and run `update.bat` to install the published DLL pair. `Install-WorldAssist-Candidate.ps1` is also available for direct installation from an extracted package. See [World Assist report](WORLD-ASSIST-dev55-VI.md).
+**Faction bonuses retained:** CoF Rank7 Experimental x15, Rank8 LP x20, Rank10 boss-specific drops +300%, Rank11 Rare→Exalted 50%; The Woven Rank7 reforge 30%, Rank9 Memory Amber 50%, with matching text.
+
 
 **Dev.55, Circle of Fortune update:** Rank 8 uses x20 native Legendary Potential roll chance (previously x5), with matching rank text and in-mod changelog. Minimum 1 LP remains. Version1.1.0-dev.55 and protocol44 remain; update both DLLs together for this revision.
 

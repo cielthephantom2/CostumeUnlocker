@@ -10,8 +10,7 @@ internal static class OfflineChangelog
     private static GUIStyle bodyStyle;
     private static readonly string content=
         "<b>BONUS OFFLINE</b>\n"+
-        "• Dev.55 faction/pickup: CoF Rank7 x15, Rank10 boss loot +300%, Rank11 Rare→Exalted50%; The Woven Rank7 reforge30%, Rank9 Amber50%. Auto pickup chỉ trong bán kính3 và khi đang di chuyển.\n"+
-        "• Dev.55 World Assist: vùng nguy hiểm của địch,14 loại mục tiêu, đường NavMesh ở world/Tab/minimap và vẽ mượt. F4 → Mod Settings → World Assist.\n"+
+        "• Dev.55 faction/pickup: CoF Rank7 x15, Rank10 boss loot +300%, Rank11 Rare→Exalted50%; The Woven Rank7 reforge30%, Rank9 Amber50%. Đã gỡ World Assist. Auto pickup dùng trigger native, phạm vi gốc x3.\n"+
         "• Dev.55 Stability: x2 cả Timeline Stability và Bonus Stability trong Echo Rewards mọi loại; Temporal Keystone x2, đồng bộ số hiển thị.\n"+
         "• Dev.55 bổ sung: Forgotten Knights Rank1 Egg of the Forgotten100%, Rank2 x2 Stability25%, Rank5 Temporal Keystone50%; sửa cả mô tả.\n"+
         "• Dev.55: Tranquility của Arcane Ascendance không còn chặn hồi mana; giữ giảm mana cost và sửa cả tooltip.\n"+
@@ -72,7 +71,7 @@ internal static class OfflineChangelog
         "• Nhân vật mới: tự hoàn thành campaign, lên ít nhất cấp 58 và đến End of Time khi bật tùy chọn. Nhân vật cũ được giữ nguyên.\n"+
         "• Đã bỏ nút và chức năng Retry character setup.\n"+
         "• Có thể bật/tắt: mở khóa lựa chọn cosmetic; tự nhặt vàng, key, potion, nguyên liệu và Ancient Bones.\n"+
-        "• Auto pickup chỉ trong vòng tròn bán kính3 world units, cùng đơn vị Combat Assist, và chỉ khi nhân vật đang di chuyển.\n"+
+        "• Auto pickup dùng trigger nhặt gốc với phạm vi x3 cho gold/potion/Ancient Bones; key/material dùng lại trigger gold. Không cần di chuyển, không quét đồ mỗi frame.\n"+
         "• Nhặt đồ từ xa bằng cách bấm vào loot; hiện mục tiêu, chấm quái trên minimap, mở sương mù và mở rộng zoom minimap.\n"+
         "• Zoom camera: phím dấu phẩy / dấu chấm, phạm vi 0,5–5x.\n\n"+
         "<b>DPS TRACKER & GIAO DIỆN</b>\n"+
