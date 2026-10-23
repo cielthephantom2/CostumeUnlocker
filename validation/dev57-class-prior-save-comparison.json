@@ -1,0 +1,50 @@
+{
+  "character": "LANQA4a0d0c",
+  "saveFile": "1CHARACTERSLOT_BETA_13",
+  "backup": "research\\item-node-native-runtime\\UserData\\LastEpochLAN\\backups\\class-respec-538cc3ea2951422ca568f7ddc06efd79",
+  "changes": {
+    "seqNo": {
+      "before": 1,
+      "after": 2
+    },
+    "abilityBar": {
+      "before": [
+        "lb23il",
+        "na28",
+        "na28",
+        "na28",
+        "ba1"
+      ],
+      "after": [
+        "flur3",
+        "na28",
+        "na28",
+        "na28",
+        "ba1"
+      ]
+    },
+    "savedCharacterTree": {
+      "before": {
+        "treeID": "",
+        "version": 0,
+        "nodeIDs": [],
+        "nodePoints": [],
+        "unspentPoints": 0,
+        "nodesTaken": null
+      },
+      "after": {
+        "treeID": "rg-1",
+        "version": 0,
+        "nodeIDs": [],
+        "nodePoints": [],
+        "unspentPoints": 0,
+        "nodesTaken": null
+      }
+    },
+    "characterClass": {
+      "before": 1,
+      "after": 4
+    }
+  },
+  "unchangedTopLevelFields": 97
+}

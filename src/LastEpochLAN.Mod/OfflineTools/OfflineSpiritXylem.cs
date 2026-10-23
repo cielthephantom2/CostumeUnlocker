@@ -61,10 +61,10 @@ internal static class SpiritXylem
                 if(current.stats[i]!=null && injected.Any(stat=>stat.Pointer==current.stats[i].Pointer))current.stats.RemoveAt(i);
         injected.Clear();current=null;
     }
-    private static void Add(CharacterStats stats,SP property,float value,byte special=0)
+    private static void Add(CharacterStats stats,SP property,float value,byte special=0,AT tags=AT.None)
     {
         if(value==0 || !float.IsFinite(value))return;
-        var stat=new Stats.Stat(property,AT.None,value,0,0,special,0){dontCollapse=true};
+        var stat=new Stats.Stat(property,tags,value,0,0,special,0){dontCollapse=true};
         injected.Add(stat);stats.stats.Add(stat);
     }
     private static float Roll(ItemData item,UniqueItemMod mod)
@@ -118,7 +118,9 @@ internal static class SpiritXylem
             float bonus=perAttunement*SpiritXylemRules.Attribute(att+addedAttribute);
             Add(stats,SP.Health,bonus);Add(stats,SP.Mana,bonus);
         }
-        else Add(stats,SP.AdaptiveSpellDamage,spellPerIntelligence*SpiritXylemRules.Attribute(intel+addedAttribute));
+        // Use the same added Spell Damage stat as weapon implicits so native
+        // damage consumers and the character sheet both include the source.
+        else Add(stats,SP.Damage,spellPerIntelligence*SpiritXylemRules.Attribute(intel+addedAttribute),0,AT.Spell);
     }
     internal static void Tick()
     {

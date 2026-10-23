@@ -51,26 +51,6 @@ namespace Il2CppLE.Data {
   public void SetDirty(bool b){}public Il2CppCysharp.Threading.Tasks.UniTask SaveData(){SaveCalls++;return new(){Value=NextSave};}
  }
 }
-namespace Il2CppPixelCrushers.DialogueSystem {
- using Il2CppLE.Networking;
- public class CharacterInfo{public string nameInDatabase,Name;}
- public class Subtitle{public CharacterInfo speakerInfo,listenerInfo;}
- public class FormattedText{public int position=-1;public string text;public static FormattedText Parse(string value,object settings)=>new(){text=value};}
- public class DialogueEntry{public int id;}
- public class Response:NativeObject{public FormattedText formattedText;public DialogueEntry destinationEntry;public bool enabled;public Response(FormattedText text,DialogueEntry entry,bool on){formattedText=text;destinationEntry=entry;enabled=on;}}
- public static class DialogueManager{}
- public class UnityUIResponseButton{public Response response;public void OnClick(){}}
- public class AbstractDialogueUI{public Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Response> Last;public virtual void ShowResponses(Subtitle sub,Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Response> options,float timeout){Last=options;}public void HideResponses(){}}
- public class UnityUIDialogueUI:AbstractDialogueUI{public override void ShowResponses(Subtitle sub,Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Response> options,float timeout){base.ShowResponses(sub,options,timeout);}}
-
-}
-namespace Il2CppPixelCrushers.DialogueSystem.TextMeshPro {
- using Il2CppPixelCrushers.DialogueSystem;using Il2CppInterop.Runtime.InteropTypes.Arrays;
- public class TextMeshProResponseButton{public Response response;public void OnClick(){}}
- public class TextMeshProDialogueUI:AbstractDialogueUI {
-  public override void ShowResponses(Subtitle sub,Il2CppReferenceArray<Response> options,float timeout){base.ShowResponses(sub,options,timeout);}
- }
-}
 namespace Il2CppLE.Networking.Generated.Static.AbilitySyncService {
  public struct ActorKey{public Il2Cpp.ActorSync GetActorSync()=>Il2Cpp.PlayerFinder.Sync;}
  public struct AbilityIndex{public Il2Cpp.Ability GetAbility()=>Il2Cpp.Ability.getAbility(Il2Cpp.AbilityID.meteor);}
@@ -80,7 +60,17 @@ namespace Il2CppLE {public class AbilitySyncService{public void ReceiveCreateVis
 namespace MelonLoader {public static class MelonLogger{public static void Msg(string s){}public static void Warning(string s){}}}
 namespace LastEpochLAN.Mod.OfflineTools {
  public class Settings{}
- public static class OfflineToolkit{public static bool Enabled=true,Ready=true;public static string Error;public static Settings Settings=new();}
+ public static class OfflineToolkit{public static bool Enabled=true;public static bool Ready{get=>Enabled && ready;set=>ready=value;}private static bool ready=true;public static string Error;public static Settings Settings=new();}
 }
 
 namespace Il2CppLE.Data { public class FakeStore{public bool IsOffline()=>true;}public class FakeCache{private readonly CharacterData data;public FakeCache(CharacterData d){data=d;}public Il2CppCysharp.Threading.Tasks.UniTask Flush(object identity,bool purge)=>data.SaveData();} }
+
+
+namespace UnityEngine {
+ public struct Rect{public Rect(float x,float y,float width,float height){}}
+ public class GUIStyle{public bool wordWrap;public GUIStyle(GUIStyle other){}}
+ public class GUISkin{public GUIStyle label=new(null);}
+ public static class GUI{public static GUISkin skin=new();public static bool enabled=true;public static void Box(Rect r,string s){}public static void Label(Rect r,string s,GUIStyle style=null){}public static bool Button(Rect r,string s)=>false;}
+}
+
+namespace Il2CppLE.Core { public static class Paths{public static string GetDataPath()=>System.IO.Path.Combine(UnityEngine.Application.persistentDataPath,"Saves");} }

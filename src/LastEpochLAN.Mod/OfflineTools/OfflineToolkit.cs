@@ -98,6 +98,7 @@ internal static class OfflineToolkit
         if(GUI.Button(new Rect(x+463,y+117,132,25),Dps.DamageMeterOverlay.IsPaused?"Resume DPS":"Pause DPS")) Dps.DamageMeterOverlay.TogglePause();
         if(GUI.Button(new Rect(x+606,y+117,140,25),Settings.DpsVisible?"Hide DPS":"Show DPS"))
         {Settings.DpsVisible=!Settings.DpsVisible;ScheduleSave();}
+        ClassRespecialization.Draw(x+449,y+164);
         bool Toggle(bool value,string label,int row)=>GUI.Toggle(new Rect(x+14,y+35+row*25,395,23),value,label);
         var s=Settings;
         bool previousChanged=GUI.changed;GUI.changed=false;
@@ -124,6 +125,6 @@ internal static class OfflineToolkit
         GUI.Label(new Rect(x+14,y+519,395,42),OfflineDensity.Status);
         if(Error!="") GUI.Label(new Rect(x+14,y+564,395,34),Error);
         if(GUI.Button(new Rect(x+14,y+600,240,25),"Back to Co-op")) PanelOpen=false;
-        if(!string.IsNullOrEmpty(GUI.tooltip)) GUI.Label(new Rect(x+449,y+395,310,60),GUI.tooltip);
+        if(!string.IsNullOrEmpty(GUI.tooltip)) GUI.Label(new Rect(x+449,y+439,310,60),GUI.tooltip);
     }
 }

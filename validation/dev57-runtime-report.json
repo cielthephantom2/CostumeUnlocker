@@ -1,0 +1,635 @@
+{
+  "phase": "unity-update-and-game-interop-ok",
+  "utc": "2026-10-23T07:34:11.0416142+00:00",
+  "modVersion": "1.1.0-dev.57",
+  "protocolVersion": 44,
+  "supported": true,
+  "gameAssemblySha256": "323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464",
+  "offlineMode": true,
+  "roomMode": "Internet inventory-only: F2 \u002B Loot Filters \u002B Room Ladder",
+  "sharedWorldEnabled": false,
+  "modUi": {
+    "f4Visible": true,
+    "settingsPageSelected": false,
+    "settingsVisible": false,
+    "stashVisible": false,
+    "dpsVisible": true
+  },
+  "runtimePatches": {
+    "Installed": 138,
+    "Skipped": 66
+  },
+  "partyTravel": {
+    "Completed": 0,
+    "Busy": false,
+    "Message": "Party travel ready",
+    "Error": ""
+  },
+  "monolithParty": {
+    "Entries": 0,
+    "Restores": 0,
+    "RewardGrants": 0,
+    "Busy": false,
+    "Borrowing": false,
+    "Message": "Join party only; use Teleport to enter Host Echo",
+    "Error": "",
+    "ObjectiveError": ""
+  },
+  "fortuneSmoke": null,
+  "pickupBoundarySmoke": null,
+  "characterSetup": {
+    "Status": "New characters: automatic campaign completion enabled.",
+    "stage": 0,
+    "saving": false,
+    "travelling": false,
+    "BlocksRoom": false,
+    "creationPending": false
+  },
+  "partyHealthScaling": false,
+  "encounterDiagnostics": {
+    "available": false,
+    "implementation": "removed; rewrite in development"
+  },
+  "encounterDevelopment": {
+    "enabled": false,
+    "gameplayEnabled": false,
+    "epoch": 0,
+    "reads": 0,
+    "scene": "",
+    "run": "",
+    "LastError": "",
+    "entries": []
+  },
+  "sharedStatus": {
+    "enabled": true,
+    "pending": 0,
+    "Sent": 0,
+    "Applied": 0,
+    "Rejected": 0,
+    "Expired": 0,
+    "Error": ""
+  },
+  "sourceOwnedStatus": {
+    "ReportsSent": 0,
+    "ReportsRejected": 0,
+    "Error": "",
+    "damagePolicy": "shared native Host status/DoT; direct hits use source-calculated damage"
+  },
+  "featurePerformance": {
+    "basis": "last 600 completed rendered frames; inclusive nested areas; main-thread allocations only",
+    "areas": [
+      {
+        "name": "Toolkit",
+        "calls": 1,
+        "timing": {
+          "Samples": 0,
+          "AverageMs": 0,
+          "P95Ms": 0,
+          "P99Ms": 0,
+          "MaxMs": 0,
+          "AverageManagedBytes": 0,
+          "MaxManagedBytes": 0
+        }
+      },
+      {
+        "name": "AutoAssist",
+        "calls": 0,
+        "timing": {
+          "Samples": 0,
+          "AverageMs": 0,
+          "P95Ms": 0,
+          "P99Ms": 0,
+          "MaxMs": 0,
+          "AverageManagedBytes": 0,
+          "MaxManagedBytes": 0
+        }
+      },
+      {
+        "name": "AutoTargets",
+        "calls": 0,
+        "timing": {
+          "Samples": 0,
+          "AverageMs": 0,
+          "P95Ms": 0,
+          "P99Ms": 0,
+          "MaxMs": 0,
+          "AverageManagedBytes": 0,
+          "MaxManagedBytes": 0
+        }
+      },
+      {
+        "name": "PlayerPublish",
+        "calls": 0,
+        "timing": {
+          "Samples": 0,
+          "AverageMs": 0,
+          "P95Ms": 0,
+          "P99Ms": 0,
+          "MaxMs": 0,
+          "AverageManagedBytes": 0,
+          "MaxManagedBytes": 0
+        }
+      },
+      {
+        "name": "WorldSync",
+        "calls": 0,
+        "timing": {
+          "Samples": 0,
+          "AverageMs": 0,
+          "P95Ms": 0,
+          "P99Ms": 0,
+          "MaxMs": 0,
+          "AverageManagedBytes": 0,
+          "MaxManagedBytes": 0
+        }
+      },
+      {
+        "name": "RemotePresentation",
+        "calls": 0,
+        "timing": {
+          "Samples": 0,
+          "AverageMs": 0,
+          "P95Ms": 0,
+          "P99Ms": 0,
+          "MaxMs": 0,
+          "AverageManagedBytes": 0,
+          "MaxManagedBytes": 0
+        }
+      },
+      {
+        "name": "VisualCapture",
+        "calls": 0,
+        "timing": {
+          "Samples": 0,
+          "AverageMs": 0,
+          "P95Ms": 0,
+          "P99Ms": 0,
+          "MaxMs": 0,
+          "AverageManagedBytes": 0,
+          "MaxManagedBytes": 0
+        }
+      },
+      {
+        "name": "VisualRead",
+        "calls": 0,
+        "timing": {
+          "Samples": 0,
+          "AverageMs": 0,
+          "P95Ms": 0,
+          "P99Ms": 0,
+          "MaxMs": 0,
+          "AverageManagedBytes": 0,
+          "MaxManagedBytes": 0
+        }
+      },
+      {
+        "name": "DpsCapture",
+        "calls": 0,
+        "timing": {
+          "Samples": 0,
+          "AverageMs": 0,
+          "P95Ms": 0,
+          "P99Ms": 0,
+          "MaxMs": 0,
+          "AverageManagedBytes": 0,
+          "MaxManagedBytes": 0
+        }
+      },
+      {
+        "name": "DpsGui",
+        "calls": 0,
+        "timing": {
+          "Samples": 0,
+          "AverageMs": 0,
+          "P95Ms": 0,
+          "P99Ms": 0,
+          "MaxMs": 0,
+          "AverageManagedBytes": 0,
+          "MaxManagedBytes": 0
+        }
+      },
+      {
+        "name": "MapFog",
+        "calls": 1,
+        "timing": {
+          "Samples": 0,
+          "AverageMs": 0,
+          "P95Ms": 0,
+          "P99Ms": 0,
+          "MaxMs": 0,
+          "AverageManagedBytes": 0,
+          "MaxManagedBytes": 0
+        }
+      },
+      {
+        "name": "EnemyDots",
+        "calls": 1,
+        "timing": {
+          "Samples": 0,
+          "AverageMs": 0,
+          "P95Ms": 0,
+          "P99Ms": 0,
+          "MaxMs": 0,
+          "AverageManagedBytes": 0,
+          "MaxManagedBytes": 0
+        }
+      },
+      {
+        "name": "Objectives",
+        "calls": 1,
+        "timing": {
+          "Samples": 0,
+          "AverageMs": 0,
+          "P95Ms": 0,
+          "P99Ms": 0,
+          "MaxMs": 0,
+          "AverageManagedBytes": 0,
+          "MaxManagedBytes": 0
+        }
+      },
+      {
+        "name": "Gui",
+        "calls": 0,
+        "timing": {
+          "Samples": 0,
+          "AverageMs": 0,
+          "P95Ms": 0,
+          "P99Ms": 0,
+          "MaxMs": 0,
+          "AverageManagedBytes": 0,
+          "MaxManagedBytes": 0
+        }
+      },
+      {
+        "name": "ReportCapture",
+        "calls": 1,
+        "timing": {
+          "Samples": 1,
+          "AverageMs": 40.0615,
+          "P95Ms": 40.0615,
+          "P99Ms": 40.0615,
+          "MaxMs": 40.0615,
+          "AverageManagedBytes": 1172816,
+          "MaxManagedBytes": 1172816
+        }
+      }
+    ]
+  },
+  "callbackPerformance": {
+    "update": {
+      "Samples": 0,
+      "AverageMs": 0,
+      "P95Ms": 0,
+      "P99Ms": 0,
+      "MaxMs": 0,
+      "AverageManagedBytes": 0,
+      "MaxManagedBytes": 0
+    },
+    "lateUpdate": {
+      "Samples": 0,
+      "AverageMs": 0,
+      "P95Ms": 0,
+      "P99Ms": 0,
+      "MaxMs": 0,
+      "AverageManagedBytes": 0,
+      "MaxManagedBytes": 0
+    },
+    "reportWriterError": "",
+    "gc0": 173,
+    "gc1": 119,
+    "gc2": 66
+  },
+  "cosmeticErrors": [],
+  "nativeGiftMenu": {
+    "Added": 0,
+    "Error": ""
+  },
+  "autoPlay": {
+    "Open": false,
+    "Armed": false,
+    "DisconnectRefreshes": 0,
+    "ChannelYields": 0,
+    "prioritySlot": -1,
+    "Status": "Stopped - F1 to configure",
+    "LastRunStatus": "Stopped - F1 to configure",
+    "pauseReason": "",
+    "Error": "",
+    "Requests": 0,
+    "ConfirmedCasts": 0,
+    "PotionsUsed": 0,
+    "hp": 0,
+    "mp": 0,
+    "potionCharges": 0,
+    "potionMax": 0,
+    "ReadFailures": 0,
+    "RetryAt": 0,
+    "targetScanRadius": 0,
+    "targetCandidates": 0,
+    "targetInRange": 0,
+    "slots": [
+      {
+        "slot": 0,
+        "key": "?",
+        "name": "No skill",
+        "cooldown": 0,
+        "charges": 0,
+        "status": "Waiting for character",
+        "repeatWait": 0
+      },
+      {
+        "slot": 1,
+        "key": "?",
+        "name": "No skill",
+        "cooldown": 0,
+        "charges": 0,
+        "status": "Waiting for character",
+        "repeatWait": 0
+      },
+      {
+        "slot": 2,
+        "key": "?",
+        "name": "No skill",
+        "cooldown": 0,
+        "charges": 0,
+        "status": "Waiting for character",
+        "repeatWait": 0
+      },
+      {
+        "slot": 3,
+        "key": "?",
+        "name": "No skill",
+        "cooldown": 0,
+        "charges": 0,
+        "status": "Waiting for character",
+        "repeatWait": 0
+      },
+      {
+        "slot": 4,
+        "key": "?",
+        "name": "No skill",
+        "cooldown": 0,
+        "charges": 0,
+        "status": "Waiting for character",
+        "repeatWait": 0
+      }
+    ]
+  },
+  "arcaneMovement": {
+    "Applications": 0
+  },
+  "archmage": {
+    "Casts": 0,
+    "Refunds": 0,
+    "LastMaximumMana": 0,
+    "LastRequestedRefund": 0
+  },
+  "lanGift": {
+    "Status": "Gift ready",
+    "Error": "",
+    "Sent": 0,
+    "Received": 0,
+    "Pending": 0,
+    "Busy": false
+  },
+  "sharedChest": {
+    "Open": false,
+    "Status": "F2 - Shared Stash (stored on Host)",
+    "characterReady": false,
+    "inventoryReady": false,
+    "identityReady": false,
+    "journalReady": false,
+    "connected": false,
+    "selectedTab": 0,
+    "tabCount": 6,
+    "tabEditPending": false,
+    "viewReceived": false,
+    "nativeVisible": false,
+    "nativeError": "",
+    "sourcePanel": "",
+    "nativeControls": "",
+    "tabLayout": null,
+    "hostRequests": 0,
+    "transferAttempts": 0,
+    "lastHostBlock": "",
+    "savePending": false,
+    "failed": false,
+    "nativeInteractions": 0,
+    "transactionStages": null,
+    "localAccessBlock": "Waiting for party character state"
+  },
+  "localCharacterReadiness": {
+    "GameplayReady": true,
+    "SharedWorldReady": true,
+    "GuestSession": false
+  },
+  "roomLadder": {
+    "Error": ""
+  },
+  "weaverImprints": {
+    "ready": false
+  },
+  "meteorNodes": {
+    "TreeUpdates": 0,
+    "CastAttempts": 0,
+    "CastUpdates": 0,
+    "MissingTrees": 0,
+    "ManaAdjustments": 0,
+    "LastLargeMeteorChance": 0,
+    "LastFrostClawCount": 0
+  },
+  "aggressiveMinions": {
+    "ExpandedAcquisitions": 0,
+    "ExpandedTargetSearches": 0
+  },
+  "avatarCaptureError": "",
+  "summons": {
+    "local": 0,
+    "omitted": 0,
+    "captureError": "",
+    "remote": 0,
+    "renderError": ""
+  },
+  "enemyHostSync": "Waiting for gameplay",
+  "fullCoop": false,
+  "adapterSmokePassed": false,
+  "worldSmokePassed": false,
+  "guiReported": false,
+  "classSmokeCompleted": false,
+  "classSmokePassed": false,
+  "worldDiagnostics": {
+    "MissingAlive": 0,
+    "MissingDead": 0,
+    "ForwardedHits": 0,
+    "ProcessedHits": 0,
+    "DamageConfirmedHits": 0,
+    "ConfirmedHealthLoss": 0,
+    "CapturedDeaths": 0,
+    "CreatedHostEnemies": 0,
+    "PendingHostEnemies": 0,
+    "SuppressedLocalEnemies": 0,
+    "SpawnFailures": [],
+    "hitHealthAudits": []
+  },
+  "sessionStatus": null,
+  "sessionPort": null,
+  "network": null,
+  "localScene": "",
+  "hostWorld": null,
+  "participants": null,
+  "positionMarkers": "base class models or fallback capsules; not combat actors",
+  "nativeClassModels": 0,
+  "capsuleFallbacks": 0,
+  "equipmentAppearanceSync": true,
+  "equipmentNativeGameplayVerified": false,
+  "equipmentErrors": [],
+  "skillEventTransport": true,
+  "skillEventsSent": 0,
+  "skillEventsReceived": 0,
+  "lastRemoteSkill": "",
+  "nativeSkillAnimations": 0,
+  "nativeCastSnapshotsApplied": 0,
+  "nativeVisualsCaptured": 0,
+  "nativeVisualCaptureError": "",
+  "nativeVisualSnapshotsPublished": 0,
+  "nativeVisualInvalidSnapshots": 0,
+  "nativePooledObjectsObserved": 0,
+  "nativeLocalVisualSnapshotsPublished": 0,
+  "nativeLastLocalVisualSnapshot": "",
+  "nativeRenderedPartsCaptured": 0,
+  "nativeParticleValuesCaptured": 0,
+  "nativeOwnedMinionVisualsCaptured": 0,
+  "nativeVisualProfiles": [],
+  "nativeVisualCommands": {
+    "Sent": 0,
+    "Received": 0,
+    "Played": 0,
+    "Dropped": 0,
+    "Error": "",
+    "HookCalls": 0,
+    "UnownedCalls": 0,
+    "NoPrefabCalls": 0,
+    "DeferredCalls": 0,
+    "DeferredOwned": 0
+  },
+  "worldCostBreakdown": [
+    {
+      "name": "mapTriggers",
+      "count": 0,
+      "averageMs": 0,
+      "maxMs": 0
+    },
+    {
+      "name": "actorScan",
+      "count": 0,
+      "averageMs": 0,
+      "maxMs": 0
+    },
+    {
+      "name": "actorRead",
+      "count": 0,
+      "averageMs": 0,
+      "maxMs": 0
+    },
+    {
+      "name": "sceneGraphs",
+      "count": 0,
+      "averageMs": 0,
+      "maxMs": 0
+    },
+    {
+      "name": "publish",
+      "count": 0,
+      "averageMs": 0,
+      "maxMs": 0
+    }
+  ],
+  "nativeAbilityObjectsObserved": 0,
+  "nativeGuestTargets": 0,
+  "guestCombatHooksInstalled": false,
+  "retiredGuestTargets": 0,
+  "hudAuthority": {
+    "hostCanEdit": false,
+    "hostRevision": null,
+    "AppliedRevision": 0,
+    "Error": ""
+  },
+  "guestDamageSent": 0,
+  "guestDamageApplied": 0,
+  "guestCombatError": "",
+  "lanFrameAverageMs": 0,
+  "lanFrameMaxMs": 0,
+  "lanFrameSamples": 0,
+  "nativeNullableEmptyFields": 0,
+  "nativeNullableValueFields": 0,
+  "nativeNullableGetterFallbacks": 0,
+  "observedGameFps": 0,
+  "observedGameFrameAverageMs": 0,
+  "worldFramesSent": 0,
+  "worldFramesOmitted": 0,
+  "lanStages": [
+    {
+      "name": "publish",
+      "averageMs": 0,
+      "maxMs": 0
+    },
+    {
+      "name": "world",
+      "averageMs": 0,
+      "maxMs": 0
+    },
+    {
+      "name": "combat",
+      "averageMs": 0,
+      "maxMs": 0
+    },
+    {
+      "name": "remoteRenderingAndParty",
+      "averageMs": 0,
+      "maxMs": 0
+    }
+  ],
+  "experimentalGuestCombat": false,
+  "guestTargetScene": "",
+  "guestTargetRegistrationVerified": false,
+  "nativeGlobalVisualsObserved": 0,
+  "nativeVisualReplicasCreated": 0,
+  "nativeVisualDiagnostics": [],
+  "nativeVisualErrors": [],
+  "enemyAnimationUpdates": 0,
+  "enemyAnimationError": "",
+  "enemyPresentation": {
+    "renderFrames": 0,
+    "active": 0,
+    "queued": 0,
+    "manualDriverTicks": 0,
+    "readyAnimationOwners": 0,
+    "SuppressedNativeAnimationEvents": 0,
+    "bufferDelayMs": 100,
+    "spawnPolicy": "nearest Guest; max two native starts per Apply",
+    "nativeGameplayValidated": false
+  },
+  "enemyVisualsCreated": 0,
+  "sceneEventsApplied": 0,
+  "sceneGraphsCaptured": 0,
+  "sceneEventError": "disabled during encounter rewrite",
+  "guestProximityActivations": 0,
+  "mapTriggersApplied": 0,
+  "mapTriggerError": "disabled during encounter rewrite",
+  "inventoryDropsObserved": 0,
+  "inventoryDropError": "",
+  "nativePartyMembers": 0,
+  "nativePartyError": "",
+  "nativePeerHealthBars": 0,
+  "nativePeerHealthBarError": "",
+  "mapObjectsCaptured": 0,
+  "mapObjectsApplied": 0,
+  "mapObjectError": "disabled during encounter rewrite",
+  "bossHudId": 0,
+  "bossHudError": "",
+  "skillNativeReplay": false,
+  "privateRewardDispatch": false,
+  "nativeDeathsDispatched": 0,
+  "nativeRewardCallbacks": 0,
+  "guestExperienceGranted": 0,
+  "nativeRewardCampaignVerified": false
+}

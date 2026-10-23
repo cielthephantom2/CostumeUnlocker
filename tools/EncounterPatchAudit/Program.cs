@@ -99,7 +99,9 @@ Check(!types.Any(t=>t.Name.Contains("Vilatria",StringComparison.Ordinal)) &&
  "Vilatria visual override hooks and setting are completely removed");
 var newMeteorHooks=new[]{"OfflineSpiritXylemLocalizationPatch","OfflineMeteorStardustTreePatch","OfflineMeteorStardustHasStatsPatch","OfflineMeteorStardustStatsPatch","OfflineMeteorStardustLimitPatch","OfflineMeteorStardustNodePatch","OfflineMeteorStardustTextPatch","OfflineMeteorStardustDescriptionPatch","OfflineMeteorStardustAltPatch","OfflineMeteorStardustLabelPatch"};
 var classMenuHooks=new[]{"OfflineClassRespecMenuPatch","OfflineClassRespecClickPatch","OfflineClassRespecClosePatch","OfflineClassRespecUnityMenuPatch","OfflineClassRespecUnityClickPatch","OfflineClassRespecUnityClosePatch"};
-Check(newMeteorHooks.Concat(classMenuHooks).All(n=>installed.Any(t=>t.Name==n)),"Stardust and both native class-menu renderer hook sets install");
+Check(newMeteorHooks.All(n=>installed.Any(t=>t.Name==n)) && installed.Any(t=>t.Name=="OfflineClassRespecLoadGatePatch") && !types.Any(t=>classMenuHooks.Contains(t.Name)),"Stardust and class save load gate install; NPC class hooks removed");
+var classRuntime=types.Single(t=>t.Name=="ClassRespecialization");
+Check(types.Single(t=>t.Name=="OfflineToolkit").Methods.Single(m=>m.Name=="Draw").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="ClassRespecialization" && m.Name=="Draw") && classRuntime.Methods.Any(m=>m.Name=="Confirm"),"F4 Mod Settings draws Reset Class with explicit confirmation");
 var skipped=patches.Except(installed).ToArray();
 Check(installed.Any(t=>t.Name=="SharedChestItemLockPatch") && installed.Any(t=>t.Name=="SharedStashProjectionMutationPatch") &&
  installed.Any(t=>t.DeclaringType?.Name=="LanLootFilters") && installed.Any(t=>t.Name=="AutoPlayCastObservationPatch") &&
@@ -307,6 +309,11 @@ Check(!assistCalls.Any(m=>m.DeclaringType.Name=="UIBase" || m.Name is "get_force
 Check(assistTick.Body.Instructions.Where(i=>i.Operand is MethodReference m && m.Name=="InputBlock")
  .All(i=>i.Previous.OpCode.Code==Mono.Cecil.Cil.Code.Ldc_I4_0),
  "Assist releases owned input blocks only; opening F1 never acquires a global input block");
+var enemyDots=types.Single(t=>t.Name=="EnemyMapDots").Methods.Single(m=>m.Name=="Tick");
+var enemyCalls=enemyDots.Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(enemyCalls.Any(m=>m.DeclaringType.Name=="MinimapIconManager" && m.Name=="Add") &&
+ enemyCalls.Any(m=>m.DeclaringType.Name=="MinimapIconManager" && m.Name=="Exists") &&
+ !enemyCalls.Any(m=>m.Name=="ChangeIcon"),"Enemy dots register sprite changes with native LE minimap manager and recover missing registrations");
 var woven=installed.Single(t=>t.Name=="OfflineWovenPotentialPatch");
 var wovenPrefix=woven.Methods.Single(m=>m.Name=="Prefix");
 Check(wovenPrefix.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="OfflineToolkit" && m.Name=="get_Enabled") &&

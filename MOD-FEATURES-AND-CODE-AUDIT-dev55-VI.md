@@ -24,7 +24,7 @@ Danh sách đối chiếu source và DLL hiện tại, không lấy changelog c�
 | Prophecy | Số item thưởng cơ sở mỗi loại x2, gồm upgraded rewards; charge tiers và thông báo dùng game gốc. Không ép mọi loại thành20 item | OfflineFortune.cs |
 | Glyph of Hope | 33% tránh tốn Forging Potential cho craft eligible | OfflineGlyphCrafting.cs |
 | Glyph of Despair | T1=100%, T2=70%, T3=50%, T4=33%; Rare/Exalted cùng rate. Không mở sealing T5+ | OfflineGlyphCrafting.cs |
-| Woven Potential reroll | LP1:50% lên2, còn lại xuống0. LP2/3:25% lên1LP, còn lại xuống1LP. LP4:25% giữ4, còn lại xuống3; giữ native tiêu hao/eligibility | OfflineWovenPotential.cs |
+| Woven Potential reroll | LP1:50% lên2, còn lại xuống0. LP2:25% lên3, fail về1. LP3:25% lên4, fail về1. LP4:25% giữ4, còn lại xuống3; giữ native tiêu hao/eligibility | OfflineWovenPotential.cs |
 
 ## B. Faction và Weaver Tree
 
@@ -88,9 +88,9 @@ Spirit Xylem (unique445, thay modifiers cũ; implicit/base item, ID, rolls, LP, 
 | Range Pickup | Tick mặc định bật: click loot từ xa không đi tới; khác với auto pickup. Không tự loot vũ khí/giáp chỉ vì range được mở |
 | Cosmetics | Unlock native cosmetic selection offline, mặc định bật; lọc entry rỗng/junk của catalog, giữ item/skill slot eligibility; không còn Default Meteor tự tạo hoặc Vilatria override |
 | New character | Mặc định bật: native-created character mới lên58, campaign quest và đến End of Time; không boost lại nhân vật cũ. Có journal tiếp tục job dở, không grant lặp |
-| Respecialize Class | Tại Lerinne:5 class, confirm rồi về character select. Giữ level/items/progress; reset mastery/passive/skill/bar; backup Saves trước mutation; đợi native flush. Hỗ trợ hai renderer hội thoại |
+| Respecialize Class | F4 → Mod Settings → Reset Class:5 class, confirm rồi về character select. Giữ level/items/progress; reset mastery/passive/skill/bar; backup Saves trước mutation; đợi native flush. Không dùng NPC dialogue |
 | Reveal objectives | Mặc định bật: Monolith objective reveal threshold; Dungeon delayed pulse sau0.5s |
-| Enemy minimap dots | Mặc định bật; quản lý marker quái local và dọn marker khi đổi scene |
+| Enemy minimap dots | Mặc định bật; giữ sprite qua unload asset, khôi phục registration thiếu, quản lý marker quái local và dọn marker khi đổi scene |
 | Player minimap dot | Xanh dương, đường kính3×NPC dot (gấp đôi bản chấm xanh trước); chỉ minimap, Tab overlay giữ marker gốc |
 | Gray unexplored map | Mặc định bật: thêm terrain preview màu xám, opacity mặc định0.2, không ghi khám phá thật vào save |
 | Extended minimap zoom | Mặc định bật, mở clamp tối thiểu tới2.5 và tối đa ít nhất150; nút +/- gốc vẫn xử lý step/save |

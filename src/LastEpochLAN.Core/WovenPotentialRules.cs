@@ -9,6 +9,6 @@ public static class WovenPotentialRules
         if ((uint)percentile >= 100) throw new ArgumentOutOfRangeException(nameof(percentile));
         if (!AppliesTo(potential)) return potential;
         if (percentile < UpgradePercent(potential)) return Math.Min(4, potential + 1);
-        return potential - 1;
+        return potential == 3 ? 1 : potential - 1;
     }
 }

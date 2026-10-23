@@ -15,6 +15,7 @@ internal static class EnemyMapDots
         internal GameObject Anchor;
         internal DMMapIcon Icon;
         internal int Kind=-1;
+        internal float CheckAt;
     }
     private static readonly Dictionary<int,Entry> byId=new();
     private static readonly List<Entry> entries=new();
@@ -77,8 +78,18 @@ internal static class EnemyMapDots
             {
                 entry.Kind=kind;
                 entry.Icon.sprite=sprites[kind];entry.Icon.icon=sprites[kind];
-                entry.Icon.ChangeIcon(sprites[kind]);
-
+                // Bind the new sprite through the manager that owns the LE
+                // minimap UI, rather than relying on ChangeIcon registration.
+                manager.Remove(entry.Icon);
+                manager.Add(entry.Icon,sprites[kind]);
+                entry.CheckAt=Time.unscaledTime+0.5f;
+            }
+            // Native UI rebuilds can drop registrations while keeping the same
+            // manager and our world anchors. Re-register only missing markers.
+            if(Time.unscaledTime>=entry.CheckAt)
+            {
+                if(!manager.Exists(entry.Icon))manager.Add(entry.Icon,sprites[entry.Kind]);
+                entry.CheckAt=Time.unscaledTime+0.5f;
             }
             ApplySize(entry.Anchor);
             if(entry.Icon.img!=null) entry.Icon.img.raycastTarget=false;
@@ -107,7 +118,7 @@ internal static class EnemyMapDots
         icon.rotate=false;icon.rotateWithMap=false;icon.useDirectionIndicator=false;
         icon.useCompositeDirectionIndicator=false;icon.WorldScale=false;
         icon.ApplyScaling=true;icon.SinScale=false;ApplySize(entry.Anchor);
-        anchor.SetActive(true);entry.Kind=-1;
+        anchor.SetActive(true);entry.Kind=-1;entry.CheckAt=0;
     }
     internal static void ApplySize(GameObject anchor,float multiplier=1f)
     {
@@ -127,23 +138,34 @@ internal static class EnemyMapDots
     internal static Sprite PlayerSprite {get {EnsureSprites();return sprites[3];}}
     private static void EnsureSprites()
     {
-        if(atlas!=null) return;
-        atlas=new Texture2D(64,16,TextureFormat.RGBA32,false);
-        atlas.name="TM Enemy minimap dots";atlas.wrapMode=TextureWrapMode.Clamp;atlas.filterMode=FilterMode.Bilinear;
-        var colors=new[]{new Color(1f,0.08f,0.06f),new Color(1f,0.82f,0.05f),new Color(1f,0.38f,0.02f),new Color(0.1f,0.5f,1f)};
+        if(atlas==null)
+        {
+            atlas=new Texture2D(64,16,TextureFormat.RGBA32,false);
+            // Unity does not see these managed IL2CPP wrapper references when
+            // unloading unused assets during travel. Keep our owned art alive.
+            atlas.hideFlags=HideFlags.DontUnloadUnusedAsset;
+            atlas.name="TM Enemy minimap dots";atlas.wrapMode=TextureWrapMode.Clamp;atlas.filterMode=FilterMode.Bilinear;
+            var colors=new[]{new Color(1f,0.08f,0.06f),new Color(1f,0.82f,0.05f),new Color(1f,0.38f,0.02f),new Color(0.1f,0.5f,1f)};
+            for(int kind=0;kind<sprites.Length;kind++)
+                for(int y=0;y<16;y++) for(int x=0;x<16;x++)
+                {
+                    float radius=Mathf.Sqrt((x-7.5f)*(x-7.5f)+(y-7.5f)*(y-7.5f));
+                    // Bake the outline into the same sprite: no extra UI objects.
+                    var edge=Mathf.SmoothStep(0f,1f,Mathf.Clamp01((radius-4.8f)/1.2f));
+                    var color=Color.Lerp(colors[kind],Color.black,edge);
+                    color.a=Mathf.Clamp01(7.5f-radius);
+                    atlas.SetPixel(kind*16+x,y,color);
+                }
+            atlas.Apply(false,true);
+        }
         for(int kind=0;kind<sprites.Length;kind++)
-            for(int y=0;y<16;y++) for(int x=0;x<16;x++)
-            {
-                float radius=Mathf.Sqrt((x-7.5f)*(x-7.5f)+(y-7.5f)*(y-7.5f));
-                // Bake the outline into the same sprite: no extra UI objects.
-                var edge=Mathf.SmoothStep(0f,1f,Mathf.Clamp01((radius-4.8f)/1.2f));
-                var color=Color.Lerp(colors[kind],Color.black,edge);
-                color.a=Mathf.Clamp01(7.5f-radius);
-                atlas.SetPixel(kind*16+x,y,color);
-            }
-        atlas.Apply(false,true);
-        for(int kind=0;kind<sprites.Length;kind++)
-        {sprites[kind]=Sprite.Create(atlas,new Rect(kind*16,0,16,16),new Vector2(0.5f,0.5f),100f);sprites[kind].name=kind==3?"TM Player blue dot":"TM Enemy dot "+kind;}
+        {
+            if(sprites[kind]!=null)continue;
+            sprites[kind]=Sprite.Create(atlas,new Rect(kind*16,0,16,16),new Vector2(0.5f,0.5f),100f);
+            sprites[kind].hideFlags=HideFlags.DontUnloadUnusedAsset;
+            sprites[kind].name=kind==3?"TM Player blue dot":"TM Enemy dot "+kind;
+            foreach(var entry in entries)if(entry.Kind==kind)entry.Kind=-1;
+        }
     }
     private static void Remove(Entry entry)
     {

@@ -4,7 +4,7 @@ internal static class WovenPotentialTests
 {
     internal static void Run(Action<bool,string> check)
     {
-        foreach (var (lp, percent, failure) in new[] { (1,50,0),(2,25,1),(3,25,2),(4,25,3) })
+        foreach (var (lp, percent, failure) in new[] { (1,50,0),(2,25,1),(3,25,1),(4,25,3) })
         {
             int success=Math.Min(4,lp+1);
             var outcomes=Enumerable.Range(0,100).Select(roll=>WovenPotentialRules.Roll(lp,roll)).ToArray();

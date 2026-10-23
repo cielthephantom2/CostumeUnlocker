@@ -1,0 +1,1094 @@
+{
+  "passed": true,
+  "error": null,
+  "gameAssembly": "323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464",
+  "checks": [
+    {
+      "passed": true,
+      "label": "Verified private profile and disposable QA character",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native localization \u002B tooltip parser renders both complete branches",
+      "values": {
+        "roll": 0,
+        "tooltip": [
+          "If Attunement is greater than Intelligence:\n\u002B3 to Attunement Skills\n\u002B10 Attunement\n\u002B3 Health and Mana per Attunement",
+          "If Intelligence is greater than Attunement:\n\u002B3 to Intelligence Skills\n\u002B10 Intelligence\n\u002B1 Spell Damage per 2 Intelligence"
+        ]
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native ItemEquipManager applies reduced spell health cost",
+      "values": [
+        {
+          "property": "Damage",
+          "tags": 512,
+          "specialTag": 0,
+          "addedValue": 72,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "Damage",
+          "tags": 256,
+          "specialTag": 0,
+          "addedValue": 72,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "Mana",
+          "tags": 0,
+          "specialTag": 0,
+          "addedValue": 60,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "AbilityProperty",
+          "tags": 253,
+          "specialTag": 2,
+          "addedValue": 0.1,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "GlobalConditionalDamage",
+          "tags": 0,
+          "specialTag": 40,
+          "addedValue": 0,
+          "increasedValue": 0,
+          "more": [
+            0.1
+          ]
+        },
+        {
+          "property": "PlayerProperty",
+          "tags": 598,
+          "specialTag": 0,
+          "addedValue": 0,
+          "increasedValue": 0,
+          "more": [
+            -0.2
+          ]
+        }
+      ]
+    },
+    {
+      "passed": true,
+      "label": "Native ItemEquipManager applies boss/rare more damage above half mana",
+      "values": [
+        {
+          "property": "Damage",
+          "tags": 512,
+          "specialTag": 0,
+          "addedValue": 72,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "Damage",
+          "tags": 256,
+          "specialTag": 0,
+          "addedValue": 72,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "Mana",
+          "tags": 0,
+          "specialTag": 0,
+          "addedValue": 60,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "AbilityProperty",
+          "tags": 253,
+          "specialTag": 2,
+          "addedValue": 0.1,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "GlobalConditionalDamage",
+          "tags": 0,
+          "specialTag": 40,
+          "addedValue": 0,
+          "increasedValue": 0,
+          "more": [
+            0.1
+          ]
+        },
+        {
+          "property": "PlayerProperty",
+          "tags": 598,
+          "specialTag": 0,
+          "addedValue": 0,
+          "increasedValue": 0,
+          "more": [
+            -0.2
+          ]
+        }
+      ]
+    },
+    {
+      "passed": true,
+      "label": "Native ItemEquipManager applies boss/rare less damage below half mana",
+      "values": [
+        {
+          "property": "Damage",
+          "tags": 512,
+          "specialTag": 0,
+          "addedValue": 72,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "Damage",
+          "tags": 256,
+          "specialTag": 0,
+          "addedValue": 72,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "Mana",
+          "tags": 0,
+          "specialTag": 0,
+          "addedValue": 60,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "AbilityProperty",
+          "tags": 253,
+          "specialTag": 2,
+          "addedValue": 0.1,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "GlobalConditionalDamage",
+          "tags": 0,
+          "specialTag": 40,
+          "addedValue": 0,
+          "increasedValue": 0,
+          "more": [
+            0.1
+          ]
+        },
+        {
+          "property": "PlayerProperty",
+          "tags": 598,
+          "specialTag": 0,
+          "addedValue": 0,
+          "increasedValue": 0,
+          "more": [
+            -0.2
+          ]
+        }
+      ]
+    },
+    {
+      "passed": true,
+      "label": "Native core attribute consumes conditional attribute",
+      "values": {
+        "roll": 0,
+        "att": true,
+        "expected": 60
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer sees correct tagged skill levels",
+      "values": {
+        "roll": 0,
+        "att": true,
+        "actual": 3,
+        "level": 3
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill maximum points apply only to the matching attribute skill",
+      "values": {
+        "roll": 0,
+        "att": true,
+        "attPoints": 3,
+        "intPoints": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer applies exact extra HP/MP or spell source alongside native attribute effects",
+      "values": {
+        "roll": 0,
+        "att": true,
+        "all": 0,
+        "health": 180,
+        "mana": 300,
+        "healthContribution": 180,
+        "manaContribution": 180,
+        "spellContribution": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Twenty native attribute recalculations do not stack",
+      "values": {
+        "roll": 0,
+        "att": true,
+        "all": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native unequip removes the complete conditional source and restores attributes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native core attribute consumes conditional attribute",
+      "values": {
+        "roll": 0,
+        "att": true,
+        "expected": 65
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer sees correct tagged skill levels",
+      "values": {
+        "roll": 0,
+        "att": true,
+        "actual": 3,
+        "level": 3
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill maximum points apply only to the matching attribute skill",
+      "values": {
+        "roll": 0,
+        "att": true,
+        "attPoints": 3,
+        "intPoints": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer applies exact extra HP/MP or spell source alongside native attribute effects",
+      "values": {
+        "roll": 0,
+        "att": true,
+        "all": 5,
+        "health": 225,
+        "mana": 225,
+        "healthContribution": 195,
+        "manaContribution": 195,
+        "spellContribution": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Twenty native attribute recalculations do not stack",
+      "values": {
+        "roll": 0,
+        "att": true,
+        "all": 5
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native unequip removes the complete conditional source and restores attributes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native core attribute consumes conditional attribute",
+      "values": {
+        "roll": 0,
+        "att": false,
+        "expected": 60
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer sees correct tagged skill levels",
+      "values": {
+        "roll": 0,
+        "att": false,
+        "actual": 3,
+        "level": 3
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill maximum points apply only to the matching attribute skill",
+      "values": {
+        "roll": 0,
+        "att": false,
+        "attPoints": 0,
+        "intPoints": 3
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer applies exact extra HP/MP or spell source alongside native attribute effects",
+      "values": {
+        "roll": 0,
+        "att": false,
+        "all": 0,
+        "health": -30,
+        "mana": -50,
+        "healthContribution": 0,
+        "manaContribution": 0,
+        "spellContribution": 30
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native damage builder consumes exact \u002B1 spell per2 INT",
+      "values": {
+        "roll": 0,
+        "all": 0,
+        "with": 130,
+        "without": 100,
+        "final": 60
+      }
+    },
+    {
+      "passed": true,
+      "label": "Twenty native attribute recalculations do not stack",
+      "values": {
+        "roll": 0,
+        "att": false,
+        "all": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native unequip removes the complete conditional source and restores attributes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native core attribute consumes conditional attribute",
+      "values": {
+        "roll": 0,
+        "att": false,
+        "expected": 65
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer sees correct tagged skill levels",
+      "values": {
+        "roll": 0,
+        "att": false,
+        "actual": 3,
+        "level": 3
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill maximum points apply only to the matching attribute skill",
+      "values": {
+        "roll": 0,
+        "att": false,
+        "attPoints": 0,
+        "intPoints": 3
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer applies exact extra HP/MP or spell source alongside native attribute effects",
+      "values": {
+        "roll": 0,
+        "att": false,
+        "all": 5,
+        "health": 30,
+        "mana": 10,
+        "healthContribution": 0,
+        "manaContribution": 0,
+        "spellContribution": 32.5
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native damage builder consumes exact \u002B1 spell per2 INT",
+      "values": {
+        "roll": 0,
+        "all": 5,
+        "with": 132.5,
+        "without": 100,
+        "final": 65
+      }
+    },
+    {
+      "passed": true,
+      "label": "Twenty native attribute recalculations do not stack",
+      "values": {
+        "roll": 0,
+        "att": false,
+        "all": 5
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native unequip removes the complete conditional source and restores attributes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native localization \u002B tooltip parser renders both complete branches",
+      "values": {
+        "roll": 255,
+        "tooltip": [
+          "If Attunement is greater than Intelligence:\n\u002B4 to Attunement Skills\n\u002B20 Attunement\n\u002B6 Health and Mana per Attunement",
+          "If Intelligence is greater than Attunement:\n\u002B4 to Intelligence Skills\n\u002B20 Intelligence\n\u002B1 Spell Damage per 2 Intelligence"
+        ]
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native ItemEquipManager applies reduced spell health cost",
+      "values": [
+        {
+          "property": "Damage",
+          "tags": 512,
+          "specialTag": 0,
+          "addedValue": 72,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "Damage",
+          "tags": 256,
+          "specialTag": 0,
+          "addedValue": 72,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "Mana",
+          "tags": 0,
+          "specialTag": 0,
+          "addedValue": 60,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "AbilityProperty",
+          "tags": 253,
+          "specialTag": 2,
+          "addedValue": 0.2,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "GlobalConditionalDamage",
+          "tags": 0,
+          "specialTag": 40,
+          "addedValue": 0,
+          "increasedValue": 0,
+          "more": [
+            0.2
+          ]
+        },
+        {
+          "property": "PlayerProperty",
+          "tags": 598,
+          "specialTag": 0,
+          "addedValue": 0,
+          "increasedValue": 0,
+          "more": [
+            -0.1
+          ]
+        }
+      ]
+    },
+    {
+      "passed": true,
+      "label": "Native ItemEquipManager applies boss/rare more damage above half mana",
+      "values": [
+        {
+          "property": "Damage",
+          "tags": 512,
+          "specialTag": 0,
+          "addedValue": 72,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "Damage",
+          "tags": 256,
+          "specialTag": 0,
+          "addedValue": 72,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "Mana",
+          "tags": 0,
+          "specialTag": 0,
+          "addedValue": 60,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "AbilityProperty",
+          "tags": 253,
+          "specialTag": 2,
+          "addedValue": 0.2,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "GlobalConditionalDamage",
+          "tags": 0,
+          "specialTag": 40,
+          "addedValue": 0,
+          "increasedValue": 0,
+          "more": [
+            0.2
+          ]
+        },
+        {
+          "property": "PlayerProperty",
+          "tags": 598,
+          "specialTag": 0,
+          "addedValue": 0,
+          "increasedValue": 0,
+          "more": [
+            -0.1
+          ]
+        }
+      ]
+    },
+    {
+      "passed": true,
+      "label": "Native ItemEquipManager applies boss/rare less damage below half mana",
+      "values": [
+        {
+          "property": "Damage",
+          "tags": 512,
+          "specialTag": 0,
+          "addedValue": 72,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "Damage",
+          "tags": 256,
+          "specialTag": 0,
+          "addedValue": 72,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "Mana",
+          "tags": 0,
+          "specialTag": 0,
+          "addedValue": 60,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "AbilityProperty",
+          "tags": 253,
+          "specialTag": 2,
+          "addedValue": 0.2,
+          "increasedValue": 0,
+          "more": []
+        },
+        {
+          "property": "GlobalConditionalDamage",
+          "tags": 0,
+          "specialTag": 40,
+          "addedValue": 0,
+          "increasedValue": 0,
+          "more": [
+            0.2
+          ]
+        },
+        {
+          "property": "PlayerProperty",
+          "tags": 598,
+          "specialTag": 0,
+          "addedValue": 0,
+          "increasedValue": 0,
+          "more": [
+            -0.1
+          ]
+        }
+      ]
+    },
+    {
+      "passed": true,
+      "label": "Native core attribute consumes conditional attribute",
+      "values": {
+        "roll": 255,
+        "att": true,
+        "expected": 70
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer sees correct tagged skill levels",
+      "values": {
+        "roll": 255,
+        "att": true,
+        "actual": 4,
+        "level": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill maximum points apply only to the matching attribute skill",
+      "values": {
+        "roll": 255,
+        "att": true,
+        "attPoints": 4,
+        "intPoints": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer applies exact extra HP/MP or spell source alongside native attribute effects",
+      "values": {
+        "roll": 255,
+        "att": true,
+        "all": 0,
+        "health": 390,
+        "mana": 490,
+        "healthContribution": 420,
+        "manaContribution": 420,
+        "spellContribution": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Twenty native attribute recalculations do not stack",
+      "values": {
+        "roll": 255,
+        "att": true,
+        "all": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native unequip removes the complete conditional source and restores attributes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native core attribute consumes conditional attribute",
+      "values": {
+        "roll": 255,
+        "att": true,
+        "expected": 75
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer sees correct tagged skill levels",
+      "values": {
+        "roll": 255,
+        "att": true,
+        "actual": 4,
+        "level": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill maximum points apply only to the matching attribute skill",
+      "values": {
+        "roll": 255,
+        "att": true,
+        "attPoints": 4,
+        "intPoints": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer applies exact extra HP/MP or spell source alongside native attribute effects",
+      "values": {
+        "roll": 255,
+        "att": true,
+        "all": 5,
+        "health": 480,
+        "mana": 500,
+        "healthContribution": 450,
+        "manaContribution": 450,
+        "spellContribution": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Twenty native attribute recalculations do not stack",
+      "values": {
+        "roll": 255,
+        "att": true,
+        "all": 5
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native unequip removes the complete conditional source and restores attributes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native core attribute consumes conditional attribute",
+      "values": {
+        "roll": 255,
+        "att": false,
+        "expected": 70
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer sees correct tagged skill levels",
+      "values": {
+        "roll": 255,
+        "att": false,
+        "actual": 4,
+        "level": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill maximum points apply only to the matching attribute skill",
+      "values": {
+        "roll": 255,
+        "att": false,
+        "attPoints": 0,
+        "intPoints": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer applies exact extra HP/MP or spell source alongside native attribute effects",
+      "values": {
+        "roll": 255,
+        "att": false,
+        "all": 0,
+        "health": -30,
+        "mana": -50,
+        "healthContribution": 0,
+        "manaContribution": 0,
+        "spellContribution": 35
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native damage builder consumes exact \u002B1 spell per2 INT",
+      "values": {
+        "roll": 255,
+        "all": 0,
+        "with": 135,
+        "without": 100,
+        "final": 70
+      }
+    },
+    {
+      "passed": true,
+      "label": "Twenty native attribute recalculations do not stack",
+      "values": {
+        "roll": 255,
+        "att": false,
+        "all": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native unequip removes the complete conditional source and restores attributes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native core attribute consumes conditional attribute",
+      "values": {
+        "roll": 255,
+        "att": false,
+        "expected": 75
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer sees correct tagged skill levels",
+      "values": {
+        "roll": 255,
+        "att": false,
+        "actual": 4,
+        "level": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill maximum points apply only to the matching attribute skill",
+      "values": {
+        "roll": 255,
+        "att": false,
+        "attPoints": 0,
+        "intPoints": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer applies exact extra HP/MP or spell source alongside native attribute effects",
+      "values": {
+        "roll": 255,
+        "att": false,
+        "all": 5,
+        "health": 30,
+        "mana": 10,
+        "healthContribution": 0,
+        "manaContribution": 0,
+        "spellContribution": 37.5
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native damage builder consumes exact \u002B1 spell per2 INT",
+      "values": {
+        "roll": 255,
+        "all": 5,
+        "with": 137.5,
+        "without": 100,
+        "final": 75
+      }
+    },
+    {
+      "passed": true,
+      "label": "Twenty native attribute recalculations do not stack",
+      "values": {
+        "roll": 255,
+        "att": false,
+        "all": 5
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native unequip removes the complete conditional source and restores attributes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native Meteor component resolved for private Sorcerer-skill test",
+      "values": {
+        "createdForBaseMage": false
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill points refund3 when old Stardust rank4 becomes1",
+      "values": {
+        "before": 16,
+        "after": 19
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native Meteor enables temp stats for Stardust",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 0,
+        "tag": "Fire",
+        "baseline": 125,
+        "modified": 125
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 0,
+        "tag": "Cold",
+        "baseline": 125,
+        "modified": 125
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 0,
+        "tag": "Physical",
+        "baseline": 125,
+        "modified": 125
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native temp-stat cache has no injected accumulation",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native Meteor enables temp stats for Stardust",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 500,
+        "tag": "Fire",
+        "baseline": 125,
+        "modified": 187.5
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 500,
+        "tag": "Cold",
+        "baseline": 125,
+        "modified": 187.5
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 500,
+        "tag": "Physical",
+        "baseline": 125,
+        "modified": 187.5
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native temp-stat cache has no injected accumulation",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native Meteor enables temp stats for Stardust",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 1000,
+        "tag": "Fire",
+        "baseline": 125,
+        "modified": 250
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 1000,
+        "tag": "Cold",
+        "baseline": 125,
+        "modified": 250
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 1000,
+        "tag": "Physical",
+        "baseline": 125,
+        "modified": 250
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native temp-stat cache has no injected accumulation",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native Meteor enables temp stats for Stardust",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 2000,
+        "tag": "Fire",
+        "baseline": 125,
+        "modified": 375
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 2000,
+        "tag": "Cold",
+        "baseline": 125,
+        "modified": 375
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 2000,
+        "tag": "Physical",
+        "baseline": 125,
+        "modified": 375
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native temp-stat cache has no injected accumulation",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native Woven threshold detour and serialization pass",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native minimap registers enemy dot with UI",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "QA removes only its enemy marker to simulate minimap UI rebuild",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Enemy dot registration recovers after native UI removal",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Repeated enemy updates do not duplicate native icon registration",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Enemy cleanup removes native icon and cache",
+      "values": null
+    }
+  ],
+  "localizationKeys": [
+    "Unique_Tooltip_0_445",
+    "Unique_Tooltip_0_445_Alt",
+    "Unique_Tooltip_1_445",
+    "Unique_Tooltip_1_445_Alt"
+  ],
+  "scope": "Real IL2CPP stat, attribute, tooltip parser and Meteor temp-stat consumers on disposable private character; no rendered tooltip or monster-hit measurement"
+}

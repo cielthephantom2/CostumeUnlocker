@@ -3,23 +3,12 @@ using Il2Cpp;
 using Il2CppLE.Data;
 using Il2CppCysharp.Threading.Tasks;
 using UnityEngine;
-using DialogueUI=Il2CppPixelCrushers.DialogueSystem.AbstractDialogueUI;
-using TmpDialogueUI=Il2CppPixelCrushers.DialogueSystem.TextMeshPro.TextMeshProDialogueUI;
-using ResponseButton=Il2CppPixelCrushers.DialogueSystem.TextMeshPro.TextMeshProResponseButton;
-using Il2CppPixelCrushers.DialogueSystem;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using ClientState=Il2CppClientAppState.ClientAppStateType;
 
 namespace LastEpochLAN.Mod.OfflineTools;
 
 internal static class ClassRespecialization
 {
-    private const int Open=90000,Cancel=90001,Back=90002,Choose=90100,Confirm=90200;
-    private static readonly Dictionary<IntPtr,int> actions=new();
-    private static DialogueUI ui;
-    private static Subtitle subtitle;
-    private static Il2CppReferenceArray<Response> original;
-    private static bool drawing;
     private static CharacterData data;
     private static CharacterClass target;
     private static ClassRespecializationData.Snapshot snapshot;
@@ -28,90 +17,79 @@ internal static class ClassRespecialization
     private static string characterId;
     internal static string Status="";
     internal static bool Busy=>data!=null;
-    private static readonly CharacterClassID[] classes={CharacterClassID.Mage,CharacterClassID.Rogue,CharacterClassID.Primalist,CharacterClassID.Sentinel,CharacterClassID.Acolyte};
-    private static Response Option(int action,string text)
+    internal static readonly CharacterClassID[] Classes={CharacterClassID.Mage,CharacterClassID.Rogue,CharacterClassID.Primalist,CharacterClassID.Sentinel,CharacterClassID.Acolyte};
+    internal static bool MenuOpen {get;private set;}
+    internal static int Selected {get;private set;}=-1;
+    private static string selectedCharacterId;
+    internal static bool Available=>!Busy && OfflineToolkit.Ready &&
+        Il2CppClientAppState.ClientStateManager.CurrentClientAppStateType==ClientState.InGame &&
+        PlayerFinder.getPlayerActor()?.health?.currentHealth>0 && UIBase.instance!=null;
+    internal static void Open(){if(!Available)return;MenuOpen=true;Cancel();}
+    internal static void Cancel(){Selected=-1;selectedCharacterId=null;}
+    internal static void Select(int id)
     {
-        var response=new Response(FormattedText.Parse(text,null),new DialogueEntry{id=action},true);
-        response.formattedText.position=-1;
-        actions[response.Pointer]=action;return response;
-    }
-    internal static void Responses(DialogueUI owner,Subtitle speech,ref Il2CppReferenceArray<Response> responses)
-    {
-        if(drawing || !OfflineToolkit.Enabled || speech==null || responses==null)return;
-        // Response subtitles may identify the player as speaker and the NPC as
-        // listener. The exact native mastery root also works with internal NPC aliases.
-        bool IsLerinne(Il2CppPixelCrushers.DialogueSystem.CharacterInfo info)=>info!=null && ((info.nameInDatabase??"")+" "+(info.Name??""))
-            .Contains("Lerinne",StringComparison.OrdinalIgnoreCase);
-        var labels=responses.Select(r=>r?.formattedText?.text??"").ToArray();
-        bool nativeRoot=labels.Any(t=>t.Contains("Respecialize Mastery Point",StringComparison.OrdinalIgnoreCase)) &&
-            labels.Any(t=>t.Contains("Respecialize Mastery",StringComparison.OrdinalIgnoreCase) &&
-                !t.Contains("Point",StringComparison.OrdinalIgnoreCase));
-        if(!nativeRoot && !IsLerinne(speech.speakerInfo) && !IsLerinne(speech.listenerInfo))return;
-        if(responses.Length==0)return;
-        responses=responses.Where(response=>response==null || !actions.ContainsKey(response.Pointer)).ToArray();
-        ui=owner;subtitle=speech;original=responses;actions.Clear();
-        var next=new Il2CppReferenceArray<Response>(responses.Length+1);
-        for(int i=0;i<responses.Length;i++)next[i]=responses[i];
-        next[responses.Length]=Option(Open,"<sprite name=respec> Respecialize Class");responses=next;
-    }
-    private static void Show(params Response[] responses)
-    {
-        if(ui==null || subtitle==null)return;
-        drawing=true;
-        try{ui.ShowResponses(subtitle,responses,0);}finally{drawing=false;}
-    }
-    private static void Classes()
-    {
-        actions.Clear();var options=new List<Response>();
+        Cancel();
         var current=PlayerFinder.getPlayerActor()?.characterDataTracker?.charData;
-        foreach(var id in classes)
-        {
-            var choice=Option(Choose+(int)id,id.ToString());
-            choice.enabled=current!=null && current.CharacterClass!=(int)id && !Busy;
-            options.Add(choice);
-        }
-        options.Add(Option(Cancel,"Back"));Show(options.ToArray());
+        if(!MenuOpen || !Available || id is <0 or >4 || current==null || current.CharacterClass==id)return;
+        Selected=id;selectedCharacterId=current.Id;
     }
-    internal static bool Click(ResponseButton button)
+    internal static void Confirm()
     {
-        return ClickResponse(button?.response);
+        if(!MenuOpen || !Available || Selected is <0 or >4)return;
+        var current=PlayerFinder.getPlayerActor()?.characterDataTracker?.charData;
+        if(current==null || current.Id!=selectedCharacterId){Cancel();return;}
+        int id=Selected;Cancel();
+        try{Begin(id);}catch(Exception ex){Fail(ex);}
     }
-    internal static bool ClickResponse(Response response)
+    private static GUIStyle bodyStyle;
+    internal static void Draw(float x,float y)
     {
-        if(response==null || !actions.TryGetValue(response.Pointer,out int action))return true;
-        if(!OfflineToolkit.Enabled || Busy || !response.enabled)return false;
+        GUI.Box(new Rect(x,y,310,265),"Reset Class (offline)");
+        bodyStyle??=new GUIStyle(GUI.skin.label){wordWrap=true};
+        bool enabled=GUI.enabled;
         try
         {
-            if(action==Open || action==Back){Classes();return false;}
-            if(action==Cancel)
+            GUI.enabled=enabled && Available;
+            if(!MenuOpen)
             {
-                actions.Clear();
-                // Reinject the root option through the standard native path.
-                var roots=original;Responses(ui,subtitle,ref roots);
-                drawing=true;try{ui.ShowResponses(subtitle,roots,0);}finally{drawing=false;}
-                return false;
+                if(GUI.Button(new Rect(x+14,y+30,282,28),"Reset Class"))Open();
             }
-            if(action>=Choose && action<Choose+5)
+            else if(Selected<0)
             {
-                int id=action-Choose;actions.Clear();
-                Show(Option(Confirm+id,"Change to "+((CharacterClassID)id)+" and return to character selection\nKeep level, items and progress; reset mastery, passives and skills."),Option(Back,"Back"));
-                return false;
+                int current=PlayerFinder.getPlayerActor()?.characterDataTracker?.charData?.CharacterClass??-1;
+                for(int i=0;i<Classes.Length;i++)
+                {
+                    var id=Classes[i];GUI.enabled=enabled && Available && current!=(int)id;
+                    if(GUI.Button(new Rect(x+14,y+30+i*28,180,25),id.ToString()))Select((int)id);
+                }
+                GUI.enabled=enabled && !Busy;
+                if(GUI.Button(new Rect(x+202,y+30,94,25),"Back")){Cancel();MenuOpen=false;}
             }
-            if(action>=Confirm && action<Confirm+5)Begin(action-Confirm);
+            else
+            {
+                GUI.enabled=enabled;
+                GUI.Label(new Rect(x+14,y+30,282,24),"Change to "+((CharacterClassID)Selected)+"?");
+                GUI.Label(new Rect(x+14,y+57,282,78),"Keep level, items and progress.\nReset mastery, passives and skills.\nReturn to character selection, back up saves, then save the change.",bodyStyle);
+                GUI.enabled=enabled && Available;
+                if(GUI.Button(new Rect(x+14,y+140,180,28),"Confirm Reset Class"))Confirm();
+                GUI.enabled=enabled && !Busy;
+                if(GUI.Button(new Rect(x+202,y+140,94,28),"Cancel"))Cancel();
+            }
+            GUI.enabled=enabled;
+            GUI.Label(new Rect(x+14,y+182,282,75),string.IsNullOrEmpty(Status)?
+                (Available?"Choose another class. Confirmation is required.":"Enter the game with a living offline character."):Status,bodyStyle);
         }
-        catch(Exception ex){Fail(ex);}
-        return false;
+        finally{GUI.enabled=enabled;}
     }
     private static void Begin(int id)
     {
-        if(!OfflineToolkit.Ready || Il2CppClientAppState.ClientStateManager.CurrentClientAppStateType!=ClientState.InGame)return;
+        if(!Available || id is <0 or >4)return;
         var actor=PlayerFinder.getPlayerActor();var current=actor?.characterDataTracker?.charData;
         var next=CharacterClassList.getClass(id);
-        if(current==null || next==null || current.CharacterClass==id || UIBase.instance==null)return;
-        if(actor.health==null || actor.health.currentHealth<=0)return;
-        // Exit first. Native state transition finishes the current character's
-        // save and tears down the actor before any class-specific data changes.
+        if(current==null || next==null || current.CharacterClass==id)return;
+        // Exit first so native code saves and tears down the live actor.
         data=current;characterId=current.Id;target=next;snapshot=null;
+        MenuOpen=false;
         Status="Returning to character selection to change class...";
         UIBase.instance.ExitToCharacterSelect();
     }
@@ -144,7 +122,7 @@ internal static class ClassRespecialization
             data=fresh;
             var global=GlobalTreeData.get()?.getTreeData(target.treeID);
             if(global==null)throw new InvalidOperationException("Target passive tree unavailable");
-            string source=Path.Combine(Application.persistentDataPath,"Saves");
+            string source=Il2CppLE.Core.Paths.GetDataPath();
             var files=Directory.GetFiles(source);
             if(files.Length==0)throw new InvalidOperationException("No native save files available to back up");
             string backup=Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),"UserData","LastEpochLAN","backups","class-respec-"+Guid.NewGuid().ToString("N"));
@@ -167,41 +145,11 @@ internal static class ClassRespecialization
         Status="Class change stopped: "+ex.GetBaseException().Message;OfflineToolkit.Error=Status;
         MelonLoader.MelonLogger.Warning(Status);Clear();
     }
-    private static void Clear(){data=null;target=null;snapshot=null;saving=false;characterId=null;actions.Clear();}
-    internal static int Rendering;
-    internal static void CloseDialog(){if(drawing || Rendering>0)return;ui=null;subtitle=null;original=null;actions.Clear();}
+    private static void Clear(){data=null;target=null;snapshot=null;saving=false;characterId=null;}
 }
-[HarmonyPatch(typeof(TmpDialogueUI),nameof(TmpDialogueUI.ShowResponses))]
-internal static class OfflineClassRespecMenuPatch
-{
-    private static void Prefix(TmpDialogueUI __instance,Subtitle subtitle,ref Il2CppReferenceArray<Response> responses)
-    {ClassRespecialization.Rendering++;ClassRespecialization.Responses(__instance,subtitle,ref responses);}
-    private static void Finalizer()=>ClassRespecialization.Rendering--;
-}
-[HarmonyPatch(typeof(ResponseButton),nameof(ResponseButton.OnClick))]
-internal static class OfflineClassRespecClickPatch
-{private static bool Prefix(ResponseButton __instance)=>ClassRespecialization.Click(__instance);}
-[HarmonyPatch(typeof(TmpDialogueUI),nameof(TmpDialogueUI.HideResponses))]
-internal static class OfflineClassRespecClosePatch
-{private static void Postfix()=>ClassRespecialization.CloseDialog();}
 [HarmonyPatch(typeof(LocalCharacterSlots),nameof(LocalCharacterSlots.LoadCharacterByData))]
 internal static class OfflineClassRespecLoadGatePatch
 {
     private static bool Prefix(ref UniTask __result)
     {if(!ClassRespecialization.Busy)return true;__result=UniTask.CompletedTask;return false;}
 }
-
-// The shipped UI can use either native Dialogue System renderer.
-[HarmonyPatch(typeof(UnityUIDialogueUI),nameof(UnityUIDialogueUI.ShowResponses))]
-internal static class OfflineClassRespecUnityMenuPatch
-{
-    private static void Prefix(UnityUIDialogueUI __instance,Subtitle subtitle,ref Il2CppReferenceArray<Response> responses)
-    {ClassRespecialization.Rendering++;ClassRespecialization.Responses(__instance,subtitle,ref responses);}
-    private static void Finalizer()=>ClassRespecialization.Rendering--;
-}
-[HarmonyPatch(typeof(UnityUIResponseButton),nameof(UnityUIResponseButton.OnClick))]
-internal static class OfflineClassRespecUnityClickPatch
-{private static bool Prefix(UnityUIResponseButton __instance)=>ClassRespecialization.ClickResponse(__instance?.response);}
-[HarmonyPatch(typeof(UnityUIDialogueUI),nameof(UnityUIDialogueUI.HideResponses))]
-internal static class OfflineClassRespecUnityClosePatch
-{private static void Postfix()=>ClassRespecialization.CloseDialog();}
