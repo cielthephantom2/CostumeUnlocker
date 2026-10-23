@@ -85,14 +85,10 @@ Check(!catalogue.CustomAttributes.Any(a=>a.AttributeType.FullName=="HarmonyLib.H
 Check(catalogue.Fields.Any(f=>f.Name=="Enabled" && f.IsStatic && f.IsInitOnly) &&
  catalogue.Methods.Single(m=>m.Name==".cctor").Body.Instructions.Any(i=>Equals(i.Operand,"--lelan-encounter-development")),
  "native encounter discovery requires explicit development switch");
-Check(!types.Any(t=>t.Name.Contains("Disintegrate") || t.Name.Contains("Ascendance")) &&
- !Walk(core.MainModule.Types).Any(t=>t.Name=="ChannelLocomotionRules"),
- "Disintegrate movement, animation, root overrides and related Core helpers are absent from binary");
-var skillOverrides=types.SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions)
- .Select(i=>i.Operand).OfType<MemberReference>().Where(m=>m.DeclaringType!=null &&
-  (m.DeclaringType.Name.Contains("Disintegrate") || m.DeclaringType.Name.Contains("ArcaneAscendance") || m.DeclaringType.Name=="ModifyDamageOnRotation")).ToArray();
-Check(skillOverrides.All(m=>m.DeclaringType.Name is "ArcaneAscendanceTree" or "ArcaneAscendanceMutator"),
- "skill overrides exclude Disintegrate and rotation penalties; Ascendance references are restricted to its tree and mutator");
+Check(!types.Any(t=>t.Name is "OfflineArcaneMovementPatch" or "OfflineArcaneDescriptionPatch"),
+ "Arcane Ascendance movement and description overrides are removed; native root retained");
+var disintegrateHooks=new[]{"OfflineDisintegrateMovementPatch","OfflineDisintegrateMobileFlagsPatch","OfflineDisintegrateCastSpeedPatch","OfflineDisintegrateDurationPatch","OfflineDisintegrateDistancePatch","OfflineDisintegrateSpeedPatch","OfflineDisintegrateStartPatch","OfflineDisintegrateStopPatch","OfflineDisintegrateDescriptionPatch"};
+Check(disintegrateHooks.All(n=>patches.Any(t=>t.Name==n)),"all local Disintegrate mobile-channel hooks are selected");
 var tranquilityHooks=new[]{"OfflineArcaneTranquilityTreePatch","OfflineArcaneTranquilityCastPatch","OfflineArcaneTranquilityDescriptionPatch","OfflineArcaneTranquilityLegacyTooltipPatch","OfflineArcaneTranquilityTooltipPatch"};
 Check(tranquilityHooks.All(n=>patches.Any(t=>t.Name==n)),"Tranquility actual-stat, description and both tooltip hooks are compiled");
 Check(mod.CustomAttributes.Any(a=>a.AttributeType.Name=="HarmonyDontPatchAllAttribute"),
@@ -560,11 +556,11 @@ Check(types.Single(t=>t.Name=="StabilityAwardScope").Fields.Any(f=>f.CustomAttri
 var stabilityRefs=stabilityHooks.Select(n=>types.Single(t=>t.Name==n)).SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Select(i=>i.Operand).OfType<MethodReference>().ToArray();
 Check(!stabilityRefs.Any(m=>m.Name is "AddStability" or "NextInt" or "Roll" or "TryGetKeyEntry"),
  "Stability corrections do not replay awards, replace native RNG or consume extra Keystones");
-var arcane=types.Single(t=>t.Name=="OfflineArcaneMovementPatch");
-var arcaneCalls=arcane.Methods.Single(m=>m.Name=="Prefix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
-Check(installed.Contains(arcane) && arcaneCalls.Any(m=>m.Name=="Local") && arcaneCalls.Any(m=>m.Name=="Instantiate") && arcaneCalls.Any(m=>m.Name=="set_roots") &&
- !arcaneCalls.Any(m=>m.Name is "set_numberOfRoots" or "DecrementNumberOfRoots"),
- "local Arcane uses a private root-free ailment definition without clearing unrelated root counters");
+var move=types.Single(t=>t.Name=="DisintegrateMovement");
+Check(move.Fields.Any(f=>f.Name=="SpeedMultiplier" && Convert.ToSingle(f.Constant)==.8f) &&
+ types.Single(t=>t.Name=="OfflineDisintegrateStopPatch").Methods.Any(m=>m.Name=="Finalizer"),
+ "Disintegrate uses80% speed with native channel-end restoration");
+Check(installed.Any(t=>t.Name=="OfflineSpiritXylemMaximumManaPatch"),"Spirit Xylem refreshes damage after native maximum Mana calculation");
 Check(!types.Any(t=>t.Name.StartsWith("UiShortcut") || t.Name is "ShortcutAction" or "ShortcutBinding"),
  "removed Shortcut runtime, rules, actions and bindings are absent from the release assembly");
 Check(!types.Single(t=>t.Name=="LanMod").Methods.Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions)

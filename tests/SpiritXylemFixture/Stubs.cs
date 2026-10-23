@@ -12,9 +12,10 @@ namespace Il2Cpp {
   public class Stat:NativeObject{public SP property;public AT tags;public float addedValue,increasedValue;public byte specialTag;public int extraTag;public bool dontCollapse;public float more;
    public Stat(SP p,AT t,float a,float inc,float m,byte st,int extra){property=p;tags=t;addedValue=a;increasedValue=inc;more=m;specialTag=st;extraTag=extra;}}
  }
- public class BaseStats:Stats{public Actor actor;public enum ModType{ADDED,INCREASED,MORE}public int Requests;public void UpdateStatsInternal(){}public void UpdateStatsNextFrame(){Requests++;}}
+ public class BaseStats:Stats{public Actor actor;public enum ModType{ADDED,INCREASED,MORE}public int Requests;public void ApplyExternalStats(){}public void UpdateStatsInternal(){}public void UpdateStatsNextFrame(){Requests++;}}
  public class CharacterStats:BaseStats{public void ApplyCoreAttributeModifiers(){}}
- public class Actor:NativeObject{public ItemContainersManager itemContainersManager=new();}
+ public class BaseMana{public int maxMana=1000;public float currentMana=1000;}
+ public class Actor:NativeObject{public BaseMana mana=new();public ItemContainersManager itemContainersManager=new();}
  public static class PlayerFinder{public static Actor Player;public static Actor getPlayerActor()=>Player;}
  public class ItemContainersManager{public ItemEquipManager itemEquipManager=new();}
  public class ItemEquipManager{public Il2CppSystem.Collections.Generic.List<EquippedItem> equippedItems=new();public class EquippedItem{public bool StatsApplied=true;public ItemData Item;public float globalStatModifier;}}

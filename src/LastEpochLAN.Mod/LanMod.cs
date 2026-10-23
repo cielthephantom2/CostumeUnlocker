@@ -5,7 +5,7 @@ using MelonLoader;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
-[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.62", "Local research")]
+[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.63", "Local research")]
 [assembly: HarmonyDontPatchAll]
 [assembly: MelonGame("Eleventh Hour Games", "Last Epoch")]
 
@@ -796,7 +796,6 @@ public sealed class LanMod : MelonMod
             cosmeticErrors = equipmentReplicas.Where(pair=>pair.Value.CosmeticError!="").Select(pair=>new {playerId=pair.Key,reason=pair.Value.CosmeticError}).ToArray(),
             nativeGiftMenu = new { NativeLanGiftMenuPatch.Added, NativeLanGiftMenuPatch.Error },
             autoPlay=autoPlay.Diagnostics,
-            arcaneMovement=new {OfflineTools.OfflineArcaneMovementPatch.Applications},
             archmage=new {OfflineTools.OfflineArchmageCastPatch.Casts,OfflineTools.OfflineArchmageRefundPatch.Refunds,
                 OfflineTools.OfflineArchmageRefundPatch.LastMaximumMana,OfflineTools.OfflineArchmageRefundPatch.LastRequestedRefund},
             lanGift = new { gift.Status, gift.Error, gift.Sent, gift.Received, gift.Pending, gift.Busy },

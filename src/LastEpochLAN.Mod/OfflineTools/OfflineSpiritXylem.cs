@@ -12,9 +12,11 @@ internal static class SpiritXylem
     private sealed record Registry(UniqueList.Entry Entry,NativeMods Mods,NativeDescriptions Descriptions,NativeEntries Entries);
     private static Registry registry;
     private static CharacterStats current;
+    private static Stats.Stat manaSpell;
+    private static float spellPerMaximumMana;
     private static readonly List<Stats.Stat> injected=new();
     private static readonly UniqueItemMod skills=new(){property=SP.LevelOfSkills,value=3,maxValue=4,canRoll=true,rollID=5};
-    private static readonly UniqueItemMod attribute=new(){property=SP.Intelligence,value=10,maxValue=20,canRoll=true,rollID=6};
+    private static readonly UniqueItemMod attribute=new(){property=SP.Attunement,value=10,maxValue=16,canRoll=true,rollID=6};
     private static readonly UniqueItemMod healthMana=new(){property=SP.PlayerProperty,tags=(AT)596,value=3,maxValue=6,canRoll=true,rollID=2};
     private static string lastError;
     internal static void Report(Exception ex)
@@ -34,10 +36,10 @@ internal static class SpiritXylem
         var descriptions=new NativeDescriptions();
         // A native ModifierInfo owns its range rows. Separate the effects so
         // each roll range is rendered directly below its corresponding line.
-        foreach(var line in SpiritXylemRules.EffectLines)
-            descriptions.Add(new(){description=line,altText=SpiritXylemRules.DetailsText});
+        for(int i=0;i<SpiritXylemRules.EffectLines.Length;i++)
+            descriptions.Add(new(){description=SpiritXylemRules.EffectLines[i],altText=SpiritXylemRules.EffectDetails[i]});
         var entries=new NativeEntries();
-        foreach(byte index in new byte[]{128,129,130,131,132,0,1})entries.Add(new UniqueModDisplayListEntry(index));
+        foreach(byte index in new byte[]{128,129,130,131,0,1})entries.Add(new UniqueModDisplayListEntry(index));
         registry=new(entry,entry.mods,entry.tooltipDescriptions,entry.tooltipEntries);
         entry.mods=common;entry.tooltipDescriptions=descriptions;entry.tooltipEntries=entries;
     }
@@ -59,7 +61,7 @@ internal static class SpiritXylem
         if(current.stats!=null)
             for(int i=current.stats.Count-1;i>=0;i--)
                 if(current.stats[i]!=null && injected.Any(stat=>stat.Pointer==current.stats[i].Pointer))current.stats.RemoveAt(i);
-        injected.Clear();current=null;
+        injected.Clear();current=null;manaSpell=null;spellPerMaximumMana=0;
     }
     private static void Add(CharacterStats stats,SP property,float value,byte special=0,AT tags=AT.None)
     {
@@ -86,40 +88,47 @@ internal static class SpiritXylem
             if(equipped?.StatsApplied==true && equipped.Item?.uniqueID==SpiritXylemRules.Id && float.IsFinite(equipped.globalStatModifier))
                 items.Add((equipped.Item,Math.Max(0,1+equipped.globalStatModifier)));
         if(items.Count==0)return;
-        float att=0,intel=0;
-        // Remove our prior source before reading native raw attribute totals,
-        // including All Attributes and implicit/legendary/passive/buff sources.
+        float att=0;
         foreach(var stat in stats.stats)
         {
             if(stat==null)continue;
-            if(stat.property==SP.AllAttributes){att+=stat.addedValue;intel+=stat.addedValue;}
-            else if(stat.property==SP.Attunement)att+=stat.addedValue;
-            else if(stat.property==SP.Intelligence)intel+=stat.addedValue;
+            if(stat.property is SP.AllAttributes or SP.Attunement)att+=stat.addedValue;
         }
-        if(!float.IsFinite(att) || !float.IsFinite(intel))return;
-        float addedIntelligence=0,levels=0,perAttunement=0,spellPerIntelligence=0;
+        if(!float.IsFinite(att))return;
+        float addedAttunement=0,levels=0,perAttunement=0,manaScaling=0;
         foreach(var (item,effect) in items)
         {
-            addedIntelligence+=Roll(item,attribute)*effect;
+            addedAttunement+=Roll(item,attribute)*effect;
             levels+=Roll(item,skills)*effect;
             perAttunement+=Roll(item,healthMana)*effect;
-            spellPerIntelligence+=effect;
+            manaScaling+=SpiritXylemRules.SpellDamagePerMaximumMana*effect;
         }
-        int finalIntelligence=SpiritXylemRules.Attribute(intel+addedIntelligence);
-        current=stats;
-        // Equality is a single correction, not an attribute bonus scaled by
-        // item effect. Native core-attribute calculation then derives both stats.
-        Add(stats,SP.Intelligence,addedIntelligence);
-        Add(stats,SP.Attunement,finalIntelligence-att);
+        int finalAttunement=SpiritXylemRules.Attribute(att+addedAttunement);
+        current=stats;spellPerMaximumMana=manaScaling;
+        Add(stats,SP.Attunement,addedAttunement);
         Add(stats,SP.LevelOfSkills,levels);
-        float bonus=perAttunement*finalIntelligence;
+        float bonus=perAttunement*finalAttunement;
         Add(stats,SP.Health,bonus);Add(stats,SP.Mana,bonus);
-        Add(stats,SP.Damage,spellPerIntelligence*finalIntelligence,0,AT.Spell);
+        // A dedicated zero-capable source can refresh after native maximum mana
+        // is calculated, without recursively recalculating attributes or mana.
+        manaSpell=new Stats.Stat(SP.Damage,AT.Spell,Math.Max(0,stats.actor.mana?.maxMana??0)*manaScaling,0,0,0,0){dontCollapse=true};
+        injected.Add(manaSpell);stats.stats.Add(manaSpell);
+    }
+    internal static void RefreshMaximumMana(CharacterStats stats)
+    {
+        if(!OfflineToolkit.Enabled || current==null || stats==null || current.Pointer!=stats.Pointer || manaSpell==null)return;
+        float value=Math.Max(0,stats.actor?.mana?.maxMana??0)*spellPerMaximumMana;
+        if(Math.Abs(manaSpell.addedValue-value)<.0001f)return;
+        manaSpell.addedValue=value;
+        // Refresh native caches next frame. The spell bonus does not feed mana,
+        // so this converges once the native maximum-mana update has completed.
+        stats.UpdateStatsNextFrame();
     }
 
     internal static void Tick()
     {
         if(!OfflineToolkit.Enabled){Clear();return;}
+        RefreshMaximumMana(current);
         if(current!=null && current.actor?.Pointer!=PlayerFinder.getPlayerActor()?.Pointer)
         {var old=current;Remove(old);if(old!=null)old.UpdateStatsNextFrame();}
     }
@@ -168,10 +177,20 @@ internal static class OfflineSpiritXylemLocalizationPatch
             "Unique_Tooltip_1_445"=>SpiritXylemRules.EffectLines[1],
             "Unique_Tooltip_2_445"=>SpiritXylemRules.EffectLines[2],
             "Unique_Tooltip_3_445"=>SpiritXylemRules.EffectLines[3],
-            "Unique_Tooltip_4_445"=>SpiritXylemRules.EffectLines[4],
-            "Unique_Tooltip_0_445_Alt" or "Unique_Tooltip_1_445_Alt" or "Unique_Tooltip_2_445_Alt" or "Unique_Tooltip_3_445_Alt" or "Unique_Tooltip_4_445_Alt"=>SpiritXylemRules.DetailsText,
+
+            "Unique_Tooltip_0_445_Alt"=>SpiritXylemRules.EffectDetails[0],
+            "Unique_Tooltip_1_445_Alt"=>SpiritXylemRules.EffectDetails[1],
+            "Unique_Tooltip_2_445_Alt"=>SpiritXylemRules.EffectDetails[2],
+            "Unique_Tooltip_3_445_Alt"=>SpiritXylemRules.EffectDetails[3],
             _=>null
         };
         if(text==null)return true;__result=text;return false;
     }
+}
+
+[HarmonyPatch(typeof(BaseStats),nameof(BaseStats.ApplyExternalStats))]
+internal static class OfflineSpiritXylemMaximumManaPatch
+{
+    private static void Postfix(BaseStats __instance)
+    {try{SpiritXylem.RefreshMaximumMana(__instance.TryCast<CharacterStats>());}catch(Exception ex){SpiritXylem.Report(ex);}}
 }

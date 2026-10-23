@@ -42,19 +42,6 @@ for(int cast=0;cast<5;cast++)
 }
 allocation.nodes.Clear();Call(typeof(OfflineMeteorCastPatch),"Prefix",meteor);
 Check(meteor.chanceFor100increasedArea==0 && meteor.frostClawCastsOnImpact==0,"respec to zero clears both actual effects on next cast");
-var stockArcane=new Ailment{id=AilmentID.ArcaneAscendance,roots=true,duration=8};
-Ailment ApplyArcane(Actor actor,Ailment source){object[] a={new AilmentReceiver{actor=actor},source};Call(typeof(OfflineArcaneMovementPatch),"Prefix",a);return (Ailment)a[1];}
-var mobile=ApplyArcane(player,stockArcane);
-Check(!mobile.roots && stockArcane.roots && mobile.duration==8 && mobile.id==stockArcane.id,"local Arcane copy removes only root flag and preserves stock definition");
-Check(ReferenceEquals(mobile,ApplyArcane(player,stockArcane)),"repeated Arcane applications reuse root-free definition for symmetric removal");
-object[] arcaneDescription={new Ability{playerAbilityID="arcas"},"Toggle to prevent movement and drain 25 mana each second."};
-Call(typeof(OfflineArcaneDescriptionPatch),"Postfix",arcaneDescription);
-Check((string)arcaneDescription[1]=="Toggle to drain 25 mana each second.","Arcane description removes movement restriction while preserving mana drain");
-var root=new Ailment{id=AilmentID.Root,roots=true};
-Check(ReferenceEquals(root,ApplyArcane(player,root)) && root.roots,"enemy root ailments are preserved");
-Check(ReferenceEquals(stockArcane,ApplyArcane(new Actor(),stockArcane)),"other actors retain native Arcane root");
-OfflineToolkit.Enabled=false;
-Check(ReferenceEquals(stockArcane,ApplyArcane(player,stockArcane)),"online Arcane remains native");OfflineToolkit.Enabled=true;
 var impact=new MeteorAoEMutator{actor=player,frostClawCastsOnImpact=2};
 object Begin(MeteorAoEMutator value){object[] args={value,null};Call(typeof(OfflineMeteorImpactScopePatch),"Prefix",args);return args[1];}
 void End(object scope)=>Call(typeof(OfflineMeteorImpactScopePatch),"Finalizer",scope);

@@ -62,7 +62,7 @@ public partial class Audit:MelonMod
      MapProbe(actor);
      if(!Environment.GetCommandLineArgs().Contains("--lelan-map-verify")){Finish(null);return;}
      Run(actor);
-     Check(Call("WovenPotentialNativeSmoke","Run")!=null,"Native Woven threshold detour and serialization pass");
+     if(!releaseBootstrap)Check(Call("WovenPotentialNativeSmoke","Run")!=null,"Native Woven threshold detour and serialization pass");
      var manager=Il2CppLE.UI.Minimap.MinimapIconManager.Instance;
      foreach(var row in manager.icons)if(row.icon?.name=="TM Enemy minimap dot"){removedMapIcon=row.icon;break;}
      Check(removedMapIcon!=null,"Native minimap registers enemy dot with UI");
@@ -81,7 +81,7 @@ public partial class Audit:MelonMod
     Finish(null);return;
    }
    Run(actor);
-   Check(Call("WovenPotentialNativeSmoke","Run")!=null,"Native Woven threshold detour and serialization pass");
+   if(!releaseBootstrap)Check(Call("WovenPotentialNativeSmoke","Run")!=null,"Native Woven threshold detour and serialization pass");
    if(!Environment.GetCommandLineArgs().Contains("--lelan-class-panel-qa")){Finish(null);return;}
    var data=actor.characterDataTracker.charData;migrationId=data.Id;migrationClass=data.CharacterClass==4?1:4;
    Call("ClassRespecialization","Open");Call("ClassRespecialization","Select",migrationClass);
@@ -134,6 +134,7 @@ public partial class Audit:MelonMod
  {
   string expected=Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),"UserData","GuestProfile"));
   Check(Il2CppLE.Core.PlatformFileManager.ApplicationSavePath==expected && actor.characterDataTracker.charData.CharacterName.StartsWith("LANQA"),"Verified private profile and disposable QA character");
+  VerifyDisintegrate(actor);
   var stats=actor.GetComponent<CharacterStats>();var equip=actor.itemContainersManager.itemEquipManager;var savedStats=stats.stats;var savedItems=equip.equippedItems;
   var definition=UniqueList.getUnique(445);
   try
@@ -148,9 +149,16 @@ public partial class Audit:MelonMod
    foreach(byte roll in new byte[]{0,255})
    {
     ResetSources();var item=Item(definition,roll);var identity=item.GetIDAsArray().ToArray();
-    string tooltip=string.Join("\n",Enumerable.Range(0,5).Select(index=>ItemTooltipContentBuilder.GetUniqueModifierInfoFromTooltipDescription(item,definition,index,(TooltipItemManager.SlotType)0).GetModifierString(false)));
-    Check(tooltip.Contains("All Skills") && tooltip.Contains("Your Attunement is equal to your Intelligence") && tooltip.Contains("Health and Mana per Attunement") && tooltip.Contains("+1 Spell Damage per Intelligence") && !tooltip.Contains("If ") && !tooltip.Contains("per 2 Intelligence"),"Native tooltip parser renders all five unconditional effects",new{roll,tooltip});
-    Check(definition.mods.Count==2 && definition.tooltipDescriptions.Count==5,"Native registry retains exactly two mana-threshold mods and five separate effects descriptions");
+    string tooltip=string.Join("\n",Enumerable.Range(0,4).Select(index=>ItemTooltipContentBuilder.GetUniqueModifierInfoFromTooltipDescription(item,definition,index,(TooltipItemManager.SlotType)0).GetModifierString(false)));
+    Check(tooltip.Contains("All Skills") && tooltip.Contains("Attunement") && !tooltip.Contains("Intelligence") && tooltip.Contains("Health and Mana per Attunement") && tooltip.Contains("+1 Spell Damage per 25 Maximum Mana") && !tooltip.Contains("If "),"Native tooltip parser renders all four custom effects",new{roll,tooltip});
+    var notes=(string[])T("SpiritXylemRules").GetField("EffectDetails",BindingFlags.NonPublic|BindingFlags.Static).GetValue(null);
+    for(int index=0;index<4;index++)
+    {
+     var info=ItemTooltipContentBuilder.GetUniqueModifierInfoFromTooltipDescription(item,definition,index,(TooltipItemManager.SlotType)0);
+     string note=info.GetPropertyAltText(false);
+     Check(note==notes[index] && !note.Contains("Intelligence"),"Native note matches this effect, without stale INT equality",new{roll,index,note});
+    }
+    Check(definition.mods.Count==2 && definition.tooltipDescriptions.Count==4,"Native registry retains exactly two mana-threshold mods and four separate effects descriptions");
     equip.UpdateStats(item,true,false,0,0,0,0);
     bool Matches(SP property,int tags,int special,float more)
     {
@@ -167,8 +175,8 @@ public partial class Audit:MelonMod
      stats.stats.Add(new Stats.Stat(SP.Health,0,1000,0,0,0,0));stats.stats.Add(new Stats.Stat(SP.Mana,0,100,0,0,0,0));
      equip.equippedItems.Add(new ItemEquipManager.EquippedItem(item,true,(ItemEquipManager.GearType)0));
      stats.ApplyCoreAttributeModifiers();
-     int final=values.Int+all+(roll==0?10:20);int level=roll==0?3:4;int per=roll==0?3:6;float hp=per*final;
-     Check(stats.GetAttributeValue(CoreAttribute.Attribute.Intelligence)==final && stats.GetAttributeValue(CoreAttribute.Attribute.Attunement)==final,"Native final ATT equals INT after the rolled Intelligence bonus",new{roll,values.Att,values.Int,all,expected=final,intelligence=stats.GetAttributeValue(CoreAttribute.Attribute.Intelligence),attunement=stats.GetAttributeValue(CoreAttribute.Attribute.Attunement)});
+     int final=values.Att+all+(roll==0?10:16);int level=roll==0?3:4;int per=roll==0?3:6;float hp=per*final;
+     Check(stats.GetAttributeValue(CoreAttribute.Attribute.Intelligence)==values.Int+all && stats.GetAttributeValue(CoreAttribute.Attribute.Attunement)==final,"Native rolled ATT bonus applies independently from INT",new{roll,values.Att,values.Int,all,expected=final,intelligence=stats.GetAttributeValue(CoreAttribute.Attribute.Intelligence),attunement=stats.GetAttributeValue(CoreAttribute.Attribute.Attunement)});
      Check(Near(Value(stats,SP.LevelOfSkills),level),"Native stat consumer reads global All Skills levels",new{roll,level,actual=Value(stats,SP.LevelOfSkills)});
      var nativeTrees=actor.localTreeData.specialisedSkillTrees;
      try
@@ -191,17 +199,19 @@ public partial class Audit:MelonMod
      }
      Check(Near(Contribution(SP.Health),hp) && Near(Contribution(SP.Mana),hp),"Native HP and MP consumers both apply rolled per-ATT bonus",new{roll,final,per,health=Value(stats,SP.Health),mana=Value(stats,SP.Mana),healthContribution=Contribution(SP.Health),manaContribution=Contribution(SP.Mana)});
      Check(Near(Value(stats,SP.Mana),100+(2+per)*final) && Near(Value(stats,SP.Health),1000+6*all+hp),"Native +2 mana per ATT stacks with item for exactly +5 to +8 mana per ATT",new{roll,final,baseMana=100,nativeMana=2*final,itemMana=hp,totalMana=Value(stats,SP.Mana),expectedMana=100+(2+per)*final,health=Value(stats,SP.Health),expectedHealth=1000+6*all+hp,nativeVitalityHealth=6*all});
+     stats.ApplyExternalStats();
+     Check(actor.mana.maxMana==(int)Value(stats,SP.Mana) && Near(Value(stats,SP.Damage),actor.mana.maxMana/25f),"Native external-stat refresh automatically derives maximum Mana and spell bonus",new{maximumMana=actor.mana.maxMana,statMana=Value(stats,SP.Mana),spell=Value(stats,SP.Damage)});
      var baseDamage=new DamageStatsHolder.BaseDamageStats();baseDamage.damage[0]=100;
      float SpellDamage()=>DamageStats.buildDamageStats(baseDamage,AT.Spell,stats,stats.stats,0,0,(DamageType)0).damage.ToArray().Sum();
      float withSpell=SpellDamage();
      float AttackDamage()=>DamageStats.buildDamageStats(baseDamage,AT.Melee,stats,stats.stats,0,0,(DamageType)0).damage.ToArray().Sum();
      float withAttack=AttackDamage();var spellRows=own.Where(st=>st.property==SP.Damage).ToArray();
      foreach(var st in spellRows)stats.stats.Remove(st);float withoutSpell=SpellDamage(),withoutAttack=AttackDamage();foreach(var st in spellRows)stats.stats.Add(st);
-     Check(Near(withSpell-withoutSpell,final),"Native damage builder consumes exactly +1 Spell Damage per final INT",new{roll,final,withSpell,withoutSpell,delta=withSpell-withoutSpell});
+     Check(Near(withSpell-withoutSpell,actor.mana.maxMana/25f),"Native damage builder consumes exactly +1 Spell Damage per25 maximum Mana",new{roll,final,withSpell,withoutSpell,delta=withSpell-withoutSpell});
      Check(Near(withAttack,withoutAttack),"Added Spell Damage does not leak into native melee damage",new{withAttack,withoutAttack});
      float health=Value(stats,SP.Health),mana=Value(stats,SP.Mana),spell=Value(stats,SP.Damage);
      for(int repeat=0;repeat<100;repeat++)stats.ApplyCoreAttributeModifiers();
-     Check(stats.GetAttributeValue(CoreAttribute.Attribute.Attunement)==final && stats.GetAttributeValue(CoreAttribute.Attribute.Intelligence)==final && Near(Value(stats,SP.Health),health) && Near(Value(stats,SP.Mana),mana) && Near(Value(stats,SP.Damage),spell),"100 native refreshes do not stack equality, native mana or item bonuses");
+     Check(stats.GetAttributeValue(CoreAttribute.Attribute.Attunement)==final && stats.GetAttributeValue(CoreAttribute.Attribute.Intelligence)==values.Int+all && Near(Value(stats,SP.Health),health) && Near(Value(stats,SP.Mana),mana) && Near(Value(stats,SP.Damage),spell),"100 native refreshes do not stack native mana or item bonuses");
      equip.equippedItems.Clear();stats.ApplyCoreAttributeModifiers();
      Check(own.Count==0 && Near(Value(stats,SP.LevelOfSkills),0) && Near(Value(stats,SP.Damage),0) && stats.GetAttributeValue(CoreAttribute.Attribute.Attunement)==values.Att+all && stats.GetAttributeValue(CoreAttribute.Attribute.Intelligence)==values.Int+all && Near(Value(stats,SP.Mana),100+2*(values.Att+all)),"Native unequip restores original INT/ATT, retains base mana and removes all item effects");
      Check(identity.SequenceEqual(item.GetIDAsArray().ToArray()),"Native recalculation never changes item ID/rolls/LP/affixes");

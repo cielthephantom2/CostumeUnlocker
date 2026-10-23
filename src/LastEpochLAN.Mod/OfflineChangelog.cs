@@ -10,6 +10,7 @@ internal static class OfflineChangelog
     private static GUIStyle bodyStyle;
     private static readonly string content=
         "<b>BONUS OFFLINE</b>\n"+
+        "• Spirit Xylem: +3–4 All Skills, +10–16 Attunement, +3–6 Health/Mana mỗi ATT, +1 Spell Damage mỗi25 Maximum Mana; giữ hai hiệu ứng boss/rare. Disintegrate di chuyển khi channel với80% tốc độ; Arcane Ascendance khóa di chuyển gốc.\n"+
         "• Dev.56: phát hành Spirit Xylem/Stardust, sửa Lerinne/gold, x2 base regen; gỡ Default Meteor/Vilatria override và helper thừa. Protocol44.\n"+
         "• Dev.55: sửa mất đoạn Attunement Spirit Xylem do localization gốc ghi đè; gỡ Default Meteor save repair gây spam log.\n"+
         "• Dev.55: sửa menu đổi class Lerinne; gỡ tùy chọn Vilatria VFX; Stardust tối đa1 điểm, mỗi10 Maximum Mana cho1% more damage tất cả hệ.\n"+

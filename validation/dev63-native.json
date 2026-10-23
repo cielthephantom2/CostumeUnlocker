@@ -1,0 +1,1580 @@
+{
+  "passed": true,
+  "error": null,
+  "gameAssembly": "323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464",
+  "checks": [
+    {
+      "passed": true,
+      "label": "Verified private profile and disposable QA character",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native Disintegrate getters select mobile channel with live target updates",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native mobile channel uses normal movement stats and native Focus timing",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native channel and speed components available",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native speed consumer is exactly80 percent after100 updates",
+      "values": {
+        "normal": 6.552,
+        "channel": 5.2416
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native speed restored after channel flag clears",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native tooltip parser renders all four custom effects",
+      "values": {
+        "roll": 0,
+        "tooltip": "\u002B3 to All Skills\n\u002B10 Attunement\n\u002B3 Health and Mana per Attunement\n\u002B1 Spell Damage per 25 Maximum Mana"
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native note matches this effect, without stale INT equality",
+      "values": {
+        "roll": 0,
+        "index": 0,
+        "note": "Range: 3 to 4"
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native note matches this effect, without stale INT equality",
+      "values": {
+        "roll": 0,
+        "index": 1,
+        "note": "Range: 10 to 16"
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native note matches this effect, without stale INT equality",
+      "values": {
+        "roll": 0,
+        "index": 2,
+        "note": "Range: 3 to 6. Mana from this item stacks with the native \u002B2 Mana per Attunement."
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native note matches this effect, without stale INT equality",
+      "values": {
+        "roll": 0,
+        "index": 3,
+        "note": "Scales with your full maximum Mana, not your current Mana. 1000 maximum Mana grants \u002B40 Spell Damage."
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native registry retains exactly two mana-threshold mods and four separate effects descriptions",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native equip does not apply the removed reduced-health-cost modifier",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native equip retains both original boss/rare mana-threshold MORE modifiers",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native rolled ATT bonus applies independently from INT",
+      "values": {
+        "roll": 0,
+        "Att": 50,
+        "Int": 30,
+        "all": 0,
+        "expected": 60,
+        "intelligence": 30,
+        "attunement": 60
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer reads global All Skills levels",
+      "values": {
+        "roll": 0,
+        "level": 3,
+        "actual": 3
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill points apply to INT, ATT, DEX and STR skills",
+      "values": {
+        "roll": 0,
+        "level": 3,
+        "points": "AwMDAw=="
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native HP and MP consumers both apply rolled per-ATT bonus",
+      "values": {
+        "roll": 0,
+        "final": 60,
+        "per": 3,
+        "health": 1180,
+        "mana": 400,
+        "healthContribution": 180,
+        "manaContribution": 180
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native \u002B2 mana per ATT stacks with item for exactly \u002B5 to \u002B8 mana per ATT",
+      "values": {
+        "roll": 0,
+        "final": 60,
+        "baseMana": 100,
+        "nativeMana": 120,
+        "itemMana": 180,
+        "totalMana": 400,
+        "expectedMana": 400,
+        "health": 1180,
+        "expectedHealth": 1180,
+        "nativeVitalityHealth": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native external-stat refresh automatically derives maximum Mana and spell bonus",
+      "values": {
+        "maximumMana": 400,
+        "statMana": 400,
+        "spell": 16
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native damage builder consumes exactly \u002B1 Spell Damage per25 maximum Mana",
+      "values": {
+        "roll": 0,
+        "final": 60,
+        "withSpell": 116,
+        "withoutSpell": 100,
+        "delta": 16
+      }
+    },
+    {
+      "passed": true,
+      "label": "Added Spell Damage does not leak into native melee damage",
+      "values": {
+        "withAttack": 100,
+        "withoutAttack": 100
+      }
+    },
+    {
+      "passed": true,
+      "label": "100 native refreshes do not stack native mana or item bonuses",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native unequip restores original INT/ATT, retains base mana and removes all item effects",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native recalculation never changes item ID/rolls/LP/affixes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native rolled ATT bonus applies independently from INT",
+      "values": {
+        "roll": 0,
+        "Att": 50,
+        "Int": 30,
+        "all": 5,
+        "expected": 65,
+        "intelligence": 35,
+        "attunement": 65
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer reads global All Skills levels",
+      "values": {
+        "roll": 0,
+        "level": 3,
+        "actual": 3
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill points apply to INT, ATT, DEX and STR skills",
+      "values": {
+        "roll": 0,
+        "level": 3,
+        "points": "AwMDAw=="
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native HP and MP consumers both apply rolled per-ATT bonus",
+      "values": {
+        "roll": 0,
+        "final": 65,
+        "per": 3,
+        "health": 1225,
+        "mana": 425,
+        "healthContribution": 195,
+        "manaContribution": 195
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native \u002B2 mana per ATT stacks with item for exactly \u002B5 to \u002B8 mana per ATT",
+      "values": {
+        "roll": 0,
+        "final": 65,
+        "baseMana": 100,
+        "nativeMana": 130,
+        "itemMana": 195,
+        "totalMana": 425,
+        "expectedMana": 425,
+        "health": 1225,
+        "expectedHealth": 1225,
+        "nativeVitalityHealth": 30
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native external-stat refresh automatically derives maximum Mana and spell bonus",
+      "values": {
+        "maximumMana": 425,
+        "statMana": 425,
+        "spell": 17
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native damage builder consumes exactly \u002B1 Spell Damage per25 maximum Mana",
+      "values": {
+        "roll": 0,
+        "final": 65,
+        "withSpell": 117,
+        "withoutSpell": 100,
+        "delta": 17
+      }
+    },
+    {
+      "passed": true,
+      "label": "Added Spell Damage does not leak into native melee damage",
+      "values": {
+        "withAttack": 100,
+        "withoutAttack": 100
+      }
+    },
+    {
+      "passed": true,
+      "label": "100 native refreshes do not stack native mana or item bonuses",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native unequip restores original INT/ATT, retains base mana and removes all item effects",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native recalculation never changes item ID/rolls/LP/affixes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native rolled ATT bonus applies independently from INT",
+      "values": {
+        "roll": 0,
+        "Att": 30,
+        "Int": 50,
+        "all": 0,
+        "expected": 40,
+        "intelligence": 50,
+        "attunement": 40
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer reads global All Skills levels",
+      "values": {
+        "roll": 0,
+        "level": 3,
+        "actual": 3
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill points apply to INT, ATT, DEX and STR skills",
+      "values": {
+        "roll": 0,
+        "level": 3,
+        "points": "AwMDAw=="
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native HP and MP consumers both apply rolled per-ATT bonus",
+      "values": {
+        "roll": 0,
+        "final": 40,
+        "per": 3,
+        "health": 1120,
+        "mana": 300,
+        "healthContribution": 120,
+        "manaContribution": 120
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native \u002B2 mana per ATT stacks with item for exactly \u002B5 to \u002B8 mana per ATT",
+      "values": {
+        "roll": 0,
+        "final": 40,
+        "baseMana": 100,
+        "nativeMana": 80,
+        "itemMana": 120,
+        "totalMana": 300,
+        "expectedMana": 300,
+        "health": 1120,
+        "expectedHealth": 1120,
+        "nativeVitalityHealth": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native external-stat refresh automatically derives maximum Mana and spell bonus",
+      "values": {
+        "maximumMana": 300,
+        "statMana": 300,
+        "spell": 12
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native damage builder consumes exactly \u002B1 Spell Damage per25 maximum Mana",
+      "values": {
+        "roll": 0,
+        "final": 40,
+        "withSpell": 112,
+        "withoutSpell": 100,
+        "delta": 12
+      }
+    },
+    {
+      "passed": true,
+      "label": "Added Spell Damage does not leak into native melee damage",
+      "values": {
+        "withAttack": 100,
+        "withoutAttack": 100
+      }
+    },
+    {
+      "passed": true,
+      "label": "100 native refreshes do not stack native mana or item bonuses",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native unequip restores original INT/ATT, retains base mana and removes all item effects",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native recalculation never changes item ID/rolls/LP/affixes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native rolled ATT bonus applies independently from INT",
+      "values": {
+        "roll": 0,
+        "Att": 30,
+        "Int": 50,
+        "all": 5,
+        "expected": 45,
+        "intelligence": 55,
+        "attunement": 45
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer reads global All Skills levels",
+      "values": {
+        "roll": 0,
+        "level": 3,
+        "actual": 3
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill points apply to INT, ATT, DEX and STR skills",
+      "values": {
+        "roll": 0,
+        "level": 3,
+        "points": "AwMDAw=="
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native HP and MP consumers both apply rolled per-ATT bonus",
+      "values": {
+        "roll": 0,
+        "final": 45,
+        "per": 3,
+        "health": 1165,
+        "mana": 325,
+        "healthContribution": 135,
+        "manaContribution": 135
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native \u002B2 mana per ATT stacks with item for exactly \u002B5 to \u002B8 mana per ATT",
+      "values": {
+        "roll": 0,
+        "final": 45,
+        "baseMana": 100,
+        "nativeMana": 90,
+        "itemMana": 135,
+        "totalMana": 325,
+        "expectedMana": 325,
+        "health": 1165,
+        "expectedHealth": 1165,
+        "nativeVitalityHealth": 30
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native external-stat refresh automatically derives maximum Mana and spell bonus",
+      "values": {
+        "maximumMana": 325,
+        "statMana": 325,
+        "spell": 13
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native damage builder consumes exactly \u002B1 Spell Damage per25 maximum Mana",
+      "values": {
+        "roll": 0,
+        "final": 45,
+        "withSpell": 113,
+        "withoutSpell": 100,
+        "delta": 13
+      }
+    },
+    {
+      "passed": true,
+      "label": "Added Spell Damage does not leak into native melee damage",
+      "values": {
+        "withAttack": 100,
+        "withoutAttack": 100
+      }
+    },
+    {
+      "passed": true,
+      "label": "100 native refreshes do not stack native mana or item bonuses",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native unequip restores original INT/ATT, retains base mana and removes all item effects",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native recalculation never changes item ID/rolls/LP/affixes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native rolled ATT bonus applies independently from INT",
+      "values": {
+        "roll": 0,
+        "Att": 30,
+        "Int": 30,
+        "all": 0,
+        "expected": 40,
+        "intelligence": 30,
+        "attunement": 40
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer reads global All Skills levels",
+      "values": {
+        "roll": 0,
+        "level": 3,
+        "actual": 3
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill points apply to INT, ATT, DEX and STR skills",
+      "values": {
+        "roll": 0,
+        "level": 3,
+        "points": "AwMDAw=="
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native HP and MP consumers both apply rolled per-ATT bonus",
+      "values": {
+        "roll": 0,
+        "final": 40,
+        "per": 3,
+        "health": 1120,
+        "mana": 300,
+        "healthContribution": 120,
+        "manaContribution": 120
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native \u002B2 mana per ATT stacks with item for exactly \u002B5 to \u002B8 mana per ATT",
+      "values": {
+        "roll": 0,
+        "final": 40,
+        "baseMana": 100,
+        "nativeMana": 80,
+        "itemMana": 120,
+        "totalMana": 300,
+        "expectedMana": 300,
+        "health": 1120,
+        "expectedHealth": 1120,
+        "nativeVitalityHealth": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native external-stat refresh automatically derives maximum Mana and spell bonus",
+      "values": {
+        "maximumMana": 300,
+        "statMana": 300,
+        "spell": 12
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native damage builder consumes exactly \u002B1 Spell Damage per25 maximum Mana",
+      "values": {
+        "roll": 0,
+        "final": 40,
+        "withSpell": 112,
+        "withoutSpell": 100,
+        "delta": 12
+      }
+    },
+    {
+      "passed": true,
+      "label": "Added Spell Damage does not leak into native melee damage",
+      "values": {
+        "withAttack": 100,
+        "withoutAttack": 100
+      }
+    },
+    {
+      "passed": true,
+      "label": "100 native refreshes do not stack native mana or item bonuses",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native unequip restores original INT/ATT, retains base mana and removes all item effects",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native recalculation never changes item ID/rolls/LP/affixes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native rolled ATT bonus applies independently from INT",
+      "values": {
+        "roll": 0,
+        "Att": 30,
+        "Int": 30,
+        "all": 5,
+        "expected": 45,
+        "intelligence": 35,
+        "attunement": 45
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer reads global All Skills levels",
+      "values": {
+        "roll": 0,
+        "level": 3,
+        "actual": 3
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill points apply to INT, ATT, DEX and STR skills",
+      "values": {
+        "roll": 0,
+        "level": 3,
+        "points": "AwMDAw=="
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native HP and MP consumers both apply rolled per-ATT bonus",
+      "values": {
+        "roll": 0,
+        "final": 45,
+        "per": 3,
+        "health": 1165,
+        "mana": 325,
+        "healthContribution": 135,
+        "manaContribution": 135
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native \u002B2 mana per ATT stacks with item for exactly \u002B5 to \u002B8 mana per ATT",
+      "values": {
+        "roll": 0,
+        "final": 45,
+        "baseMana": 100,
+        "nativeMana": 90,
+        "itemMana": 135,
+        "totalMana": 325,
+        "expectedMana": 325,
+        "health": 1165,
+        "expectedHealth": 1165,
+        "nativeVitalityHealth": 30
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native external-stat refresh automatically derives maximum Mana and spell bonus",
+      "values": {
+        "maximumMana": 325,
+        "statMana": 325,
+        "spell": 13
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native damage builder consumes exactly \u002B1 Spell Damage per25 maximum Mana",
+      "values": {
+        "roll": 0,
+        "final": 45,
+        "withSpell": 113,
+        "withoutSpell": 100,
+        "delta": 13
+      }
+    },
+    {
+      "passed": true,
+      "label": "Added Spell Damage does not leak into native melee damage",
+      "values": {
+        "withAttack": 100,
+        "withoutAttack": 100
+      }
+    },
+    {
+      "passed": true,
+      "label": "100 native refreshes do not stack native mana or item bonuses",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native unequip restores original INT/ATT, retains base mana and removes all item effects",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native recalculation never changes item ID/rolls/LP/affixes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native tooltip parser renders all four custom effects",
+      "values": {
+        "roll": 255,
+        "tooltip": "\u002B4 to All Skills\n\u002B16 Attunement\n\u002B6 Health and Mana per Attunement\n\u002B1 Spell Damage per 25 Maximum Mana"
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native note matches this effect, without stale INT equality",
+      "values": {
+        "roll": 255,
+        "index": 0,
+        "note": "Range: 3 to 4"
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native note matches this effect, without stale INT equality",
+      "values": {
+        "roll": 255,
+        "index": 1,
+        "note": "Range: 10 to 16"
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native note matches this effect, without stale INT equality",
+      "values": {
+        "roll": 255,
+        "index": 2,
+        "note": "Range: 3 to 6. Mana from this item stacks with the native \u002B2 Mana per Attunement."
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native note matches this effect, without stale INT equality",
+      "values": {
+        "roll": 255,
+        "index": 3,
+        "note": "Scales with your full maximum Mana, not your current Mana. 1000 maximum Mana grants \u002B40 Spell Damage."
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native registry retains exactly two mana-threshold mods and four separate effects descriptions",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native equip does not apply the removed reduced-health-cost modifier",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native equip retains both original boss/rare mana-threshold MORE modifiers",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native rolled ATT bonus applies independently from INT",
+      "values": {
+        "roll": 255,
+        "Att": 50,
+        "Int": 30,
+        "all": 0,
+        "expected": 66,
+        "intelligence": 30,
+        "attunement": 66
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer reads global All Skills levels",
+      "values": {
+        "roll": 255,
+        "level": 4,
+        "actual": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill points apply to INT, ATT, DEX and STR skills",
+      "values": {
+        "roll": 255,
+        "level": 4,
+        "points": "BAQEBA=="
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native HP and MP consumers both apply rolled per-ATT bonus",
+      "values": {
+        "roll": 255,
+        "final": 66,
+        "per": 6,
+        "health": 1396,
+        "mana": 628,
+        "healthContribution": 396,
+        "manaContribution": 396
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native \u002B2 mana per ATT stacks with item for exactly \u002B5 to \u002B8 mana per ATT",
+      "values": {
+        "roll": 255,
+        "final": 66,
+        "baseMana": 100,
+        "nativeMana": 132,
+        "itemMana": 396,
+        "totalMana": 628,
+        "expectedMana": 628,
+        "health": 1396,
+        "expectedHealth": 1396,
+        "nativeVitalityHealth": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native external-stat refresh automatically derives maximum Mana and spell bonus",
+      "values": {
+        "maximumMana": 628,
+        "statMana": 628,
+        "spell": 25.119999
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native damage builder consumes exactly \u002B1 Spell Damage per25 maximum Mana",
+      "values": {
+        "roll": 255,
+        "final": 66,
+        "withSpell": 125.12,
+        "withoutSpell": 100,
+        "delta": 25.120003
+      }
+    },
+    {
+      "passed": true,
+      "label": "Added Spell Damage does not leak into native melee damage",
+      "values": {
+        "withAttack": 100,
+        "withoutAttack": 100
+      }
+    },
+    {
+      "passed": true,
+      "label": "100 native refreshes do not stack native mana or item bonuses",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native unequip restores original INT/ATT, retains base mana and removes all item effects",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native recalculation never changes item ID/rolls/LP/affixes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native rolled ATT bonus applies independently from INT",
+      "values": {
+        "roll": 255,
+        "Att": 50,
+        "Int": 30,
+        "all": 5,
+        "expected": 71,
+        "intelligence": 35,
+        "attunement": 71
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer reads global All Skills levels",
+      "values": {
+        "roll": 255,
+        "level": 4,
+        "actual": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill points apply to INT, ATT, DEX and STR skills",
+      "values": {
+        "roll": 255,
+        "level": 4,
+        "points": "BAQEBA=="
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native HP and MP consumers both apply rolled per-ATT bonus",
+      "values": {
+        "roll": 255,
+        "final": 71,
+        "per": 6,
+        "health": 1456,
+        "mana": 668,
+        "healthContribution": 426,
+        "manaContribution": 426
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native \u002B2 mana per ATT stacks with item for exactly \u002B5 to \u002B8 mana per ATT",
+      "values": {
+        "roll": 255,
+        "final": 71,
+        "baseMana": 100,
+        "nativeMana": 142,
+        "itemMana": 426,
+        "totalMana": 668,
+        "expectedMana": 668,
+        "health": 1456,
+        "expectedHealth": 1456,
+        "nativeVitalityHealth": 30
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native external-stat refresh automatically derives maximum Mana and spell bonus",
+      "values": {
+        "maximumMana": 668,
+        "statMana": 668,
+        "spell": 26.72
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native damage builder consumes exactly \u002B1 Spell Damage per25 maximum Mana",
+      "values": {
+        "roll": 255,
+        "final": 71,
+        "withSpell": 126.72,
+        "withoutSpell": 100,
+        "delta": 26.720001
+      }
+    },
+    {
+      "passed": true,
+      "label": "Added Spell Damage does not leak into native melee damage",
+      "values": {
+        "withAttack": 100,
+        "withoutAttack": 100
+      }
+    },
+    {
+      "passed": true,
+      "label": "100 native refreshes do not stack native mana or item bonuses",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native unequip restores original INT/ATT, retains base mana and removes all item effects",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native recalculation never changes item ID/rolls/LP/affixes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native rolled ATT bonus applies independently from INT",
+      "values": {
+        "roll": 255,
+        "Att": 30,
+        "Int": 50,
+        "all": 0,
+        "expected": 46,
+        "intelligence": 50,
+        "attunement": 46
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer reads global All Skills levels",
+      "values": {
+        "roll": 255,
+        "level": 4,
+        "actual": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill points apply to INT, ATT, DEX and STR skills",
+      "values": {
+        "roll": 255,
+        "level": 4,
+        "points": "BAQEBA=="
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native HP and MP consumers both apply rolled per-ATT bonus",
+      "values": {
+        "roll": 255,
+        "final": 46,
+        "per": 6,
+        "health": 1276,
+        "mana": 468,
+        "healthContribution": 276,
+        "manaContribution": 276
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native \u002B2 mana per ATT stacks with item for exactly \u002B5 to \u002B8 mana per ATT",
+      "values": {
+        "roll": 255,
+        "final": 46,
+        "baseMana": 100,
+        "nativeMana": 92,
+        "itemMana": 276,
+        "totalMana": 468,
+        "expectedMana": 468,
+        "health": 1276,
+        "expectedHealth": 1276,
+        "nativeVitalityHealth": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native external-stat refresh automatically derives maximum Mana and spell bonus",
+      "values": {
+        "maximumMana": 468,
+        "statMana": 468,
+        "spell": 18.72
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native damage builder consumes exactly \u002B1 Spell Damage per25 maximum Mana",
+      "values": {
+        "roll": 255,
+        "final": 46,
+        "withSpell": 118.72,
+        "withoutSpell": 100,
+        "delta": 18.720001
+      }
+    },
+    {
+      "passed": true,
+      "label": "Added Spell Damage does not leak into native melee damage",
+      "values": {
+        "withAttack": 100,
+        "withoutAttack": 100
+      }
+    },
+    {
+      "passed": true,
+      "label": "100 native refreshes do not stack native mana or item bonuses",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native unequip restores original INT/ATT, retains base mana and removes all item effects",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native recalculation never changes item ID/rolls/LP/affixes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native rolled ATT bonus applies independently from INT",
+      "values": {
+        "roll": 255,
+        "Att": 30,
+        "Int": 50,
+        "all": 5,
+        "expected": 51,
+        "intelligence": 55,
+        "attunement": 51
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer reads global All Skills levels",
+      "values": {
+        "roll": 255,
+        "level": 4,
+        "actual": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill points apply to INT, ATT, DEX and STR skills",
+      "values": {
+        "roll": 255,
+        "level": 4,
+        "points": "BAQEBA=="
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native HP and MP consumers both apply rolled per-ATT bonus",
+      "values": {
+        "roll": 255,
+        "final": 51,
+        "per": 6,
+        "health": 1336,
+        "mana": 508,
+        "healthContribution": 306,
+        "manaContribution": 306
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native \u002B2 mana per ATT stacks with item for exactly \u002B5 to \u002B8 mana per ATT",
+      "values": {
+        "roll": 255,
+        "final": 51,
+        "baseMana": 100,
+        "nativeMana": 102,
+        "itemMana": 306,
+        "totalMana": 508,
+        "expectedMana": 508,
+        "health": 1336,
+        "expectedHealth": 1336,
+        "nativeVitalityHealth": 30
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native external-stat refresh automatically derives maximum Mana and spell bonus",
+      "values": {
+        "maximumMana": 508,
+        "statMana": 508,
+        "spell": 20.32
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native damage builder consumes exactly \u002B1 Spell Damage per25 maximum Mana",
+      "values": {
+        "roll": 255,
+        "final": 51,
+        "withSpell": 120.32,
+        "withoutSpell": 100,
+        "delta": 20.32
+      }
+    },
+    {
+      "passed": true,
+      "label": "Added Spell Damage does not leak into native melee damage",
+      "values": {
+        "withAttack": 100,
+        "withoutAttack": 100
+      }
+    },
+    {
+      "passed": true,
+      "label": "100 native refreshes do not stack native mana or item bonuses",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native unequip restores original INT/ATT, retains base mana and removes all item effects",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native recalculation never changes item ID/rolls/LP/affixes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native rolled ATT bonus applies independently from INT",
+      "values": {
+        "roll": 255,
+        "Att": 30,
+        "Int": 30,
+        "all": 0,
+        "expected": 46,
+        "intelligence": 30,
+        "attunement": 46
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer reads global All Skills levels",
+      "values": {
+        "roll": 255,
+        "level": 4,
+        "actual": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill points apply to INT, ATT, DEX and STR skills",
+      "values": {
+        "roll": 255,
+        "level": 4,
+        "points": "BAQEBA=="
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native HP and MP consumers both apply rolled per-ATT bonus",
+      "values": {
+        "roll": 255,
+        "final": 46,
+        "per": 6,
+        "health": 1276,
+        "mana": 468,
+        "healthContribution": 276,
+        "manaContribution": 276
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native \u002B2 mana per ATT stacks with item for exactly \u002B5 to \u002B8 mana per ATT",
+      "values": {
+        "roll": 255,
+        "final": 46,
+        "baseMana": 100,
+        "nativeMana": 92,
+        "itemMana": 276,
+        "totalMana": 468,
+        "expectedMana": 468,
+        "health": 1276,
+        "expectedHealth": 1276,
+        "nativeVitalityHealth": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native external-stat refresh automatically derives maximum Mana and spell bonus",
+      "values": {
+        "maximumMana": 468,
+        "statMana": 468,
+        "spell": 18.72
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native damage builder consumes exactly \u002B1 Spell Damage per25 maximum Mana",
+      "values": {
+        "roll": 255,
+        "final": 46,
+        "withSpell": 118.72,
+        "withoutSpell": 100,
+        "delta": 18.720001
+      }
+    },
+    {
+      "passed": true,
+      "label": "Added Spell Damage does not leak into native melee damage",
+      "values": {
+        "withAttack": 100,
+        "withoutAttack": 100
+      }
+    },
+    {
+      "passed": true,
+      "label": "100 native refreshes do not stack native mana or item bonuses",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native unequip restores original INT/ATT, retains base mana and removes all item effects",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native recalculation never changes item ID/rolls/LP/affixes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native rolled ATT bonus applies independently from INT",
+      "values": {
+        "roll": 255,
+        "Att": 30,
+        "Int": 30,
+        "all": 5,
+        "expected": 51,
+        "intelligence": 35,
+        "attunement": 51
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native stat consumer reads global All Skills levels",
+      "values": {
+        "roll": 255,
+        "level": 4,
+        "actual": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill points apply to INT, ATT, DEX and STR skills",
+      "values": {
+        "roll": 255,
+        "level": 4,
+        "points": "BAQEBA=="
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native HP and MP consumers both apply rolled per-ATT bonus",
+      "values": {
+        "roll": 255,
+        "final": 51,
+        "per": 6,
+        "health": 1336,
+        "mana": 508,
+        "healthContribution": 306,
+        "manaContribution": 306
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native \u002B2 mana per ATT stacks with item for exactly \u002B5 to \u002B8 mana per ATT",
+      "values": {
+        "roll": 255,
+        "final": 51,
+        "baseMana": 100,
+        "nativeMana": 102,
+        "itemMana": 306,
+        "totalMana": 508,
+        "expectedMana": 508,
+        "health": 1336,
+        "expectedHealth": 1336,
+        "nativeVitalityHealth": 30
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native external-stat refresh automatically derives maximum Mana and spell bonus",
+      "values": {
+        "maximumMana": 508,
+        "statMana": 508,
+        "spell": 20.32
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native damage builder consumes exactly \u002B1 Spell Damage per25 maximum Mana",
+      "values": {
+        "roll": 255,
+        "final": 51,
+        "withSpell": 120.32,
+        "withoutSpell": 100,
+        "delta": 20.32
+      }
+    },
+    {
+      "passed": true,
+      "label": "Added Spell Damage does not leak into native melee damage",
+      "values": {
+        "withAttack": 100,
+        "withoutAttack": 100
+      }
+    },
+    {
+      "passed": true,
+      "label": "100 native refreshes do not stack native mana or item bonuses",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native unequip restores original INT/ATT, retains base mana and removes all item effects",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native recalculation never changes item ID/rolls/LP/affixes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native Meteor component resolved for private Sorcerer-skill test",
+      "values": {
+        "createdForBaseMage": false
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native skill points refund3 when old Stardust rank4 becomes1",
+      "values": {
+        "before": 16,
+        "after": 19
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native Meteor enables temp stats for Stardust",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 0,
+        "tag": "Fire",
+        "baseline": 125,
+        "modified": 125
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 0,
+        "tag": "Cold",
+        "baseline": 125,
+        "modified": 125
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 0,
+        "tag": "Physical",
+        "baseline": 125,
+        "modified": 125
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native temp-stat cache has no injected accumulation",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native Meteor enables temp stats for Stardust",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 500,
+        "tag": "Fire",
+        "baseline": 125,
+        "modified": 187.5
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 500,
+        "tag": "Cold",
+        "baseline": 125,
+        "modified": 187.5
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 500,
+        "tag": "Physical",
+        "baseline": 125,
+        "modified": 187.5
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native temp-stat cache has no injected accumulation",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native Meteor enables temp stats for Stardust",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 1000,
+        "tag": "Fire",
+        "baseline": 125,
+        "modified": 250
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 1000,
+        "tag": "Cold",
+        "baseline": 125,
+        "modified": 250
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 1000,
+        "tag": "Physical",
+        "baseline": 125,
+        "modified": 250
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native temp-stat cache has no injected accumulation",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native Meteor enables temp stats for Stardust",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 2000,
+        "tag": "Fire",
+        "baseline": 125,
+        "modified": 375
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 2000,
+        "tag": "Cold",
+        "baseline": 125,
+        "modified": 375
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native Damage MORE multiplies independently for each element",
+      "values": {
+        "mana": 2000,
+        "tag": "Physical",
+        "baseline": 125,
+        "modified": 375
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native temp-stat cache has no injected accumulation",
+      "values": null
+    }
+  ],
+  "localizationKeys": [
+    "Unique_Tooltip_0_445",
+    "Unique_Tooltip_0_445_Alt",
+    "Unique_Tooltip_1_445",
+    "Unique_Tooltip_1_445_Alt",
+    "Unique_Tooltip_2_445",
+    "Unique_Tooltip_2_445_Alt",
+    "Unique_Tooltip_3_445",
+    "Unique_Tooltip_3_445_Alt"
+  ],
+  "scope": "Real IL2CPP stat, attribute, tooltip parser and Meteor temp-stat consumers on disposable private character; no rendered tooltip or monster-hit measurement"
+}
