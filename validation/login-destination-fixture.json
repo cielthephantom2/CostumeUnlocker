@@ -1,0 +1,16 @@
+{
+  "passed": 9,
+  "checks": [
+    "established offline login selects Rest from: Observatory",
+    "established offline login selects Rest from: EoT",
+    "established offline login selects Rest from: Bazaar",
+    "established offline login selects Rest from: M_Rest",
+    "destination override does not rewrite save or campaign progression",
+    "fresh character keeps native introduction",
+    "online character never redirected",
+    "online environment retains native selection",
+    "missing character or failed native destination preserved"
+  ],
+  "actualSource": true,
+  "nativeGameplayValidated": false
+}

@@ -1,0 +1,22 @@
+{
+  "passed": 15,
+  "checks": [
+    "native unlimited branch allows exhausted or heavily used altar: 0",
+    "native unlimited branch allows exhausted or heavily used altar: 1",
+    "native unlimited branch allows exhausted or heavily used altar: 2",
+    "native unlimited branch allows exhausted or heavily used altar: 9",
+    "native unlimited branch allows exhausted or heavily used altar: 10",
+    "native unlimited branch allows exhausted or heavily used altar: 11",
+    "native unlimited branch allows exhausted or heavily used altar: 1000",
+    "native unlimited branch allows exhausted or heavily used altar: 2147483647",
+    "unlimited use does not bypass other eligibility conditions",
+    "UI reads native unlimited flag without resetting spent uses",
+    "repeated queries preserve counters",
+    "all native altar tiers use unlimited mode without fake maxima",
+    "other crafting station still exhausts normally",
+    "online crafting and UI stay native",
+    "missing altar registry safely ignored"
+  ],
+  "actualSource": true,
+  "nativeGameplayValidated": false
+}

@@ -107,17 +107,23 @@ Check(types.Single(t=>t.Name=="OfflineEchoSpawnEnqueuePatch").Methods.Any(m=>m.N
 Check(!types.Any(t=>t.Name.Contains("Vilatria",StringComparison.Ordinal)) &&
  !types.Single(t=>t.Name=="ToolkitSettings").Properties.Any(p=>p.Name=="IgnoreVilatriaMeteorVisuals"),
  "Vilatria visual override hooks and setting are completely removed");
+var loginDestination=types.Single(t=>t.Name=="OfflineLoginDestinationPatch");
+Check(installed.Contains(loginDestination) && loginDestination.Fields.Any(f=>f.Name=="Destination" && Equals(f.Constant,"M_Rest")) &&
+ loginDestination.Methods.Single(m=>m.Name=="Postfix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().All(m=>
+ m.DeclaringType.Name=="OfflineToolkit" && m.Name=="get_Enabled" || m.DeclaringType.Name=="CharacterData" && m.Name is "get_IsOffline" or "get_ReachedTown" || m.DeclaringType.FullName=="System.String" && m.Name=="IsNullOrEmpty"),
+ "login destination selects Travelers Rest for established offline characters without save writes or extra transitions");
 var pickupNotifications=types.Single(t=>t.Name=="OfflinePickupNotificationPatch");
 Check(installed.Contains(pickupNotifications) &&
  pickupNotifications.Methods.Single(m=>m.Name=="Prefix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().All(m=>m.DeclaringType.Name=="OfflineToolkit" && m.Name=="get_Enabled") &&
  Walk(new[]{pickupNotifications}).SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Where(i=>i.Operand is string).Select(i=>(string)i.Operand).OrderBy(n=>n).SequenceEqual(new[]{"ShardAdded","MultiShardsAdded","RuneOrGlyphAddedNotification","KeyOrWovenEchoAddedNotification","MaterialAdded"}.OrderBy(n=>n)),
  "offline pickup banners suppress only five presentation methods; inventory grants and other notifications remain native");
-var enchanterHooks=new[]{"OfflineWovenEnchanterLimitPatch","OfflineWovenEnchanterRemainingPatch","OfflineWovenEnchanterUiPatch"};
-Check(enchanterHooks.All(n=>installed.Any(t=>t.Name==n)),"Woven Enchanter max uses, native remaining-use and UI hooks install");
+var enchanterHooks=new[]{"OfflineWovenEnchanterLimitPatch","OfflineWovenEnchanterRemainingPatch","OfflineWovenEnchanterUiPatch","OfflineWovenEnchanterEligibilityPatch"};
+Check(enchanterHooks.All(n=>installed.Any(t=>t.Name==n)),"Woven Enchanter native unlimited mode, remaining-use, UI and pre-eligibility hooks install");
 var enchanter=types.Single(t=>t.Name=="WovenEnchanter");
-Check(enchanter.Fields.Any(f=>f.Name=="MaximumUses" && Convert.ToInt32(f.Constant)==10) &&
- !enchanter.Methods.Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Any(i=>i.Operand is MethodReference m && m.Name is "set_localTimesUsed" or "set_forceAllow" or "set_limitedUses" or "ResetUses"),
- "Enchanter cap10 preserves spent-use counters, native eligibility and limited-use enforcement");
+var enchanterCalls=enchanter.Methods.Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(enchanterCalls.Any(m=>m.Name=="set_limitedUses") &&
+ !enchanterCalls.Any(m=>m.Name is "set_localTimesUsed" or "set_forceAllow" or "set_maxUses" or "ResetUses"),
+ "Enchanter uses native unlimited flag without resetting counters, fake large limits or global forceAllow");
 var newMeteorHooks=new[]{"OfflineSpiritXylemLocalizationPatch","OfflineMeteorStardustTreePatch","OfflineMeteorStardustHasStatsPatch","OfflineMeteorStardustStatsPatch","OfflineMeteorStardustLimitPatch","OfflineMeteorStardustNodePatch","OfflineMeteorStardustTextPatch","OfflineMeteorStardustDescriptionPatch","OfflineMeteorStardustAltPatch","OfflineMeteorStardustLabelPatch"};
 var classMenuHooks=new[]{"OfflineClassRespecMenuPatch","OfflineClassRespecClickPatch","OfflineClassRespecClosePatch","OfflineClassRespecUnityMenuPatch","OfflineClassRespecUnityClickPatch","OfflineClassRespecUnityClosePatch"};
 Check(newMeteorHooks.All(n=>installed.Any(t=>t.Name==n)) && installed.Any(t=>t.Name=="OfflineClassRespecLoadGatePatch") && !types.Any(t=>classMenuHooks.Contains(t.Name)),"Stardust and class save load gate install; NPC class hooks removed");
@@ -366,7 +372,7 @@ Check(!installed.SelectMany(t=>t.CustomAttributes.Where(a=>a.AttributeType.Name=
 Check(!installed.Where(t=>!enchanterHooks.Contains(t.Name)).SelectMany(t=>t.CustomAttributes.Where(a=>a.AttributeType.Name=="HarmonyPatch"))
  .SelectMany(a=>a.ConstructorArguments).Any(a=>a.Value is TypeReference target &&
  target.Name is "RandomizeLegendaryPotentialItemContainer" or "RandomizeLegendaryPotentialCraftingUI" or "ZoneRestrictedCraftingManager"),
- "Woven Potential input/UI/use gates remain native; only three explicit Enchanter limit hooks may target the shared manager");
+ "Woven Potential input/UI/use gates remain native; only four explicit Enchanter unlimited hooks may target the shared manager");
 var imprintPatches=installed.Where(t=>t.Name.StartsWith("OfflineWeaver",StringComparison.Ordinal)).ToArray();
 Check(imprintPatches.Length==11,"all eleven narrowly selected Weaver Imprint gameplay/legacy/V2 tooltip patch classes are installed");
 var pointImprints=imprintPatches.Single(t=>t.Name=="OfflineWeaverImprintPointRatesPatch");
