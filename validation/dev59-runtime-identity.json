@@ -1,0 +1,7 @@
+{
+  "modVersion": "1.1.0-dev.59",
+  "gameAssemblySha256": "323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464",
+  "protocolVersion": 44,
+  "scope": "Private runtime; exact dev59 binary",
+  "utc": "2026-10-23T16:25:24.7636021+07:00"
+}

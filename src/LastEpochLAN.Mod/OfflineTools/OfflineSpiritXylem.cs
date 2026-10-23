@@ -14,7 +14,7 @@ internal static class SpiritXylem
     private static CharacterStats current;
     private static readonly List<Stats.Stat> injected=new();
     private static readonly UniqueItemMod skills=new(){property=SP.LevelOfSkills,value=3,maxValue=4,canRoll=true,rollID=5};
-    private static readonly UniqueItemMod attribute=new(){property=SP.Attunement,value=10,maxValue=20,canRoll=true,rollID=6};
+    private static readonly UniqueItemMod attribute=new(){property=SP.Intelligence,value=10,maxValue=20,canRoll=true,rollID=6};
     private static readonly UniqueItemMod healthMana=new(){property=SP.PlayerProperty,tags=(AT)596,value=3,maxValue=6,canRoll=true,rollID=2};
     private static string lastError;
     internal static void Report(Exception ex)
@@ -25,19 +25,16 @@ internal static class SpiritXylem
         if(!OfflineToolkit.Enabled){RestoreRegistry();return;}
         if(registry?.Entry.Pointer==entry.Pointer)return;
         if(entry.mods==null || entry.mods.Count!=8)throw new InvalidOperationException("Unexpected Spirit Xylem definition");
-        // Keep the shipped common spell-health-cost and native mana-threshold
-        // damage/defense mods. All rolled conditional bonuses are supplied once
-        // by the equipped source below, never as unconditional registry stats.
-        var common=new NativeMods();common.Add(entry.mods[1]);common.Add(entry.mods[5]);common.Add(entry.mods[4]);
-        if(common[0].property!=SP.AbilityProperty || common[0].tags!=(AT)253 || common[0].specialTag!=2 ||
-            common[1].property!=SP.GlobalConditionalDamage || common[1].specialTag!=40 ||
-            common[2].property!=SP.PlayerProperty || common[2].tags!=(AT)598)
+        // Preserve native mana-threshold damage/defense, their rolls and item
+        // effect scaling. The former reduced spell-health-cost modifier is gone.
+        var common=new NativeMods();common.Add(entry.mods[5]);common.Add(entry.mods[4]);
+        if(common[0].property!=SP.GlobalConditionalDamage || common[0].specialTag!=40 ||
+            common[1].property!=SP.PlayerProperty || common[1].tags!=(AT)598)
             throw new InvalidOperationException("Spirit Xylem native modifier identity mismatch");
         var descriptions=new NativeDescriptions();
-        descriptions.Add(new(){description=SpiritXylemRules.AttunementText,altText=SpiritXylemRules.ComparisonText});
-        descriptions.Add(new(){description=SpiritXylemRules.IntelligenceText,altText=SpiritXylemRules.ComparisonText});
+        descriptions.Add(new(){description=SpiritXylemRules.EffectsText,altText=SpiritXylemRules.DetailsText});
         var entries=new NativeEntries();
-        foreach(byte index in new byte[]{0,1,2,128,129})entries.Add(new UniqueModDisplayListEntry(index));
+        foreach(byte index in new byte[]{128,0,1})entries.Add(new UniqueModDisplayListEntry(index));
         registry=new(entry,entry.mods,entry.tooltipDescriptions,entry.tooltipEntries);
         entry.mods=common;entry.tooltipDescriptions=descriptions;entry.tooltipEntries=entries;
     }
@@ -87,9 +84,8 @@ internal static class SpiritXylem
                 items.Add((equipped.Item,Math.Max(0,1+equipped.globalStatModifier)));
         if(items.Count==0)return;
         float att=0,intel=0;
-        // This is the same raw sum consumed by native ApplyCoreAttributeModifiers.
-        // The prior source was removed before counting. Item implicit/legendary
-        // affixes and other equipment/passive/buff attributes remain included.
+        // Remove our prior source before reading native raw attribute totals,
+        // including All Attributes and implicit/legendary/passive/buff sources.
         foreach(var stat in stats.stats)
         {
             if(stat==null)continue;
@@ -97,31 +93,27 @@ internal static class SpiritXylem
             else if(stat.property==SP.Attunement)att+=stat.addedValue;
             else if(stat.property==SP.Intelligence)intel+=stat.addedValue;
         }
-        var branch=SpiritXylemRules.Choose(att,intel);
-        if(branch==SpiritXylemRules.Branch.None)return;
-        bool attBranch=branch==SpiritXylemRules.Branch.Attunement;
-        float addedAttribute=0,levels=0,perAttunement=0,spellPerIntelligence=0;
+        if(!float.IsFinite(att) || !float.IsFinite(intel))return;
+        float addedIntelligence=0,levels=0,perAttunement=0,spellPerIntelligence=0;
         foreach(var (item,effect) in items)
         {
-            addedAttribute+=Roll(item,attribute)*effect;
+            addedIntelligence+=Roll(item,attribute)*effect;
             levels+=Roll(item,skills)*effect;
-            if(attBranch)perAttunement+=Roll(item,healthMana)*effect;
-            else spellPerIntelligence+=.5f*effect;
+            perAttunement+=Roll(item,healthMana)*effect;
+            spellPerIntelligence+=effect;
         }
+        int finalIntelligence=SpiritXylemRules.Attribute(intel+addedIntelligence);
         current=stats;
-        // Publish physical stats before native attribute/HP/MP/skill calculations;
-        // native events update max skill points and all derived attribute effects.
-        Add(stats,attBranch?SP.Attunement:SP.Intelligence,addedAttribute);
-        Add(stats,SP.LevelOfSkills,levels,(byte)(attBranch?Tags.SpecificityType.TagsAttunement:Tags.SpecificityType.TagsIntelligence));
-        if(attBranch)
-        {
-            float bonus=perAttunement*SpiritXylemRules.Attribute(att+addedAttribute);
-            Add(stats,SP.Health,bonus);Add(stats,SP.Mana,bonus);
-        }
-        // Use the same added Spell Damage stat as weapon implicits so native
-        // damage consumers and the character sheet both include the source.
-        else Add(stats,SP.Damage,spellPerIntelligence*SpiritXylemRules.Attribute(intel+addedAttribute),0,AT.Spell);
+        // Equality is a single correction, not an attribute bonus scaled by
+        // item effect. Native core-attribute calculation then derives both stats.
+        Add(stats,SP.Intelligence,addedIntelligence);
+        Add(stats,SP.Attunement,finalIntelligence-att);
+        Add(stats,SP.LevelOfSkills,levels);
+        float bonus=perAttunement*finalIntelligence;
+        Add(stats,SP.Health,bonus);Add(stats,SP.Mana,bonus);
+        Add(stats,SP.Damage,spellPerIntelligence*finalIntelligence,0,AT.Spell);
     }
+
     internal static void Tick()
     {
         if(!OfflineToolkit.Enabled){Clear();return;}
@@ -169,9 +161,9 @@ internal static class OfflineSpiritXylemLocalizationPatch
         if(!OfflineToolkit.Enabled)return true;
         string text=key switch
         {
-            "Unique_Tooltip_0_445"=>SpiritXylemRules.AttunementText,
-            "Unique_Tooltip_1_445"=>SpiritXylemRules.IntelligenceText,
-            "Unique_Tooltip_0_445_Alt" or "Unique_Tooltip_1_445_Alt"=>SpiritXylemRules.ComparisonText,
+            "Unique_Tooltip_0_445"=>SpiritXylemRules.EffectsText,
+            "Unique_Tooltip_1_445"=>"",
+            "Unique_Tooltip_0_445_Alt" or "Unique_Tooltip_1_445_Alt"=>SpiritXylemRules.DetailsText,
             _=>null
         };
         if(text==null)return true;__result=text;return false;

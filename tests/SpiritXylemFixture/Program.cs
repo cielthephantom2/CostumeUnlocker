@@ -12,41 +12,44 @@ void Reset(float att=50,float intel=30,byte roll=0){
 }
 float Value(SP p)=>stats.stats.Where(s=>s.property==p).Sum(s=>s.addedValue);
 float Level(byte tag)=>stats.stats.Where(s=>s.property==SP.LevelOfSkills && s.specialTag==tag).Sum(s=>s.addedValue);
-Reset();var originalMods=definition.mods;var originalDescriptions=definition.tooltipDescriptions;var originalEntries=definition.tooltipEntries;var healthCost=originalMods[1];var damage=originalMods[5];var defense=originalMods[4];SpiritXylem.Configure(definition);
-Check(definition.mods.Count==3 && definition.mods[0]==healthCost && definition.mods[1]==damage && definition.mods[2]==defense,"three common effects retain native health-cost/mana-threshold mod objects");
-Check(healthCost.value==.1f && healthCost.maxValue==.2f && damage.type==BaseStats.ModType.MORE && defense.value==-.2f && defense.maxValue==-.1f,"native common10to20percent health cost/damage and20to10percent less damage retain rolls/semantics");
-Check(definition.tooltipEntries.Select(e=>e.modDisplay).SequenceEqual(new byte[]{0,1,2,128,129}),"native tooltip displays common mods then both conditional paragraphs");Check(definition.tooltipDescriptions[0].description.Contains("[10,20,6]") && definition.tooltipDescriptions[1].description.Contains("+1 Spell Damage per 2 Intelligence"),"new ranges and Intelligence branch included in native tooltip text");
-SpiritXylem.Configure(definition);Check(definition.mods.Count==3 && definition.tooltipDescriptions.Count==2,"registry configuration is idempotent");
+Reset();var originalMods=definition.mods;var originalDescriptions=definition.tooltipDescriptions;var originalEntries=definition.tooltipEntries;var damage=originalMods[5];var defense=originalMods[4];SpiritXylem.Configure(definition);
+Check(definition.mods.Count==2 && definition.mods[0]==damage && definition.mods[1]==defense,"retain exact native boss/rare damage and defense objects; remove reduced health cost");
+Check(!definition.mods.Any(m=>m.property==SP.AbilityProperty && m.tags==(AT)253 && m.specialTag==2),"reduced spell health cost is absent from equipped native mods");
+Check(damage.type==BaseStats.ModType.MORE && defense.value==-.2f && defense.maxValue==-.1f,"native mana threshold damage/defense rolls unchanged");
+Check(definition.tooltipEntries.Select(e=>e.modDisplay).SequenceEqual(new byte[]{128,0,1}) && definition.tooltipDescriptions.Count==1,"tooltip has one unconditional effects block followed by two preserved native modifiers");
+Check(definition.tooltipDescriptions[0].description==SpiritXylemRules.EffectsText && !SpiritXylemRules.EffectsText.Contains("If ") && SpiritXylemRules.EffectsText.Contains("All Skills") && SpiritXylemRules.EffectsText.Contains("+1 Spell Damage per Intelligence"),"five requested effects replace both old conditional branches");
+SpiritXylem.Configure(definition);Check(definition.mods.Count==2 && definition.tooltipDescriptions.Count==1,"registry configuration is idempotent");
 SpiritXylem.Clear();Check(ReferenceEquals(definition.mods,originalMods) && ReferenceEquals(definition.tooltipDescriptions,originalDescriptions) && ReferenceEquals(definition.tooltipEntries,originalEntries),"cleanup restores exact original registry references");
 Reset();var bytes=item.id.ToArray();var rolls=item.uniqueRolls.ToArray();var affixes=item.affixes;SpiritXylem.Apply(stats);
-Check(Value(SP.Attunement)==60 && Value(SP.Intelligence)==30,"Attunement branch adds min10 to actual core stat source");Check(Level(11)==3 && Level(9)==0,"Attunement branch grants3 levels only to Attunement-scaled skills");Check(Value(SP.Health)==180 && Value(SP.Mana)==180 && Value(SP.Damage)==0,"Attunement branch health/mana use3 per final60Attunement");Check(item.id.SequenceEqual(bytes) && item.uniqueRolls.SequenceEqual(rolls) && item.legendaryPotential==3 && ReferenceEquals(affixes,item.affixes),"item identity rolls LP and legendary affixes stay byte/reference identical");
-for(int n=0;n<20;n++)SpiritXylem.Apply(stats);Check(stats.stats.Count==6 && Value(SP.Attunement)==60 && Value(SP.Health)==180,"repeated recalculation never stacks bonuses or self-locks comparison");
-// With former bonus the displayed stats would favor Attunement; naked sources favor INT.
-stats.stats[0].addedValue=20;stats.stats[1].addedValue=25;SpiritXylem.Apply(stats);Check(Value(SP.Attunement)==20 && Value(SP.Intelligence)==35 && Level(11)==0 && Level(9)==3,"changing base stats switches branches using attributes before its own bonus");Check(Value(SP.Health)==0 && Value(SP.Mana)==0 && Value(SP.Damage)==17.5f,"switch removes old HP/MP and adds1 spell damage per2 final35Intelligence");
-stats.stats[0].addedValue=25;SpiritXylem.Apply(stats);Check(stats.stats.Count==2 && Value(SP.Damage)==0 && Value(SP.Intelligence)==25,"equal underlying attributes receive neither branch");
-Reset(50,30,255);SpiritXylem.Apply(stats);Check(Value(SP.Attunement)==70 && Level(11)==4 && Value(SP.Health)==420 && Value(SP.Mana)==420,"maximum Attunement rolls give20attribute4skills6HP/MP per Attunement");
-Reset(30,50,255);SpiritXylem.Apply(stats);Check(Value(SP.Intelligence)==70 && Level(9)==4 && Value(SP.Damage)==35 && Value(SP.Health)==0,"maximum Intelligence rolls give20attribute4skills35 spell damage at70INT");
-Reset();actor.itemContainersManager.itemEquipManager.equippedItems[0].StatsApplied=false;SpiritXylem.Apply(stats);Check(stats.stats.Count==2,"native StatsApplied=false excludes disabled/faction/primordial-cap equipment");
-Reset();actor.itemContainersManager.itemEquipManager.equippedItems[0].Item.uniqueID=444;SpiritXylem.Apply(stats);Check(stats.stats.Count==2,"other uniques unaffected");
-Reset();actor.itemContainersManager.itemEquipManager.equippedItems.Clear();SpiritXylem.Apply(stats);Check(stats.stats.Count==2,"inventory/stash copies cannot grant equipped bonuses");
-Reset();SpiritXylem.Apply(stats);actor.itemContainersManager.itemEquipManager.equippedItems.Clear();SpiritXylem.Apply(stats);Check(stats.stats.Count==2 && Value(SP.Health)==0,"unequipping removes every conditional stat on next native recalculation");
-Reset();SpiritXylem.Apply(stats);var old=stats;var oldActor=actor;actor=PlayerFinder.Player=new();stats=new(){actor=actor};stats.stats.Add(new(SP.Intelligence,0,70,0,0,0,0));actor.itemContainersManager.itemEquipManager.equippedItems.Add(new(){Item=item});SpiritXylem.Apply(stats);Check(old.stats.Count==2 && old.Requests>0 && Value(SP.Intelligence)==80,"actor replacement removes old source before adding to new actor");
-Reset();PlayerFinder.Player=new();SpiritXylem.Apply(stats);Check(stats.stats.Count==2,"remote actor never receives local item changes");
-Reset();SpiritXylem.Apply(stats);OfflineToolkit.Enabled=false;SpiritXylem.Tick();Check(stats.stats.Count==2 && definition.mods.Count==8,"online transition restores native registry and conditional stats");
-Reset();SpiritXylem.Apply(stats);SpiritXylem.Clear();Check(stats.stats.Count==2 && definition.mods.Count==8,"scene cleanup removes source and restores original asset");
-Reset();actor.itemContainersManager.itemEquipManager.equippedItems[0].globalStatModifier=.5f;SpiritXylem.Apply(stats);Check(Value(SP.Attunement)==65 && Value(SP.Health)==292.5f,"native increased item-effect multiplier applies to conditional rolls");
-Reset();item.uniqueRolls=Array.Empty<byte>();var patch=typeof(OfflineSpiritXylemConditionPatch).GetMethod("Prefix",BindingFlags.NonPublic|BindingFlags.Static);patch.Invoke(null,new object[]{stats});Check(stats.stats.Count==2 && MelonLoader.MelonLogger.Messages.Count>0,"malformed rolls preserve native stat update instead of throwing through Harmony");
-Reset();Check(SpiritXylemRules.Choose(float.NaN,0)==SpiritXylemRules.Branch.None && SpiritXylemRules.Choose(10.4f,10.49f)==SpiritXylemRules.Branch.None,"comparison handles nonfinite input and native integer rounding ties");
-var localization=typeof(OfflineSpiritXylemLocalizationPatch).GetMethod("Prefix",BindingFlags.NonPublic|BindingFlags.Static);
-foreach(var row in new[]{("Unique_Tooltip_0_445",SpiritXylemRules.AttunementText),("Unique_Tooltip_1_445",SpiritXylemRules.IntelligenceText)})
-{
- object[] args2={row.Item1,"shipped old localized description"};bool original=(bool)localization.Invoke(null,args2);
- Check(!original && (string)args2[1]==row.Item2,"native localization cannot replace new conditional paragraph with old HP/MP-only text: "+row.Item1);
+Check(Value(SP.Intelligence)==40 && Value(SP.Attunement)==40,"INT30 plus min10 INT gives40; ATT50 is set down to final INT40");
+Check(Level(0)==3 && !stats.stats.Any(s=>s.property==SP.LevelOfSkills && s.specialTag!=0),"min3 global skill levels use no attribute filter");
+Check(Value(SP.Health)==120 && Value(SP.Mana)==120 && Value(SP.Damage)==40,"min3 HP/MP per final40 ATT plus1 spell damage per40 INT apply together");
+Check(item.id.SequenceEqual(bytes) && item.uniqueRolls.SequenceEqual(rolls) && item.legendaryPotential==3 && ReferenceEquals(affixes,item.affixes),"item identity rolls LP and legendary affixes remain unchanged");
+for(int n=0;n<100;n++)SpiritXylem.Apply(stats);
+Check(Value(SP.Intelligence)==40 && Value(SP.Attunement)==40 && Level(0)==3 && Value(SP.Health)==120 && Value(SP.Damage)==40,"100 recalculations never stack equality, attribute, health, mana or damage");
+stats.stats[0].addedValue=200;stats.stats[1].addedValue=65;SpiritXylem.Apply(stats);
+Check(Value(SP.Attunement)==75 && Value(SP.Intelligence)==75 && Value(SP.Health)==225 && Value(SP.Damage)==75,"changing base INT/ATT refreshes equality and every scaling effect");
+foreach(var (att,intel) in new[]{(30f,50f),(50f,30f),(30f,30f)}){
+ Reset(att,intel,255);SpiritXylem.Apply(stats);float expected=intel+20;
+ Check(Value(SP.Intelligence)==expected && Value(SP.Attunement)==expected && Level(0)==4 && Value(SP.Health)==6*expected && Value(SP.Mana)==6*expected && Value(SP.Damage)==expected,"max rolls all apply regardless of old comparison: "+att+"/"+intel);
 }
-object[] otherKey={"Unique_Tooltip_444_0","unrelated"};Check((bool)localization.Invoke(null,otherKey) && (string)otherKey[1]=="unrelated","other unique localization remains native");
-OfflineToolkit.Enabled=false;object[] onlineKey={"Unique_Tooltip_0_445","online"};Check((bool)localization.Invoke(null,onlineKey),"online localized unique description stays native");OfflineToolkit.Enabled=true;
-Reset();stats.stats.Add(new(SP.AllAttributes,0,5,0,0,0,0));SpiritXylem.Apply(stats);Check(Value(SP.Health)==195 && Value(SP.Mana)==195,"All Attributes source contributes to final65 Attunement scaling");
-Reset(30,50);stats.stats.Add(new(SP.AllAttributes,0,5,0,0,0,0));SpiritXylem.Apply(stats);Check(Value(SP.Damage)==32.5f,"All Attributes source contributes to final65 Intelligence spell scaling");
-Check(stats.stats.Single(st=>st.property==SP.Damage).tags==AT.Spell,"flat spell damage uses the native weapon Spell Damage tag");
-Check(!SpiritXylemRules.AttunementText.Contains(" to 4)") && !SpiritXylemRules.AttunementText.Contains(" to 20)") && !SpiritXylemRules.AttunementText.Contains(" to 6)") && !SpiritXylemRules.IntelligenceText.Contains(" to 4)"),"conditional tooltips show actual rolls without redundant literal range text");
-Directory.CreateDirectory("validation");File.WriteAllText("validation/dev56-spirit-xylem-fixture.json",JsonSerializer.Serialize(new{passed=checks.Count,checks,actualSource=true,nativeGameplayValidated=false},new JsonSerializerOptions{WriteIndented=true}));Console.WriteLine("PASS "+checks.Count+" actual-source Spirit Xylem checks");
+Reset();actor.itemContainersManager.itemEquipManager.equippedItems[0].StatsApplied=false;SpiritXylem.Apply(stats);Check(stats.stats.Count==2,"StatsApplied=false equipment grants no effects");
+Reset();item.uniqueID=444;SpiritXylem.Apply(stats);Check(stats.stats.Count==2,"other uniques unaffected");
+Reset();actor.itemContainersManager.itemEquipManager.equippedItems.Clear();SpiritXylem.Apply(stats);Check(stats.stats.Count==2,"inventory or stash copies grant no effects");
+Reset();SpiritXylem.Apply(stats);actor.itemContainersManager.itemEquipManager.equippedItems.Clear();SpiritXylem.Apply(stats);Check(stats.stats.Count==2 && Value(SP.Attunement)==50 && Value(SP.Intelligence)==30 && Value(SP.Health)==0 && Value(SP.Damage)==0,"unequip restores original ATT/INT and removes all five effects");
+Reset();SpiritXylem.Apply(stats);var old=stats;actor=PlayerFinder.Player=new();stats=new(){actor=actor};stats.stats.Add(new(SP.Intelligence,0,70,0,0,0,0));actor.itemContainersManager.itemEquipManager.equippedItems.Add(new(){Item=item});SpiritXylem.Apply(stats);Check(old.stats.Count==2 && old.Requests>0 && Value(SP.Intelligence)==80 && Value(SP.Attunement)==80,"actor replacement removes old source and applies equality on the new actor");
+Reset();PlayerFinder.Player=new();SpiritXylem.Apply(stats);Check(stats.stats.Count==2,"remote actor never receives local item effects");
+Reset();SpiritXylem.Apply(stats);OfflineToolkit.Enabled=false;SpiritXylem.Tick();Check(stats.stats.Count==2 && definition.mods.Count==8,"online transition restores native registry and all attribute sources");
+Reset();SpiritXylem.Apply(stats);SpiritXylem.Clear();Check(stats.stats.Count==2 && definition.mods.Count==8,"scene cleanup restores native assets and stats");
+Reset();actor.itemContainersManager.itemEquipManager.equippedItems[0].globalStatModifier=.5f;SpiritXylem.Apply(stats);Check(Value(SP.Intelligence)==45 && Value(SP.Attunement)==45 && Value(SP.Health)==202.5f && Value(SP.Mana)==202.5f && Value(SP.Damage)==67.5f && Level(0)==4.5f,"increased item effect scales bonuses once while equality remains exact");
+Reset();item.uniqueRolls=Array.Empty<byte>();typeof(OfflineSpiritXylemConditionPatch).GetMethod("Prefix",BindingFlags.NonPublic|BindingFlags.Static).Invoke(null,new object[]{stats});Check(stats.stats.Count==2 && MelonLoader.MelonLogger.Messages.Count>0,"malformed rolls fail without leaving partial attribute or skill effects");
+Reset();stats.stats.Add(new(SP.AllAttributes,0,5,0,0,0,0));SpiritXylem.Apply(stats);Check(Value(SP.Attunement)+Value(SP.AllAttributes)==45 && Value(SP.Intelligence)+Value(SP.AllAttributes)==45 && Value(SP.Health)==135 && Value(SP.Mana)==135 && Value(SP.Damage)==45,"All Attributes contributes to final INT and ATT equality and HP/MP/spell scaling");
+Reset();stats.stats[0].addedValue=float.NaN;SpiritXylem.Apply(stats);Check(stats.stats.Count==2,"nonfinite attributes do not publish invalid stats");
+Reset(40,30);SpiritXylem.Apply(stats);Check(Value(SP.Attunement)==40 && Value(SP.Intelligence)==40 && Value(SP.Health)==120,"already-equal final attributes retain all other effects");
+var localization=typeof(OfflineSpiritXylemLocalizationPatch).GetMethod("Prefix",BindingFlags.NonPublic|BindingFlags.Static);
+foreach(var row in new[]{("Unique_Tooltip_0_445",SpiritXylemRules.EffectsText),("Unique_Tooltip_1_445",""),("Unique_Tooltip_0_445_Alt",SpiritXylemRules.DetailsText)}){
+ object[] values={row.Item1,"old condition"};Check(!(bool)localization.Invoke(null,values) && (string)values[1]==row.Item2,"native localization removes old branches for "+row.Item1);
+}
+object[] other={"Unique_Tooltip_444_0","unrelated"};Check((bool)localization.Invoke(null,other) && (string)other[1]=="unrelated","unrelated localization remains native");
+OfflineToolkit.Enabled=false;object[] online={"Unique_Tooltip_0_445","online"};Check((bool)localization.Invoke(null,online),"online tooltip remains native");OfflineToolkit.Enabled=true;
+Directory.CreateDirectory("validation");File.WriteAllText("validation/spirit-rework-fixture.json",JsonSerializer.Serialize(new{passed=checks.Count,checks,actualSource=true,nativeGameplayValidated=false},new JsonSerializerOptions{WriteIndented=true}));Console.WriteLine("PASS "+checks.Count+" actual-source Spirit Xylem rework checks");

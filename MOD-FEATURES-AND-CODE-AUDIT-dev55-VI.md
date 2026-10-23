@@ -68,14 +68,13 @@ Weaver Tree / Imprint (cần node và imprinted item đúng loại):
 
 Spirit Xylem (unique445, thay modifiers cũ; implicit/base item, ID, rolls, LP, legendary affix giữ nguyên):
 
-- Reduced Health Cost of Spells10–20%.
-- More Damage to Bosses/Rares10–20% khi trên nửa mana.
-- Less Damage Taken from Bosses/Rares20–10% khi dưới nửa mana.
-- Attunement>Intelligence: +3–4 level Attunement Skills, +10–20 Attunement, +3–6 HP và MP mỗi Attunement cuối, gồm All Attributes.
-- Intelligence>Attunement: +3–4 level Intelligence Skills, +10–20 Intelligence, +1 Spell Damage mỗi2 INT cuối, gồm All Attributes (tính liên tục, không làm tròn từng cặp).
-- So sánh thuộc tính trước bonus có điều kiện của chính gậy để không tự khóa nhánh; bằng nhau không có nhánh nào. Gear/passive/legendary affixes khác vẫn tham gia.
-- Reduced Mana Cost cũ đã bỏ vì không nằm trong bộ chỉ số yêu cầu mới.
-- Tooltip cần override khóa localization native của unique445, vì description0 của game gốc ghi đè asset string thành dòng HP/MP cũ.
+- +3–4 All Skills (không lọc thuộc tính).
+- Attunement bằng Intelligence cuối, sau khi cộng +10–20 Intelligence của item; ATT gốc có thể tăng hoặc giảm để bằng INT.
+- +10–20 Intelligence, gồm All Attributes trong giá trị cuối.
+- +3–6 Health và Mana mỗi Attunement; Mana cộng thêm vào +2 Mana/ATT gốc, thành +5–8 Mana/ATT trước modifier khác.
+- +1 flat Spell Damage mỗi Intelligence, AT.Spell; không chia2 và không áp sang melee.
+- Giữ More Damage to Bosses/Rares10–20% khi trên nửa mana và Less Damage Taken from Bosses/Rares20–10% khi dưới nửa mana.
+- Bỏ reduced health cost và hai điều kiện so sánh thuộc tính; giữ rollID/implicit/LP/affix. Native localization thay bằng một paragraph5 dòng, không lặp range dư.
 
 ## D. F1/F4, minimap và tiện ích
 

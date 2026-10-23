@@ -1,0 +1,359 @@
+{
+  "passed": true,
+  "nativeChecks": 152,
+  "skills": [
+    {
+      "roll": 0,
+      "level": 3,
+      "points": [
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "roll": 0,
+      "level": 3,
+      "points": [
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "roll": 0,
+      "level": 3,
+      "points": [
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "roll": 0,
+      "level": 3,
+      "points": [
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "roll": 0,
+      "level": 3,
+      "points": [
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "roll": 0,
+      "level": 3,
+      "points": [
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "roll": 255,
+      "level": 4,
+      "points": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "roll": 255,
+      "level": 4,
+      "points": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "roll": 255,
+      "level": 4,
+      "points": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "roll": 255,
+      "level": 4,
+      "points": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "roll": 255,
+      "level": 4,
+      "points": [
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "roll": 255,
+      "level": 4,
+      "points": [
+        4,
+        4,
+        4,
+        4
+      ]
+    }
+  ],
+  "mana": [
+    {
+      "roll": 0,
+      "final": 40,
+      "baseMana": 100,
+      "nativeMana": 80,
+      "itemMana": 120,
+      "totalMana": 300,
+      "expectedMana": 300,
+      "health": 1120,
+      "expectedHealth": 1120,
+      "nativeVitalityHealth": 0
+    },
+    {
+      "roll": 0,
+      "final": 45,
+      "baseMana": 100,
+      "nativeMana": 90,
+      "itemMana": 135,
+      "totalMana": 325,
+      "expectedMana": 325,
+      "health": 1165,
+      "expectedHealth": 1165,
+      "nativeVitalityHealth": 30
+    },
+    {
+      "roll": 0,
+      "final": 60,
+      "baseMana": 100,
+      "nativeMana": 120,
+      "itemMana": 180,
+      "totalMana": 400,
+      "expectedMana": 400,
+      "health": 1180,
+      "expectedHealth": 1180,
+      "nativeVitalityHealth": 0
+    },
+    {
+      "roll": 0,
+      "final": 65,
+      "baseMana": 100,
+      "nativeMana": 130,
+      "itemMana": 195,
+      "totalMana": 425,
+      "expectedMana": 425,
+      "health": 1225,
+      "expectedHealth": 1225,
+      "nativeVitalityHealth": 30
+    },
+    {
+      "roll": 0,
+      "final": 40,
+      "baseMana": 100,
+      "nativeMana": 80,
+      "itemMana": 120,
+      "totalMana": 300,
+      "expectedMana": 300,
+      "health": 1120,
+      "expectedHealth": 1120,
+      "nativeVitalityHealth": 0
+    },
+    {
+      "roll": 0,
+      "final": 45,
+      "baseMana": 100,
+      "nativeMana": 90,
+      "itemMana": 135,
+      "totalMana": 325,
+      "expectedMana": 325,
+      "health": 1165,
+      "expectedHealth": 1165,
+      "nativeVitalityHealth": 30
+    },
+    {
+      "roll": 255,
+      "final": 50,
+      "baseMana": 100,
+      "nativeMana": 100,
+      "itemMana": 300,
+      "totalMana": 500,
+      "expectedMana": 500,
+      "health": 1300,
+      "expectedHealth": 1300,
+      "nativeVitalityHealth": 0
+    },
+    {
+      "roll": 255,
+      "final": 55,
+      "baseMana": 100,
+      "nativeMana": 110,
+      "itemMana": 330,
+      "totalMana": 540,
+      "expectedMana": 540,
+      "health": 1360,
+      "expectedHealth": 1360,
+      "nativeVitalityHealth": 30
+    },
+    {
+      "roll": 255,
+      "final": 70,
+      "baseMana": 100,
+      "nativeMana": 140,
+      "itemMana": 420,
+      "totalMana": 660,
+      "expectedMana": 660,
+      "health": 1420,
+      "expectedHealth": 1420,
+      "nativeVitalityHealth": 0
+    },
+    {
+      "roll": 255,
+      "final": 75,
+      "baseMana": 100,
+      "nativeMana": 150,
+      "itemMana": 450,
+      "totalMana": 700,
+      "expectedMana": 700,
+      "health": 1480,
+      "expectedHealth": 1480,
+      "nativeVitalityHealth": 30
+    },
+    {
+      "roll": 255,
+      "final": 50,
+      "baseMana": 100,
+      "nativeMana": 100,
+      "itemMana": 300,
+      "totalMana": 500,
+      "expectedMana": 500,
+      "health": 1300,
+      "expectedHealth": 1300,
+      "nativeVitalityHealth": 0
+    },
+    {
+      "roll": 255,
+      "final": 55,
+      "baseMana": 100,
+      "nativeMana": 110,
+      "itemMana": 330,
+      "totalMana": 540,
+      "expectedMana": 540,
+      "health": 1360,
+      "expectedHealth": 1360,
+      "nativeVitalityHealth": 30
+    }
+  ],
+  "spell": [
+    {
+      "roll": 0,
+      "final": 40,
+      "withSpell": 140,
+      "withoutSpell": 100,
+      "delta": 40
+    },
+    {
+      "roll": 0,
+      "final": 45,
+      "withSpell": 145,
+      "withoutSpell": 100,
+      "delta": 45
+    },
+    {
+      "roll": 0,
+      "final": 60,
+      "withSpell": 160,
+      "withoutSpell": 100,
+      "delta": 60
+    },
+    {
+      "roll": 0,
+      "final": 65,
+      "withSpell": 165,
+      "withoutSpell": 100,
+      "delta": 65
+    },
+    {
+      "roll": 0,
+      "final": 40,
+      "withSpell": 140,
+      "withoutSpell": 100,
+      "delta": 40
+    },
+    {
+      "roll": 0,
+      "final": 45,
+      "withSpell": 145,
+      "withoutSpell": 100,
+      "delta": 45
+    },
+    {
+      "roll": 255,
+      "final": 50,
+      "withSpell": 150,
+      "withoutSpell": 100,
+      "delta": 50
+    },
+    {
+      "roll": 255,
+      "final": 55,
+      "withSpell": 155,
+      "withoutSpell": 100,
+      "delta": 55
+    },
+    {
+      "roll": 255,
+      "final": 70,
+      "withSpell": 170,
+      "withoutSpell": 100,
+      "delta": 70
+    },
+    {
+      "roll": 255,
+      "final": 75,
+      "withSpell": 175,
+      "withoutSpell": 100,
+      "delta": 75
+    },
+    {
+      "roll": 255,
+      "final": 50,
+      "withSpell": 150,
+      "withoutSpell": 100,
+      "delta": 50
+    },
+    {
+      "roll": 255,
+      "final": 55,
+      "withSpell": 155,
+      "withoutSpell": 100,
+      "delta": 55
+    }
+  ],
+  "limits": "Native consumers and damage builder; no monster hit or rendered tooltip screenshot"
+}

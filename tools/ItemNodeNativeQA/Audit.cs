@@ -121,69 +121,77 @@ public class Audit:MelonMod
   var definition=UniqueList.getUnique(445);
   try
   {
+   void ResetSources()
+   {
+    Call("SpiritXylem","Clear");equip.equippedItems=new();stats.stats=new();
+    // Zero native cached attributes in a scratch stat list, then discard the
+    // resulting delta rows. Each case starts with clean native +2 mana/ATT.
+    stats.ApplyCoreAttributeModifiers();stats.stats=new();UniqueList.getUnique(445);
+   }
    foreach(byte roll in new byte[]{0,255})
    {
-    var item=Item(definition,roll);
-    var tooltip=new List<string>();foreach(int index in new[]{0,1})tooltip.Add(ItemTooltipContentBuilder.GetUniqueModifierInfoFromTooltipDescription(item,definition,index,(TooltipItemManager.SlotType)0).GetModifierString(false));
-    Check(tooltip[0].Contains("If Attunement") && tooltip[0].Contains("Attunement Skills") && tooltip[0].Contains("Health and Mana per Attunement") && tooltip[1].Contains("Spell Damage per 2 Intelligence"),"Native localization + tooltip parser renders both complete branches",new{roll,tooltip});
-    Call("SpiritXylem","Clear");UniqueList.getUnique(445);stats.stats=new();equip.equippedItems=new();
+    ResetSources();var item=Item(definition,roll);var identity=item.GetIDAsArray().ToArray();
+    string tooltip=ItemTooltipContentBuilder.GetUniqueModifierInfoFromTooltipDescription(item,definition,0,(TooltipItemManager.SlotType)0).GetModifierString(false);
+    Check(tooltip.Contains("All Skills") && tooltip.Contains("Your Attunement is equal to your Intelligence") && tooltip.Contains("Health and Mana per Attunement") && tooltip.Contains("+1 Spell Damage per Intelligence") && !tooltip.Contains("If ") && !tooltip.Contains("per 2 Intelligence"),"Native tooltip parser renders all five unconditional effects",new{roll,tooltip});
+    Check(definition.mods.Count==2 && definition.tooltipDescriptions.Count==1,"Native registry retains exactly two mana-threshold mods and one new effects description");
     equip.UpdateStats(item,true,false,0,0,0,0);
-    var nativeMods=new List<object>();
-    foreach(var stat in stats.stats)nativeMods.Add(new{property=stat.property.ToString(),tags=(int)stat.tags,stat.specialTag,stat.addedValue,stat.increasedValue,more=stat.moreValues?.ToArray()});
-    bool Matches(SP property,int tags,int special,float added,float more)
+    bool Matches(SP property,int tags,int special,float more)
     {
-     foreach(var st in stats.stats)if(st.property==property && (int)st.tags==tags && st.specialTag==special && Near(st.addedValue,added) && (more==0 || st.moreValues.ToArray().Any(v=>Near(v,more))))return true;
+     foreach(var st in stats.stats)if(st.property==property && (int)st.tags==tags && st.specialTag==special && st.moreValues.ToArray().Any(v=>Near(v,more)))return true;
      return false;
     }
-    Check(Matches(SP.AbilityProperty,253,2,roll==0?.1f:.2f,0),"Native ItemEquipManager applies reduced spell health cost",nativeMods);
-    Check(Matches(SP.GlobalConditionalDamage,0,40,0,roll==0?.1f:.2f),"Native ItemEquipManager applies boss/rare more damage above half mana",nativeMods);
-    Check(Matches(SP.PlayerProperty,598,0,0,roll==0?-.2f:-.1f),"Native ItemEquipManager applies boss/rare less damage below half mana",nativeMods);
-    foreach(bool att in new[]{true,false})
+    Check(!stats.stats.ToArray().Any(st=>st.property==SP.AbilityProperty && (int)st.tags==253 && st.specialTag==2),"Native equip does not apply the removed reduced-health-cost modifier");
+    Check(Matches(SP.GlobalConditionalDamage,0,40,roll==0?.1f:.2f) && Matches(SP.PlayerProperty,598,0,roll==0?-.2f:-.1f),"Native equip retains both original boss/rare mana-threshold MORE modifiers");
+    foreach(var values in new[]{(Att:50,Int:30),(Att:30,Int:50),(Att:30,Int:30)})
     foreach(int all in new[]{0,5})
     {
-     Call("SpiritXylem","Clear");UniqueList.getUnique(445);
-     stats.stats=new();stats.stats.Add(new Stats.Stat(SP.Attunement,0,att?50:30,0,0,0,0));stats.stats.Add(new Stats.Stat(SP.Intelligence,0,att?30:50,0,0,0,0));stats.stats.Add(new Stats.Stat(SP.AllAttributes,0,all,0,0,0,0));
-     equip.equippedItems=new();equip.equippedItems.Add(new ItemEquipManager.EquippedItem(item,true,(ItemEquipManager.GearType)0));
+     ResetSources();
+     stats.stats.Add(new Stats.Stat(SP.Attunement,0,values.Att,0,0,0,0));stats.stats.Add(new Stats.Stat(SP.Intelligence,0,values.Int,0,0,0,0));stats.stats.Add(new Stats.Stat(SP.AllAttributes,0,all,0,0,0,0));
+     stats.stats.Add(new Stats.Stat(SP.Health,0,1000,0,0,0,0));stats.stats.Add(new Stats.Stat(SP.Mana,0,100,0,0,0,0));
+     equip.equippedItems.Add(new ItemEquipManager.EquippedItem(item,true,(ItemEquipManager.GearType)0));
      stats.ApplyCoreAttributeModifiers();
-     int final=(roll==0?60:70)+all;int level=roll==0?3:4;float hp=(roll==0?3:6)*final;
-     Check(stats.GetAttributeValue(att?CoreAttribute.Attribute.Attunement:CoreAttribute.Attribute.Intelligence)==final,"Native core attribute consumes conditional attribute",new{roll,att,expected=final});
-     Check(Near(Value(stats,SP.LevelOfSkills,(byte)(att?11:9)),level),"Native stat consumer sees correct tagged skill levels",new{roll,att,actual=Value(stats,SP.LevelOfSkills,(byte)(att?11:9)),level});
+     int final=values.Int+all+(roll==0?10:20);int level=roll==0?3:4;int per=roll==0?3:6;float hp=per*final;
+     Check(stats.GetAttributeValue(CoreAttribute.Attribute.Intelligence)==final && stats.GetAttributeValue(CoreAttribute.Attribute.Attunement)==final,"Native final ATT equals INT after the rolled Intelligence bonus",new{roll,values.Att,values.Int,all,expected=final,intelligence=stats.GetAttributeValue(CoreAttribute.Attribute.Intelligence),attunement=stats.GetAttributeValue(CoreAttribute.Attribute.Attunement)});
+     Check(Near(Value(stats,SP.LevelOfSkills),level),"Native stat consumer reads global All Skills levels",new{roll,level,actual=Value(stats,SP.LevelOfSkills)});
      var nativeTrees=actor.localTreeData.specialisedSkillTrees;
      try
      {
       actor.localTreeData.specialisedSkillTrees=new();
-      var attAbility=Ability.getAbility(AbilityID.summonThornTotem);var intAbility=Ability.getAbility(AbilityID.fireball);
-      var attTree=new LocalTreeData.SkillTreeData(attAbility.playerAbilityID,0){level=20};var intTree=new LocalTreeData.SkillTreeData(intAbility.playerAbilityID,1){level=20};
-      actor.localTreeData.specialisedSkillTrees.Add(attTree);actor.localTreeData.specialisedSkillTrees.Add(intTree);
+      var trees=new List<LocalTreeData.SkillTreeData>();
+      foreach(var abilityID in new[]{AbilityID.fireball,AbilityID.summonThornTotem,AbilityID.puncture,AbilityID.rive1})
+      {
+       var ability=Ability.getAbility(abilityID);var tree=new LocalTreeData.SkillTreeData(ability.playerAbilityID,(byte)trees.Count){level=20};trees.Add(tree);actor.localTreeData.specialisedSkillTrees.Add(tree);
+      }
       actor.localTreeData.setAdditionalMaxPointsFromStatsOnServerOrInSingleplayer(stats.stats,actor.GetMutatorManager(),false);
-      Check(attTree.additionalMaxPointsFromStats==(att?level:0) && intTree.additionalMaxPointsFromStats==(att?0:level),"Native skill maximum points apply only to the matching attribute skill",new{roll,att,attPoints=attTree.additionalMaxPointsFromStats,intPoints=intTree.additionalMaxPointsFromStats});
+      Check(trees.All(t=>t.additionalMaxPointsFromStats==level),"Native skill points apply to INT, ATT, DEX and STR skills",new{roll,level,points=trees.Select(t=>t.additionalMaxPointsFromStats).ToArray()});
      }
      finally{actor.localTreeData.specialisedSkillTrees=nativeTrees;}
      var own=(List<Stats.Stat>)T("SpiritXylem").GetField("injected",BindingFlags.Static|BindingFlags.NonPublic).GetValue(null);
      float Contribution(SP property)
      {
-      float with=Value(stats,property);var held=new List<Stats.Stat>();
-      for(int index=stats.stats.Count-1;index>=0;index--)if(own.Any(st=>st.Pointer==stats.stats[index].Pointer) && stats.stats[index].property==property){held.Add(stats.stats[index]);stats.stats.RemoveAt(index);}
-      float without=Value(stats,property);foreach(var st in held)stats.stats.Add(st);return with-without;
+      float with=Value(stats,property);var held=own.Where(st=>st.property==property).ToArray();
+      foreach(var st in held)stats.stats.Remove(st);float without=Value(stats,property);foreach(var st in held)stats.stats.Add(st);return with-without;
      }
-     Check(att?Near(Contribution(SP.Health),hp)&&Near(Contribution(SP.Mana),hp):Near(Contribution(SP.Damage),final*.5f),"Native stat consumer applies exact extra HP/MP or spell source alongside native attribute effects",new{roll,att,all,health=Value(stats,SP.Health),mana=Value(stats,SP.Mana),healthContribution=Contribution(SP.Health),manaContribution=Contribution(SP.Mana),spellContribution=Contribution(SP.Damage)});
-     if(!att)
-     {
-      var baseDamage=new DamageStatsHolder.BaseDamageStats();baseDamage.damage[0]=100;
-      float SpellDamage()=>DamageStats.buildDamageStats(baseDamage,AT.Spell,stats,stats.stats,0,0,(DamageType)0).damage.ToArray().Sum();
-      float with=SpellDamage();var held=own.Where(st=>st.property==SP.Damage).ToArray();
-      foreach(var st in held)stats.stats.Remove(st);float without=SpellDamage();foreach(var st in held)stats.stats.Add(st);
-      Check(Near(with-without,final*.5f),"Native damage builder consumes exact +1 spell per2 INT",new{roll,all,with,without,final});
-     }
-     float beforeRefresh=Value(stats,att?SP.Health:SP.Damage);
-     for(int repeat=0;repeat<20;repeat++)stats.ApplyCoreAttributeModifiers();
-     Check(Near(Value(stats,att?SP.Health:SP.Damage),beforeRefresh),"Twenty native attribute recalculations do not stack",new{roll,att,all});
+     Check(Near(Contribution(SP.Health),hp) && Near(Contribution(SP.Mana),hp),"Native HP and MP consumers both apply rolled per-ATT bonus",new{roll,final,per,health=Value(stats,SP.Health),mana=Value(stats,SP.Mana),healthContribution=Contribution(SP.Health),manaContribution=Contribution(SP.Mana)});
+     Check(Near(Value(stats,SP.Mana),100+(2+per)*final) && Near(Value(stats,SP.Health),1000+6*all+hp),"Native +2 mana per ATT stacks with item for exactly +5 to +8 mana per ATT",new{roll,final,baseMana=100,nativeMana=2*final,itemMana=hp,totalMana=Value(stats,SP.Mana),expectedMana=100+(2+per)*final,health=Value(stats,SP.Health),expectedHealth=1000+6*all+hp,nativeVitalityHealth=6*all});
+     var baseDamage=new DamageStatsHolder.BaseDamageStats();baseDamage.damage[0]=100;
+     float SpellDamage()=>DamageStats.buildDamageStats(baseDamage,AT.Spell,stats,stats.stats,0,0,(DamageType)0).damage.ToArray().Sum();
+     float withSpell=SpellDamage();
+     float AttackDamage()=>DamageStats.buildDamageStats(baseDamage,AT.Melee,stats,stats.stats,0,0,(DamageType)0).damage.ToArray().Sum();
+     float withAttack=AttackDamage();var spellRows=own.Where(st=>st.property==SP.Damage).ToArray();
+     foreach(var st in spellRows)stats.stats.Remove(st);float withoutSpell=SpellDamage(),withoutAttack=AttackDamage();foreach(var st in spellRows)stats.stats.Add(st);
+     Check(Near(withSpell-withoutSpell,final),"Native damage builder consumes exactly +1 Spell Damage per final INT",new{roll,final,withSpell,withoutSpell,delta=withSpell-withoutSpell});
+     Check(Near(withAttack,withoutAttack),"Added Spell Damage does not leak into native melee damage",new{withAttack,withoutAttack});
+     float health=Value(stats,SP.Health),mana=Value(stats,SP.Mana),spell=Value(stats,SP.Damage);
+     for(int repeat=0;repeat<100;repeat++)stats.ApplyCoreAttributeModifiers();
+     Check(stats.GetAttributeValue(CoreAttribute.Attribute.Attunement)==final && stats.GetAttributeValue(CoreAttribute.Attribute.Intelligence)==final && Near(Value(stats,SP.Health),health) && Near(Value(stats,SP.Mana),mana) && Near(Value(stats,SP.Damage),spell),"100 native refreshes do not stack equality, native mana or item bonuses");
      equip.equippedItems.Clear();stats.ApplyCoreAttributeModifiers();
-     Check(own.Count==0 && Near(Value(stats,SP.LevelOfSkills,(byte)(att?11:9)),0) && stats.GetAttributeValue(att?CoreAttribute.Attribute.Attunement:CoreAttribute.Attribute.Intelligence)==50+all,"Native unequip removes the complete conditional source and restores attributes");
+     Check(own.Count==0 && Near(Value(stats,SP.LevelOfSkills),0) && Near(Value(stats,SP.Damage),0) && stats.GetAttributeValue(CoreAttribute.Attribute.Attunement)==values.Att+all && stats.GetAttributeValue(CoreAttribute.Attribute.Intelligence)==values.Int+all && Near(Value(stats,SP.Mana),100+2*(values.Att+all)),"Native unequip restores original INT/ATT, retains base mana and removes all item effects");
+     Check(identity.SequenceEqual(item.GetIDAsArray().ToArray()),"Native recalculation never changes item ID/rolls/LP/affixes");
     }
    }
   }
-  finally{Call("SpiritXylem","Clear");stats.stats=savedStats;equip.equippedItems=savedItems;stats.ApplyCoreAttributeModifiers();}
+  finally{Call("SpiritXylem","Clear");stats.stats=savedStats;equip.equippedItems=savedItems;stats.UpdateStatsInternal();}
   var local=actor.localTreeData;var originalTrees=local.specialisedSkillTrees;int originalMana=actor.mana.maxMana;
   var meteor=local.GetComponent<MeteorMutator>()??actor.GetMutatorManager().getMutator(Ability.getAbility(AbilityID.meteor))?.TryCast<MeteorMutator>();
   bool created=meteor==null;
