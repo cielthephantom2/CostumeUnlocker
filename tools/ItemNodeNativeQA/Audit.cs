@@ -131,9 +131,9 @@ public class Audit:MelonMod
    foreach(byte roll in new byte[]{0,255})
    {
     ResetSources();var item=Item(definition,roll);var identity=item.GetIDAsArray().ToArray();
-    string tooltip=ItemTooltipContentBuilder.GetUniqueModifierInfoFromTooltipDescription(item,definition,0,(TooltipItemManager.SlotType)0).GetModifierString(false);
+    string tooltip=string.Join("\n",Enumerable.Range(0,5).Select(index=>ItemTooltipContentBuilder.GetUniqueModifierInfoFromTooltipDescription(item,definition,index,(TooltipItemManager.SlotType)0).GetModifierString(false)));
     Check(tooltip.Contains("All Skills") && tooltip.Contains("Your Attunement is equal to your Intelligence") && tooltip.Contains("Health and Mana per Attunement") && tooltip.Contains("+1 Spell Damage per Intelligence") && !tooltip.Contains("If ") && !tooltip.Contains("per 2 Intelligence"),"Native tooltip parser renders all five unconditional effects",new{roll,tooltip});
-    Check(definition.mods.Count==2 && definition.tooltipDescriptions.Count==1,"Native registry retains exactly two mana-threshold mods and one new effects description");
+    Check(definition.mods.Count==2 && definition.tooltipDescriptions.Count==5,"Native registry retains exactly two mana-threshold mods and five separate effects descriptions");
     equip.UpdateStats(item,true,false,0,0,0,0);
     bool Matches(SP property,int tags,int special,float more)
     {

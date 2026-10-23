@@ -16,9 +16,9 @@ Reset();var originalMods=definition.mods;var originalDescriptions=definition.too
 Check(definition.mods.Count==2 && definition.mods[0]==damage && definition.mods[1]==defense,"retain exact native boss/rare damage and defense objects; remove reduced health cost");
 Check(!definition.mods.Any(m=>m.property==SP.AbilityProperty && m.tags==(AT)253 && m.specialTag==2),"reduced spell health cost is absent from equipped native mods");
 Check(damage.type==BaseStats.ModType.MORE && defense.value==-.2f && defense.maxValue==-.1f,"native mana threshold damage/defense rolls unchanged");
-Check(definition.tooltipEntries.Select(e=>e.modDisplay).SequenceEqual(new byte[]{128,0,1}) && definition.tooltipDescriptions.Count==1,"tooltip has one unconditional effects block followed by two preserved native modifiers");
-Check(definition.tooltipDescriptions[0].description==SpiritXylemRules.EffectsText && !SpiritXylemRules.EffectsText.Contains("If ") && SpiritXylemRules.EffectsText.Contains("All Skills") && SpiritXylemRules.EffectsText.Contains("+1 Spell Damage per Intelligence"),"five requested effects replace both old conditional branches");
-SpiritXylem.Configure(definition);Check(definition.mods.Count==2 && definition.tooltipDescriptions.Count==1,"registry configuration is idempotent");
+Check(definition.tooltipEntries.Select(e=>e.modDisplay).SequenceEqual(new byte[]{128,129,130,131,132,0,1}) && definition.tooltipDescriptions.Count==5,"five ordered native tooltip entries place each roll range below its own effect");
+Check(definition.tooltipDescriptions.Select(d=>d.description).SequenceEqual(SpiritXylemRules.EffectLines) && !SpiritXylemRules.EffectsText.Contains("If ") && SpiritXylemRules.EffectsText.Contains("All Skills") && SpiritXylemRules.EffectsText.Contains("+1 Spell Damage per Intelligence"),"five requested effects replace both old conditional branches");
+SpiritXylem.Configure(definition);Check(definition.mods.Count==2 && definition.tooltipDescriptions.Count==5,"registry configuration is idempotent");
 SpiritXylem.Clear();Check(ReferenceEquals(definition.mods,originalMods) && ReferenceEquals(definition.tooltipDescriptions,originalDescriptions) && ReferenceEquals(definition.tooltipEntries,originalEntries),"cleanup restores exact original registry references");
 Reset();var bytes=item.id.ToArray();var rolls=item.uniqueRolls.ToArray();var affixes=item.affixes;SpiritXylem.Apply(stats);
 Check(Value(SP.Intelligence)==40 && Value(SP.Attunement)==40,"INT30 plus min10 INT gives40; ATT50 is set down to final INT40");
@@ -47,7 +47,7 @@ Reset();stats.stats.Add(new(SP.AllAttributes,0,5,0,0,0,0));SpiritXylem.Apply(sta
 Reset();stats.stats[0].addedValue=float.NaN;SpiritXylem.Apply(stats);Check(stats.stats.Count==2,"nonfinite attributes do not publish invalid stats");
 Reset(40,30);SpiritXylem.Apply(stats);Check(Value(SP.Attunement)==40 && Value(SP.Intelligence)==40 && Value(SP.Health)==120,"already-equal final attributes retain all other effects");
 var localization=typeof(OfflineSpiritXylemLocalizationPatch).GetMethod("Prefix",BindingFlags.NonPublic|BindingFlags.Static);
-foreach(var row in new[]{("Unique_Tooltip_0_445",SpiritXylemRules.EffectsText),("Unique_Tooltip_1_445",""),("Unique_Tooltip_0_445_Alt",SpiritXylemRules.DetailsText)}){
+foreach(var row in SpiritXylemRules.EffectLines.Select((line,index)=>("Unique_Tooltip_"+index+"_445",line)).Append(("Unique_Tooltip_0_445_Alt",SpiritXylemRules.DetailsText))){
  object[] values={row.Item1,"old condition"};Check(!(bool)localization.Invoke(null,values) && (string)values[1]==row.Item2,"native localization removes old branches for "+row.Item1);
 }
 object[] other={"Unique_Tooltip_444_0","unrelated"};Check((bool)localization.Invoke(null,other) && (string)other[1]=="unrelated","unrelated localization remains native");

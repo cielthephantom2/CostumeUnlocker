@@ -1,0 +1,21 @@
+{
+  "version": "1.1.0-dev.59",
+  "protocol": 44,
+  "zipSha256": "CE01732AA11F901FCE53ADF204CF7436622BBCF50F506DBF7166923ACAC23B7A",
+  "zipSize": 680723,
+  "entries": 28,
+  "files": [
+    {
+      "sha256": "BCDCD626A4FF8F20373795B4DC09FC4F2CB45E423DDD0E5EFD5E38FF726B2183",
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1183232
+    },
+    {
+      "sha256": "6419F8543589730732D90A9A7B567C1CB2C7281225A8C34ABB03B715269766CC",
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 436224
+    }
+  ],
+  "steamCopied": false,
+  "nativeRerun": false
+}

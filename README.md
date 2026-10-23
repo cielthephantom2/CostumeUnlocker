@@ -1,6 +1,6 @@
 # TM Last Epoch Co-op Mod — 1.1.0-dev.59
 
-**Dev.59:** Spirit Xylem: +3–4 All Skills, ATT bằng INT cuối, +10–20 INT, +3–6 HP/Mana mỗi ATT và +1 Spell Damage mỗi INT. Bỏ reduced health cost/hai điều kiệnIf; giữ hai hiệu ứng boss/rare theo mana. Protocol44. [Release notes](RELEASE-1.1.0-dev59-VI.md).
+**Dev.59 (cập nhật tooltip, giữ version):** Mỗi Range nằm ngay dưới hiệu ứng tương ứng. Spirit Xylem: +3–4 All Skills, ATT bằng INT cuối, +10–20 INT, +3–6 HP/Mana mỗi ATT và +1 Spell Damage mỗi INT. Bỏ reduced health cost/hai điều kiệnIf; giữ hai hiệu ứng boss/rare theo mana. Protocol44. [Release notes](RELEASE-1.1.0-dev59-VI.md).
 
 **Dev.58:** Bỏ tăng mật độ quái ngoài Monolith: campaign và Dungeon (bao gồm Temporal Sanctum) dùng mật độ gốc. Monolith giữ max(1, Corruption/100). Protocol44. [Release notes](RELEASE-1.1.0-dev58-VI.md).
 

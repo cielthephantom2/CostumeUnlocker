@@ -32,9 +32,12 @@ internal static class SpiritXylem
             common[1].property!=SP.PlayerProperty || common[1].tags!=(AT)598)
             throw new InvalidOperationException("Spirit Xylem native modifier identity mismatch");
         var descriptions=new NativeDescriptions();
-        descriptions.Add(new(){description=SpiritXylemRules.EffectsText,altText=SpiritXylemRules.DetailsText});
+        // A native ModifierInfo owns its range rows. Separate the effects so
+        // each roll range is rendered directly below its corresponding line.
+        foreach(var line in SpiritXylemRules.EffectLines)
+            descriptions.Add(new(){description=line,altText=SpiritXylemRules.DetailsText});
         var entries=new NativeEntries();
-        foreach(byte index in new byte[]{128,0,1})entries.Add(new UniqueModDisplayListEntry(index));
+        foreach(byte index in new byte[]{128,129,130,131,132,0,1})entries.Add(new UniqueModDisplayListEntry(index));
         registry=new(entry,entry.mods,entry.tooltipDescriptions,entry.tooltipEntries);
         entry.mods=common;entry.tooltipDescriptions=descriptions;entry.tooltipEntries=entries;
     }
@@ -161,9 +164,12 @@ internal static class OfflineSpiritXylemLocalizationPatch
         if(!OfflineToolkit.Enabled)return true;
         string text=key switch
         {
-            "Unique_Tooltip_0_445"=>SpiritXylemRules.EffectsText,
-            "Unique_Tooltip_1_445"=>"",
-            "Unique_Tooltip_0_445_Alt" or "Unique_Tooltip_1_445_Alt"=>SpiritXylemRules.DetailsText,
+            "Unique_Tooltip_0_445"=>SpiritXylemRules.EffectLines[0],
+            "Unique_Tooltip_1_445"=>SpiritXylemRules.EffectLines[1],
+            "Unique_Tooltip_2_445"=>SpiritXylemRules.EffectLines[2],
+            "Unique_Tooltip_3_445"=>SpiritXylemRules.EffectLines[3],
+            "Unique_Tooltip_4_445"=>SpiritXylemRules.EffectLines[4],
+            "Unique_Tooltip_0_445_Alt" or "Unique_Tooltip_1_445_Alt" or "Unique_Tooltip_2_445_Alt" or "Unique_Tooltip_3_445_Alt" or "Unique_Tooltip_4_445_Alt"=>SpiritXylemRules.DetailsText,
             _=>null
         };
         if(text==null)return true;__result=text;return false;
