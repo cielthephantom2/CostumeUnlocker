@@ -5,7 +5,7 @@ using MelonLoader;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
-[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.60", "Local research")]
+[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.61", "Local research")]
 [assembly: HarmonyDontPatchAll]
 [assembly: MelonGame("Eleventh Hour Games", "Last Epoch")]
 
@@ -57,10 +57,7 @@ public sealed class LanMod : MelonMod
     private bool panel = true;
     private bool supported;
     private string fingerprint = "";
-    private string displayName = "Traveller";
-    private string hostIp = "192.168.1.100";
-    private string port = "7777";
-    private string roomCode = "";
+    private readonly AutomaticRoom automaticRoom=new();
     private string message = "Idle";
     private string currentScene = "";
     private float nextPublish;
@@ -75,7 +72,6 @@ public sealed class LanMod : MelonMod
     private bool guiReported;
     private readonly ReleaseUpdateChecker updateChecker=new();
     private LanSettings settings;
-    private bool autoStartAttempted;
     private float nextSmokeReport;
     private float nextRuntimeReport;
     private long skillsReceived;
@@ -111,15 +107,15 @@ public sealed class LanMod : MelonMod
         // passed new-interop compilation and installed all72 selected hooks.
         // This compatibility gate is not native gameplay acceptance.
         supported = IsSupportedGameAssembly(fingerprint);
-        roomCode = Convert.ToHexString(RandomNumberGenerator.GetBytes(4));
         adapterSmokeRequested = StartupArguments.Contains("--lelan-adapter-smoke");
         classSmokeRequested = StartupArguments.Contains("--lelan-class-visual-smoke");
         worldAuditRequested = StartupArguments.Contains("--lelan-world-audit");
         reportFile = Path.Combine(runtime, "UserData", "LastEpochLAN.runtime-report.json");
         Directory.CreateDirectory(Path.GetDirectoryName(reportFile)!);
         configPath = Path.Combine(runtime, "UserData", "LastEpochLAN.config.json");
-        settings = new LanSettings { RoomCode = roomCode };
+        settings = new LanSettings();
         OfflineTools.OfflineToolkit.Initialize();
+        if(supported)OfflineTools.NativeProphecyRewardSpawn.EnsureInstalled();
         updateChecker.Check(ModVersion);
         try
         {
@@ -127,16 +123,14 @@ public sealed class LanMod : MelonMod
             {
                 if (new FileInfo(configPath).Length > 4096) throw new InvalidDataException("LAN configuration exceeds 4096 bytes.");
                 settings = JsonSerializer.Deserialize<LanSettings>(File.ReadAllText(configPath)) ?? throw new InvalidDataException("Empty LAN configuration.");
-                displayName = settings.Name ?? "Traveller";
-                hostIp = settings.HostIp ?? "192.168.1.100";
-                port = settings.Port.ToString();
-                roomCode = settings.RoomCode ?? "";
             }
             else File.WriteAllText(configPath, JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
         }
-        catch (Exception ex) { settings.AutoStart = false; message = "Configuration error: " + ex.Message; LoggerInstance.Warning(message); }
+        catch (Exception ex) { message = "Configuration error: " + ex.Message; LoggerInstance.Warning(message); }
         settings.ExperimentalClassModels = settings.GuestPrivateRewards = settings.HostOwnedEnemies = settings.ExperimentalGuestCombat = false;
         settings.ExperimentalNativeRewards = settings.ProbeRemoteCharacter = false;
+        try { File.WriteAllText(configPath, JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true })); }
+        catch(Exception ex) { LoggerInstance.Warning("Save configuration: "+ex.Message); }
         SaveRuntimeReport("initialized", null);
         LoggerInstance.Msg($"Internet room: F2 Shared Stash, Loot Filters and Room Ladder enabled; offline aggressive minion detection x2; shared world/combat/travel disabled. Patches installed={RoomPatches.Installed}, skipped={RoomPatches.Skipped}. F4 opens the panel.");
         if (!supported) message = "Unsupported GameAssembly build. See README.";
@@ -250,14 +244,6 @@ public sealed class LanMod : MelonMod
                 catch (Exception ex) { LoggerInstance.Error("Class visual smoke failed: " + ex); }
                 SaveRuntimeReport("class-visual-smoke", offline);
             }
-            if (settings.AutoStart && !autoStartAttempted && !OfflineTools.NewCharacterBoost.BlocksRoom)
-            {
-                autoStartAttempted = true;
-                if (settings.Role == "Host") StartHost();
-                else if (settings.Role == "Join") StartJoin();
-                else message = "Configuration Role must be Host or Join.";
-                LoggerInstance.Msg("LAN auto-start: " + message);
-            }
             if (worldAuditRequested && Time.unscaledTime >= nextAudit)
             {
                 nextAudit = Time.unscaledTime + 2f;
@@ -313,10 +299,11 @@ public sealed class LanMod : MelonMod
             // UI panels do not participate in the Assist pause policy.
             if(supported) using (RuntimePerformance.Measure(PerformanceArea.AutoAssist)) autoPlay.Tick(
                 RoomFeaturePolicy.SharedWorldEnabled && (partyTravel.Busy || monolithParty.Busy));
+            TickAutomaticRoom();
             if (pendingJoin?.IsCompleted == true)
             {
                 try { session = pendingJoin.GetAwaiter().GetResult(); message = "Connected"; }
-                catch (Exception ex) { message = ex.Message; LoggerInstance.Warning(message); }
+                catch (Exception ex) { message = ex.Message; automaticRoom.Failed(Time.unscaledTimeAsDouble); LoggerInstance.Warning(message); }
                 pendingJoin = null;
                 pendingCancellation?.Dispose();
                 pendingCancellation = null;
@@ -331,11 +318,11 @@ public sealed class LanMod : MelonMod
             NativeRoomLadder.Tick(session);
             if (session == null)
             {
-                if((autoPlay.Open || autoPlay.Armed) && Time.unscaledTime>=nextRuntimeReport)
-                {nextRuntimeReport=Time.unscaledTime+2;SaveRuntimeReport("local-autoplay-diagnostics",offline);}
+                if((autoPlay.Open || autoPlay.Armed || OfflineTools.OfflineToolkit.Ready) && Time.unscaledTime>=nextRuntimeReport)
+                {nextRuntimeReport=Time.unscaledTime+2;SaveRuntimeReport("offline-gameplay-diagnostics",offline);}
                 return;
             }
-            if (!session.Connected) { message = session.Status; StopRoom(); return; }
+            if (!session.Connected) { message = session.Status; StopRoom(); automaticRoom.Failed(Time.unscaledTimeAsDouble); return; }
             if (!RoomFeaturePolicy.SharedWorldEnabled)
             {
                 // Inventory readiness only: no actor/scene graph/animation/VFX,
@@ -593,31 +580,20 @@ public sealed class LanMod : MelonMod
         else if(updateStatus.StartsWith("Latest version:",StringComparison.Ordinal))
             updateStyle.normal.textColor=Color.green;
         GUI.Label(new Rect(30,464,420,24),updateStatus,updateStyle);
-        GUI.Label(new Rect(30, 52, 100, 22), "Name");
-        displayName = GUI.TextField(new Rect(140, 52, 310, 23), displayName, 32);
-        GUI.Label(new Rect(30, 84, 100, 22), "Host IPv4");
-        hostIp = GUI.TextField(new Rect(140, 84, 200, 23), hostIp, 45);
-        if (GUI.Button(new Rect(350, 84, 100, 23), "Save settings"))
-        {
-            try { SaveConnectionSettings(); message = "Connection settings saved"; }
-            catch (Exception ex) { message = ex.Message; }
-        }
-        GUI.Label(new Rect(30, 116, 100, 22), "Port");
-        port = GUI.TextField(new Rect(140, 116, 310, 23), port, 5);
-        GUI.Label(new Rect(30, 148, 100, 22), "Room code");
-        roomCode = GUI.TextField(new Rect(140, 148, 310, 23), roomCode, 64);
-        GUI.enabled = supported && offline && session == null && pendingJoin == null;
-        if (GUI.Button(new Rect(30, 186, 130, 30), "Host Internet")) StartHost();
-        if (GUI.Button(new Rect(175, 186, 130, 30), "Join Internet")) StartJoin();
-        GUI.enabled = session != null || pendingJoin != null;
-        if (GUI.Button(new Rect(320, 186, 130, 30), "Disconnect")) { StopRoom(); message = "Disconnected"; }
+        GUI.Label(new Rect(30,52,420,22),"Room connects automatically when entering a character.");
+        if(automaticRoom.CharacterId.Length>0)
+            GUI.Label(new Rect(30,82,420,22),automaticRoom.IsHost ? "Host" : "Guest — retry every 30 seconds if connection fails");
+        GUI.enabled = supported && offline && automaticRoom.CharacterId.Length>0 && session == null && pendingJoin == null;
+        if (GUI.Button(new Rect(30, 122, 180, 30), "Reconnect")) automaticRoom.Resume();
+        GUI.enabled = session != null || pendingJoin != null || automaticRoom.CharacterId.Length>0 && !automaticRoom.Paused;
+        if (GUI.Button(new Rect(230, 122, 180, 30), "Disconnect")) { automaticRoom.Pause();StopRoom();panel=true;message = "Disconnected — automatic connection paused"; }
         GUI.enabled = true;
-        if (!supported) GUI.Label(new Rect(30, 225, 420, 22), "Unsupported game version");
-        else if (!offline) GUI.Label(new Rect(30, 225, 420, 22), "Choose Play Offline");
-        else GUI.Label(new Rect(30, 225, 420, 22), session == null ? message : "Internet room connected — F2 Shared Stash");
+        if (!supported) GUI.Label(new Rect(30, 174, 420, 40), "Unsupported game version");
+        else if (!offline) GUI.Label(new Rect(30, 174, 420, 40), "Choose Play Offline");
+        else GUI.Label(new Rect(30, 174, 420, 40), session == null ? message : "Internet room connected — F2 Shared Stash");
         if (session?.Connected == true)
         {
-            int y = 254;
+            int y = 222;
             foreach (var player in session.PlayerPositions)
             {
                 GUI.Label(new Rect(30, y, 380, 20), player.Name + (player.StashReady ? " — inventory ready" : " — loading inventory"));
@@ -628,18 +604,37 @@ public sealed class LanMod : MelonMod
         GUI.Label(new Rect(30,335,420,22),"World, combat, VFX and map travel sync paused.");
         if (!guiReported) { guiReported = true; SaveRuntimeReport("imgui-callback-ok", offline); }
     }
-    private int ReadPort()
+    private void TickAutomaticRoom()
     {
-        if (!int.TryParse(port, out int value) || value < 1 || value > 65535) throw new ArgumentException("Port: 1–65535.");
-        return value;
+        // Private engine QA must never contact the configured public endpoint.
+        if(StartupArguments.Any(a=>a.StartsWith("--lelan-",StringComparison.Ordinal)))return;
+        var state=Il2CppClientAppState.ClientStateManager.CurrentClientAppStateType;
+        bool menu=state is Il2CppClientAppState.ClientAppStateType.CharacterSelect or Il2CppClientAppState.ClientAppStateType.Login;
+        if(menu || !OfflineTools.OfflineToolkit.Enabled)
+        {
+            if(automaticRoom.Observe("",""))StopRoom();
+            return;
+        }
+        if(!supported || !OfflineTools.OfflineToolkit.Ready || OfflineTools.NewCharacterBoost.BlocksRoom)return;
+        var character=Il2Cpp.PlayerFinder.getPlayerActor()?.characterDataTracker?.charData;
+        if(character==null || string.IsNullOrWhiteSpace(character.Id) || string.IsNullOrWhiteSpace(character.CharacterName))return;
+        if(automaticRoom.Observe(character.Id,character.CharacterName))
+        {
+            if(session!=null || pendingJoin!=null)StopRoom();
+        }
+        if(monolithParty.Busy || monolithParty.Borrowing || !automaticRoom.Due(Time.unscaledTimeAsDouble,session?.Connected==true,pendingJoin!=null))return;
+        // Dispose dead transports before replacement; only one join may exist.
+        if(session!=null)StopRoom();
+        automaticRoom.Attempt(Time.unscaledTimeAsDouble);
+        if(automaticRoom.IsHost)StartHost();else StartJoin();
     }
 
     private void StartHost()
     {
         if(monolithParty.Busy || monolithParty.Borrowing){message="Wait for shared Echo cleanup before starting another room.";return;}
         if(OfflineTools.NewCharacterBoost.BlocksRoom) {message="Wait for new character setup and End of Time travel.";return;}
-        try { SaveConnectionSettings(); session = LanSession.Host(displayName, fingerprint, roomCode, ReadPort()); message = "Hosting"; }
-        catch (Exception ex) { message = ex.Message; }
+        try { session = LanSession.Host(automaticRoom.Name, fingerprint, "", AutomaticRoom.Port); message = "Hosting"; }
+        catch (Exception ex) { message = ex.Message; automaticRoom.Failed(Time.unscaledTimeAsDouble); }
     }
 
     private void StartJoin()
@@ -648,24 +643,11 @@ public sealed class LanMod : MelonMod
         if(OfflineTools.NewCharacterBoost.BlocksRoom) {message="Wait for new character setup and End of Time travel.";return;}
         try
         {
-            SaveConnectionSettings();
             pendingCancellation = new CancellationTokenSource();
-            pendingJoin = LanSession.JoinAsync(hostIp, ReadPort(), displayName, fingerprint, roomCode, pendingCancellation.Token);
+            pendingJoin = LanSession.JoinAsync(AutomaticRoom.Address, AutomaticRoom.Port, automaticRoom.Name, fingerprint, "", pendingCancellation.Token);
             message = "Connecting...";
         }
-        catch (Exception ex) { message = ex.Message; pendingCancellation?.Dispose(); pendingCancellation = null; }
-    }
-
-    private void SaveConnectionSettings()
-    {
-        string address = hostIp.Trim();
-        if (!System.Net.IPAddress.TryParse(address, out var parsed) ||
-            parsed.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
-            throw new ArgumentException("Enter a valid host IPv4 address, e.g. 192.168.1.8.");
-        int tcpPort = ReadPort();
-        settings.HostIp = hostIp = parsed.ToString();
-        settings.Port = tcpPort; settings.Name = displayName; settings.RoomCode = roomCode;
-        File.WriteAllText(configPath, JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
+        catch (Exception ex) { message = ex.Message; automaticRoom.Failed(Time.unscaledTimeAsDouble);pendingCancellation?.Dispose(); pendingCancellation = null; }
     }
 
     private void StopRoom()
@@ -741,6 +723,10 @@ public sealed class LanMod : MelonMod
             sourceOwnedStatus=new {NativeAilmentSynchronization.ReportsSent,NativeAilmentSynchronization.ReportsRejected,
                 NativeAilmentSynchronization.Error,damagePolicy=NativePartyStatus.Enabled?"shared native Host status/DoT; direct hits use source-calculated damage":"source-owned damage; shared visual experiment only"},
             featurePerformance = RuntimePerformance.Read(),
+            deathHitchTrace = OfflineTools.DeathHitchTrace.Read(),
+            prophecyRewards = OfflineTools.ProphecyRewards.Read(),
+            automaticRoom = new {automaticRoom.Name,automaticRoom.IsHost,automaticRoom.Paused,automaticRoom.RetryAt,address=AutomaticRoom.Address,port=AutomaticRoom.Port},
+            echoEnemyAggro = OfflineTools.EchoEnemyAggro.Read(),
             callbackPerformance=new {update=updateTiming.Read(),lateUpdate=lateTiming.Read(),reportWriterError=reportWriter.Error,
                 gc0=GC.CollectionCount(0),gc1=GC.CollectionCount(1),gc2=GC.CollectionCount(2)},
             cosmeticErrors = equipmentReplicas.Where(pair=>pair.Value.CosmeticError!="").Select(pair=>new {playerId=pair.Key,reason=pair.Value.CosmeticError}).ToArray(),
@@ -842,10 +828,4 @@ public sealed class LanSettings
     public bool ExperimentalNativeRewards { get; set; }
     public bool GuestPrivateRewards { get; set; }
     public bool ProbeRemoteCharacter { get; set; }
-    public bool AutoStart { get; set; }
-    public string Role { get; set; } = "Host";
-    public string Name { get; set; } = "Traveller";
-    public string HostIp { get; set; } = "192.168.1.100";
-    public int Port { get; set; } = 7777;
-    public string RoomCode { get; set; } = "";
 }

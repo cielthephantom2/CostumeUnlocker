@@ -275,10 +275,26 @@ Check(installed.Count(t=>bloodrageUiTargets.ContainsKey(t.Name))==2 &&
  progressText.Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Where(m=>m.Name.StartsWith("set_",StringComparison.Ordinal))
  .All(m=>m.Name=="set_text"),
  "Bloodrage hunt/quest counters scale only the UI maximum; helper writes text only, no threshold/currency/save mutations");
-Check(!types.Any(t=>t.Name.StartsWith("OfflineProphecy",StringComparison.Ordinal)) &&
+Check(!types.Any(t=>t.Name.StartsWith("OfflineProphecy",StringComparison.Ordinal) &&
+ t.Name is not ("OfflineProphecySpawnPatch" or "OfflineProphecyTransitionPatch")) &&
  !patches.SelectMany(t=>t.CustomAttributes.Where(a=>a.AttributeType.Name=="HarmonyPatch")).SelectMany(a=>a.ConstructorArguments)
  .Any(a=>a.Value is TypeReference t && t.Name=="ProphecySlot"),
- "custom prophecy charge runtime, transaction/UI hooks and notification overrides are absent; native charge behavior is restored");
+ "custom prophecy charge runtime, transaction/UI hooks and notification overrides are absent; native charge behavior retained");
+var prophecyStream=types.Single(t=>t.Name=="ProphecyRewards");
+var prophecyCalls=Walk(new[]{prophecyStream}).SelectMany(t=>t.Methods).Where(m=>m.HasBody)
+ .SelectMany(m=>m.Body.Instructions).Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(!prophecyCalls.Any(m=>m.DeclaringType.Name=="ProphecySlot") &&
+ !prophecyCalls.Any(m=>m.Name.Contains("TryTriggerReward") || m.Name.Contains("CompletedCharges") || m.Name.Contains("ChargeInProgress")),
+ "deferred Prophecy delivery never replays trigger events or reads/writes charge/progress counters");
+Check(prophecyCalls.Count(m=>m.DeclaringType.Name=="NativeProphecyRewardSpawn" && m.Name=="Deliver")==1 &&
+ prophecyCalls.Any(m=>m.Name=="Instantiate" && m.DeclaringType.FullName=="UnityEngine.Object") &&
+ prophecyStream.Methods.Single(m=>m.Name=="Tick").Body.Instructions.Any(i=>i.Operand is MethodReference m && m.Name=="get_frameCount"),
+ "Prophecy delivery uses isolated reward snapshots and a frame-limited native spawn consumer");
+var prophecyAbi=types.Single(t=>t.Name=="NativeProphecyRewardSpawn");
+Check(prophecyAbi.Methods.Single(m=>m.Name=="Receive").Parameters[2].ParameterType.FullName=="System.UInt64" &&
+ !patches.SelectMany(t=>t.CustomAttributes.Where(a=>a.AttributeType.Name=="HarmonyPatch")).SelectMany(a=>a.ConstructorArguments)
+ .Any(a=>a.Value is TypeReference t && t.Name=="ProphecySlotReward"),
+ "native Prophecy lens uses eight-byte value ABI; no Harmony Nullable lens argument bridge");
 var assistRuntime=types.Single(t=>t.Name=="AutoPlayRuntime");
 var assistTick=assistRuntime.Methods.Single(m=>m.Name=="Tick");
 Check(assistTick.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="AutoPlayRecovery" && m.Name=="Failed") &&

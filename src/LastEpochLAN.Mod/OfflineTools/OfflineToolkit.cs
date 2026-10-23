@@ -65,6 +65,8 @@ internal static class OfflineToolkit
     {try {action();}catch(Exception ex) {var error=ex.GetBaseException().Message;if(error!=Error) MelonLoader.MelonLogger.Warning("Offline tools: "+error);Error=error;}}
     internal static void Tick(bool panel)
     {
+        Safely(DeathHitchTrace.Frame);
+        Safely(ProphecyRewards.Tick);
         Safely(ClassRespecialization.Tick);
         Safely(OfflineOnly.Tick);
         Safely(NewCharacterBoost.Tick);
@@ -84,7 +86,7 @@ internal static class OfflineToolkit
         if(saveAt>=0 && Time.unscaledTime>=saveAt) Safely(Save);
     }
     internal static void SceneChanged() {MeteorStardust.Clear();SpiritXylem.Clear();NewCharacterBoost.SceneChanged();MapFog.Clear();PlayerMapDot.Clear();EnemyMapDots.Clear();CameraZoom.Restore();ObjectiveReveal.Clear();Dps.DpsRuntime.SceneChanged();}
-    internal static void Dispose() {Safely(OfflinePickup.Clear);SceneChanged();Safely(OfflineBuffs.Restore);Safely(OfflineFortune.RestoreRewards);EnemyMapDots.Dispose();MinimapZoom.Clear();if(saveAt>=0) Safely(Save);}
+    internal static void Dispose() {Safely(ProphecyRewards.Flush);Safely(OfflinePickup.Clear);SceneChanged();Safely(OfflineBuffs.Restore);Safely(OfflineFortune.RestoreRewards);EnemyMapDots.Dispose();MinimapZoom.Clear();if(saveAt>=0) Safely(Save);}
     internal static void Draw()
     {
         float x=16,y=16;

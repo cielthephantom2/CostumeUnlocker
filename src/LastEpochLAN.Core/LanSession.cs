@@ -304,7 +304,7 @@ public sealed partial class LanSession : IDisposable
     {
         if (string.IsNullOrWhiteSpace(name) || name.Length > 32) throw new ArgumentException("Name: 1–32 characters.");
         if (string.IsNullOrWhiteSpace(build) || build.Length > 128) throw new ArgumentException("Invalid build fingerprint.");
-        if (code.Length < 6 || code.Length > 64) throw new ArgumentException("Room code: 6–64 characters.");
+        if (code.Length != 0 && (code.Length < 6 || code.Length > 64)) throw new ArgumentException("Room code: empty or 6–64 characters.");
         if (port < 0 || port > 65535) throw new ArgumentOutOfRangeException(nameof(port));
     }
 

@@ -1,0 +1,59 @@
+{
+  "version": "1.1.0-dev.61",
+  "protocol": 44,
+  "zipSHA256": "750B33B69FDBB772763E2C9A73AC48B6D3E576D8D9EC704FD8CDAA60B011FD04",
+  "zipSize": 715287,
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "sha256": "7189B0460CE663DBDDA5F5B40815EB3F89D513AF537661C57AAE759906E2F183",
+      "size": 1213440
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "sha256": "838FC1F0A9721A653639230060EB365287198935AA2051AA5D991272ADCC5870",
+      "size": 436224
+    }
+  ],
+  "checks": {
+    "updaterFixture": 15,
+    "fixture": 245,
+    "managed": 1053,
+    "audit": 188,
+    "native": 153
+  },
+  "entries": [
+    "Mods/LastEpochLAN.dll",
+    "UserLibs/LastEpochLAN.Core.dll",
+    "latest.json",
+    "README.md",
+    "update.bat",
+    "RELEASE-1.1.0-dev55-VI.md",
+    "NATIVE-PICKUP-dev55-VI.md",
+    "TEST-CHECKLIST-dev55-VI.md",
+    "FACTIONS-PICKUP-dev55-VI.md",
+    "FORGOTTEN-KNIGHTS-dev55-VI.md",
+    "TIMELINE-STABILITY-X2-dev55-VI.md",
+    "ASSIST-DISCONNECT-dev55-VI.md",
+    "ASSIST-RESPONSIVENESS-dev55-VI.md",
+    "ASSIST-UI-CONTINUE-dev55-VI.md",
+    "PLAYER-MINIMAP-DOT-dev55-VI.md",
+    "PROPHECY-CHARGE-dev55-VI.md",
+    "GOLD-REGEN-CLASS-dev55-VI.md",
+    "SPIRIT-XYLEM-dev55-VI.md",
+    "LERINNE-STARDUST-dev55-VI.md",
+    "MOD-FEATURES-AND-CODE-AUDIT-dev55-VI.md",
+    "RELEASE-1.1.0-dev56-VI.md",
+    "RELEASE-1.1.0-dev57-VI.md",
+    "RELEASE-1.1.0-dev58-VI.md",
+    "RELEASE-1.1.0-dev59-VI.md",
+    "RELEASE-1.1.0-dev60-VI.md",
+    "FORGING-POTENTIAL-HALF-VI.md",
+    "RELEASE-1.1.0-dev61-VI.md",
+    "validation/dev61-fixture.json",
+    "validation/dev61-audit.json",
+    "validation/dev61-native.json",
+    "validation/dev61-updater-fixture.json",
+    "validation/dev61-managed.json"
+  ]
+}

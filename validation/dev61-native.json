@@ -1,0 +1,1326 @@
+{
+  "passed": true,
+  "error": null,
+  "gameAssembly": "323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464",
+  "checks": [
+    {
+      "passed": true,
+      "label": "Prophecy QA uses isolated disposable native character",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "x3 aggro native box hook installed",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "147 native geometric comparisons equal exactly x3 with native bonuses retained",
+      "values": {
+        "compared": 147,
+        "broadened": 68
+      }
+    },
+    {
+      "passed": true,
+      "label": "distant targets outside x3 remain outside native box",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Real IL2CPP hostile pooled actor passes echo gate across different scenes",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native acquisition selects player using x3 range",
+      "values": {
+        "x": -30,
+        "expected": false,
+        "activationAttempts": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native acquisition restores original controller modifier",
+      "values": {
+        "x": -30
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native acquisition selects player using x3 range",
+      "values": {
+        "x": -20,
+        "expected": false,
+        "activationAttempts": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native acquisition restores original controller modifier",
+      "values": {
+        "x": -20
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native acquisition selects player using x3 range",
+      "values": {
+        "x": -10,
+        "expected": true,
+        "activationAttempts": 1
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native acquisition restores original controller modifier",
+      "values": {
+        "x": -10
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native acquisition selects player using x3 range",
+      "values": {
+        "x": 10,
+        "expected": true,
+        "activationAttempts": 1
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native acquisition restores original controller modifier",
+      "values": {
+        "x": 10
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native acquisition selects player using x3 range",
+      "values": {
+        "x": 20,
+        "expected": true,
+        "activationAttempts": 1
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native acquisition restores original controller modifier",
+      "values": {
+        "x": 20
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native acquisition selects player using x3 range",
+      "values": {
+        "x": 30,
+        "expected": false,
+        "activationAttempts": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native acquisition restores original controller modifier",
+      "values": {
+        "x": 30
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native acquisition reaches player beyond original aggro boundary",
+      "values": {
+        "tested": 6,
+        "expanded": 3
+      }
+    },
+    {
+      "passed": true,
+      "label": "Real offline actor is ready for deferred native reward delivery",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native reward detour defers callback with nullable lens",
+      "values": {
+        "lensId": -1
+      }
+    },
+    {
+      "passed": true,
+      "label": "Stream retains native reward count for lens",
+      "values": {
+        "lensId": -1,
+        "native": 4,
+        "streamed": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Private lens RNG restored after replay",
+      "values": {
+        "lensId": -1
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native reward detour defers callback with nullable lens",
+      "values": {
+        "lensId": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Stream retains native reward count for lens",
+      "values": {
+        "lensId": 0,
+        "native": 4,
+        "streamed": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Private lens RNG restored after replay",
+      "values": {
+        "lensId": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native reward detour defers callback with nullable lens",
+      "values": {
+        "lensId": 1
+      }
+    },
+    {
+      "passed": true,
+      "label": "Stream retains native reward count for lens",
+      "values": {
+        "lensId": 1,
+        "native": 8,
+        "streamed": 8
+      }
+    },
+    {
+      "passed": true,
+      "label": "Private lens RNG restored after replay",
+      "values": {
+        "lensId": 1
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native reward detour defers callback with nullable lens",
+      "values": {
+        "lensId": 2
+      }
+    },
+    {
+      "passed": true,
+      "label": "Stream retains native reward count for lens",
+      "values": {
+        "lensId": 2,
+        "native": 4,
+        "streamed": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Private lens RNG restored after replay",
+      "values": {
+        "lensId": 2
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native reward detour defers callback with nullable lens",
+      "values": {
+        "lensId": 3
+      }
+    },
+    {
+      "passed": true,
+      "label": "Stream retains native reward count for lens",
+      "values": {
+        "lensId": 3,
+        "native": 4,
+        "streamed": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Private lens RNG restored after replay",
+      "values": {
+        "lensId": 3
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native reward detour defers callback with nullable lens",
+      "values": {
+        "lensId": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Stream retains native reward count for lens",
+      "values": {
+        "lensId": 4,
+        "native": 4,
+        "streamed": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Private lens RNG restored after replay",
+      "values": {
+        "lensId": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native reward detour defers callback with nullable lens",
+      "values": {
+        "lensId": 5
+      }
+    },
+    {
+      "passed": true,
+      "label": "Stream retains native reward count for lens",
+      "values": {
+        "lensId": 5,
+        "native": 4,
+        "streamed": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Private lens RNG restored after replay",
+      "values": {
+        "lensId": 5
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native reward detour defers callback with nullable lens",
+      "values": {
+        "lensId": 6
+      }
+    },
+    {
+      "passed": true,
+      "label": "Stream retains native reward count for lens",
+      "values": {
+        "lensId": 6,
+        "native": 4,
+        "streamed": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Private lens RNG restored after replay",
+      "values": {
+        "lensId": 6
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native reward detour defers callback with nullable lens",
+      "values": {
+        "lensId": 7
+      }
+    },
+    {
+      "passed": true,
+      "label": "Stream retains native reward count for lens",
+      "values": {
+        "lensId": 7,
+        "native": 4,
+        "streamed": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Private lens RNG restored after replay",
+      "values": {
+        "lensId": 7
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native reward detour defers callback with nullable lens",
+      "values": {
+        "lensId": 8
+      }
+    },
+    {
+      "passed": true,
+      "label": "Stream retains native reward count for lens",
+      "values": {
+        "lensId": 8,
+        "native": 4,
+        "streamed": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Private lens RNG restored after replay",
+      "values": {
+        "lensId": 8
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native reward detour defers callback with nullable lens",
+      "values": {
+        "lensId": 9
+      }
+    },
+    {
+      "passed": true,
+      "label": "Stream retains native reward count for lens",
+      "values": {
+        "lensId": 9,
+        "native": 8,
+        "streamed": 8
+      }
+    },
+    {
+      "passed": true,
+      "label": "Private lens RNG restored after replay",
+      "values": {
+        "lensId": 9
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native reward detour defers callback with nullable lens",
+      "values": {
+        "lensId": 10
+      }
+    },
+    {
+      "passed": true,
+      "label": "Stream retains native reward count for lens",
+      "values": {
+        "lensId": 10,
+        "native": 4,
+        "streamed": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Private lens RNG restored after replay",
+      "values": {
+        "lensId": 10
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native reward detour defers callback with nullable lens",
+      "values": {
+        "lensId": 11
+      }
+    },
+    {
+      "passed": true,
+      "label": "Stream retains native reward count for lens",
+      "values": {
+        "lensId": 11,
+        "native": 4,
+        "streamed": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Private lens RNG restored after replay",
+      "values": {
+        "lensId": 11
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native forced lens outcome preserves whole-batch amount",
+      "values": {
+        "lensId": 1,
+        "duplication": false,
+        "replacement": false,
+        "native": 4,
+        "streamed": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native forced lens outcome preserves whole-batch amount",
+      "values": {
+        "lensId": 9,
+        "duplication": false,
+        "replacement": false,
+        "native": 4,
+        "streamed": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native forced lens outcome preserves whole-batch amount",
+      "values": {
+        "lensId": 1,
+        "duplication": false,
+        "replacement": true,
+        "native": 4,
+        "streamed": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native forced lens outcome preserves whole-batch amount",
+      "values": {
+        "lensId": 9,
+        "duplication": false,
+        "replacement": true,
+        "native": 1,
+        "streamed": 1
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native forced lens outcome preserves whole-batch amount",
+      "values": {
+        "lensId": 1,
+        "duplication": true,
+        "replacement": false,
+        "native": 8,
+        "streamed": 8
+      }
+    },
+    {
+      "passed": true,
+      "label": "Duplication pair contents match native baseline after identity normalization",
+      "values": {
+        "nativePairs": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "streamedPairs": [
+          true,
+          true,
+          true,
+          true
+        ]
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native forced lens outcome preserves whole-batch amount",
+      "values": {
+        "lensId": 9,
+        "duplication": true,
+        "replacement": false,
+        "native": 8,
+        "streamed": 8
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native forced lens outcome preserves whole-batch amount",
+      "values": {
+        "lensId": 1,
+        "duplication": true,
+        "replacement": true,
+        "native": 8,
+        "streamed": 8
+      }
+    },
+    {
+      "passed": true,
+      "label": "Duplication pair contents match native baseline after identity normalization",
+      "values": {
+        "nativePairs": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "streamedPairs": [
+          true,
+          true,
+          true,
+          true
+        ]
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native forced lens outcome preserves whole-batch amount",
+      "values": {
+        "lensId": 9,
+        "duplication": true,
+        "replacement": true,
+        "native": 1,
+        "streamed": 1
+      }
+    },
+    {
+      "passed": true,
+      "label": "Real native TimelineBoss trigger consumes exactly 4 of 12 charges and defers all 80 drops",
+      "values": {
+        "triggered": true,
+        "consumed": 4,
+        "remaining": 8,
+        "immediateDrops": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2246,
+        "count": 0,
+        "previous": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2247,
+        "count": 1,
+        "previous": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2248,
+        "count": 2,
+        "previous": 1
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2249,
+        "count": 3,
+        "previous": 2
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2250,
+        "count": 4,
+        "previous": 3
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2251,
+        "count": 5,
+        "previous": 4
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2252,
+        "count": 6,
+        "previous": 5
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2253,
+        "count": 7,
+        "previous": 6
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2254,
+        "count": 8,
+        "previous": 7
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2255,
+        "count": 9,
+        "previous": 8
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2256,
+        "count": 10,
+        "previous": 9
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2257,
+        "count": 11,
+        "previous": 10
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2258,
+        "count": 12,
+        "previous": 11
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2259,
+        "count": 13,
+        "previous": 12
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2260,
+        "count": 14,
+        "previous": 13
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2261,
+        "count": 15,
+        "previous": 14
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2262,
+        "count": 16,
+        "previous": 15
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2263,
+        "count": 17,
+        "previous": 16
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2264,
+        "count": 18,
+        "previous": 17
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2265,
+        "count": 19,
+        "previous": 18
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2266,
+        "count": 20,
+        "previous": 19
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2267,
+        "count": 21,
+        "previous": 20
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2268,
+        "count": 22,
+        "previous": 21
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2269,
+        "count": 23,
+        "previous": 22
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2270,
+        "count": 24,
+        "previous": 23
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2271,
+        "count": 25,
+        "previous": 24
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2272,
+        "count": 26,
+        "previous": 25
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2273,
+        "count": 27,
+        "previous": 26
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2274,
+        "count": 28,
+        "previous": 27
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2275,
+        "count": 29,
+        "previous": 28
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2276,
+        "count": 30,
+        "previous": 29
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2277,
+        "count": 31,
+        "previous": 30
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2278,
+        "count": 32,
+        "previous": 31
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2279,
+        "count": 33,
+        "previous": 32
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2280,
+        "count": 34,
+        "previous": 33
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2281,
+        "count": 35,
+        "previous": 34
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2282,
+        "count": 36,
+        "previous": 35
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2283,
+        "count": 37,
+        "previous": 36
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2284,
+        "count": 38,
+        "previous": 37
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2285,
+        "count": 39,
+        "previous": 38
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2286,
+        "count": 40,
+        "previous": 39
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2287,
+        "count": 41,
+        "previous": 40
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2288,
+        "count": 42,
+        "previous": 41
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2289,
+        "count": 43,
+        "previous": 42
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2290,
+        "count": 44,
+        "previous": 43
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2291,
+        "count": 45,
+        "previous": 44
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2292,
+        "count": 46,
+        "previous": 45
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2293,
+        "count": 47,
+        "previous": 46
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2294,
+        "count": 48,
+        "previous": 47
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2295,
+        "count": 49,
+        "previous": 48
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2296,
+        "count": 50,
+        "previous": 49
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2297,
+        "count": 51,
+        "previous": 50
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2298,
+        "count": 52,
+        "previous": 51
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2299,
+        "count": 53,
+        "previous": 52
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2300,
+        "count": 54,
+        "previous": 53
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2301,
+        "count": 55,
+        "previous": 54
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2302,
+        "count": 56,
+        "previous": 55
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2303,
+        "count": 57,
+        "previous": 56
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2304,
+        "count": 58,
+        "previous": 57
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2305,
+        "count": 59,
+        "previous": 58
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2306,
+        "count": 60,
+        "previous": 59
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2307,
+        "count": 61,
+        "previous": 60
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2308,
+        "count": 62,
+        "previous": 61
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2309,
+        "count": 63,
+        "previous": 62
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2310,
+        "count": 64,
+        "previous": 63
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2311,
+        "count": 65,
+        "previous": 64
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2312,
+        "count": 66,
+        "previous": 65
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2313,
+        "count": 67,
+        "previous": 66
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2314,
+        "count": 68,
+        "previous": 67
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2315,
+        "count": 69,
+        "previous": 68
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2316,
+        "count": 70,
+        "previous": 69
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2317,
+        "count": 71,
+        "previous": 70
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2318,
+        "count": 72,
+        "previous": 71
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2319,
+        "count": 73,
+        "previous": 72
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2320,
+        "count": 74,
+        "previous": 73
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2321,
+        "count": 75,
+        "previous": 74
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2322,
+        "count": 76,
+        "previous": 75
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2323,
+        "count": 77,
+        "previous": 76
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2324,
+        "count": 78,
+        "previous": 77
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2325,
+        "count": 79,
+        "previous": 78
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native frame creates at most one Origin item",
+      "values": {
+        "frame": 2326,
+        "count": 80,
+        "previous": 79
+      }
+    },
+    {
+      "passed": true,
+      "label": "All 80 native items delivered over at least 80 distinct frames",
+      "values": {
+        "count": 80,
+        "frames": 81
+      }
+    },
+    {
+      "passed": true,
+      "label": "Transition flush delivers every remaining native item exactly once",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Repeated transition flush cannot duplicate completed rewards",
+      "values": null
+    }
+  ],
+  "localizationKeys": [],
+  "scope": "Real IL2CPP hostile pooled actor acquisition across scenes, nullable reward detour, native item generation counts/lens outcomes and 80-frame scheduling; ground placement intercepted in private QA; no live pursuit/death-hitch measurement"
+}
