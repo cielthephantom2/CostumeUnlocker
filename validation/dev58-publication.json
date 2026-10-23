@@ -1,0 +1,16 @@
+{
+  "zipSha256": "863375CC3C937981575B441B209C727DE313053D5E4F3ECDAED2021B4873AF85",
+  "version": "1.1.0-dev.58",
+  "url": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.58",
+  "futureUploadsRequireExplicitRequest": true,
+  "tagCommit": "ef33abad40d0de899aa2beda15c4d2ff69e2a0a4",
+  "protocol": 44,
+  "coreChecks": 1053,
+  "compiledAuditChecks": 185,
+  "densityFixtureChecks": 21,
+  "nativeGameplayValidated": false,
+  "downloadedZipMatches": true,
+  "asset": "https://github.com/cielthephantom2/CostumeUnlocker/releases/download/v1.1.0-dev.58/TM-Coop-1.1.0-dev.58.zip",
+  "steamInstalled": false,
+  "updaterLiveChecks": 17
+}
