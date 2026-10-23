@@ -1,0 +1,20 @@
+{
+  "version": "1.1.0-dev.59",
+  "versionChanged": false,
+  "sourceCommit": "cdf36780531f6429158487a05f8b95c616cbc168",
+  "tagObject": "e12323f05ae2eff80813dc84736a3602258168a0",
+  "release": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.59",
+  "releaseId": 421660467,
+  "zipSHA256": "CE01732AA11F901FCE53ADF204CF7436622BBCF50F506DBF7166923ACAC23B7A",
+  "publicDownloadVerified": true,
+  "fixtureChecks": 37,
+  "auditChecks": 185,
+  "updaterFixtureChecks": 15,
+  "updaterLiveChecks": 17,
+  "nativeRerun": false,
+  "steamCopied": false,
+  "gameRunning": true,
+  "steamModSHA256": "0F13DC2865851E4DB9E3AB8F04B286E63A0FB05614300A92E4CDE61308D92F51",
+  "steamCoreSHA256": "CBCB170E0E4627540311A0A42315094330BCF5B2DC816EBDA86B38564876C037",
+  "oldArtifactBackup": "validation/dev59-range-before.json"
+}
