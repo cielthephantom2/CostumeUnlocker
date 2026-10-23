@@ -1,0 +1,32 @@
+{
+  "version": "1.1.0-dev.62",
+  "protocol": 44,
+  "release": "https://github.com/cielthephantom2/CostumeUnlocker/releases/tag/v1.1.0-dev.62",
+  "releaseId": 422158781,
+  "draft": false,
+  "prerelease": true,
+  "sourceCommit": "e14ce2cf371394e3d489b309c546477915dca413",
+  "zipSHA256": "663BE82A55192BE5B1A1F2067FBF2017ECCDDB3CA0E5CE0FB9FBE15FB7EF8775",
+  "zipBytes": 512738,
+  "publicDownloadVerified": true,
+  "managedChecks": 1053,
+  "featureChecks": 259,
+  "auditChecks": 194,
+  "nativeChecks": 15,
+  "updaterFixtureChecks": 15,
+  "steamCopied": true,
+  "qaToolsExcluded": true,
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "sha256": "8ABE8CA21AEBB4C6A9B79EA068E1F0D1BA3A1A081587F5C950DABE3EAB1F5407",
+      "size": 851968
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "sha256": "52C37F342EEF2DE9D208850FA94FCFA479FEE0937E9D062BBCF4FE05533B40BA",
+      "size": 434176
+    }
+  ],
+  "updaterLiveChecks": 17
+}
