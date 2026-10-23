@@ -1,0 +1,16 @@
+{
+  "backup": "D:\\New folder\\CostumeUnlocker-Publish\\local-backups\\steam-dev63-20261024-054416",
+  "version": "1.1.0-dev.63",
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "verified": true,
+      "hash": "8D63FB9215DB6E8C2FA9EE3204A9AB18C4342D0D7FDB14A338255B3A7E784101"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "verified": true,
+      "hash": "0DA293282AF81E808A5E2ACC1BEF435E1D53389D1900239B6808BC03A218E178"
+    }
+  ]
+}
