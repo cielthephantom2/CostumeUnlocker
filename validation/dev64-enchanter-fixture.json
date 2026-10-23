@@ -1,0 +1,25 @@
+{
+  "passed": 18,
+  "checks": [
+    "native counter model keeps spent uses and exhausts at10: 0",
+    "native counter model keeps spent uses and exhausts at10: 1",
+    "native counter model keeps spent uses and exhausts at10: 2",
+    "native counter model keeps spent uses and exhausts at10: 3",
+    "native counter model keeps spent uses and exhausts at10: 4",
+    "native counter model keeps spent uses and exhausts at10: 5",
+    "native counter model keeps spent uses and exhausts at10: 6",
+    "native counter model keeps spent uses and exhausts at10: 7",
+    "native counter model keeps spent uses and exhausts at10: 8",
+    "native counter model keeps spent uses and exhausts at10: 9",
+    "native counter model keeps spent uses and exhausts at10: 10",
+    "native counter model keeps spent uses and exhausts at10: 11",
+    "already exhausted2-use altar receives8 remaining, without counter reset",
+    "repeated UI/gameplay queries cannot replenish uses",
+    "higher native altar tier also has requested10-use cap",
+    "other crafting stations unaffected",
+    "online calculation and UI stay native",
+    "missing altar registry safely ignored"
+  ],
+  "actualSource": true,
+  "nativeGameplayValidated": false
+}

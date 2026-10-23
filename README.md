@@ -1,6 +1,6 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.63
+# TM Last Epoch Co-op Mod — 1.1.0-dev.64
 
-**Dev.63:** Spirit Xylem: +3–4 All Skills, +10–16 ATT, +3–6 Health/Mana mỗi ATT, +1 Spell Damage mỗi25 Maximum Mana; giữ hai hiệu ứng boss/rare. Chú thích riêng đúng từng stat. Disintegrate di chuyển khi channel với80% tốc độ; Arcane Ascendance khóa di chuyển gốc. Protocol44. [Release notes](RELEASE-1.1.0-dev63-VI.md).
+**Dev.64:** Woven Enchanter có10 lượt dùng mỗi altar, đồng bộ giới hạn crafting và UI; giữ số lượt đã sử dụng. Giữ toàn bộ thay đổi dev.63. Protocol44. [Release notes](RELEASE-1.1.0-dev64-VI.md).
 
 **Dev.61:** Tự kết nối theo tên nhân vật: Doomsday tự host, nhân vật khác tự join 27.70.239.115:7777 và retry sau 30 giây nếu thất bại; bỏ cấu hình kết nối/room code khỏi UI. Sửa cổng aggro x3 trong echo; chia tạo thưởng Prophecy qua nhiều frame, giữ charge và lens. Protocol44. [Release notes](RELEASE-1.1.0-dev61-VI.md).
 

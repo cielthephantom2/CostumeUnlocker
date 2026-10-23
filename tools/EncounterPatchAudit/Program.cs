@@ -107,6 +107,12 @@ Check(types.Single(t=>t.Name=="OfflineEchoSpawnEnqueuePatch").Methods.Any(m=>m.N
 Check(!types.Any(t=>t.Name.Contains("Vilatria",StringComparison.Ordinal)) &&
  !types.Single(t=>t.Name=="ToolkitSettings").Properties.Any(p=>p.Name=="IgnoreVilatriaMeteorVisuals"),
  "Vilatria visual override hooks and setting are completely removed");
+var enchanterHooks=new[]{"OfflineWovenEnchanterLimitPatch","OfflineWovenEnchanterRemainingPatch","OfflineWovenEnchanterUiPatch"};
+Check(enchanterHooks.All(n=>installed.Any(t=>t.Name==n)),"Woven Enchanter max uses, native remaining-use and UI hooks install");
+var enchanter=types.Single(t=>t.Name=="WovenEnchanter");
+Check(enchanter.Fields.Any(f=>f.Name=="MaximumUses" && Convert.ToInt32(f.Constant)==10) &&
+ !enchanter.Methods.Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Any(i=>i.Operand is MethodReference m && m.Name is "set_localTimesUsed" or "set_forceAllow" or "set_limitedUses" or "ResetUses"),
+ "Enchanter cap10 preserves spent-use counters, native eligibility and limited-use enforcement");
 var newMeteorHooks=new[]{"OfflineSpiritXylemLocalizationPatch","OfflineMeteorStardustTreePatch","OfflineMeteorStardustHasStatsPatch","OfflineMeteorStardustStatsPatch","OfflineMeteorStardustLimitPatch","OfflineMeteorStardustNodePatch","OfflineMeteorStardustTextPatch","OfflineMeteorStardustDescriptionPatch","OfflineMeteorStardustAltPatch","OfflineMeteorStardustLabelPatch"};
 var classMenuHooks=new[]{"OfflineClassRespecMenuPatch","OfflineClassRespecClickPatch","OfflineClassRespecClosePatch","OfflineClassRespecUnityMenuPatch","OfflineClassRespecUnityClickPatch","OfflineClassRespecUnityClosePatch"};
 Check(newMeteorHooks.All(n=>installed.Any(t=>t.Name==n)) && installed.Any(t=>t.Name=="OfflineClassRespecLoadGatePatch") && !types.Any(t=>classMenuHooks.Contains(t.Name)),"Stardust and class save load gate install; NPC class hooks removed");
@@ -352,10 +358,10 @@ Check(!installed.SelectMany(t=>t.CustomAttributes.Where(a=>a.AttributeType.Name=
  .SelectMany(a=>a.ConstructorArguments).Any(a=>a.Value is string target &&
  (target.Contains("CanRandomizeLegendaryPotential") || target=="CraftRandomizeLegendaryPotential")),
  "Woven native machine eligibility and craft caller are unpatched; 0 LP remains rejected, use consumption stays native");
-Check(!installed.SelectMany(t=>t.CustomAttributes.Where(a=>a.AttributeType.Name=="HarmonyPatch"))
+Check(!installed.Where(t=>!enchanterHooks.Contains(t.Name)).SelectMany(t=>t.CustomAttributes.Where(a=>a.AttributeType.Name=="HarmonyPatch"))
  .SelectMany(a=>a.ConstructorArguments).Any(a=>a.Value is TypeReference target &&
  target.Name is "RandomizeLegendaryPotentialItemContainer" or "RandomizeLegendaryPotentialCraftingUI" or "ZoneRestrictedCraftingManager"),
- "Woven input container, crafting UI and zone/use gate remain entirely native");
+ "Woven Potential input/UI/use gates remain native; only three explicit Enchanter limit hooks may target the shared manager");
 var imprintPatches=installed.Where(t=>t.Name.StartsWith("OfflineWeaver",StringComparison.Ordinal)).ToArray();
 Check(imprintPatches.Length==11,"all eleven narrowly selected Weaver Imprint gameplay/legacy/V2 tooltip patch classes are installed");
 var pointImprints=imprintPatches.Single(t=>t.Name=="OfflineWeaverImprintPointRatesPatch");
