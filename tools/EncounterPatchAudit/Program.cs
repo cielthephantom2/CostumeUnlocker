@@ -16,6 +16,8 @@ void Check(bool good,string text){if(!good)throw new InvalidOperationException(t
 var types=Walk(mod.MainModule.Types).ToArray();
 Check(!types.Any(t=>legacy.IsMatch(t.FullName)),"legacy encounter adapters and global Nemesis/Omen/shrine classes absent from binary");
 Check(!types.Any(t=>t.Name is "LanMapTriggers" or "NativeSceneEvents" or "NativeMapObjectReplica"),"generic callback/state-graph/object-state replay engines absent");
+Check(!types.Any(t=>t.Name.Contains("DefaultMeteor",StringComparison.Ordinal) || t.Name=="OfflineRemovedMeteorRepairPatch"),"retired Default Meteor and save-repair hook absent from release binary");
+Check(!types.Any(t=>t.Name is "QolRules" or "NativeQaNaturalBoot") && !types.Single(t=>t.Name=="MeteorNodeRules").Methods.Any(m=>m.Name=="LargeMeteorChance"),"unused pickup/reveal/QA boot and old Meteor chance helpers removed");
 var patches=types.Where(t=>t.CustomAttributes.Any(a=>a.AttributeType.FullName=="HarmonyLib.HarmonyPatch")).ToArray();
 var violations=new List<string>();
 var bloodrageTargets=new Dictionary<string,(string Type,string Method)>
@@ -92,6 +94,12 @@ Check(enabled.Count==2 && enabled[0].OpCode.Code==Mono.Cecil.Cil.Code.Ldc_I4_0 &
  "compiled release shared-world policy is false with no configuration or command-line override");
 string ReflectionNamespace(TypeDefinition type)=>type.IsNested ? ReflectionNamespace(type.DeclaringType) : type.Namespace;
 var installed=patches.Where(t=>LastEpochLAN.Mod.RoomFeaturePolicy.AllowsPatch(ReflectionNamespace(t),t.Name,t.DeclaringType?.Name??"")).ToArray();
+Check(!types.Any(t=>t.Name.Contains("Vilatria",StringComparison.Ordinal)) &&
+ !types.Single(t=>t.Name=="ToolkitSettings").Properties.Any(p=>p.Name=="IgnoreVilatriaMeteorVisuals"),
+ "Vilatria visual override hooks and setting are completely removed");
+var newMeteorHooks=new[]{"OfflineSpiritXylemLocalizationPatch","OfflineMeteorStardustTreePatch","OfflineMeteorStardustHasStatsPatch","OfflineMeteorStardustStatsPatch","OfflineMeteorStardustLimitPatch","OfflineMeteorStardustNodePatch","OfflineMeteorStardustTextPatch","OfflineMeteorStardustDescriptionPatch","OfflineMeteorStardustAltPatch","OfflineMeteorStardustLabelPatch"};
+var classMenuHooks=new[]{"OfflineClassRespecMenuPatch","OfflineClassRespecClickPatch","OfflineClassRespecClosePatch","OfflineClassRespecUnityMenuPatch","OfflineClassRespecUnityClickPatch","OfflineClassRespecUnityClosePatch"};
+Check(newMeteorHooks.Concat(classMenuHooks).All(n=>installed.Any(t=>t.Name==n)),"Stardust and both native class-menu renderer hook sets install");
 var skipped=patches.Except(installed).ToArray();
 Check(installed.Any(t=>t.Name=="SharedChestItemLockPatch") && installed.Any(t=>t.Name=="SharedStashProjectionMutationPatch") &&
  installed.Any(t=>t.DeclaringType?.Name=="LanLootFilters") && installed.Any(t=>t.Name=="AutoPlayCastObservationPatch") &&
@@ -168,8 +176,9 @@ var localPickupCalls=pickup.Methods.Where(m=>m.Name is "Local" or "Owned").Selec
 Check(localPickupCalls.Any(m=>m.Name=="get_Enabled") && localPickupCalls.Any(m=>m.Name=="get_itemContainersManager") && !localPickupCalls.Any(m=>m.Name=="get_Ready"),
  "pickup requires offline local storage without model/network visual readiness");
 var pickupTickCalls=pickup.Methods.Single(m=>m.Name=="Tick").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
-Check(new[]{"pickupItem","pickupGold","pickupPotion","pickupAncientBone"}.All(name=>pickupTickCalls.Any(m=>m.Name==name)) &&
- !pickupTickCalls.Any(m=>m.Name is "modifyGold" or "modifyAncientBones" or "set_currentCharges"),
+var pickupTransactionCalls=pickup.Methods.Where(m=>m.Name is "Tick" or "PickupGold").SelectMany(m=>m.Body.Instructions).Select(i=>i.Operand).OfType<MethodReference>().ToArray();
+Check(new[]{"pickupItem","pickupGold","pickupPotion","pickupAncientBone"}.All(name=>pickupTransactionCalls.Any(m=>m.Name==name)) &&
+ !pickupTransactionCalls.Any(m=>m.Name is "modifyGold" or "modifyAncientBones" or "set_currentCharges"),
  "all delayed pickups use native storage/currency methods without direct grants");
 var pickupPolicy=types.Single(t=>t.Name=="PickupRules");
 Check((float)pickupPolicy.Fields.Single(f=>f.Name=="Delay").Constant==.5f && !pickupPolicy.Fields.Any(f=>f.Name is "Radius" or "SweepInterval" or "MaximumVisits"),
@@ -590,7 +599,7 @@ using(var nativeMetadata=AssemblyDefinition.ReadAssembly(Path.Combine(args[3],"M
  Check(NativeBody("MeteorAoEMutator","Mutate").AsSpan().IndexOf(new byte[]{0xBA,0xC4,0x02,0,0})>=0 &&
   NativeBody("MeteorAoEMutator","Mutate").AsSpan().IndexOf(new byte[]{0x0F,0x28,0xF8,0xF3,0x0F,0x59,0x3D})>=0,
   "Heat Flux native consumer queries Frost Claw ID708 and applies its inlined mana factor to that result");
- foreach(var hook in installed.Where(t=>ladderHooks.Contains(t.Name) || meteorHooks.Contains(t.Name) || t.Name is "SharedStashLegacyConfigurationPatch" or "SharedStashConfigurationPatch" or "AggressiveMinionAcquirePatch" or "AggressiveMinionTargetPatch" or "OfflineWeaverImprintTooltipStatPatch" or "OfflineWeaverImprintTooltipInfoPatch" or "OfflineWeaverImprintLegacyValuePatch" or "OfflineWeaverImprintLegacyInfoPatch"))
+ foreach(var hook in installed.Where(t=>newMeteorHooks.Contains(t.Name) || classMenuHooks.Contains(t.Name) || ladderHooks.Contains(t.Name) || meteorHooks.Contains(t.Name) || t.Name is "SharedStashLegacyConfigurationPatch" or "SharedStashConfigurationPatch" or "AggressiveMinionAcquirePatch" or "AggressiveMinionTargetPatch" or "OfflineWeaverImprintTooltipStatPatch" or "OfflineWeaverImprintTooltipInfoPatch" or "OfflineWeaverImprintLegacyValuePatch" or "OfflineWeaverImprintLegacyInfoPatch"))
  {
   var attribute=hook.CustomAttributes.Single(a=>a.AttributeType.FullName=="HarmonyLib.HarmonyPatch");
   var type=(TypeReference)attribute.ConstructorArguments[0].Value;

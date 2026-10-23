@@ -1,0 +1,17 @@
+{
+  "removed": [
+    "System.String LastEpochLAN.Mod.OfflineTools.Dps.DamageMeterOverlay::FormatDuration(System.Single)",
+    "System.String LastEpochLAN.Mod.OfflineTools.Dps.DamageMeterOverlay::GetMapLabel()",
+    "System.Void LastEpochLAN.Mod.LanSharedChest::AddTab()",
+    "System.Void LastEpochLAN.Mod.NativeRewardCompletion::Reset()",
+    "System.Void LastEpochLAN.Mod.OfflineTools.MapFog::ApplyCurrent()",
+    "T LastEpochLAN.Mod.NativeEquipmentReplica::ReadOptional(System.Func\u00601\u003CT\u003E)",
+    "T LastEpochLAN.Mod.NativePlayerAnimationReplica::Read(System.Func\u00601\u003CIl2CppSystem.Nullable\u00601\u003CT\u003E\u003E,T)"
+  ],
+  "added": [],
+  "changed": [],
+  "compilerGeneratedRenamedRemoved": 30,
+  "compilerGeneratedRenamedAdded": 30,
+  "unchanged": 4443,
+  "scope": "Normalized compiled method IL, local types and exception handlers; normalizes compiler-generated lambda/display-class ordinal renumbering and metadata token relocation. Not a native gameplay test."
+}

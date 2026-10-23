@@ -31,15 +31,13 @@ internal static class OfflineMinimumPotentialPatch
 
 internal static class OfflineBuffs
 {
-    // Native source uses increasedValue for speed/regen and addedValue for this
+    // Native source uses increasedValue for speed and addedValue for this
     // area property. One untagged area entry avoids duplicating +50% for melee.
     internal readonly record struct Spec(string Name, SP Property, float Added, float Increased);
     internal static readonly Spec[] Specs =
     {
         new("TMCoop.Fixed.MoveSpeed", SP.Movespeed, 0, OfflineBonusRules.MoveSpeed),
-        new("TMCoop.Fixed.Area", SP.IncreasedAreaForAreaSkills, OfflineBonusRules.Area, 0),
-        new("TMCoop.Fixed.ManaRegen", SP.ManaRegen, 0, OfflineBonusRules.ManaRegen),
-        new("TMCoop.Fixed.HealthRegen", SP.HealthRegen, 0, OfflineBonusRules.HealthRegen)
+        new("TMCoop.Fixed.Area", SP.IncreasedAreaForAreaSkills, OfflineBonusRules.Area, 0)
     };
     private static StatBuffs current;
     private static float nextCheck;
@@ -59,6 +57,9 @@ internal static class OfflineBuffs
 
     internal static void Ensure(StatBuffs buffs)
     {
+        // Remove the retired increased-regen buffs, including live migration.
+        if(buffs.activeBuffNames.ContainsKey("TMCoop.Fixed.ManaRegen")) buffs.removeBuffsWithName("TMCoop.Fixed.ManaRegen");
+        if(buffs.activeBuffNames.ContainsKey("TMCoop.Fixed.HealthRegen")) buffs.removeBuffsWithName("TMCoop.Fixed.HealthRegen");
         foreach (var spec in Specs)
         {
             if (buffs.activeBuffNames.TryGetValue(spec.Name, out var buff) && buff != null)

@@ -537,11 +537,6 @@ internal static class DamageMeterOverlay
 		return s_tmpTextProperty?.GetValue(tmpTextObject) as string;
 	}
 
-	private static string GetMapLabel()
-	{
-		return string.IsNullOrWhiteSpace(s_currentMapLabel) ? "Unknown Area" : s_currentMapLabel;
-	}
-
 	private static List<SkillTotal> GetTopSkills(int maxRows)
 	{
 		maxRows = Math.Clamp(maxRows, 1, 8);
@@ -855,12 +850,6 @@ internal static class DamageMeterOverlay
 	{
 		double num = value * 100.0;
 		return (num >= 10.0) ? (num.ToString("0.#", CultureInfo.InvariantCulture) + "%") : (num.ToString("0.0", CultureInfo.InvariantCulture) + "%");
-	}
-
-	private static string FormatDuration(float seconds)
-	{
-		TimeSpan timeSpan = TimeSpan.FromSeconds(Mathf.Max(0f, seconds));
-		return (timeSpan.TotalMinutes >= 1.0) ? timeSpan.ToString("m\\:ss", CultureInfo.InvariantCulture) : timeSpan.ToString("s\\.s\\s", CultureInfo.InvariantCulture);
 	}
 
 	private static void AccumulateSkillMetadata(SkillTotal total, DamageMeterHitInfo hitInfo)

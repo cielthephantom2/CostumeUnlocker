@@ -19,16 +19,21 @@ namespace Il2Cpp
  public class LocalTreeData:Component
  {
   public Actor actor;public SkillTreeData Skill;public SkillTreeData getSkillTreeData(Ability ability)=>Skill;
-  public class TreeData{public string treeID="Meteor";public List<NodeData> nodes=new();}
+  public class TreeData{public string treeID="Meteor";public Il2CppSystem.Collections.Generic.List<NodeData> nodes=new();}
   public class SkillTreeData:TreeData{}
   public class NodeData{public byte id,pointsAllocated;}
  }
  public class ArcaneAscendanceTree:Tree{public static void updateMutator(){}}
- public enum SP{ManaRegen=18,ManaEfficiency=69}
- public class Stats{public class Stat{public SP property;public int tags,specialTag,extraTag;public float addedValue,increasedValue;public List<float> moreValues=new();}}
+ public enum SP{Damage=0,ManaRegen=18,ManaEfficiency=69}
+ public class Stats{public static Stat MoreStat(SP property,int tags,float value,byte specialTag,int extraTag)=>new(){property=property,tags=tags,specialTag=specialTag,extraTag=extraTag,moreValues=new(){value}};public class Stat{public SP property;public int tags,specialTag,extraTag;public float addedValue,increasedValue;public List<float> moreValues=new();}}
  public class ArcaneAscendanceMutator:Component{public Actor actor;public List<Stats.Stat> statsWhileActive=new();public void Mutate(){}}
- public class MeteorSkillTree:Tree{public static void updateMutator(){}}
- public class MeteorMutator:Component{public Actor actor;public float chanceFor100increasedArea;public int frostClawCastsOnImpact;public void Mutate(){}}
+ public class MeteorSkillTree:Tree{public static int NativeStardustNodes;public static void updateMutator(LocalTreeData local,LocalTreeData.TreeData tree){
+ var t=typeof(MeteorSkillTree).Assembly.GetType("LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustTreePatch");object[] a={local,tree,null};
+ t.GetMethod("Prefix",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Static).Invoke(null,a);
+ NativeStardustNodes=tree.nodes.Count(n=>n.id==10);
+ t.GetMethod("Finalizer",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Static).Invoke(null,new object[]{null,a[2]});
+ }}
+ public class MeteorMutator:Component{public Actor actor;public float chanceFor100increasedArea;public int frostClawCastsOnImpact;public void Mutate(){}public bool addsTempStats()=>false;public Il2CppSystem.Collections.Generic.List<Stats.Stat> getTempStats()=>new();}
  public class MeteorAoEMutator:Component{public Actor actor;public int frostClawCastsOnImpact;public void Mutate(){}}
  public class AbilityMutator{}
  public class Ability{public string playerAbilityID;public static Ability getAbility(AbilityID id)=>new();}
@@ -39,15 +44,15 @@ namespace Il2Cpp
  public class Tree:Component{public string treeID;}
  public class SkillTreeNode
  {
-  public Tree tree;public byte id;public Il2CppSystem.Collections.Generic.List<NodeTooltipStat> stats=new();
-  public class NodeTooltipStat{public string value;}
+  public string description,altText;public byte maxPoints=4;public void findTreeAndRegister(){}public void updateText(){}public Tree tree;public byte id;public Il2CppSystem.Collections.Generic.List<NodeTooltipStat> stats=new();
+  public class NodeTooltipStat{public string value,statName;public bool noScaling;}
  }
  public class GlobalTreeData
  {
   public static GlobalTreeData Instance=new();public static GlobalTreeData get()=>Instance;
   public Dictionary<string,TreeData> Trees=new();public TreeData getTreeData(string id)=>Trees.GetValueOrDefault(id);
   public class TreeData{public Dictionary<byte,NodeData> Nodes=new();public NodeData getNode(byte id)=>Nodes.GetValueOrDefault(id);}
-  public class NodeData{public string name;}
+  public class NodeData{public string name;public byte maxPoints=4;}
  }
  public class NodeTooltipManager
  {
@@ -68,7 +73,7 @@ namespace Il2CppLE.UI.Tooltips
 }
 namespace LastEpochLAN.Mod.OfflineTools{internal static class OfflineToolkit{internal static bool Enabled=true;}}
 namespace Il2CppLocalizationSystem{public class LocalizationAbilities{public string GetDescription(Il2Cpp.Ability ability)=>"";}}
-namespace Il2CppLocalizationSystem{public class LocalizationSkills{public string GetNodeDescription(string treeID,byte nodeID,string originalValue)=>originalValue;public string GetStatName(string treeID,byte nodeID,int statIndex,string originalValue)=>originalValue;}}
+namespace Il2CppLocalizationSystem{public class LocalizationSkills{public string GetNodeDescription(string treeID,byte nodeID,string originalValue)=>originalValue;public string GetNodeAltText(string treeID,byte nodeID,string originalValue)=>originalValue;public string GetStatName(string treeID,byte nodeID,int statIndex,string originalValue)=>originalValue;}}
 
 namespace Il2CppSystem.Collections.Generic
 {

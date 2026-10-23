@@ -46,7 +46,6 @@ internal sealed class LanSharedChest
         SelectedTab=tab;view=null;selected=null;dragged="";nextPoll=0;previews.Clear();
         Status="Loading shared tab "+(tab+1)+"...";
     }
-    internal void AddTab()=>SendTabEdit("add-tab");
     internal void AddTabInCategory(int category)=>SendTabEdit("add-tab",destinationCategory:category);
     internal void ConfigureTab(SharedStashTab settings)=>SendTabEdit("configure-tab",settings);
     internal void SortTab(string[] order)=>SendTabEdit("sort-tab",null,order);

@@ -1,5 +1,5 @@
 {
-  "passed": 35,
+  "passed": 39,
   "checks": [
     "fixed500ms delay and gameplay inventory readiness without model/network Ready",
     "old map-wide drop placement restored; no pickup during spawn",
@@ -35,7 +35,11 @@
     "native failure preserves floor item and restores classification scope",
     "only native errors are logged, no pickup diagnostics",
     "manual Range Pickup remains immediate and independent of auto delay",
-    "successful automatic/manual pickup emits no diagnostic logs"
+    "successful automatic/manual pickup emits no diagnostic logs",
+    "native gold transaction rejects original distant ground record",
+    "delayed gold uses native transaction despite its distance gate and removes record once",
+    "gold cannot grant twice",
+    "gold transaction exception restores original floor location without granting"
   ],
   "actualSource": true,
   "delaySeconds": 0.5,

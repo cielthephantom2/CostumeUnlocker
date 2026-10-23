@@ -9,8 +9,6 @@ namespace LastEpochLAN.Mod.OfflineTools;
 internal static class MeteorNodeRules
 {
     internal const string Extinction="Meteor Crit Chance",HeatFlux="Meteor Frost Claw on Impact";
-    internal static float LargeMeteorChance(float native)=>!float.IsFinite(native) || native<=0?0:
-        (float)Math.Min(1d,(double)native*.33/.10);
     internal static int FrostClaws(int native)=>native<=0?0:(int)Math.Min(int.MaxValue,(long)native*2);
     internal static float HeatFluxMana(float native)=>float.IsFinite(native) && native>0?native/1.2f:native;
     // Native ScaleValueText appends localized "per point" text (and may wrap

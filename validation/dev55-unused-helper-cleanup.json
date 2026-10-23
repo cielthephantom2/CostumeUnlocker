@@ -1,0 +1,43 @@
+{
+  "removed": [
+    {
+      "file": "src/LastEpochLAN.Mod/LanSharedChest.cs",
+      "removedPattern": "    internal void AddTab\\(\\)=>SendTabEdit\\(\"add-tab\"\\);\\n"
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeEquipmentReplica.cs",
+      "removedPattern": "    // IL2CPP boxes an empty Nullable<T>.*?    private static T ReadOptional<T>.*?\\n    }\\n\\n"
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativePlayerAnimationReplica.cs",
+      "removedPattern": "    private static T Read<T>\\(Func<Il2CppSystem.Nullable<T>> getter, T fallback\\) where T : struct\\n    \\{.*?\\n    }\\n\\n"
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeRewardCompletion.cs",
+      "removedPattern": "    internal static void Reset\\(\\) \\{ pending.Clear\\(\\); Current = null; }\\n"
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/MapFog.cs",
+      "removedPattern": "    internal static void ApplyCurrent\\(\\)\\n    \\{.*?\\n    }\\n"
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/Dps/DamageMeterOverlay.cs",
+      "removedPattern": "\\tprivate static string GetMapLabel\\(\\)\\n\\t\\{.*?\\n\\t}\\n\\n"
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/Dps/DamageMeterOverlay.cs",
+      "removedPattern": "\\tprivate static string FormatDuration\\(float seconds\\)\\n\\t\\{.*?\\n\\t}\\n\\n"
+    }
+  ],
+  "count": 7,
+  "reason": "No source/IL callers or reflection registrations found; native stash AddTabInCategory and other active implementations retained.",
+  "sharedWorldRemoval": false,
+  "runtimeMethodsAdded": 0,
+  "runtimeMethodsChangedAfterGeneratedNameNormalization": 0,
+  "remainingCandidates": 13,
+  "dispositions": {
+    "inactiveSharedWorldMethodsRetained": 12,
+    "manuallyRegisteredHopeHookRetained": 1
+  },
+  "modSha256": "D6E11936153B9B8E9F17E2E0B6C7E76F97539E53DFA63D4589C4FD7C2C8BBEBC"
+}

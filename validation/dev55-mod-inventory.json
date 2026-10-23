@@ -1,0 +1,3061 @@
+{
+  "sourceFiles": 202,
+  "compiledTypes": 1034,
+  "installedHooks": 144,
+  "disabledHooks": 66,
+  "sharedWorldEnabled": false,
+  "files": [
+    {
+      "file": "src/LastEpochLAN.Core/AssemblyInfo.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/AutoPlayRecovery.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.AutoPlayRecovery"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/AutoPlayRules.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.AutoPlaySettings",
+        "LastEpochLAN.Core.AutoPlaySettings/\u003C\u003Ec",
+        "LastEpochLAN.Core.AutoSkillRule",
+        "LastEpochLAN.Core.AutoPotionRule",
+        "LastEpochLAN.Core.AutoSkillContext",
+        "LastEpochLAN.Core.AutoPlayRules",
+        "LastEpochLAN.Core.AutoPlaySchedule",
+        "LastEpochLAN.Core.AutoPlayCadence"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/BloodrageChargeRules.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.BloodrageChargeRules"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/BufferedEnemyPresentation.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.BufferedEnemyPresentation",
+        "LastEpochLAN.Core.EnemyAdmission"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/BufferedMotion.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.MotionSample",
+        "LastEpochLAN.Core.SnapshotPresentationClock",
+        "LastEpochLAN.Core.BufferedMotion"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/ConfirmedDeaths.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.ConfirmedDeath",
+        "LastEpochLAN.Core.ConfirmedDeaths"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/DensityRules.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.DensityRules"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/DpsRules.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.DpsRules"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/EchoRewardLedger.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.EchoRewardLedger"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/EnemyDeathLedger.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.DeathReceipt",
+        "LastEpochLAN.Core.EnemyDeathLedger",
+        "LastEpochLAN.Core.EnemyDeathLedger/Delivery",
+        "LastEpochLAN.Core.EnemyDeathLedger/\u003C\u003Ec",
+        "LastEpochLAN.Core.EnemyDeathLedger/\u003C\u003Ec__DisplayClass10_0",
+        "LastEpochLAN.Core.EnemyDeathLedger/\u003C\u003Ec__DisplayClass10_1",
+        "LastEpochLAN.Core.EnemyDeathLedger/\u003C\u003Ec__DisplayClass7_0",
+        "LastEpochLAN.Core.EnemyDeathLedger/\u003C\u003Ec__DisplayClass9_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/EnemyHistory.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.EnemyHistory",
+        "LastEpochLAN.Core.EnemyHistory/\u003C\u003Ec",
+        "LastEpochLAN.Core.EnemyHistory/\u003C\u003Ec__DisplayClass3_0",
+        "LastEpochLAN.Core.EnemyHistory/\u003C\u003Ec__DisplayClass4_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/FortuneRules.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.FortuneRules"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/Gifts.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.GiftMessage",
+        "LastEpochLAN.Core.GiftRecord",
+        "LastEpochLAN.Core.GiftJournal"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/GlyphCraftingRules.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.GlyphCraftingRules",
+        "LastEpochLAN.Core.CraftingHopeScope"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/HudConfiguration.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.HudValue",
+        "LastEpochLAN.Core.HudConfiguration",
+        "LastEpochLAN.Core.HudConfiguration/\u003C\u003Ec",
+        "LastEpochLAN.Core.HudAuthority"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/IncomingDamage.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.IncomingDamage",
+        "LastEpochLAN.Core.IncomingDamage/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/LanNetworks.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.LanNetworks"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/LanSession.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.LanSession",
+        "LastEpochLAN.Core.LanSession/Peer",
+        "LastEpochLAN.Core.LanSession/\u003C\u003Ec",
+        "LastEpochLAN.Core.LanSession/\u003C\u003Ec__DisplayClass132_0",
+        "LastEpochLAN.Core.LanSession/\u003C\u003Ec__DisplayClass79_0",
+        "LastEpochLAN.Core.LanSession/\u003CAcceptLoopAsync\u003Ed__131",
+        "LastEpochLAN.Core.LanSession/\u003CClientReadAsync\u003Ed__136",
+        "LastEpochLAN.Core.LanSession/\u003CClientTickAsync\u003Ed__137",
+        "LastEpochLAN.Core.LanSession/\u003CHostTickAsync\u003Ed__133",
+        "LastEpochLAN.Core.LanSession/\u003CJoinAsync\u003Ed__129",
+        "LastEpochLAN.Core.LanSession/\u003CPeerTickAsync\u003Ed__134",
+        "LastEpochLAN.Core.LanSession/\u003CReadPacketAsync\u003Ed__62",
+        "LastEpochLAN.Core.LanSession/\u003CSendSnapshotAsync\u003Ed__135",
+        "LastEpochLAN.Core.LanSession/\u003CServePeerAsync\u003Ed__132",
+        "LastEpochLAN.Core.LanSession/\u003CWritePacketAsync\u003Ed__61"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/LanSession.Encounters.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.LanSession",
+        "LastEpochLAN.Core.LanSession/EncounterPublication",
+        "LastEpochLAN.Core.LanSession/\u003C\u003Ec",
+        "LastEpochLAN.Core.LanSession/\u003C\u003Ec__DisplayClass157_0",
+        "LastEpochLAN.Core.LanSession/\u003C\u003Ec__DisplayClass157_1",
+        "LastEpochLAN.Core.LanSession/\u003C\u003Ec__DisplayClass159_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/LanSession.LootFilters.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.LanSession",
+        "LastEpochLAN.Core.LanSession/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/LinearCorruptionRules.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.LinearCorruptionRules"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/OfflineBonusRules.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.OfflineBonusRules",
+        "LastEpochLAN.Core.OfflineBonusRules/CorruptionReward"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/PartyEchoState.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.PartyEchoState",
+        "LastEpochLAN.Core.PartyEchoState/\u003C\u003Ec",
+        "LastEpochLAN.Core.EchoCompletion",
+        "LastEpochLAN.Core.EchoObjective",
+        "LastEpochLAN.Core.PartyEchoRules"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/PartyParticipation.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.PartyParticipation"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/PartyStatus.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.StatusValue",
+        "LastEpochLAN.Core.StatusValue/\u003C\u003Ec",
+        "LastEpochLAN.Core.StatusValue/\u003C\u003Ec__DisplayClass22_0",
+        "LastEpochLAN.Core.StatusField",
+        "LastEpochLAN.Core.StatusCounters",
+        "LastEpochLAN.Core.StatusStat",
+        "LastEpochLAN.Core.StatusStat/\u003C\u003Ec",
+        "LastEpochLAN.Core.StatusSourceProfile",
+        "LastEpochLAN.Core.StatusSourceProfile/\u003C\u003Ec",
+        "LastEpochLAN.Core.StatusCallback"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/PartyTravelRules.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.PartyTravelRules"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/PerformanceDiagnostics.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.PlayerLocation",
+        "LastEpochLAN.Core.TimingSummary",
+        "LastEpochLAN.Core.NetworkSummary",
+        "LastEpochLAN.Core.TimingWindow",
+        "LastEpochLAN.Core.FrameTimingWindow",
+        "LastEpochLAN.Core.LatestReportWriter",
+        "LastEpochLAN.Core.LatestReportWriter/\u003CFlushAsync\u003Ed__10"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/PooledFrameBuffer.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.PooledFrameBuffer"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/Protocol.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.PlayerState",
+        "LastEpochLAN.Core.PlayerState/\u003C\u003Ec",
+        "LastEpochLAN.Core.DroppedItemState",
+        "LastEpochLAN.Core.AvatarState",
+        "LastEpochLAN.Core.AvatarState/\u003C\u003Ec",
+        "LastEpochLAN.Core.CosmeticPrefab",
+        "LastEpochLAN.Core.VisualPoint",
+        "LastEpochLAN.Core.VisualLine",
+        "LastEpochLAN.Core.VisualLine/\u003C\u003Ec",
+        "LastEpochLAN.Core.VisualPose",
+        "LastEpochLAN.Core.VisualPose/\u003C\u003Ec",
+        "LastEpochLAN.Core.SkillVisualState",
+        "LastEpochLAN.Core.SkillVisualState/\u003C\u003Ec",
+        "LastEpochLAN.Core.VisualParticleFrame",
+        "LastEpochLAN.Core.NativeMotionState",
+        "LastEpochLAN.Core.EquipmentAppearance",
+        "LastEpochLAN.Core.AnimationLayer",
+        "LastEpochLAN.Core.AnimationSnapshot",
+        "LastEpochLAN.Core.AnimationSnapshot/\u003C\u003Ec",
+        "LastEpochLAN.Core.AnimationParameter",
+        "LastEpochLAN.Core.Packet",
+        "LastEpochLAN.Core.SkillEvent",
+        "LastEpochLAN.Core.NativeVisualCommand",
+        "LastEpochLAN.Core.NativeVisualCommand/\u003C\u003Ec",
+        "LastEpochLAN.Core.EnemyState",
+        "LastEpochLAN.Core.EnemyState/\u003C\u003Ec",
+        "LastEpochLAN.Core.WorldState",
+        "LastEpochLAN.Core.WorldState/\u003C\u003Ec",
+        "LastEpochLAN.Core.MapObjectState",
+        "LastEpochLAN.Core.MapTriggerState",
+        "LastEpochLAN.Core.SceneGraphState",
+        "LastEpochLAN.Core.HitRequest",
+        "LastEpochLAN.Core.Wire",
+        "LastEpochLAN.Core.Wire/\u003CReadAsync\u003Ed__3",
+        "LastEpochLAN.Core.Wire/\u003CReadExactlyAsync\u003Ed__4",
+        "LastEpochLAN.Core.Wire/\u003CWriteAsync\u003Ed__2",
+        "LastEpochLAN.Core.LanAddress"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/RecentEnemyDamage.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.RecentEnemyDamage",
+        "LastEpochLAN.Core.RecentEnemyDamage/\u003C\u003Ec",
+        "LastEpochLAN.Core.RecentEnemyDamage/\u003C\u003Ec__DisplayClass5_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/ReleaseVersion.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.ReleaseVersion"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/ResolvedAilment.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.ResolvedAilment",
+        "LastEpochLAN.Core.ResolvedAilment/\u003C\u003Ec",
+        "LastEpochLAN.Core.AilmentCount"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/RoomLadder.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.RoomLadderCharacter",
+        "LastEpochLAN.Core.RoomLadderCharacter/\u003C\u003Ec",
+        "LastEpochLAN.Core.RoomLadderRow",
+        "LastEpochLAN.Core.RoomLadder",
+        "LastEpochLAN.Core.RoomLadder/\u003C\u003Ec",
+        "LastEpochLAN.Core.RoomLadder/\u003C\u003Ec__DisplayClass0_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/RoomLootFilter.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.RoomLootFilter",
+        "LastEpochLAN.Core.RoomLootFilter/\u003C\u003Ec",
+        "LastEpochLAN.Core.RoomLootFilterConverter"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/SharedChest.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.ChestItem",
+        "LastEpochLAN.Core.ChestCommand",
+        "LastEpochLAN.Core.ChestCommand/\u003C\u003Ec",
+        "LastEpochLAN.Core.ChestReply",
+        "LastEpochLAN.Core.ChestReply/\u003C\u003Ec",
+        "LastEpochLAN.Core.ChestRequest",
+        "LastEpochLAN.Core.ChestOperation",
+        "LastEpochLAN.Core.ChestState",
+        "LastEpochLAN.Core.DurableJson",
+        "LastEpochLAN.Core.SharedChestStore",
+        "LastEpochLAN.Core.SharedChestStore/\u003C\u003Ec",
+        "LastEpochLAN.Core.SharedChestStore/\u003C\u003Ec__DisplayClass12_0",
+        "LastEpochLAN.Core.SharedChestStore/\u003C\u003Ec__DisplayClass13_0",
+        "LastEpochLAN.Core.SharedChestStore/\u003C\u003Ec__DisplayClass13_1",
+        "LastEpochLAN.Core.SharedChestStore/\u003C\u003Ec__DisplayClass13_2",
+        "LastEpochLAN.Core.SharedChestStore/\u003C\u003Ec__DisplayClass13_3",
+        "LastEpochLAN.Core.SharedChestStore/\u003C\u003Ec__DisplayClass13_4",
+        "LastEpochLAN.Core.SharedChestStore/\u003C\u003Ec__DisplayClass13_5",
+        "LastEpochLAN.Core.SharedChestStore/\u003C\u003Ec__DisplayClass13_6",
+        "LastEpochLAN.Core.SharedChestStore/\u003C\u003Ec__DisplayClass5_0",
+        "LastEpochLAN.Core.SharedChestStore/\u003C\u003Ec__DisplayClass5_1",
+        "LastEpochLAN.Core.SharedChestStore/\u003C\u003Ec__DisplayClass9_0",
+        "LastEpochLAN.Core.ChestLocalTransaction",
+        "LastEpochLAN.Core.ChestClientJournal"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/SharedStashTabs.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.SharedStashRules",
+        "LastEpochLAN.Core.SharedStashRules/\u003C\u003Ec",
+        "LastEpochLAN.Core.SharedStashTab",
+        "LastEpochLAN.Core.SharedStashTab/\u003C\u003Ec",
+        "LastEpochLAN.Core.SharedStashCategory",
+        "LastEpochLAN.Core.SharedStashCategory/\u003C\u003Ec",
+        "LastEpochLAN.Core.SharedStashCategory/\u003C\u003Ec__DisplayClass25_0",
+        "LastEpochLAN.Core.SharedStashCategory/\u003C\u003Ec__DisplayClass25_1",
+        "LastEpochLAN.Core.SharedStashPriority",
+        "LastEpochLAN.Core.SharedStashPriority/\u003C\u003Ec",
+        "LastEpochLAN.Core.SharedStashEdit"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/SourceStatusVisuals.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.StatusVisualGroup",
+        "LastEpochLAN.Core.StatusVisualReport",
+        "LastEpochLAN.Core.StatusVisualReport/\u003C\u003Ec",
+        "LastEpochLAN.Core.SourceStatusVisuals",
+        "LastEpochLAN.Core.SourceStatusVisuals/Contribution",
+        "LastEpochLAN.Core.SourceStatusVisuals/\u003C\u003Ec",
+        "LastEpochLAN.Core.SourceStatusVisuals/\u003C\u003Ec__DisplayClass5_0",
+        "LastEpochLAN.Core.SourceStatusVisuals/\u003C\u003Ec__DisplayClass6_0",
+        "LastEpochLAN.Core.SourceStatusVisuals/\u003C\u003Ec__DisplayClass8_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/StateValidation.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.StateValidation",
+        "LastEpochLAN.Core.StateValidation/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/SummonState.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.SummonState",
+        "LastEpochLAN.Core.SummonFrame",
+        "LastEpochLAN.Core.SummonPresentation",
+        "LastEpochLAN.Core.SummonPresentation/Entry",
+        "LastEpochLAN.Core.SummonPresentation/\u003C\u003Ec",
+        "LastEpochLAN.Core.SummonPresentation/\u003C\u003Ec__DisplayClass7_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/WeaverImprintRules.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.WeaverImprintRules"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/WorldContent.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.WorldContent"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/WorldTransfer.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.EnemyTemplate",
+        "LastEpochLAN.Core.TypedEnemy",
+        "LastEpochLAN.Core.WorldChunk",
+        "LastEpochLAN.Core.WorldChunkWriter",
+        "LastEpochLAN.Core.WorldChunkWriter/\u003C\u003Ec",
+        "LastEpochLAN.Core.WorldChunkWriter/\u003C\u003Ec__DisplayClass4_0",
+        "LastEpochLAN.Core.WorldChunkReader",
+        "LastEpochLAN.Core.WorldChunkReader/\u003C\u003Ec",
+        "LastEpochLAN.Core.WorldChunkReader/\u003C\u003Ec__DisplayClass12_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/WovenPotentialRules.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.WovenPotentialRules"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/AutoPlayNativeSmoke.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.AutoPlayRuntime",
+        "LastEpochLAN.Mod.AutoPlayRuntime/\u003C\u003Ec__DisplayClass10_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/AutoPlayRoomLifecycle.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.AutoPlayRuntime"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/AutoPlayRuntime.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.AutoPlayRuntime",
+        "LastEpochLAN.Mod.AutoPlayRuntime/\u003C\u003Ec__DisplayClass95_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/ClassVisualReplica.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.ClassVisualReplica",
+        "LastEpochLAN.Mod.ClassVisualReplica/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/CompilerAttributes.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "System.Runtime.CompilerServices.NullableAttribute",
+        "System.Runtime.CompilerServices.NullableContextAttribute"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/HostEnemyReplicas.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.HostEnemyReplicas",
+        "LastEpochLAN.Mod.HostEnemyReplicas/HiddenActor",
+        "LastEpochLAN.Mod.HostEnemyReplicas/\u003C\u003Ec",
+        "LastEpochLAN.Mod.HostEnemyReplicas/\u003C\u003Ec__DisplayClass23_0",
+        "LastEpochLAN.Mod.HostEnemyReplicas/\u003C\u003Ec__DisplayClass28_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/HostWorldAudit.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.HostWorldAudit"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/LanDroppedItems.cs",
+      "classification": "contains policy-disabled hooks",
+      "types": [
+        "LastEpochLAN.Mod.LanDroppedItems",
+        "LastEpochLAN.Mod.LanDroppedItems/\u003C\u003Ec",
+        "LastEpochLAN.Mod.LanDroppedItems/\u003C\u003Ec__DisplayClass6_0",
+        "LastEpochLAN.Mod.LanInventoryDropCapturePatch"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.LanInventoryDropCapturePatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/LanGift.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.LanGift",
+        "LastEpochLAN.Mod.LanGift/\u003C\u003Ec",
+        "LastEpochLAN.Mod.LanGift/\u003C\u003Ec__DisplayClass36_0",
+        "LastEpochLAN.Mod.LanGiftOpenPatch",
+        "LastEpochLAN.Mod.LanGiftConfirmPatch",
+        "LastEpochLAN.Mod.LanGiftValidatePatch",
+        "LastEpochLAN.Mod.LanGiftApplyingLockPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.LanGiftApplyingLockPatch"
+      ],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.LanGiftOpenPatch",
+        "LastEpochLAN.Mod.LanGiftConfirmPatch",
+        "LastEpochLAN.Mod.LanGiftValidatePatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/LanHud.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.LanHud",
+        "LastEpochLAN.Mod.LanHud/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/LanLootFilters.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.LanLootFilters",
+        "LastEpochLAN.Mod.LanLootFilters/MarkFilterOwners",
+        "LastEpochLAN.Mod.LanLootFilters/MarkFilterOwners/\u003C\u003Ec",
+        "LastEpochLAN.Mod.LanLootFilters/MarkFilterOwners/\u003C\u003Ec__DisplayClass0_0",
+        "LastEpochLAN.Mod.LanLootFilters/MarkFilterOwners/\u003C\u003Ec__DisplayClass0_1",
+        "LastEpochLAN.Mod.LanLootFilters/ClearPooledMarker",
+        "LastEpochLAN.Mod.LanLootFilters/Verdict",
+        "LastEpochLAN.Mod.LanLootFilters/\u003C\u003Ec",
+        "LastEpochLAN.Mod.LanLootFilters/\u003C\u003Ec__DisplayClass13_0",
+        "LastEpochLAN.Mod.LanLootFilters/\u003C\u003Ec__DisplayClass21_0",
+        "LastEpochLAN.Mod.LanLootFilters/\u003C\u003Ec__DisplayClass24_1"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.LanLootFilters/MarkFilterOwners",
+        "LastEpochLAN.Mod.LanLootFilters/ClearPooledMarker"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/LanMod.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.LanMod",
+        "LastEpochLAN.Mod.LanMod/\u003C\u003Ec",
+        "LastEpochLAN.Mod.LanMod/\u003C\u003Ec__DisplayClass88_0",
+        "LastEpochLAN.Mod.LanMod/\u003C\u003Ec__DisplayClass95_0",
+        "LastEpochLAN.Mod.LanMod/\u003C\u003Ec__DisplayClass95_1",
+        "LastEpochLAN.Mod.LanMod/\u003C\u003Ec__DisplayClass95_2",
+        "LastEpochLAN.Mod.LanSettings"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/LanMonolithParty.cs",
+      "classification": "contains policy-disabled hooks",
+      "types": [
+        "LastEpochLAN.Mod.LanMonolithParty",
+        "LastEpochLAN.Mod.LanMonolithParty/\u003C\u003Ec",
+        "LastEpochLAN.Mod.SharedEchoRunLookupPatch",
+        "LastEpochLAN.Mod.SharedEchoPersistentRunPatch",
+        "LastEpochLAN.Mod.SharedEchoPersistentRunPatch/\u003C\u003Ec",
+        "LastEpochLAN.Mod.SharedEchoCompletionPatch",
+        "LastEpochLAN.Mod.SharedEchoGenerationPatch",
+        "LastEpochLAN.Mod.SharedEchoRewardAuthorityPatch",
+        "LastEpochLAN.Mod.SharedEchoPrivateProgressPatch",
+        "LastEpochLAN.Mod.SharedEchoSelectionPatch",
+        "LastEpochLAN.Mod.SharedEchoSelectionPatch/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.SharedEchoRunLookupPatch",
+        "LastEpochLAN.Mod.SharedEchoPersistentRunPatch",
+        "LastEpochLAN.Mod.SharedEchoCompletionPatch",
+        "LastEpochLAN.Mod.SharedEchoGenerationPatch",
+        "LastEpochLAN.Mod.SharedEchoRewardAuthorityPatch",
+        "LastEpochLAN.Mod.SharedEchoPrivateProgressPatch",
+        "LastEpochLAN.Mod.SharedEchoSelectionPatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/LanPartyTravel.cs",
+      "classification": "contains policy-disabled hooks",
+      "types": [
+        "LastEpochLAN.Mod.LanPartyTravel",
+        "LastEpochLAN.Mod.LanPartyTravel/\u003C\u003Ec__DisplayClass19_0",
+        "LastEpochLAN.Mod.LanPartyTravel/\u003C\u003Ec__DisplayClass20_0",
+        "LastEpochLAN.Mod.NativeLanPartyPortalPatch"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.NativeLanPartyPortalPatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/LanSharedChest.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.LanSharedChest",
+        "LastEpochLAN.Mod.LanSharedChest/\u003C\u003Ec",
+        "LastEpochLAN.Mod.LanSharedChest/\u003C\u003Ec__DisplayClass108_0",
+        "LastEpochLAN.Mod.LanSharedChest/\u003C\u003Ec__DisplayClass87_0",
+        "LastEpochLAN.Mod.LanSharedChest/\u003C\u003Ec__DisplayClass88_0",
+        "LastEpochLAN.Mod.LanSharedChest/\u003C\u003Ec__DisplayClass90_0",
+        "LastEpochLAN.Mod.LanSharedChest/\u003C\u003Ec__DisplayClass94_0",
+        "LastEpochLAN.Mod.SharedChestItemLockPatch",
+        "LastEpochLAN.Mod.SharedChestManagerLockPatch",
+        "LastEpochLAN.Mod.SharedChestSkin"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.SharedChestItemLockPatch",
+        "LastEpochLAN.Mod.SharedChestManagerLockPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/LanSharedStashPriority.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.SharedStashPriorityRouting",
+        "LastEpochLAN.Mod.SharedStashPriorityRouting/\u003C\u003Ec__DisplayClass1_0",
+        "LastEpochLAN.Mod.SharedStashPriorityRouting/\u003C\u003Ec__DisplayClass1_1"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeActorBinding.cs",
+      "classification": "contains policy-disabled hooks",
+      "types": [
+        "LastEpochLAN.Mod.NativeActorBinding",
+        "LastEpochLAN.Mod.NativeActorBinding/Binding",
+        "LastEpochLAN.Mod.NativePrivateActorDestroyPatch"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.NativePrivateActorDestroyPatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeAilmentSynchronization.cs",
+      "classification": "contains policy-disabled hooks",
+      "types": [
+        "LastEpochLAN.Mod.NativeAilmentSynchronization",
+        "LastEpochLAN.Mod.NativeAilmentSynchronization/View",
+        "LastEpochLAN.Mod.NativeAilmentSynchronization/Capture",
+        "LastEpochLAN.Mod.NativeAilmentSynchronization/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeAilmentSynchronization/\u003C\u003Ec__DisplayClass20_0",
+        "LastEpochLAN.Mod.NativeAilmentSynchronization/\u003C\u003Ec__DisplayClass24_0",
+        "LastEpochLAN.Mod.LanAilmentResolvedPatch",
+        "LastEpochLAN.Mod.LanAilmentDirtyPatch",
+        "LastEpochLAN.Mod.LanAilmentDirtyPatch/\u003C\u003Ec",
+        "LastEpochLAN.Mod.LanSharedAilmentVisualPatch",
+        "LastEpochLAN.Mod.LanSourceDotScopePatch"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.LanAilmentResolvedPatch",
+        "LastEpochLAN.Mod.LanAilmentDirtyPatch",
+        "LastEpochLAN.Mod.LanSharedAilmentVisualPatch",
+        "LastEpochLAN.Mod.LanSourceDotScopePatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeAnimation.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeAnimation",
+        "LastEpochLAN.Mod.NativeAnimation/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeAnimation/\u003C\u003Ec__DisplayClass2_0",
+        "LastEpochLAN.Mod.NativeAnimation/\u003C\u003Ec__DisplayClass5_0",
+        "LastEpochLAN.Mod.NativeAnimation/\u003C\u003Ec__DisplayClass6_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeAssetProbe.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.NativeAssetProbe"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeAutoPlayPanel.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.AutoPlayRuntime/NativePanel",
+        "LastEpochLAN.Mod.AutoPlayRuntime/NativePanel/\u003C\u003Ec",
+        "LastEpochLAN.Mod.AutoPlayRuntime/NativePanel/\u003C\u003Ec__DisplayClass43_0",
+        "LastEpochLAN.Mod.AutoPlayRuntime/NativePanel/\u003C\u003Ec__DisplayClass44_0",
+        "LastEpochLAN.Mod.AutoPlayRuntime/NativePanel/\u003C\u003Ec__DisplayClass45_0",
+        "LastEpochLAN.Mod.AutoPlayRuntime/NativePanel/\u003C\u003Ec__DisplayClass46_0",
+        "LastEpochLAN.Mod.AutoPlayRuntime/NativePanel/\u003C\u003Ec__DisplayClass49_0",
+        "LastEpochLAN.Mod.AutoPlayRuntime/NativePanel/\u003C\u003Ec__DisplayClass50_0",
+        "LastEpochLAN.Mod.AutoPlayRuntime/NativePanel/\u003C\u003Ec__DisplayClass51_0",
+        "LastEpochLAN.Mod.AutoPlayRuntime/NativePanel/\u003C\u003Ec__DisplayClass53_0",
+        "LastEpochLAN.Mod.AutoPlayRuntime/NativePanel/\u003C\u003Ec__DisplayClass55_0",
+        "LastEpochLAN.Mod.AutoPlayRuntime/NativePanel/\u003C\u003Ec__DisplayClass56_0",
+        "LastEpochLAN.Mod.AutoPlayRuntime/NativePanel/\u003C\u003Ec__DisplayClass58_0",
+        "LastEpochLAN.Mod.AutoPlayRuntime/NativePanel/\u003C\u003Ec__DisplayClass59_0",
+        "LastEpochLAN.Mod.AutoPlayRuntime/NativePanel/\u003C\u003Ec__DisplayClass60_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeBossHud.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeBossHud",
+        "LastEpochLAN.Mod.NativeBossHud/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeBossHud/\u003C\u003Ec__DisplayClass6_0",
+        "LastEpochLAN.Mod.NativeBossHud/\u003C\u003Ec__DisplayClass6_1",
+        "LastEpochLAN.Mod.NativeBossHud/\u003C\u003Ec__DisplayClass8_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeCampaignProbe.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.NativeCampaignProbe",
+        "LastEpochLAN.Mod.NativeCampaignProbe/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeChestUiProbe.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.NativeChestUiProbe"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeClassAnimator.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeClassAnimator",
+        "LastEpochLAN.Mod.NativeClassAnimator/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeClassAnimator/\u003C\u003Ec__DisplayClass11_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeCosmeticAbiSmoke.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.NativeCosmeticAbiSmoke"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeCosmeticCapture.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeCosmeticCapture"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeCosmeticReplica.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeCosmeticReplica",
+        "LastEpochLAN.Mod.NativeCosmeticReplica/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeEncounterCatalogue.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeEncounterCatalogue",
+        "LastEpochLAN.Mod.NativeEncounterCatalogue/\u003C\u003Ec__DisplayClass15_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeEncounterIsolationSmoke.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.NativeEncounterIsolationSmoke"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeEnemyControl.cs",
+      "classification": "contains policy-disabled hooks",
+      "types": [
+        "LastEpochLAN.Mod.NativeEnemyControl",
+        "LastEpochLAN.Mod.NativeEnemyControlPatch",
+        "LastEpochLAN.Mod.NativeEnemyControlPatch/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.NativeEnemyControlPatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeEnemyPoseBlend.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeEnemyPoseBlend",
+        "LastEpochLAN.Mod.NativeEnemyPoseBlend/Pose"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeEquipmentReplica.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeEquipmentReplica",
+        "LastEpochLAN.Mod.NativeEquipmentReplica/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeEquipmentReplica/\u003C\u003Ec__DisplayClass18_0",
+        "LastEpochLAN.Mod.NativeEquipmentReplica/\u003C\u003Ec__DisplayClass18_1",
+        "LastEpochLAN.Mod.NativeEquipmentReplica/\u003C\u003Ec__DisplayClass20_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeGiftDataSmoke.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.NativeGiftDataSmoke"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeGiftMenu.cs",
+      "classification": "contains policy-disabled hooks",
+      "types": [
+        "LastEpochLAN.Mod.NativeLanGiftMenuPatch",
+        "LastEpochLAN.Mod.NativeLanGiftMenuPatch/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeLanGiftMenuActionPatch",
+        "LastEpochLAN.Mod.NativeLanGiftSocialActionPatch"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.NativeLanGiftMenuPatch",
+        "LastEpochLAN.Mod.NativeLanGiftMenuActionPatch",
+        "LastEpochLAN.Mod.NativeLanGiftSocialActionPatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeGiftProbe.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.NativeGiftProbe"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeGiftTransferProbe.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.NativeGiftTransferProbe",
+        "LastEpochLAN.Mod.NativeGiftTransferProbe/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeGiftNoticeAudit"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.NativeGiftNoticeAudit"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeGuestCombat.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeGuestCombat",
+        "LastEpochLAN.Mod.NativeGuestCombat/PeerActor",
+        "LastEpochLAN.Mod.NativeGuestCombat/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeGuestCombat/\u003C\u003Ec__DisplayClass36_0",
+        "LastEpochLAN.Mod.NativeGuestCombat/\u003C\u003Ec__DisplayClass36_1",
+        "LastEpochLAN.Mod.NativeGuestCombat/\u003C\u003Ec__DisplayClass40_0",
+        "LastEpochLAN.Mod.NativeGuestActorLifecyclePatch",
+        "LastEpochLAN.Mod.NativeGuestActorLifecyclePatch/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeGuestTargetValidityPatch",
+        "LastEpochLAN.Mod.NativeGuestTargetInterfacePatch",
+        "LastEpochLAN.Mod.NativeGuestProtectionAwakePatch",
+        "LastEpochLAN.Mod.NativeGuestTargetPriorityPatch",
+        "LastEpochLAN.Mod.NativeGuestHolderDamagePatch",
+        "LastEpochLAN.Mod.NativeGuestHolderProtectionDamagePatch"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeHostBloodCrystalAdapter.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeHostBloodCrystalAdapter",
+        "LastEpochLAN.Mod.NativeHostBloodCrystalAdapter/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeHostBloodCrystalAdapter/\u003C\u003Ec__DisplayClass11_0",
+        "LastEpochLAN.Mod.NativeHostBloodCrystalAdapter/\u003C\u003Ec__DisplayClass7_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeHostOmenAdapter.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeHostOmenAdapter",
+        "LastEpochLAN.Mod.NativeHostOmenAdapter/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeHostOmenAdapter/\u003C\u003Ec__DisplayClass12_0",
+        "LastEpochLAN.Mod.NativeHostOmenAdapter/\u003C\u003Ec__DisplayClass7_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeHostRiftAdapter.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeHostRiftAdapter",
+        "LastEpochLAN.Mod.NativeHostRiftAdapter/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeHostRiftAdapter/\u003C\u003Ec__DisplayClass11_0",
+        "LastEpochLAN.Mod.NativeHostRiftAdapter/\u003C\u003Ec__DisplayClass7_0",
+        "LastEpochLAN.Mod.NativeHostRiftAdapter/\u003C\u003Ec__DisplayClass9_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeHudPolicyProbe.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.NativeHudPolicyProbe",
+        "LastEpochLAN.Mod.NativeHudPolicyProbe/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeLootFilterMatch.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeLootFilterMatch",
+        "LastEpochLAN.Mod.NativeLootFilterMatch/NullableLayout",
+        "LastEpochLAN.Mod.NativeLootFilterMatch/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeNullable.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeNullable"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeOfflineHostWorld.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeOfflineHostWorld",
+        "LastEpochLAN.Mod.NativeOfflineHostWorld/Projection"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeOwnedOmenProbe.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.NativeOwnedOmenProbe",
+        "LastEpochLAN.Mod.NativeOwnedOmenProbe/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativePartyReplica.cs",
+      "classification": "contains policy-disabled hooks",
+      "types": [
+        "LastEpochLAN.Mod.NativePartyReplica",
+        "LastEpochLAN.Mod.NativePartyReplica/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativePartyReplica/\u003C\u003Ec__DisplayClass17_0",
+        "LastEpochLAN.Mod.NativePartyReplica/\u003C\u003Ec__DisplayClass17_1",
+        "LastEpochLAN.Mod.NativePartyReplica/\u003C\u003Ec__DisplayClass17_2",
+        "LastEpochLAN.Mod.LanPartyHealthTickPatch"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.LanPartyHealthTickPatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativePartyStatus.cs",
+      "classification": "contains policy-disabled hooks",
+      "types": [
+        "LastEpochLAN.Mod.NativePartyStatus",
+        "LastEpochLAN.Mod.NativePartyStatus/Pending",
+        "LastEpochLAN.Mod.NativePartyStatus/Expiration",
+        "LastEpochLAN.Mod.NativePartyStatus/ProfileAck",
+        "LastEpochLAN.Mod.NativePartyStatus/Replay",
+        "LastEpochLAN.Mod.NativePartyStatus/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativePartyStatus/\u003C\u003Ec__DisplayClass34_0",
+        "LastEpochLAN.Mod.NativePartyStatus/\u003C\u003Ec__DisplayClass38_0",
+        "LastEpochLAN.Mod.NativePartyStatus/\u003C\u003Ec__DisplayClass38_1",
+        "LastEpochLAN.Mod.LanPartyStatusHitPatch",
+        "LastEpochLAN.Mod.LanPartyStatusCapturePatch",
+        "LastEpochLAN.Mod.LanPartyStatusOverridesPatch",
+        "LastEpochLAN.Mod.LanPartyStatusStrengthPatch"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.LanPartyStatusHitPatch",
+        "LastEpochLAN.Mod.LanPartyStatusCapturePatch",
+        "LastEpochLAN.Mod.LanPartyStatusOverridesPatch",
+        "LastEpochLAN.Mod.LanPartyStatusStrengthPatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativePartyStatusMirror.cs",
+      "classification": "contains policy-disabled hooks",
+      "types": [
+        "LastEpochLAN.Mod.NativePartyStatusMirror",
+        "LastEpochLAN.Mod.NativePartyStatusMirror/Capture",
+        "LastEpochLAN.Mod.NativePartyStatusMirror/View",
+        "LastEpochLAN.Mod.NativePartyStatusMirror/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativePartyStatusMirror/\u003C\u003Ec__DisplayClass7_0",
+        "LastEpochLAN.Mod.LanPartyStatusReplicaWriterPatch",
+        "LastEpochLAN.Mod.LanPartyStatusReplicaWriterPatch/\u003C\u003Ec",
+        "LastEpochLAN.Mod.LanPartyStatusDirtyPatch",
+        "LastEpochLAN.Mod.LanPartyStatusDirtyPatch/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.LanPartyStatusReplicaWriterPatch",
+        "LastEpochLAN.Mod.LanPartyStatusDirtyPatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativePartyStatusSmoke.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.NativePartyStatusSmoke",
+        "LastEpochLAN.Mod.NativePartyStatusSmoke/\u003C\u003Ec__DisplayClass9_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativePartyStatusTransportSmoke.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.NativePartyStatusTransportSmoke",
+        "LastEpochLAN.Mod.NativePartyStatusTransportSmoke/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativePartyTravelProbe.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.NativePartyTravelProbe"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativePeerHealthBars.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativePeerHealthBars",
+        "LastEpochLAN.Mod.NativePeerHealthBars/Bar",
+        "LastEpochLAN.Mod.NativePeerHealthBars/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativePeerHealthBars/\u003C\u003Ec__DisplayClass7_0",
+        "LastEpochLAN.Mod.NativePeerHealthBars/\u003C\u003Ec__DisplayClass7_1",
+        "LastEpochLAN.Mod.LanOverheadBar"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativePlayerAnimationReplica.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativePlayerAnimationReplica",
+        "LastEpochLAN.Mod.NativePlayerAnimationReplica/\u003C\u003Ec__DisplayClass27_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeRemoteActor.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeRemoteActor"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeReplicationBootstrap.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeReplicationBootstrap"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeReplicationLifecycle.cs",
+      "classification": "contains policy-disabled hooks",
+      "types": [
+        "LastEpochLAN.Mod.NativeReplicationLifecycle",
+        "LastEpochLAN.Mod.NativeReplicationReleasePatch"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.NativeReplicationReleasePatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeRewardCompletion.cs",
+      "classification": "contains policy-disabled hooks",
+      "types": [
+        "LastEpochLAN.Mod.NativeRewardCompletion",
+        "LastEpochLAN.Mod.NativeRewardCompletion/Pending",
+        "LastEpochLAN.Mod.NativeDropMoveNextPatch",
+        "LastEpochLAN.Mod.NativeRewardAsyncFailurePatch"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.NativeDropMoveNextPatch",
+        "LastEpochLAN.Mod.NativeRewardAsyncFailurePatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeRoomLadder.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.NativeRoomLadder",
+        "LastEpochLAN.Mod.NativeRoomLadder/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeRoomLadder/\u003C\u003Ec__DisplayClass11_0",
+        "LastEpochLAN.Mod.NativeRoomLadder/\u003C\u003Ec__DisplayClass14_0",
+        "LastEpochLAN.Mod.RoomLadderOpenPatch",
+        "LastEpochLAN.Mod.RoomLadderClosePatch",
+        "LastEpochLAN.Mod.RoomLadderSessionPatch",
+        "LastEpochLAN.Mod.RoomLadderSelfRowPatch",
+        "LastEpochLAN.Mod.RoomLadderFilterPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.RoomLadderOpenPatch",
+        "LastEpochLAN.Mod.RoomLadderClosePatch",
+        "LastEpochLAN.Mod.RoomLadderSessionPatch",
+        "LastEpochLAN.Mod.RoomLadderSelfRowPatch",
+        "LastEpochLAN.Mod.RoomLadderFilterPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeServerProbe.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.NativeServerProbe"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeServiceScope.cs",
+      "classification": "contains policy-disabled hooks",
+      "types": [
+        "LastEpochLAN.Mod.NativeServiceScope",
+        "LastEpochLAN.Mod.NativeScopedNetworkServicePatch",
+        "LastEpochLAN.Mod.NativeScopedRegistryPatch"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.NativeScopedNetworkServicePatch",
+        "LastEpochLAN.Mod.NativeScopedRegistryPatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeSessionProbe.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.NativeLanAuthentication",
+        "LastEpochLAN.Mod.NativeLanHailPatch",
+        "LastEpochLAN.Mod.NativeLanVerifyPatch",
+        "LastEpochLAN.Mod.NativeLanVerifyPatch/\u003C\u003Ec__DisplayClass0_0",
+        "LastEpochLAN.Mod.NativeLanServerReceivePatch",
+        "LastEpochLAN.Mod.NativeSessionProbe"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.NativeLanHailPatch",
+        "LastEpochLAN.Mod.NativeLanServerReceivePatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeSharedChestProbe.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.NativeSharedChestProbe"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeSharedStashCategories.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeSharedStashView",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass21_0",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass22_0",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass24_0",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass25_0",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass26_0",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass29_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeSharedStashConfiguration.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeSharedStashView",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass37_0",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass39_0",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass39_1",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass40_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeSharedStashLifecycle.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.NativeSharedStashView",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass47_0",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass47_1",
+        "LastEpochLAN.Mod.SharedStashPreparationVisibilityPatch",
+        "LastEpochLAN.Mod.SharedStashPreparationVisibilityPatch/\u003C\u003Ec"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.SharedStashPreparationVisibilityPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeSharedStashNativeControls.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeSharedStashView",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass65_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeSharedStashTabs.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeSharedStashView",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass115_0",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass117_0",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass118_0",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass120_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeSharedStashView.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.NativeSharedStashView",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass170_0",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass180_0",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass181_0",
+        "LastEpochLAN.Mod.NativeSharedStashView/\u003C\u003Ec__DisplayClass182_0",
+        "LastEpochLAN.Mod.SharedStashNativeBindingPatch",
+        "LastEpochLAN.Mod.SharedStashNativeInputPatch",
+        "LastEpochLAN.Mod.SharedStashNativeInputPatch/\u003C\u003Ec",
+        "LastEpochLAN.Mod.SharedStashNativeInputPatch/\u003C\u003Ec__DisplayClass0_0",
+        "LastEpochLAN.Mod.SharedStashProjectionMutationPatch",
+        "LastEpochLAN.Mod.SharedStashProjectionMutationPatch/\u003C\u003Ec"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.SharedStashNativeBindingPatch",
+        "LastEpochLAN.Mod.SharedStashNativeInputPatch",
+        "LastEpochLAN.Mod.SharedStashProjectionMutationPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeSkillPoolCapture.cs",
+      "classification": "contains policy-disabled hooks",
+      "types": [
+        "LastEpochLAN.Mod.NativePooledSkillVisualCapturePatch",
+        "LastEpochLAN.Mod.NativePooledSkillVisualCapturePatch/\u003CTargetMethods\u003Ed__0",
+        "LastEpochLAN.Mod.NativeCastingVisualScopePatch",
+        "LastEpochLAN.Mod.NativePooledSkillVisualFinishPatch",
+        "LastEpochLAN.Mod.NativePlayerCastPoolScopePatch",
+        "LastEpochLAN.Mod.NativeRefreshableSkillVisualScopePatch"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.NativePooledSkillVisualCapturePatch",
+        "LastEpochLAN.Mod.NativeCastingVisualScopePatch",
+        "LastEpochLAN.Mod.NativePooledSkillVisualFinishPatch",
+        "LastEpochLAN.Mod.NativePlayerCastPoolScopePatch",
+        "LastEpochLAN.Mod.NativeRefreshableSkillVisualScopePatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeSkillVisualRendering.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeSkillVisualReplica",
+        "LastEpochLAN.Mod.NativeSkillVisualReplica/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeSkillVisualReplica/\u003C\u003Ec__DisplayClass2_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeSkillVisualReplica.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeSkillVisualReplica",
+        "LastEpochLAN.Mod.NativeSkillVisualReplica/Visual",
+        "LastEpochLAN.Mod.NativeSkillVisualReplica/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeSkillVisualReplica/\u003C\u003Ec__DisplayClass52_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeSkillVisuals.cs",
+      "classification": "contains policy-disabled hooks",
+      "types": [
+        "LastEpochLAN.Mod.NativeSkillVisualCapture",
+        "LastEpochLAN.Mod.NativeSkillVisualCapture/Pending",
+        "LastEpochLAN.Mod.NativeSkillVisualCapture/Tracked",
+        "LastEpochLAN.Mod.NativeSkillVisualCapture/Casting",
+        "LastEpochLAN.Mod.NativeSkillVisualCapture/Profile",
+        "LastEpochLAN.Mod.NativeSkillVisualCapture/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeSkillVisualCapture/\u003C\u003Ec__DisplayClass83_0",
+        "LastEpochLAN.Mod.NativeEnabledVisualDiscoveryPatch",
+        "LastEpochLAN.Mod.NativeConnectedVisualCapturePatch",
+        "LastEpochLAN.Mod.NativeGlobalVisualCapturePatch",
+        "LastEpochLAN.Mod.NativeConnectedVisualFinishPatch",
+        "LastEpochLAN.Mod.NativeActualCastingVisualCapturePatch",
+        "LastEpochLAN.Mod.NativeConstructedSkillVisualCapturePatch",
+        "LastEpochLAN.Mod.NativeActualAbilityPrefabCapturePatch",
+        "LastEpochLAN.Mod.NativeSkillVisualCapturePatch"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.NativeEnabledVisualDiscoveryPatch",
+        "LastEpochLAN.Mod.NativeConnectedVisualCapturePatch",
+        "LastEpochLAN.Mod.NativeGlobalVisualCapturePatch",
+        "LastEpochLAN.Mod.NativeConnectedVisualFinishPatch",
+        "LastEpochLAN.Mod.NativeActualCastingVisualCapturePatch",
+        "LastEpochLAN.Mod.NativeConstructedSkillVisualCapturePatch",
+        "LastEpochLAN.Mod.NativeActualAbilityPrefabCapturePatch",
+        "LastEpochLAN.Mod.NativeSkillVisualCapturePatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeStatusCampaignSmoke.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.NativeStatusCampaignSmoke",
+        "LastEpochLAN.Mod.NativeStatusCampaignSmoke/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeStatusCodec.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeStatusCodec",
+        "LastEpochLAN.Mod.NativeStatusCodec/Context",
+        "LastEpochLAN.Mod.NativeStatusCodec/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeStatusCodec/\u003C\u003Ec__DisplayClass17_0",
+        "LastEpochLAN.Mod.NativeStatusCodec/\u003C\u003Ec__DisplayClass18_0",
+        "LastEpochLAN.Mod.NativeStatusCodec/\u003C\u003Ec__DisplayClass18_1",
+        "LastEpochLAN.Mod.NativeStatusCodec/\u003C\u003Ec__DisplayClass19_0",
+        "LastEpochLAN.Mod.NativeStatusCodec/\u003C\u003Ec__DisplayClass20_0",
+        "LastEpochLAN.Mod.NativeStatusCodec/\u003C\u003Ec__DisplayClass5_0",
+        "LastEpochLAN.Mod.NativeStatusCodec/\u003C\u003Ec__DisplayClass7_0",
+        "LastEpochLAN.Mod.NativeStatusCodec/\u003C\u003Ec__DisplayClass7_1"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeSummonCapture.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeSummonCapture",
+        "LastEpochLAN.Mod.NativeSummonCapture/Snapshot",
+        "LastEpochLAN.Mod.NativeSummonCapture/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeSummonCapture/\u003C\u003Ec__DisplayClass17_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeSummonReplicas.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeSummonReplicas",
+        "LastEpochLAN.Mod.NativeSummonReplicas/Peer",
+        "LastEpochLAN.Mod.NativeSummonReplicas/Model",
+        "LastEpochLAN.Mod.NativeSummonReplicas/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeSummonReplicas/\u003C\u003Ec__DisplayClass10_0",
+        "LastEpochLAN.Mod.NativeSummonReplicas/\u003C\u003Ec__DisplayClass10_1"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeVfxPresentation.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.NativeVfxPresentation"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeVfxProbe.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.NativeVfxProbe",
+        "LastEpochLAN.Mod.NativeVfxProbe/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/NativeVisualEvents.cs",
+      "classification": "contains policy-disabled hooks",
+      "types": [
+        "LastEpochLAN.Mod.NativeVisualEvents",
+        "LastEpochLAN.Mod.NativeVisualEvents/Pending",
+        "LastEpochLAN.Mod.NativeVisualEvents/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeHitVfxOwnerScopePatch",
+        "LastEpochLAN.Mod.NativeReplayRendererProbePatch",
+        "LastEpochLAN.Mod.NativeReplayRendererProbePatch/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeVisualReplayReferencesPatch",
+        "LastEpochLAN.Mod.NativeVisualSpawnCommandPatch",
+        "LastEpochLAN.Mod.NativeVisualSpawnCommandPatch/\u003C\u003Ec",
+        "LastEpochLAN.Mod.NativeDeferredVfxOwnerScopePatch"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.NativeHitVfxOwnerScopePatch",
+        "LastEpochLAN.Mod.NativeReplayRendererProbePatch",
+        "LastEpochLAN.Mod.NativeVisualReplayReferencesPatch",
+        "LastEpochLAN.Mod.NativeVisualSpawnCommandPatch",
+        "LastEpochLAN.Mod.NativeDeferredVfxOwnerScopePatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineChangelog.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.OfflineChangelog"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/ReleaseUpdateChecker.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.ReleaseUpdateChecker",
+        "LastEpochLAN.Mod.ReleaseUpdateChecker/\u003C\u003Ec__DisplayClass14_0",
+        "LastEpochLAN.Mod.ReleaseUpdateChecker/\u003CCheckAsync\u003Ed__15"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/RemoteCharacterProbe.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.RemoteCharacterProbe",
+        "LastEpochLAN.Mod.RemoteCharacterProbe/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/RoomDisconnectCleanup.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.RoomDisconnectCleanup"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/RoomFeaturePolicy.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.RoomFeaturePolicy"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/RoomPatches.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.RoomPatches",
+        "LastEpochLAN.Mod.RoomPatches/\u003C\u003Ec",
+        "LastEpochLAN.Mod.AutoPlayCastObservationPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.AutoPlayCastObservationPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/RuntimePerformance.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.RuntimePerformance",
+        "LastEpochLAN.Mod.RuntimePerformance/Sample",
+        "LastEpochLAN.Mod.RuntimePerformance/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/SharedStashGeometry.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.SharedStashGeometry"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/SharedStashNativeLayout.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.SharedStashNativeLayout",
+        "LastEpochLAN.Mod.SharedStashNativeLayout/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/SharedStashPriorityCodec.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.SharedStashPriorityCodec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/SkillCapture.cs",
+      "classification": "contains policy-disabled hooks",
+      "types": [
+        "LastEpochLAN.Mod.SkillCapture"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.SkillCapture"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/WorldSynchronizer.cs",
+      "classification": "contains policy-disabled hooks",
+      "types": [
+        "LastEpochLAN.Mod.WorldSynchronizer",
+        "LastEpochLAN.Mod.WorldSynchronizer/ReplicaBackup",
+        "LastEpochLAN.Mod.WorldSynchronizer/HitHealthAudit",
+        "LastEpochLAN.Mod.WorldSynchronizer/\u003C\u003Ec",
+        "LastEpochLAN.Mod.WorldSynchronizer/\u003C\u003Ec__DisplayClass174_0",
+        "LastEpochLAN.Mod.WorldSynchronizer/\u003C\u003Ec__DisplayClass174_1",
+        "LastEpochLAN.Mod.WorldSynchronizer/\u003C\u003Ec__DisplayClass174_2",
+        "LastEpochLAN.Mod.WorldSynchronizer/\u003C\u003Ec__DisplayClass174_3",
+        "LastEpochLAN.Mod.WorldSynchronizer/\u003C\u003Ec__DisplayClass181_0",
+        "LastEpochLAN.Mod.WorldSynchronizer/\u003C\u003Ec__DisplayClass182_0",
+        "LastEpochLAN.Mod.GuestRewardCallbackPatch",
+        "LastEpochLAN.Mod.HostOfflineEnemyAttackPatch",
+        "LastEpochLAN.Mod.HostEnemyAttackPatch",
+        "LastEpochLAN.Mod.HostEnemyInstantAttackPatch",
+        "LastEpochLAN.Mod.ReplicaAiPatch",
+        "LastEpochLAN.Mod.ReplicaAnimationBufferPatch",
+        "LastEpochLAN.Mod.GuestLocalSpawnPatch",
+        "LastEpochLAN.Mod.HostDeathPatch",
+        "LastEpochLAN.Mod.ReplicaDamagePatch",
+        "LastEpochLAN.Mod.ReplicaCullPatch",
+        "LastEpochLAN.Mod.ReplicaHealthTickPatch"
+      ],
+      "installedHooks": [],
+      "disabledHooks": [
+        "LastEpochLAN.Mod.GuestRewardCallbackPatch",
+        "LastEpochLAN.Mod.HostOfflineEnemyAttackPatch",
+        "LastEpochLAN.Mod.HostEnemyAttackPatch",
+        "LastEpochLAN.Mod.HostEnemyInstantAttackPatch",
+        "LastEpochLAN.Mod.ReplicaAiPatch",
+        "LastEpochLAN.Mod.ReplicaAnimationBufferPatch",
+        "LastEpochLAN.Mod.GuestLocalSpawnPatch",
+        "LastEpochLAN.Mod.HostDeathPatch",
+        "LastEpochLAN.Mod.ReplicaDamagePatch",
+        "LastEpochLAN.Mod.ReplicaCullPatch",
+        "LastEpochLAN.Mod.ReplicaHealthTickPatch"
+      ]
+    },
+    {
+      "file": "src/LastEpochLAN.Core/Encounters/EncounterClientView.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.Encounters.EncounterClientView",
+        "LastEpochLAN.Core.Encounters.EncounterClientView/\u003C\u003Ec__DisplayClass10_0",
+        "LastEpochLAN.Core.Encounters.EncounterClientView/\u003C\u003Ec__DisplayClass9_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/Encounters/EncounterHost.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.Encounters.EncounterActors",
+        "LastEpochLAN.Core.Encounters.EncounterActors/\u003C\u003Ec",
+        "LastEpochLAN.Core.Encounters.EncounterDestination",
+        "LastEpochLAN.Core.Encounters.EncounterArea",
+        "LastEpochLAN.Core.Encounters.EncounterInstance",
+        "LastEpochLAN.Core.Encounters.EncounterView",
+        "LastEpochLAN.Core.Encounters.EncounterView/\u003C\u003Ec",
+        "LastEpochLAN.Core.Encounters.EncounterCommand",
+        "LastEpochLAN.Core.Encounters.EncounterReservation",
+        "LastEpochLAN.Core.Encounters.EncounterSnapshot",
+        "LastEpochLAN.Core.Encounters.EncounterSnapshot/\u003C\u003Ec",
+        "LastEpochLAN.Core.Encounters.EncounterHost",
+        "LastEpochLAN.Core.Encounters.EncounterHost/\u003C\u003Ec",
+        "LastEpochLAN.Core.Encounters.EncounterHost/\u003C\u003Ec__DisplayClass13_0",
+        "LastEpochLAN.Core.Encounters.EncounterHost/\u003C\u003Ec__DisplayClass15_0",
+        "LastEpochLAN.Core.Encounters.EncounterHost/\u003C\u003Ec__DisplayClass23_0",
+        "LastEpochLAN.Core.Encounters.EncounterHost/\u003C\u003Ec__DisplayClass24_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/Encounters/EncounterHost.Nemesis.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.Encounters.EncounterHost",
+        "LastEpochLAN.Core.Encounters.EncounterHost/\u003C\u003Ec__DisplayClass30_0",
+        "LastEpochLAN.Core.Encounters.EncounterHost/\u003C\u003Ec__DisplayClass34_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/Encounters/EncounterHostDriver.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.Encounters.EncounterExecution",
+        "LastEpochLAN.Core.Encounters.IEncounterFamilyAdapter",
+        "LastEpochLAN.Core.Encounters.EncounterHostDriver",
+        "LastEpochLAN.Core.Encounters.EncounterHostDriver/Observation",
+        "LastEpochLAN.Core.Encounters.EncounterHostDriver/\u003C\u003Ec__DisplayClass32_0",
+        "LastEpochLAN.Core.Encounters.EncounterHostDriver/\u003C\u003Ec__DisplayClass32_1",
+        "LastEpochLAN.Core.Encounters.EncounterHostDriver/\u003C\u003Ec__DisplayClass32_2"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/Encounters/EncounterRewardAcknowledgments.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.Encounters.EncounterRewardAcknowledgments",
+        "LastEpochLAN.Core.Encounters.EncounterRewardAcknowledgments/\u003C\u003Ec",
+        "LastEpochLAN.Core.Encounters.EncounterRewardAcknowledgments/\u003C\u003Ec__DisplayClass8_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/Encounters/EncounterRewardAuthority.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.Encounters.EncounterRewardAuthority",
+        "LastEpochLAN.Core.Encounters.EncounterRewardAuthority/\u003C\u003Ec__DisplayClass5_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/Encounters/EncounterRewardJournal.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.Encounters.EncounterRewardRecord",
+        "LastEpochLAN.Core.Encounters.EncounterRewardJournal",
+        "LastEpochLAN.Core.Encounters.EncounterRewardJournal/\u003C\u003Ec",
+        "LastEpochLAN.Core.Encounters.EncounterRewardJournal/\u003C\u003Ec__DisplayClass8_0",
+        "LastEpochLAN.Core.Encounters.EncounterRewardPump",
+        "LastEpochLAN.Core.Encounters.EncounterRewardPump/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/Encounters/EncounterTransport.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.Encounters.EncounterRequest",
+        "LastEpochLAN.Core.Encounters.EncounterReply",
+        "LastEpochLAN.Core.Encounters.NemesisTurn",
+        "LastEpochLAN.Core.Encounters.EncounterDelivery",
+        "LastEpochLAN.Core.Encounters.EncounterDelivery/\u003C\u003Ec",
+        "LastEpochLAN.Core.Encounters.EncounterDelivery/\u003C\u003Ec__DisplayClass15_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Core/Encounters/NemesisBattleScheduler.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Core.Encounters.NemesisBattle",
+        "LastEpochLAN.Core.Encounters.NemesisBattleScheduler",
+        "LastEpochLAN.Core.Encounters.NemesisBattleScheduler/\u003C\u003Ec__DisplayClass2_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/AggressiveMinionRange.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.AggressiveMinionRange",
+        "LastEpochLAN.Mod.OfflineTools.AggressiveMinionAcquirePatch",
+        "LastEpochLAN.Mod.OfflineTools.AggressiveMinionAcquirePatch/Scope",
+        "LastEpochLAN.Mod.OfflineTools.AggressiveMinionTargetPatch",
+        "LastEpochLAN.Mod.OfflineTools.AggressiveMinionTargetPatch/Scope"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.AggressiveMinionAcquirePatch",
+        "LastEpochLAN.Mod.OfflineTools.AggressiveMinionTargetPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/CameraZoom.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.CameraZoom"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/CharacterSetupGate.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.CharacterSetupGate"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/ClassRespecializationData.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.ClassRespecializationData",
+        "LastEpochLAN.Mod.OfflineTools.ClassRespecializationData/Snapshot"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/CorruptionNativeSmoke.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.CorruptionNativeSmoke"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/CosmeticCatalogRules.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.CosmeticCatalogRules"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/CosmeticItemSlotMatchesPatch.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.CosmeticItemSlotMatchesPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.CosmeticItemSlotMatchesPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/CosmeticsManagerOwnedCosmeticsPatch.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.CosmeticsManagerOwnedCosmeticsPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.CosmeticsManagerOwnedCosmeticsPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/CosmeticStoreIcon.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.CosmeticStoreIcon"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/CosmeticStoreIconRules.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.CosmeticStoreIconRules"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/CosmeticVerdict.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/EnemyMapDots.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.EnemyMapDots",
+        "LastEpochLAN.Mod.OfflineTools.EnemyMapDots/Entry"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/MapFog.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.MapFog",
+        "LastEpochLAN.Mod.OfflineTools.MapFog/\u003C\u003Ec",
+        "LastEpochLAN.Mod.OfflineTools.MapFogLifecycle",
+        "LastEpochLAN.Mod.OfflineTools.MapFogLifecycle/\u003CTargetMethods\u003Ed__0"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.MapFogLifecycle"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/MinimapZoom.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.MinimapZoom",
+        "LastEpochLAN.Mod.OfflineTools.MinimapZoom/State",
+        "LastEpochLAN.Mod.OfflineTools.ExtendNativeMinimapZoom",
+        "LastEpochLAN.Mod.OfflineTools.ExtendNativeMinimapZoom/\u003CTargetMethods\u003Ed__0"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.ExtendNativeMinimapZoom"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/NewCharacterBoost.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.NewCharacterBoost",
+        "LastEpochLAN.Mod.OfflineTools.NewCharacterBoost/Job",
+        "LastEpochLAN.Mod.OfflineTools.QueueNewOfflineCharacterBoostPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.QueueNewOfflineCharacterBoostPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/ObjectiveReveal.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.ObjectiveReveal",
+        "LastEpochLAN.Mod.OfflineTools.RevealDungeonObjectivesPatch",
+        "LastEpochLAN.Mod.OfflineTools.RevealMonolithObjectivesPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.RevealDungeonObjectivesPatch",
+        "LastEpochLAN.Mod.OfflineTools.RevealMonolithObjectivesPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineArcaneMovement.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineArcaneMovementPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArcaneDescriptionPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineArcaneMovementPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArcaneDescriptionPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineArcaneTranquility.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.ArcaneTranquility",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArcaneTranquilityTreePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArcaneTranquilityCastPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArcaneTranquilityDescriptionPatch",
+        "LastEpochLAN.Mod.OfflineTools.TranquilityTooltipScope",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArcaneTranquilityLegacyTooltipPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArcaneTranquilityTooltipPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineArcaneTranquilityTreePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArcaneTranquilityCastPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArcaneTranquilityDescriptionPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArcaneTranquilityLegacyTooltipPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArcaneTranquilityTooltipPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineArchmage.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.ArchmageRules",
+        "LastEpochLAN.Mod.OfflineTools.ArchmageCastScope",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArchmageCastPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArchmageRefundPatch",
+        "LastEpochLAN.Mod.OfflineTools.ArchmageTooltip",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArchmageDescriptionPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArchmageStatNamePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArchmageTooltipValuePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArchmageLegacyValuePatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineArchmageCastPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArchmageRefundPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArchmageDescriptionPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArchmageStatNamePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArchmageTooltipValuePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineArchmageLegacyValuePatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineBaseRegeneration.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineBaseRegenerationScopePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineBaseRegenerationValuePatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineBaseRegenerationScopePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineBaseRegenerationValuePatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineBloodrageCharges.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineBloodrageChargeAnnouncementPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineBloodrageChargeCountPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineBloodrageInitialRewardsPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineBloodrageProgressText",
+        "LastEpochLAN.Mod.OfflineTools.OfflineBloodrageHuntProgressTextPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineBloodrageQuestProgressTextPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineBloodrageChargeAnnouncementPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineBloodrageChargeCountPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineBloodrageInitialRewardsPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineBloodrageHuntProgressTextPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineBloodrageQuestProgressTextPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineBonuses.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineEconomy",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMinimumPotentialPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineBuffs",
+        "LastEpochLAN.Mod.OfflineTools.OfflineBuffs/Spec"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineMinimumPotentialPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineClassRespecialization.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.ClassRespecialization",
+        "LastEpochLAN.Mod.OfflineTools.ClassRespecialization/\u003C\u003Ec",
+        "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecMenuPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecClickPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecClosePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecLoadGatePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecUnityMenuPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecUnityClickPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecUnityClosePatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecMenuPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecClickPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecClosePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecLoadGatePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecUnityMenuPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecUnityClickPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecUnityClosePatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineCorruption.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineShadeCorruptionPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineShadeCorruptionCompletionTracePatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineShadeCorruptionPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineShadeCorruptionCompletionTracePatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineCosmeticCatalog.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.NativeNull",
+        "LastEpochLAN.Mod.OfflineTools.OfflineCosmeticCatalog"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineDensity.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineDensity",
+        "LastEpochLAN.Mod.OfflineTools.OfflineDensityPlacementPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineDensityPlacementPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineForgottenKnights.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.ForgottenKnightsRules",
+        "LastEpochLAN.Mod.OfflineTools.ForgottenKnightsRules/\u003C\u003Ec__DisplayClass1_0",
+        "LastEpochLAN.Mod.OfflineTools.OfflineForgottenKnights",
+        "LastEpochLAN.Mod.OfflineTools.OfflineForgottenKnightsRankPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineForgottenKnightsDescriptionPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineForgottenKnightsRankPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineForgottenKnightsDescriptionPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineFortune.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineFortune",
+        "LastEpochLAN.Mod.OfflineTools.OfflineFortune/RewardEdit",
+        "LastEpochLAN.Mod.OfflineTools.FortuneRankPatch",
+        "LastEpochLAN.Mod.OfflineTools.FortuneProphecyCatalogPatch",
+        "LastEpochLAN.Mod.OfflineTools.FortuneRankDescriptionPatch",
+        "LastEpochLAN.Mod.OfflineTools.MageLootScope",
+        "LastEpochLAN.Mod.OfflineTools.FortuneMageLootPatch",
+        "LastEpochLAN.Mod.OfflineTools.FortuneMageRecipientPatch",
+        "LastEpochLAN.Mod.OfflineTools.FortuneMageQuantityPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.FortuneRankPatch",
+        "LastEpochLAN.Mod.OfflineTools.FortuneProphecyCatalogPatch",
+        "LastEpochLAN.Mod.OfflineTools.FortuneRankDescriptionPatch",
+        "LastEpochLAN.Mod.OfflineTools.FortuneMageLootPatch",
+        "LastEpochLAN.Mod.OfflineTools.FortuneMageRecipientPatch",
+        "LastEpochLAN.Mod.OfflineTools.FortuneMageQuantityPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineGlyphCrafting.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineHopeForgeScopePatch",
+        "LastEpochLAN.Mod.OfflineTools.HopeForgeState",
+        "LastEpochLAN.Mod.OfflineTools.OfflineHopeRollHook",
+        "LastEpochLAN.Mod.OfflineTools.OfflineDespairChancePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineGlyphDescriptionPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineHopeForgeScopePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineDespairChancePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineGlyphDescriptionPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineInventoryOwnedIdsPatch.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineInventoryOwnedIdsPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineInventoryOwnedIdsPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineLinearCorruption.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionExperiencePatch",
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionRunExperiencePatch",
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionPotentialPreviewPatch",
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionPotentialRollPatch",
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionWillRollPatch",
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionWillRollPatch/\u003C\u003Ec__DisplayClass0_0",
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionEchoRarityPreviewPatch",
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionEchoRarityPatch",
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionAmberPatch",
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionGoldPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionExperiencePatch",
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionRunExperiencePatch",
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionPotentialPreviewPatch",
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionPotentialRollPatch",
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionWillRollPatch",
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionEchoRarityPreviewPatch",
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionEchoRarityPatch",
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionAmberPatch",
+        "LastEpochLAN.Mod.OfflineTools.LinearCorruptionGoldPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineMeteorNodes.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.MeteorNodeRules",
+        "LastEpochLAN.Mod.OfflineTools.MeteorNodeRuntime",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorTreePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorCastPatch",
+        "LastEpochLAN.Mod.OfflineTools.MeteorManaScope",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorImpactScopePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorManaCostPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorTooltipValuePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorLegacyValuePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorTooltipInfoPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorLegacyInfoPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorTreePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorCastPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorImpactScopePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorManaCostPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorTooltipValuePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorLegacyValuePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorTooltipInfoPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorLegacyInfoPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineMeteorStardust.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.MeteorStardust",
+        "LastEpochLAN.Mod.OfflineTools.StardustTreeScope",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustTreePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustHasStatsPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustStatsPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustLimitPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustNodePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustTextPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustDescriptionPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustAltPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustLabelPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustTreePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustHasStatsPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustStatsPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustLimitPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustNodePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustTextPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustDescriptionPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustAltPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustLabelPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineOnly.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineOnly",
+        "LastEpochLAN.Mod.OfflineTools.OfflineLandingPatch",
+        "LastEpochLAN.Mod.OfflineTools.BlockOnlinePlayPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineModeSwitchPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineCharacterTabPatch",
+        "LastEpochLAN.Mod.OfflineTools.BlockOnlineSwitchPatch",
+        "LastEpochLAN.Mod.OfflineTools.BlockCharacterOnlineSwitchPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineLandingPatch",
+        "LastEpochLAN.Mod.OfflineTools.BlockOnlinePlayPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineModeSwitchPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineCharacterTabPatch",
+        "LastEpochLAN.Mod.OfflineTools.BlockOnlineSwitchPatch",
+        "LastEpochLAN.Mod.OfflineTools.BlockCharacterOnlineSwitchPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflinePickup.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.OfflinePickup",
+        "LastEpochLAN.Mod.OfflineTools.OfflinePickup/Key",
+        "LastEpochLAN.Mod.OfflineTools.OfflinePickup/Pending",
+        "LastEpochLAN.Mod.OfflineTools.OfflinePickup/DropState",
+        "LastEpochLAN.Mod.OfflineTools.OfflinePickup/\u003C\u003Ec",
+        "LastEpochLAN.Mod.OfflineTools.OfflineDelayedPickupInteractionPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineSpecialPickupPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineNativePickupScenePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineNativePickupZonePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineNativePickupDisposePatch",
+        "LastEpochLAN.Mod.OfflineTools.AutomaticPickupScope",
+        "LastEpochLAN.Mod.OfflineTools.AutomaticPickupScope/\u003C\u003Ec__DisplayClass4_0",
+        "LastEpochLAN.Mod.OfflineTools.OfflineGoldPickupPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineNativeAutoPickupGatePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineNativeAutoPickupGatePatch/\u003CTargetMethods\u003Ed__0",
+        "LastEpochLAN.Mod.OfflineTools.OfflineAutoPickupItemFilterPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineRangePickupPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineDelayedPickupInteractionPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineSpecialPickupPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineNativePickupScenePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineNativePickupZonePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineNativePickupDisposePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineGoldPickupPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineNativeAutoPickupGatePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineAutoPickupItemFilterPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineRangePickupPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineSpiritXylem.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.SpiritXylem",
+        "LastEpochLAN.Mod.OfflineTools.SpiritXylem/Registry",
+        "LastEpochLAN.Mod.OfflineTools.SpiritXylem/\u003C\u003Ec__DisplayClass12_0",
+        "LastEpochLAN.Mod.OfflineTools.OfflineSpiritXylemDefinitionPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineSpiritXylemModsPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineSpiritXylemResetPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineSpiritXylemConditionPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineSpiritXylemLocalizationPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineSpiritXylemDefinitionPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineSpiritXylemModsPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineSpiritXylemResetPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineSpiritXylemConditionPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineSpiritXylemLocalizationPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineTimelineStability.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.TimelineStabilityRules",
+        "LastEpochLAN.Mod.OfflineTools.TimelineStabilityRules/\u003C\u003Ec__DisplayClass3_0",
+        "LastEpochLAN.Mod.OfflineTools.StabilityAwardScope",
+        "LastEpochLAN.Mod.OfflineTools.OfflineEchoStabilityPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineEchoBonusStabilityScopePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineTemporalKeystoneScopePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineScopedStabilityAwardPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineTemporalKeystoneRangePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineEchoStabilityTooltipPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineEchoStabilityBarPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineEchoBonusStabilityDisplayPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineEchoStabilityPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineEchoBonusStabilityScopePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineTemporalKeystoneScopePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineScopedStabilityAwardPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineTemporalKeystoneRangePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineEchoStabilityTooltipPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineEchoStabilityBarPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineEchoBonusStabilityDisplayPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineToolkit.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.ToolkitSettings",
+        "LastEpochLAN.Mod.OfflineTools.OfflineToolkit",
+        "LastEpochLAN.Mod.OfflineTools.OfflineToolkit/\u003C\u003Ec__DisplayClass13_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineToolkitSmoke.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineToolkitSmoke",
+        "LastEpochLAN.Mod.OfflineTools.OfflineToolkitSmoke/\u003C\u003Ec",
+        "LastEpochLAN.Mod.OfflineTools.OfflineToolkitSmoke/\u003C\u003Ec__DisplayClass11_0"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineWeaverImprints.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverImprintPointRatesPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverCommonerDropPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverCommonerDropPatch/State",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverCommonerChancePatch",
+        "LastEpochLAN.Mod.OfflineTools.WeaverImprintCallScope",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverEchoImprintScopePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverEchoImprintChancePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverWovenImprintScopePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverWovenImprintScopePatch/\u003CTargetMethods\u003Ed__0",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverWovenImprintWeightPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverImprintPointRatesPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverCommonerDropPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverCommonerChancePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverEchoImprintScopePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverEchoImprintChancePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverWovenImprintScopePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverWovenImprintWeightPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineWeaverImprintTooltip.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverImprintTooltipStatPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverImprintTooltipInfoPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverImprintLegacyValuePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverImprintLegacyInfoPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverImprintTooltipStatPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverImprintTooltipInfoPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverImprintLegacyValuePatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWeaverImprintLegacyInfoPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineWovenPotential.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineWovenPotentialPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineWovenPotentialPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/OfflineWovenRanks.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.WovenRankRules",
+        "LastEpochLAN.Mod.OfflineTools.WovenRankRules/\u003C\u003Ec__DisplayClass1_0",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWovenRanks",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWovenRankPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWovenRankDescriptionPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.OfflineWovenRankPatch",
+        "LastEpochLAN.Mod.OfflineTools.OfflineWovenRankDescriptionPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/PickupRules.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/PlayerCosmeticInventoryOwnedPatch.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.PlayerCosmeticInventoryOwnedPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.PlayerCosmeticInventoryOwnedPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/PlayerMapDot.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.PlayerMapDot"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/SpiritXylemRules.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.SpiritXylemRules"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/UserInventoryActiveItemPatch.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.UserInventoryActiveItemPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.UserInventoryActiveItemPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/UserInventoryActiveRawItemPatch.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.UserInventoryActiveRawItemPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.UserInventoryActiveRawItemPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/UserInventoryOwnedIdsPatch.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.UserInventoryOwnedIdsPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.UserInventoryOwnedIdsPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/WeaverImprintDiagnostics.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.WeaverImprintDiagnostics"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/WovenPotentialNativeSmoke.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.WovenPotentialNativeSmoke"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/Dps/DamageMeterHitInfo.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.Dps.DamageMeterHitInfo"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/Dps/DamageMeterOverlay.cs",
+      "classification": "support/entrypoint/rules; direct-call references are conservative",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.Dps.DamageMeterOverlay",
+        "LastEpochLAN.Mod.OfflineTools.Dps.DamageMeterOverlay/RecentHit",
+        "LastEpochLAN.Mod.OfflineTools.Dps.DamageMeterOverlay/SkillTotal",
+        "LastEpochLAN.Mod.OfflineTools.Dps.DamageMeterOverlay/StatCard",
+        "LastEpochLAN.Mod.OfflineTools.Dps.DamageMeterOverlay/\u003C\u003Ec"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/Dps/DpsNativeSmoke.cs",
+      "classification": "QA/diagnostics; inspect CLI/call gates",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.Dps.DpsNativeSmoke"
+      ],
+      "installedHooks": [],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/Dps/DpsRuntime.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.Dps.DpsRuntime",
+        "LastEpochLAN.Mod.OfflineTools.Dps.DpsSettings",
+        "LastEpochLAN.Mod.OfflineTools.Dps.DpsDrawing",
+        "LastEpochLAN.Mod.OfflineTools.Dps.DpsMenu",
+        "LastEpochLAN.Mod.OfflineTools.Dps.DpsPointerInputPatch",
+        "LastEpochLAN.Mod.OfflineTools.Dps.DpsPointerInputPatch/\u003C\u003Ec"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.Dps.DpsPointerInputPatch"
+      ],
+      "disabledHooks": []
+    },
+    {
+      "file": "src/LastEpochLAN.Mod/OfflineTools/Dps/OfflineDamageHooks.cs",
+      "classification": "contains installed release hooks",
+      "types": [
+        "LastEpochLAN.Mod.OfflineTools.Dps.OfflineDamageHooks",
+        "LastEpochLAN.Mod.OfflineTools.Dps.DpsActorDamagePatch",
+        "LastEpochLAN.Mod.OfflineTools.Dps.DpsProtectionDamagePatch",
+        "LastEpochLAN.Mod.OfflineTools.Dps.DpsAilmentDamagePatch",
+        "LastEpochLAN.Mod.OfflineTools.Dps.DpsContinuousAilmentPatch"
+      ],
+      "installedHooks": [
+        "LastEpochLAN.Mod.OfflineTools.Dps.DpsActorDamagePatch",
+        "LastEpochLAN.Mod.OfflineTools.Dps.DpsProtectionDamagePatch",
+        "LastEpochLAN.Mod.OfflineTools.Dps.DpsAilmentDamagePatch",
+        "LastEpochLAN.Mod.OfflineTools.Dps.DpsContinuousAilmentPatch"
+      ],
+      "disabledHooks": []
+    }
+  ],
+  "installed": [
+    "LastEpochLAN.Mod.LanGiftApplyingLockPatch",
+    "LastEpochLAN.Mod.LanLootFilters/MarkFilterOwners",
+    "LastEpochLAN.Mod.LanLootFilters/ClearPooledMarker",
+    "LastEpochLAN.Mod.SharedChestItemLockPatch",
+    "LastEpochLAN.Mod.SharedChestManagerLockPatch",
+    "LastEpochLAN.Mod.RoomLadderOpenPatch",
+    "LastEpochLAN.Mod.RoomLadderClosePatch",
+    "LastEpochLAN.Mod.RoomLadderSessionPatch",
+    "LastEpochLAN.Mod.RoomLadderSelfRowPatch",
+    "LastEpochLAN.Mod.RoomLadderFilterPatch",
+    "LastEpochLAN.Mod.SharedStashPreparationVisibilityPatch",
+    "LastEpochLAN.Mod.SharedStashNativeBindingPatch",
+    "LastEpochLAN.Mod.SharedStashNativeInputPatch",
+    "LastEpochLAN.Mod.SharedStashProjectionMutationPatch",
+    "LastEpochLAN.Mod.AutoPlayCastObservationPatch",
+    "LastEpochLAN.Mod.OfflineTools.AggressiveMinionAcquirePatch",
+    "LastEpochLAN.Mod.OfflineTools.AggressiveMinionTargetPatch",
+    "LastEpochLAN.Mod.OfflineTools.CosmeticItemSlotMatchesPatch",
+    "LastEpochLAN.Mod.OfflineTools.CosmeticsManagerOwnedCosmeticsPatch",
+    "LastEpochLAN.Mod.OfflineTools.MapFogLifecycle",
+    "LastEpochLAN.Mod.OfflineTools.ExtendNativeMinimapZoom",
+    "LastEpochLAN.Mod.OfflineTools.QueueNewOfflineCharacterBoostPatch",
+    "LastEpochLAN.Mod.OfflineTools.RevealDungeonObjectivesPatch",
+    "LastEpochLAN.Mod.OfflineTools.RevealMonolithObjectivesPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineArcaneMovementPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineArcaneDescriptionPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineArcaneTranquilityTreePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineArcaneTranquilityCastPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineArcaneTranquilityDescriptionPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineArcaneTranquilityLegacyTooltipPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineArcaneTranquilityTooltipPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineArchmageCastPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineArchmageRefundPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineArchmageDescriptionPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineArchmageStatNamePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineArchmageTooltipValuePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineArchmageLegacyValuePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineBaseRegenerationScopePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineBaseRegenerationValuePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineBloodrageChargeAnnouncementPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineBloodrageChargeCountPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineBloodrageInitialRewardsPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineBloodrageHuntProgressTextPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineBloodrageQuestProgressTextPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineMinimumPotentialPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecMenuPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecClickPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecClosePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecLoadGatePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecUnityMenuPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecUnityClickPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineClassRespecUnityClosePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineShadeCorruptionPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineShadeCorruptionCompletionTracePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineDensityPlacementPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineForgottenKnightsRankPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineForgottenKnightsDescriptionPatch",
+    "LastEpochLAN.Mod.OfflineTools.FortuneRankPatch",
+    "LastEpochLAN.Mod.OfflineTools.FortuneProphecyCatalogPatch",
+    "LastEpochLAN.Mod.OfflineTools.FortuneRankDescriptionPatch",
+    "LastEpochLAN.Mod.OfflineTools.FortuneMageLootPatch",
+    "LastEpochLAN.Mod.OfflineTools.FortuneMageRecipientPatch",
+    "LastEpochLAN.Mod.OfflineTools.FortuneMageQuantityPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineHopeForgeScopePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineDespairChancePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineGlyphDescriptionPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineInventoryOwnedIdsPatch",
+    "LastEpochLAN.Mod.OfflineTools.LinearCorruptionExperiencePatch",
+    "LastEpochLAN.Mod.OfflineTools.LinearCorruptionRunExperiencePatch",
+    "LastEpochLAN.Mod.OfflineTools.LinearCorruptionPotentialPreviewPatch",
+    "LastEpochLAN.Mod.OfflineTools.LinearCorruptionPotentialRollPatch",
+    "LastEpochLAN.Mod.OfflineTools.LinearCorruptionWillRollPatch",
+    "LastEpochLAN.Mod.OfflineTools.LinearCorruptionEchoRarityPreviewPatch",
+    "LastEpochLAN.Mod.OfflineTools.LinearCorruptionEchoRarityPatch",
+    "LastEpochLAN.Mod.OfflineTools.LinearCorruptionAmberPatch",
+    "LastEpochLAN.Mod.OfflineTools.LinearCorruptionGoldPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineMeteorTreePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineMeteorCastPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineMeteorImpactScopePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineMeteorManaCostPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineMeteorTooltipValuePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineMeteorLegacyValuePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineMeteorTooltipInfoPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineMeteorLegacyInfoPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustTreePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustHasStatsPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustStatsPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustLimitPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustNodePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustTextPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustDescriptionPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustAltPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineMeteorStardustLabelPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineLandingPatch",
+    "LastEpochLAN.Mod.OfflineTools.BlockOnlinePlayPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineModeSwitchPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineCharacterTabPatch",
+    "LastEpochLAN.Mod.OfflineTools.BlockOnlineSwitchPatch",
+    "LastEpochLAN.Mod.OfflineTools.BlockCharacterOnlineSwitchPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineDelayedPickupInteractionPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineSpecialPickupPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineNativePickupScenePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineNativePickupZonePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineNativePickupDisposePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineGoldPickupPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineNativeAutoPickupGatePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineAutoPickupItemFilterPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineRangePickupPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineSpiritXylemDefinitionPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineSpiritXylemModsPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineSpiritXylemResetPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineSpiritXylemConditionPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineSpiritXylemLocalizationPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineEchoStabilityPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineEchoBonusStabilityScopePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineTemporalKeystoneScopePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineScopedStabilityAwardPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineTemporalKeystoneRangePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineEchoStabilityTooltipPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineEchoStabilityBarPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineEchoBonusStabilityDisplayPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineWeaverImprintPointRatesPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineWeaverCommonerDropPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineWeaverCommonerChancePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineWeaverEchoImprintScopePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineWeaverEchoImprintChancePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineWeaverWovenImprintScopePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineWeaverWovenImprintWeightPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineWeaverImprintTooltipStatPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineWeaverImprintTooltipInfoPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineWeaverImprintLegacyValuePatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineWeaverImprintLegacyInfoPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineWovenPotentialPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineWovenRankPatch",
+    "LastEpochLAN.Mod.OfflineTools.OfflineWovenRankDescriptionPatch",
+    "LastEpochLAN.Mod.OfflineTools.PlayerCosmeticInventoryOwnedPatch",
+    "LastEpochLAN.Mod.OfflineTools.UserInventoryActiveItemPatch",
+    "LastEpochLAN.Mod.OfflineTools.UserInventoryActiveRawItemPatch",
+    "LastEpochLAN.Mod.OfflineTools.UserInventoryOwnedIdsPatch",
+    "LastEpochLAN.Mod.OfflineTools.Dps.DpsPointerInputPatch",
+    "LastEpochLAN.Mod.OfflineTools.Dps.DpsActorDamagePatch",
+    "LastEpochLAN.Mod.OfflineTools.Dps.DpsProtectionDamagePatch",
+    "LastEpochLAN.Mod.OfflineTools.Dps.DpsAilmentDamagePatch",
+    "LastEpochLAN.Mod.OfflineTools.Dps.DpsContinuousAilmentPatch"
+  ],
+  "disabled": [
+    "LastEpochLAN.Mod.LanInventoryDropCapturePatch",
+    "LastEpochLAN.Mod.LanGiftOpenPatch",
+    "LastEpochLAN.Mod.LanGiftConfirmPatch",
+    "LastEpochLAN.Mod.LanGiftValidatePatch",
+    "LastEpochLAN.Mod.SharedEchoRunLookupPatch",
+    "LastEpochLAN.Mod.SharedEchoPersistentRunPatch",
+    "LastEpochLAN.Mod.SharedEchoCompletionPatch",
+    "LastEpochLAN.Mod.SharedEchoGenerationPatch",
+    "LastEpochLAN.Mod.SharedEchoRewardAuthorityPatch",
+    "LastEpochLAN.Mod.SharedEchoPrivateProgressPatch",
+    "LastEpochLAN.Mod.SharedEchoSelectionPatch",
+    "LastEpochLAN.Mod.NativeLanPartyPortalPatch",
+    "LastEpochLAN.Mod.NativePrivateActorDestroyPatch",
+    "LastEpochLAN.Mod.LanAilmentResolvedPatch",
+    "LastEpochLAN.Mod.LanAilmentDirtyPatch",
+    "LastEpochLAN.Mod.LanSharedAilmentVisualPatch",
+    "LastEpochLAN.Mod.LanSourceDotScopePatch",
+    "LastEpochLAN.Mod.NativeEnemyControlPatch",
+    "LastEpochLAN.Mod.NativeLanGiftMenuPatch",
+    "LastEpochLAN.Mod.NativeLanGiftMenuActionPatch",
+    "LastEpochLAN.Mod.NativeLanGiftSocialActionPatch",
+    "LastEpochLAN.Mod.NativeGiftNoticeAudit",
+    "LastEpochLAN.Mod.LanPartyHealthTickPatch",
+    "LastEpochLAN.Mod.LanPartyStatusHitPatch",
+    "LastEpochLAN.Mod.LanPartyStatusCapturePatch",
+    "LastEpochLAN.Mod.LanPartyStatusOverridesPatch",
+    "LastEpochLAN.Mod.LanPartyStatusStrengthPatch",
+    "LastEpochLAN.Mod.LanPartyStatusReplicaWriterPatch",
+    "LastEpochLAN.Mod.LanPartyStatusDirtyPatch",
+    "LastEpochLAN.Mod.NativeReplicationReleasePatch",
+    "LastEpochLAN.Mod.NativeDropMoveNextPatch",
+    "LastEpochLAN.Mod.NativeRewardAsyncFailurePatch",
+    "LastEpochLAN.Mod.NativeScopedNetworkServicePatch",
+    "LastEpochLAN.Mod.NativeScopedRegistryPatch",
+    "LastEpochLAN.Mod.NativeLanHailPatch",
+    "LastEpochLAN.Mod.NativeLanServerReceivePatch",
+    "LastEpochLAN.Mod.NativePooledSkillVisualCapturePatch",
+    "LastEpochLAN.Mod.NativeCastingVisualScopePatch",
+    "LastEpochLAN.Mod.NativePooledSkillVisualFinishPatch",
+    "LastEpochLAN.Mod.NativePlayerCastPoolScopePatch",
+    "LastEpochLAN.Mod.NativeRefreshableSkillVisualScopePatch",
+    "LastEpochLAN.Mod.NativeEnabledVisualDiscoveryPatch",
+    "LastEpochLAN.Mod.NativeConnectedVisualCapturePatch",
+    "LastEpochLAN.Mod.NativeGlobalVisualCapturePatch",
+    "LastEpochLAN.Mod.NativeConnectedVisualFinishPatch",
+    "LastEpochLAN.Mod.NativeActualCastingVisualCapturePatch",
+    "LastEpochLAN.Mod.NativeConstructedSkillVisualCapturePatch",
+    "LastEpochLAN.Mod.NativeActualAbilityPrefabCapturePatch",
+    "LastEpochLAN.Mod.NativeSkillVisualCapturePatch",
+    "LastEpochLAN.Mod.NativeHitVfxOwnerScopePatch",
+    "LastEpochLAN.Mod.NativeReplayRendererProbePatch",
+    "LastEpochLAN.Mod.NativeVisualReplayReferencesPatch",
+    "LastEpochLAN.Mod.NativeVisualSpawnCommandPatch",
+    "LastEpochLAN.Mod.NativeDeferredVfxOwnerScopePatch",
+    "LastEpochLAN.Mod.SkillCapture",
+    "LastEpochLAN.Mod.GuestRewardCallbackPatch",
+    "LastEpochLAN.Mod.HostOfflineEnemyAttackPatch",
+    "LastEpochLAN.Mod.HostEnemyAttackPatch",
+    "LastEpochLAN.Mod.HostEnemyInstantAttackPatch",
+    "LastEpochLAN.Mod.ReplicaAiPatch",
+    "LastEpochLAN.Mod.ReplicaAnimationBufferPatch",
+    "LastEpochLAN.Mod.GuestLocalSpawnPatch",
+    "LastEpochLAN.Mod.HostDeathPatch",
+    "LastEpochLAN.Mod.ReplicaDamagePatch",
+    "LastEpochLAN.Mod.ReplicaCullPatch",
+    "LastEpochLAN.Mod.ReplicaHealthTickPatch"
+  ],
+  "reviewCandidates": [
+    {
+      "method": "System.Collections.Generic.IEnumerable\u00601\u003CSystem.Reflection.MethodBase\u003E LastEpochLAN.Mod.NativeGuestActorLifecyclePatch::TargetMethods()",
+      "source": "src/LastEpochLAN.Mod/NativeGuestCombat.cs",
+      "note": "No direct IL caller; reflection/delegates/QA may still use this. Review candidate, not proof of dead code."
+    },
+    {
+      "method": "System.Boolean LastEpochLAN.Mod.NativeGuestActorLifecyclePatch::Prefix(Il2Cpp.Actor,System.Reflection.MethodBase)",
+      "source": "src/LastEpochLAN.Mod/NativeGuestCombat.cs",
+      "note": "No direct IL caller; reflection/delegates/QA may still use this. Review candidate, not proof of dead code."
+    },
+    {
+      "method": "System.Boolean LastEpochLAN.Mod.NativeGuestTargetValidityPatch::Prefix(Il2Cpp.Actor,Il2Cpp.LifeState,System.Boolean\u0026)",
+      "source": "src/LastEpochLAN.Mod/NativeGuestCombat.cs",
+      "note": "No direct IL caller; reflection/delegates/QA may still use this. Review candidate, not proof of dead code."
+    },
+    {
+      "method": "System.Boolean LastEpochLAN.Mod.NativeGuestTargetInterfacePatch::Prefix(Il2Cpp.Actor,System.Boolean\u0026)",
+      "source": "src/LastEpochLAN.Mod/NativeGuestCombat.cs",
+      "note": "No direct IL caller; reflection/delegates/QA may still use this. Review candidate, not proof of dead code."
+    },
+    {
+      "method": "System.Boolean LastEpochLAN.Mod.NativeGuestProtectionAwakePatch::Prefix(Il2Cpp.ProtectionClass)",
+      "source": "src/LastEpochLAN.Mod/NativeGuestCombat.cs",
+      "note": "No direct IL caller; reflection/delegates/QA may still use this. Review candidate, not proof of dead code."
+    },
+    {
+      "method": "System.Boolean LastEpochLAN.Mod.NativeGuestTargetPriorityPatch::Prefix(Il2Cpp.Actor,System.Single,System.Single\u0026)",
+      "source": "src/LastEpochLAN.Mod/NativeGuestCombat.cs",
+      "note": "No direct IL caller; reflection/delegates/QA may still use this. Review candidate, not proof of dead code."
+    },
+    {
+      "method": "System.Boolean LastEpochLAN.Mod.NativeGuestHolderDamagePatch::Prefix(Il2Cpp.DamageStatsHolder,Il2Cpp.Actor)",
+      "source": "src/LastEpochLAN.Mod/NativeGuestCombat.cs",
+      "note": "No direct IL caller; reflection/delegates/QA may still use this. Review candidate, not proof of dead code."
+    },
+    {
+      "method": "System.Boolean LastEpochLAN.Mod.NativeGuestHolderProtectionDamagePatch::Prefix(Il2Cpp.DamageStatsHolder,Il2Cpp.ProtectionClass,System.Single)",
+      "source": "src/LastEpochLAN.Mod/NativeGuestCombat.cs",
+      "note": "No direct IL caller; reflection/delegates/QA may still use this. Review candidate, not proof of dead code."
+    },
+    {
+      "method": "System.Guid LastEpochLAN.Mod.NativeHostBloodCrystalAdapter::Register(Il2Cpp.RageOfMorditasLogic)",
+      "source": "src/LastEpochLAN.Mod/NativeHostBloodCrystalAdapter.cs",
+      "note": "No direct IL caller; reflection/delegates/QA may still use this. Review candidate, not proof of dead code."
+    },
+    {
+      "method": "System.Void LastEpochLAN.Mod.NativeHostBloodCrystalAdapter::Poll()",
+      "source": "src/LastEpochLAN.Mod/NativeHostBloodCrystalAdapter.cs",
+      "note": "No direct IL caller; reflection/delegates/QA may still use this. Review candidate, not proof of dead code."
+    },
+    {
+      "method": "System.Guid LastEpochLAN.Mod.NativeHostRiftAdapter::Register(Il2Cpp.TimeBeastRift)",
+      "source": "src/LastEpochLAN.Mod/NativeHostRiftAdapter.cs",
+      "note": "No direct IL caller; reflection/delegates/QA may still use this. Review candidate, not proof of dead code."
+    },
+    {
+      "method": "System.Void LastEpochLAN.Mod.NativeHostRiftAdapter::Poll()",
+      "source": "src/LastEpochLAN.Mod/NativeHostRiftAdapter.cs",
+      "note": "No direct IL caller; reflection/delegates/QA may still use this. Review candidate, not proof of dead code."
+    },
+    {
+      "method": "System.Void LastEpochLAN.Mod.OfflineTools.OfflineHopeRollHook::Prefix(Il2CppLE.Core.RngElement,System.Single\u0026)",
+      "source": "src/LastEpochLAN.Mod/OfflineTools/OfflineGlyphCrafting.cs",
+      "note": "No direct IL caller; reflection/delegates/QA may still use this. Review candidate, not proof of dead code."
+    }
+  ],
+  "scope": "All source files and compiled release metadata; conservative direct-call analysis, not whole-program proof of dead code"
+}

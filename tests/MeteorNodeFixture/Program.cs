@@ -101,7 +101,7 @@ Check(old.requireLayoutUpdate && old.description.text.Contains("100%"),"legacy d
 string once=old.description.text;Call(typeof(OfflineMeteorLegacyInfoPatch),"Postfix",old,heat);
 Check(old.description.text==once && !once.Contains("Offline bonus"),"repeated description refresh adds no commentary");
 OfflineToolkit.Enabled=false;Check(Legacy(extinction,"10%","10%")=="10%" && Legacy(heat,"1","1")=="1","online tooltips remain native");
-Check(MeteorNodeRules.FrostClaws(int.MaxValue)==int.MaxValue && MeteorNodeRules.LargeMeteorChance(float.NaN)==0,"invalid and overflowing inputs remain bounded");
+Check(MeteorNodeRules.FrostClaws(int.MaxValue)==int.MaxValue,"overflowing Frost Claw count stays bounded");
 
 OfflineToolkit.Enabled=true;
 // Native Tranquility contributes a -1 more multiplier to ManaRegen, not
@@ -170,6 +170,34 @@ Check(TranquilityTooltipScope.Begin(tranquilityNode)==null,"online tooltip stat 
 object[] onlineDescription={"arcas",(byte)19,"native online description"};Call(typeof(OfflineArcaneTranquilityDescriptionPatch),"Postfix",onlineDescription);
 Check((string)onlineDescription[2]=="native online description","online Tranquility description remains native");
 OfflineToolkit.Enabled=true;
+
+// Stardust replaces the native pair (all damage MORE + fire reciprocal).
+OfflineToolkit.Enabled=true;PlayerFinder.Player=player;tree.actor=player;tree.Attached=meteor;
+allocation.treeID=MeteorStardust.Tree;
+allocation.nodes=new(){new(){id=10,pointsAllocated=4},new(){id=1,pointsAllocated=2}};
+var savedNodes=allocation.nodes;MeteorStardust.Clear();MeteorStardust.Ensure(meteor);
+Check(ReferenceEquals(savedNodes,allocation.nodes) && allocation.nodes[0].pointsAllocated==1,"Stardust old4 ranks become1 and original allocation collection is restored");
+Check(MeteorSkillTree.NativeStardustNodes==0 && allocation.nodes.Count==2,"native update cannot create old non-fire bonus or fire reciprocal; other allocations retained");
+object[] hasStats={meteor,false};Call(typeof(OfflineMeteorStardustHasStatsPatch),"Postfix",hasStats);Check((bool)hasStats[1],"Stardust alone activates the native temporary-stat pipeline");
+var nativeRows=new Il2CppSystem.Collections.Generic.List<Stats.Stat>();var otherDamage=new Stats.Stat{property=SP.Damage,moreValues=new(){.25f}};nativeRows.Add(otherDamage);
+foreach(int mana in new[]{0,1,9,10,500,1000,2000})
+{
+ player.mana.maxMana=mana;var result=nativeRows;MeteorStardust.Add(meteor,ref result);
+ Check(result.Count==2 && ReferenceEquals(result[0],otherDamage) && Near(result[1].moreValues.Single(),mana*.001f) && result[1].tags==0,"Stardust is a separate all-type MORE multiplier from max mana: "+mana);
+ Check(nativeRows.Count==1,"native reusable temp-stat cache remains unchanged: "+mana);
+}
+player.mana.maxMana=1000;var withBonus=nativeRows;MeteorStardust.Add(meteor,ref withBonus);
+Check(Near((1+otherDamage.moreValues[0])*(1+withBonus[1].moreValues[0]),2.5f),"1000 max mana doubles damage multiplicatively with an existing25% more modifier");
+allocation.nodes[0].pointsAllocated=0;withBonus=nativeRows;MeteorStardust.Add(meteor,ref withBonus);Check(ReferenceEquals(withBonus,nativeRows),"respec Stardust to zero removes bonus immediately");allocation.nodes[0].pointsAllocated=1;
+meteor.actor=new Actor{mana=new()};withBonus=nativeRows;MeteorStardust.Add(meteor,ref withBonus);Check(ReferenceEquals(withBonus,nativeRows),"other actor keeps native temp stats");meteor.actor=player;
+OfflineToolkit.Enabled=false;withBonus=nativeRows;MeteorStardust.Add(meteor,ref withBonus);Check(ReferenceEquals(withBonus,nativeRows),"online mode keeps native temp stats");OfflineToolkit.Enabled=true;
+var stardustNode=new SkillTreeNode{tree=new MeteorSkillTree{treeID=MeteorStardust.Tree},id=10};MeteorStardust.Configure(stardustNode);
+Check(stardustNode.maxPoints==1 && stardustNode.stats.Single().value=="1%" && stardustNode.stats.Single().noScaling && stardustNode.description==MeteorStardust.Description,"UI cap and tooltip show1 point and1% per10 maximum mana, with no old non-fire text");
+var uiRows=stardustNode.stats;MeteorStardust.Configure(stardustNode);Check(ReferenceEquals(uiRows,stardustNode.stats),"repeated UI refresh does not allocate another stat list");
+object[] description={MeteorStardust.Tree,(byte)10,"old non-fire description"};Call(typeof(OfflineMeteorStardustDescriptionPatch),"Postfix",description);Check((string)description[2]==MeteorStardust.Description,"localized description agrees with actual mana multiplier");
+var failure=new Exception("native tree failure");object[] treeArgs={tree,allocation,null};Call(typeof(OfflineMeteorStardustTreePatch),"Prefix",treeArgs);Check(allocation.nodes.All(n=>n.id!=10),"temporary native tree omits only Stardust");
+Call(typeof(OfflineMeteorStardustTreePatch),"Finalizer",failure,treeArgs[2]);Check(ReferenceEquals(allocation.nodes,savedNodes),"native exception restores full allocation collection");
+Check(MeteorStardust.More(-1)==0,"invalid negative max mana cannot become less damage");
 
 Console.WriteLine($"All {checks.Count} actual-source Meteor checks passed; native execution/rendering not exercised.");
 if(args.Length>0)File.WriteAllText(args[0],JsonSerializer.Serialize(new{passed=checks.Count,nativeGameplayVerified=false,checks},new JsonSerializerOptions{WriteIndented=true}));

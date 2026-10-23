@@ -1,5 +1,13 @@
 # TM Last Epoch Co-op Mod 1.1.0-dev.55
 
+Sửa tooltip Attunement Spirit Xylem qua đúng khóa localization; gỡ toàn bộ Default Meteor save repair gây spam. Báo cáo đầy đủ tính năng và rà code: [MOD-FEATURES-AND-CODE-AUDIT-dev55-VI.md](MOD-FEATURES-AND-CODE-AUDIT-dev55-VI.md).
+
+Cập nhật mới: sửa menu Respecialize Class tại Lerinne; gỡ Vilatria visual override; Stardust tối đa 1 điểm, 1% more damage mỗi 10 Maximum Mana. [Chi tiết và kiểm tra](LERINNE-STARDUST-dev55-VI.md).
+
+Spirit Xylem: sửa modifiers và tooltip thành hai nhánh Attunement/Intelligence, giữ item ID/roll/LP và affix legendary. Xem [chi tiết và kiểm tra](SPIRIT-XYLEM-dev55-VI.md).
+
+Bổ sung: sửa gold toàn map0.5s, x2 base hồi mana/máu và Respecialize Class tại Lerinne. Chi tiết, sao lưu và checklist: [GOLD-REGEN-CLASS-dev55-VI.md](GOLD-REGEN-CLASS-dev55-VI.md).
+
 Tranquility của Arcane Ascendance (arcas, node19): bỏ hiệu ứng -100% hồi mana khi kỹ năng đang bật. Giữ bonus giảm mana cost20% mỗi điểm và các hiệu ứng còn lại. Chỉ sửa mutator của người chơi local ở Play Offline.
 
 Sửa mô tả để chỉ còn lợi ích giảm mana cost; bỏ dòng Cannot Regenerate Mana ở cả tooltip cũ và V2, giữ layout và dòng hiệu quả mana gốc. Danh sách stat tooltip chỉ lọc tạm trong khi render, được khôi phục kể cả khi native ném exception.

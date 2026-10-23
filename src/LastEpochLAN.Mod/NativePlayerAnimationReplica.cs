@@ -96,11 +96,6 @@ internal sealed class NativePlayerAnimationReplica
         return result;
     }
 
-    private static T Read<T>(Func<Il2CppSystem.Nullable<T>> getter, T fallback) where T : struct
-    {
-        return NativeNullable.Read(getter) ?? fallback;
-    }
-
     private int tickedFrame = -1;
     internal long ManualTicks { get; private set; }
     internal void TickPresentation()

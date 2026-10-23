@@ -96,14 +96,6 @@ internal sealed class NativeEquipmentReplica
         }
     }
 
-    // IL2CPP boxes an empty Nullable<T> to a null object. The generated field
-    // wrapper throws in CreateGCHandle before our normal null check can execute.
-    private static T ReadOptional<T>(Func<T> getter) where T : class
-    {
-        try { return getter(); }
-        catch (NullReferenceException) { return null; }
-    }
-
     private static EquipmentAppearance Translate(Il2Cpp.Actor actor, Il2Cpp.EquipmentVisualsManager gear, EquipmentAppearance item)
     {
         var service = Il2CppLE.Services.ServiceProvider.CosmeticKeyOverrideService;

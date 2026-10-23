@@ -10,9 +10,14 @@ internal static class OfflineChangelog
     private static GUIStyle bodyStyle;
     private static readonly string content=
         "<b>BONUS OFFLINE</b>\n"+
+        "• Dev.56: phát hành Spirit Xylem/Stardust, sửa Lerinne/gold, x2 base regen; gỡ Default Meteor/Vilatria override và helper thừa. Protocol44.\n"+
+        "• Dev.55: sửa mất đoạn Attunement Spirit Xylem do localization gốc ghi đè; gỡ Default Meteor save repair gây spam log.\n"+
+        "• Dev.55: sửa menu đổi class Lerinne; gỡ tùy chọn Vilatria VFX; Stardust tối đa1 điểm, mỗi10 Maximum Mana cho1% more damage tất cả hệ.\n"+
         "• Dev.55 faction/pickup: CoF Rank7 x15, Rank10 boss loot +300%, Rank11 Rare→Exalted50%; The Woven Rank7 reforge30%, Rank9 Amber50%. Đã gỡ World Assist. Auto pickup bán kính5, thêm Woven Echoes;5 lượt/giây, tối đa5 món xét và1 thao tác/lượt.\n"+
         "• Dev.55 Stability: x2 cả Timeline Stability và Bonus Stability trong Echo Rewards mọi loại; Temporal Keystone x2, đồng bộ số hiển thị.\n"+
         "• Dev.55 bổ sung: Forgotten Knights Rank1 Egg of the Forgotten100%, Rank2 x2 Stability25%, Rank5 Temporal Keystone50%; sửa cả mô tả.\n"+
+        "• Dev.55: Spirit Xylem có hai nhánh Attunement/Intelligence; chỉ nhánh thuộc tính cao hơn được hưởng skill level, thuộc tính và HP/MP hoặc spell damage. Đồng bộ tooltip.\n"+
+        "• Dev.55: sửa nhặt gold toàn map sau0.5s; x2 base hồi mana/máu; Lerinne có Respecialize Class (giữ level/đồ/tiến trình, reset mastery/passive/skill).\n"+
         "• Dev.55: Tranquility của Arcane Ascendance không còn chặn hồi mana; giữ giảm mana cost và sửa cả tooltip.\n"+
         "• Dev.54: gỡ toàn bộ UI Shortcut, hotkey và xử lý mở bảng liên quan.\n"+
         "• Dev.53: chuyển hook Woven Imprint ra hàm chọn Echo bên ngoài để tránh lỗi native→managed khi chuyển Empowered sang Normal Monolith; giữ trọng số x2 và luồng chọn Echo native.\n"+
@@ -37,7 +42,7 @@ internal static class OfflineChangelog
         "• Glyph of Despair: T1 100%, T2 70%, T3 50%, T4 33%; cùng tỷ lệ cho Rare và Exalted có T6/T7. Không mở seal T5 trở lên.\n"+
         $"• Tốc độ di chuyển +{OfflineBonusRules.MoveSpeed*100:0}%.\n"+
         $"• Diện tích ảnh hưởng của kỹ năng (AoE) +{OfflineBonusRules.Area*100:0}%.\n"+
-        $"• Hồi mana +{OfflineBonusRules.ManaRegen*100:0}%; hồi máu +{OfflineBonusRules.HealthRegen*100:0}%.\n"+
+        "• Hồi mana/máu: x2 giá trị cơ bản; giữ modifier từ đồ và passive.\n"+
         "• Unique có thể roll Legendary Potential luôn đạt tối thiểu 1 LP; giữ các kết quả LP cao hơn.\n"+
         "• Bỏ diminishing returns: EXP +1%/Corruption; LP roll bonus +0,07209%/Corruption; WW promotion roll bonus +0,08686%/Corruption; Echo Reward Rarity +0,89656%/Corruption.\n"+
         "• Vàng gốc tăng tuyến tính +0,12%/Corruption và giữ nguyên bonus mod corruption/40 (tối thiểu x1). 1.000 Corruption: x2,2 × x25 = x55 vàng quái. Tổng hai hệ số nhân chồng không phải đường thẳng.\n"+

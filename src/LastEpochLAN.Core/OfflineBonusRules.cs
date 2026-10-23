@@ -4,8 +4,8 @@ public static class OfflineBonusRules
 {
     public const float MoveSpeed = 0.25f;
     public const float Area = 0.5f;
-    public const float ManaRegen = 0.5f;
-    public const float HealthRegen = 0.5f;
+    public const float BaseRegenMultiplier = 2f;
+    public static float BaseRegen(float native) => native * BaseRegenMultiplier;
     public const int ShadeCorruptionMultiplier = 5;
 
     public readonly record struct CorruptionReward(int Total, int Catchup, int Gaze);

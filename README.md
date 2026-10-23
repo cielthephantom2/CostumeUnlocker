@@ -1,4 +1,16 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.55
+# TM Last Epoch Co-op Mod — 1.1.0-dev.56
+
+**Dev.56:** Spirit Xylem và Stardust đã qua79 kiểm tra IL2CPP native; sửa tooltip Attunement/All Attributes, menu Lerinne, gold pickup và x2 base regen. Gỡ Default Meteor save repair, Vilatria visual override và helper thừa. Protocol44. [Release notes](RELEASE-1.1.0-dev56-VI.md) · [Toàn bộ tính năng](MOD-FEATURES-AND-CODE-AUDIT-dev55-VI.md).
+
+Dev.55 cleanup tiếp theo: gỡ7 helper không có caller, giữ144 release hooks và các tính năng hiện hành;13 ứng viên còn lại đã phân loại. Xem [báo cáo rà code](MOD-FEATURES-AND-CODE-AUDIT-dev55-VI.md).
+
+Sửa tooltip Attunement Spirit Xylem qua đúng khóa localization; gỡ toàn bộ Default Meteor save repair gây spam. Báo cáo đầy đủ tính năng và rà code: [MOD-FEATURES-AND-CODE-AUDIT-dev55-VI.md](MOD-FEATURES-AND-CODE-AUDIT-dev55-VI.md).
+
+Cập nhật mới: sửa menu Respecialize Class tại Lerinne; gỡ Vilatria visual override; Stardust tối đa 1 điểm, 1% more damage mỗi 10 Maximum Mana. [Chi tiết và kiểm tra](LERINNE-STARDUST-dev55-VI.md).
+
+**Dev.55, Spirit Xylem:** Rework unique445 into mutually exclusive Attunement/Intelligence branches, with native health-cost/mana-threshold damage/defense effects and matching rolled tooltip text. Preserve item IDs, rolls, LP and legendary affixes. See [Spirit Xylem](SPIRIT-XYLEM-dev55-VI.md).
+
+**Dev.55, gold / base regeneration / class respecialization:** Fix delayed map-wide gold pickup; replace +50% increased regen with x2 base mana/health regeneration. Chronomancer Lerinne offers Respecialize Class for all five classes, preserving level/items/progress and resetting mastery/passives/skills after a backed-up native save. See [details and game checks](GOLD-REGEN-CLASS-dev55-VI.md).
 
 
 **Dev.55, player minimap dot:** The local player uses a blue dot with the same outlined style as NPC dots, now 3x NPC-dot diameter (twice the previous blue player dot). One native marker follows the player; Tab overlay retains its original icon. See [minimap report](PLAYER-MINIMAP-DOT-dev55-VI.md).

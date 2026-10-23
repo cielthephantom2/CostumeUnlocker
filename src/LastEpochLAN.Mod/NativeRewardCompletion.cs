@@ -48,7 +48,6 @@ internal static class NativeRewardCompletion
     {
         if (handle.Owner != IntPtr.Zero && pending.TryGetValue(handle.Owner,out var current) && ReferenceEquals(current,handle)) pending.TryRemove(handle.Owner,out _);
     }
-    internal static void Reset() { pending.Clear(); Current = null; }
 
     internal static void NativeSmoke()
     {

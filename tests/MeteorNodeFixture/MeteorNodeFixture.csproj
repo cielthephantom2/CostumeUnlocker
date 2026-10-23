@@ -3,4 +3,4 @@
   <ItemGroup><Compile Include="../../src/LastEpochLAN.Mod/OfflineTools/OfflineMeteorNodes.cs" Link="ActualMeteorNodes.cs" /></ItemGroup>
   <ItemGroup><Compile Include="../../src/LastEpochLAN.Mod/OfflineTools/OfflineArcaneMovement.cs" Link="ActualArcaneMovement.cs" /></ItemGroup>
   <ItemGroup><Compile Include="../../src/LastEpochLAN.Mod/OfflineTools/OfflineArcaneTranquility.cs" Link="ActualArcaneTranquility.cs" /></ItemGroup>
-</Project>
+<ItemGroup><Compile Include="../../src/LastEpochLAN.Mod/OfflineTools/OfflineMeteorStardust.cs" Link="ActualStardust.cs" /></ItemGroup></Project>

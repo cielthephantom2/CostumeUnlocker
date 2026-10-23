@@ -24,11 +24,6 @@ internal static class MapFog
         current=map;
         if(!OfflineToolkit.Settings.RemoveFog) ClearPreview();
     }
-    internal static void ApplyCurrent()
-    {
-        if(!OfflineToolkit.Settings.RemoveFog) ClearPreview();
-        else Tick();
-    }
     internal static void Tick()
     {
         using var performance = RuntimePerformance.Measure(PerformanceArea.MapFog);

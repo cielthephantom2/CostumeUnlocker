@@ -23,7 +23,7 @@ GroundItemManager.GroundItem Drop(int type,float x,uint id,bool tutorial=false)
 T Interaction<T>(float x,uint id)where T:PickupGroundObjectInteraction,new()
 {
  var entry=new T{player=actor,id=id,transform=new(){position=new UVec(x,0,0)}};
- if(entry is GoldPickupInteraction gold)manager.activeGoldPiles.Add(gold);
+ if(entry is GoldPickupInteraction gold){manager.activeGoldPiles.Add(gold);manager.offlineItems.gold.Add(new(){id=id,location=entry.transform.position,amount=gold.amount});}
  if(entry is PotionPickupInteraction potion)manager.activePotions.Add(potion);
  if(entry is PickupAncientBonesInteraction bone)manager.activeAncientBones.Add(bone);
  OfflinePickup.Enqueue(entry);return entry;
@@ -76,5 +76,10 @@ Check(manager.Keys==0 && manager.offlineItems.items.Count==1 && AutomaticPickupS
 Check(MelonLoader.MelonLogger.Messages.Count==1,"only native errors are logged, no pickup diagnostics");
 Reset();var equipment=Drop(1,400,1);Check(!(bool)Prefix(typeof(OfflineRangePickupPatch),new GroundItemLabel{Data=equipment.itemData}) && manager.Equipment==1,"manual Range Pickup remains immediate and independent of auto delay");
 Check(MelonLoader.MelonLogger.Messages.Count==0,"successful automatic/manual pickup emits no diagnostic logs");
+Reset();var farGold=Interaction<GoldPickupInteraction>(400,55);manager.pickupGold(actor,55,farGold);
+Check(manager.Gold==0,"native gold transaction rejects original distant ground record");Tick(.5f);
+Check(manager.Gold==10 && manager.offlineItems.gold.Count==0 && manager.activeGoldPiles.Count==0,"delayed gold uses native transaction despite its distance gate and removes record once");Tick(1);Check(manager.Gold==10,"gold cannot grant twice");
+Reset();Interaction<GoldPickupInteraction>(400,55);manager.ThrowOnGold=true;Tick(.5f);
+Check(manager.Gold==0 && manager.offlineItems.gold[0].location.x==400,"gold transaction exception restores original floor location without granting");
 Directory.CreateDirectory("validation");File.WriteAllText("validation/dev55-pickup-map-delay-fixture.json",JsonSerializer.Serialize(new{passed=checks.Count,checks,actualSource=true,delaySeconds=.5,mapWide=true,perFrameCountCap=false,nativeGameplayValidated=false,fpsMeasured=false},new JsonSerializerOptions{WriteIndented=true}));
 Console.WriteLine($"All {checks.Count} map-wide delayed pickup checks passed.");

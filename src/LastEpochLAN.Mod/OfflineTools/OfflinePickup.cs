@@ -101,7 +101,7 @@ internal static class OfflinePickup
             {
                 switch(entry.Key.Type)
                 {
-                    case Kind.Gold:manager.pickupGold(actor,entry.Key.Id,interaction.TryCast<GoldPickupInteraction>());break;
+                    case Kind.Gold:PickupGold(manager,actor,entry.Key.Id,interaction.TryCast<GoldPickupInteraction>());break;
                     case Kind.Potion:
                         var potion=actor.GetComponent<HealthPotion>();
                         if(potion!=null && potion.currentCharges<potion.maxCharges)manager.pickupPotion(actor,entry.Key.Id,interaction.TryCast<PotionPickupInteraction>());
@@ -123,6 +123,30 @@ internal static class OfflinePickup
                 try{manager.pickupItem(actor,entry.Key.Id,StackableItemFlags.All);}
                 catch(Exception ex){Report(ex);}
             }
+    }
+    private static void PickupGold(GroundItemManager manager,Actor actor,uint id,GoldPickupInteraction interaction)
+    {
+        // Native pickupGold validates the saved ground-record position, even
+        // when called directly. Move only this record for the native transaction.
+        var source=manager.offlineItems;
+        if(source?.gold==null)return;
+        GroundItemManager.GroundGold ground=null;
+        foreach(var entry in source.gold)if(entry!=null && entry.id==id){ground=entry;break;}
+        if(ground==null)return; // Already collected manually or pooled.
+        var location=ground.location;var pointer=ground.Pointer;
+        try
+        {
+            ground.location=actor.position();
+            manager.pickupGold(actor,id,interaction);
+        }
+        finally
+        {
+            // On rejection/exception restore the floor location. A successful
+            // pickup already removed/pooled the record; never touch it again.
+            if(manager.offlineItems?.Pointer==source.Pointer)
+                foreach(var entry in source.gold)
+                    if(entry!=null && entry.Pointer==pointer && entry.id==id){entry.location=location;break;}
+        }
     }
     private static void Report(Exception ex)
     {

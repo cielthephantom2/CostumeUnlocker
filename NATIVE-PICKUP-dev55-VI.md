@@ -13,3 +13,5 @@ F4 Mod Settings và changelog cập nhật thành all map /0,5s. Không log từ
 Kiểm chứng: Release build0 warnings/errors;35 actual-source checks và169 compiled/native audit checks pass,188 patch classes inspected. Kiểm tra mốc499/500ms, deadline riêng, vacuum không lấy món mới sớm, đi xa1000units,25món cùng lúc không cap, gold/potion/bones ngoài400units, potion đầy, toggles, duplicate/manual pickup, storage readiness, pool/ID reuse, đổi nhân vật/manager/zone, exception và scope cleanup. Chưa xác nhận gameplay mới trong game và chưa đo FPS. Delay đơn thuần không được báo cáo như một cải thiện FPS đã đo.
 
 Giữ version1.1.0-dev.55 / protocol44. Combat Assist, minimap chấm xanh scale0.90 và các bonus khác giữ nguyên; Prophecy vẫn là cơ chế charge gốc. Đóng game rồi chạy update.bat để nhận cả hai DLL.
+
+Sửa Auto Gold: hàm native kiểm tra vị trí ground record. Transaction tự nhặt đặt tạm riêng record cần nhặt tại nhân vật, rồi dùng nguyên hàm native; nếu thất bại sẽ khôi phục vị trí. Delay0.5s, bonus gold và không cấp trùng vẫn giữ nguyên. Xem GOLD-REGEN-CLASS-dev55-VI.md.

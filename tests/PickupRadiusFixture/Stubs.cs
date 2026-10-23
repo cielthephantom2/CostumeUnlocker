@@ -74,7 +74,8 @@ namespace Il2Cpp
  {
   public static GroundItemManager instance=new();
   public class GroundItem:NativeObject{public ItemData itemData;public UnityEngine.Vector3 location;public uint id;}
-  public class GroundItemList:NativeObject{public Il2CppSystem.Collections.Generic.List<GroundItem> items=new();}
+  public class GroundGold:NativeObject{public int amount=10;public uint id;public UnityEngine.Vector3 location;}
+  public class GroundItemList:NativeObject{public Il2CppSystem.Collections.Generic.List<GroundItem> items=new();public Il2CppSystem.Collections.Generic.List<GroundGold> gold=new();}
   public GroundItemList offlineItems=new();
   public AutoPool.Subscriber<GoldPickupInteraction> goldPileSubscriber=new();
   public AutoPool.Subscriber<PotionPickupInteraction> potionSubscriber=new();
@@ -84,10 +85,10 @@ namespace Il2Cpp
   public Il2CppSystem.Collections.Generic.List<GoldPickupInteraction> activeGoldPiles=new();
   public Il2CppSystem.Collections.Generic.List<PotionPickupInteraction> activePotions=new();
   public Il2CppSystem.Collections.Generic.List<PickupAncientBonesInteraction> activeAncientBones=new();
-  public int Gold,Bones,Keys,Materials,WovenEchoes,Equipment,VacuumCalls,Operations;public bool ThrowOnItem,RefuseItem;
+  public int Gold,Bones,Keys,Materials,WovenEchoes,Equipment,VacuumCalls,Operations;public bool ThrowOnItem,RefuseItem,ThrowOnGold;
   public bool TryGetGroundItemList(Actor a,out GroundItemList list){list=offlineItems;return true;}
   public void dropGoldForPlayer(){}public void dropItemForPlayer(){}
-  public void pickupGold(Actor a,uint id,GoldPickupInteraction p){Operations++;if(!activeGoldPiles.Remove(p))return;Gold+=p.amount;p.isActiveAndEnabled=false;}
+  public void pickupGold(Actor a,uint id,GoldPickupInteraction p){Operations++;var g=offlineItems.gold.FirstOrDefault(g=>g.id==id);if(g==null || Math.Abs(g.location.x-a.position().x)>10)return;if(ThrowOnGold)throw new Exception("gold rejected");if(!activeGoldPiles.Remove(p))return;offlineItems.gold.Remove(g);Gold+=g.amount;p.isActiveAndEnabled=false;}
   public bool pickupPotion(Actor a,uint id,PotionPickupInteraction p){Operations++;if(a.Potion.currentCharges>=a.Potion.maxCharges)return false;if(!activePotions.Remove(p))return false;a.Potion.currentCharges++;p.isActiveAndEnabled=false;return true;}
   public void pickupAncientBone(Actor a,uint id,PickupAncientBonesInteraction p){Operations++;if(!activeAncientBones.Remove(p))return;Bones+=p.amount;p.isActiveAndEnabled=false;}
   public void pickupItem(Actor a,uint id,StackableItemFlags flags)

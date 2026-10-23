@@ -46,8 +46,8 @@ internal static class OfflineBonusTests
         check(OfflineBonusRules.GoldAmount(8,25)==200 && OfflineBonusRules.GoldAmount(3,2.5f)==7 &&
             OfflineBonusRules.GoldAmount(0,25)==0 && OfflineBonusRules.GoldAmount(int.MaxValue,25)==int.MaxValue,
             "scaled gold floors fractional currency, preserves zero and prevents integer overflow");
-        check(8*(1+OfflineBonusRules.ManaRegen)==12 && 8*(1+OfflineBonusRules.HealthRegen)==12,
-            "regen increases use 0.5 for 50 percent, not flat 50 or 50x");
+        check(OfflineBonusRules.BaseRegen(8)==16 && OfflineBonusRules.BaseRegen(3)==6,
+            "base regeneration doubles before item/passive modifiers");
         check(OfflineBonusRules.MoveSpeed==0.25f && OfflineBonusRules.Area==0.5f,
             "fixed speed and area bonuses use the HUD percentage units");
     }
