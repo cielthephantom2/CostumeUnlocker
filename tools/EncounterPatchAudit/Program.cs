@@ -107,6 +107,11 @@ Check(types.Single(t=>t.Name=="OfflineEchoSpawnEnqueuePatch").Methods.Any(m=>m.N
 Check(!types.Any(t=>t.Name.Contains("Vilatria",StringComparison.Ordinal)) &&
  !types.Single(t=>t.Name=="ToolkitSettings").Properties.Any(p=>p.Name=="IgnoreVilatriaMeteorVisuals"),
  "Vilatria visual override hooks and setting are completely removed");
+var pickupNotifications=types.Single(t=>t.Name=="OfflinePickupNotificationPatch");
+Check(installed.Contains(pickupNotifications) &&
+ pickupNotifications.Methods.Single(m=>m.Name=="Prefix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().All(m=>m.DeclaringType.Name=="OfflineToolkit" && m.Name=="get_Enabled") &&
+ Walk(new[]{pickupNotifications}).SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Where(i=>i.Operand is string).Select(i=>(string)i.Operand).OrderBy(n=>n).SequenceEqual(new[]{"ShardAdded","MultiShardsAdded","RuneOrGlyphAddedNotification","KeyOrWovenEchoAddedNotification","MaterialAdded"}.OrderBy(n=>n)),
+ "offline pickup banners suppress only five presentation methods; inventory grants and other notifications remain native");
 var enchanterHooks=new[]{"OfflineWovenEnchanterLimitPatch","OfflineWovenEnchanterRemainingPatch","OfflineWovenEnchanterUiPatch"};
 Check(enchanterHooks.All(n=>installed.Any(t=>t.Name==n)),"Woven Enchanter max uses, native remaining-use and UI hooks install");
 var enchanter=types.Single(t=>t.Name=="WovenEnchanter");

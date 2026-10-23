@@ -1,6 +1,6 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.64
+# TM Last Epoch Co-op Mod — 1.1.0-dev.65
 
-**Dev.64:** Woven Enchanter có10 lượt dùng mỗi altar, đồng bộ giới hạn crafting và UI; giữ số lượt đã sử dụng. Giữ toàn bộ thay đổi dev.63. Protocol44. [Release notes](RELEASE-1.1.0-dev64-VI.md).
+**Dev.65:** Ẩn thông báo nhặt shard, rune/glyph, vật liệu, key và Woven Echo “sent to the Forge/Storage” trong offline. Giữ Woven Enchanter10 lượt và toàn bộ thay đổi dev.64. Protocol44. [Release notes](RELEASE-1.1.0-dev65-VI.md).
 
 **Dev.61:** Tự kết nối theo tên nhân vật: Doomsday tự host, nhân vật khác tự join 27.70.239.115:7777 và retry sau 30 giây nếu thất bại; bỏ cấu hình kết nối/room code khỏi UI. Sửa cổng aggro x3 trong echo; chia tạo thưởng Prophecy qua nhiều frame, giữ charge và lens. Protocol44. [Release notes](RELEASE-1.1.0-dev61-VI.md).
 
