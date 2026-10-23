@@ -4,14 +4,14 @@ internal static class DensityTests
 {
     internal static void Run(Action<bool, string> check)
     {
-        check(DensityRules.Multiplier(false, 0) == 5 && DensityRules.Multiplier(false, 1000) == 5,
-            "outside density x5 does not inherit a previous Monolith corruption");
+        check(DensityRules.Multiplier(false, 0) == 1 && DensityRules.Multiplier(false, 1000) == 1,
+            "outside density is native x1 and does not inherit a previous Monolith corruption");
         check(DensityRules.Multiplier(true, -1) == 1 && DensityRules.Multiplier(true, 0) == 1 &&
             DensityRules.Multiplier(true, 50) == 1 && DensityRules.Multiplier(true, 100) == 1,
             "Monolith never loses native density at low or absent corruption");
         check(DensityRules.Multiplier(true, 250) == 2.5f && DensityRules.Multiplier(true, 500) == 5 &&
             DensityRules.Multiplier(true, 1000) == 10 && DensityRules.Multiplier(true, 2000) == 20,
-            "Monolith scales linearly with corruption, without the outside x5 multiplier");
+            "Monolith scales linearly with corruption, without applying an outside multiplier");
         check(DensityRules.CanGenerate(true, false, false) && DensityRules.CanGenerate(true, true, true) &&
             !DensityRules.CanGenerate(true, true, false) && !DensityRules.CanGenerate(false, false, false),
             "density supports solo and Host; Guest and online do not generate extra populations");

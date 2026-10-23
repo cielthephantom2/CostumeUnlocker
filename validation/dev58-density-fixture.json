@@ -1,0 +1,28 @@
+{
+  "passed": 21,
+  "checks": [
+    "Campaign/Dungeon with remembered high-corruption run: native roll runs with no field writes",
+    "Campaign/Dungeon with remembered high-corruption run: finalizer preserves native fields",
+    "Outside Monolith on guest: native roll runs with no field writes",
+    "Outside Monolith on guest: finalizer preserves native fields",
+    "Unloaded stale Monolith manager: native roll runs with no field writes",
+    "Unloaded stale Monolith manager: finalizer preserves native fields",
+    "Monolith retains corruption scaling 0",
+    "Monolith native placement fields restored 0",
+    "Monolith retains corruption scaling 100",
+    "Monolith native placement fields restored 100",
+    "Monolith retains corruption scaling 250",
+    "Monolith native placement fields restored 250",
+    "Monolith retains corruption scaling 500",
+    "Monolith native placement fields restored 500",
+    "Monolith retains corruption scaling 1000",
+    "Monolith native placement fields restored 1000",
+    "Native failure restores pre-roll values",
+    "100 Monolith rerolls never compound multiplier",
+    "Missing Monolith run preserves native placement",
+    "Online path unchanged",
+    "Existing Monolith guest generation policy retained"
+  ],
+  "actualSource": true,
+  "nativeGameplayValidated": false
+}

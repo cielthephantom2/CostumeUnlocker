@@ -1,0 +1,25 @@
+{
+  "version": "1.1.0-dev.58",
+  "protocol": 44,
+  "zipPath": "local-releases\\TM-Coop-1.1.0-dev.58.zip",
+  "zipSha256": "863375CC3C937981575B441B209C727DE313053D5E4F3ECDAED2021B4873AF85",
+  "size": 677439,
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "sha256": "E9E3F2856A1338EC1B622752532AC357BEBD81A54DEBFB93D87CB8E06CDAA629",
+      "size": 1183744
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "sha256": "919AD9AF1F0C31BF0FFEF32ACC6EE15E6CD5B4B450FAF4EA1F286C514B9F85BB",
+      "size": 436224
+    }
+  ],
+  "densityChecks": 21,
+  "coreChecks": 1053,
+  "compiledAuditChecks": 185,
+  "nativeGameplayValidated": false,
+  "steamInstalled": false,
+  "qaHelpersPackaged": false
+}

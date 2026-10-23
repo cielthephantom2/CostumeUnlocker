@@ -4,7 +4,7 @@ namespace LastEpochLAN.Core;
 public static class DensityRules
 {
     public static float Multiplier(bool monolith, int corruption) =>
-        monolith ? Math.Max(1f, corruption / 100f) : 5f;
+        monolith ? Math.Max(1f, corruption / 100f) : 1f;
 
     public static bool CanGenerate(bool offline, bool connected, bool host) =>
         offline && (!connected || host);

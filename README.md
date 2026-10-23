@@ -1,4 +1,6 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.57
+# TM Last Epoch Co-op Mod — 1.1.0-dev.58
+
+**Dev.58:** Bỏ tăng mật độ quái ngoài Monolith: campaign và Dungeon (bao gồm Temporal Sanctum) dùng mật độ gốc. Monolith giữ max(1, Corruption/100). Protocol44. [Release notes](RELEASE-1.1.0-dev58-VI.md).
 
 **Dev.57:** Sửa Enemy minimap dots bị mất sprite khi tải cảnh; Spirit Xylem chỉ hiện số roll thực tế; Woven 3 LP thất bại về1 LP. Reset Class chuyển vào F4 → Mod Settings, có xác nhận và backup. Protocol44. [Release notes](RELEASE-1.1.0-dev57-VI.md) · [Toàn bộ tính năng](MOD-FEATURES-AND-CODE-AUDIT-dev55-VI.md).
 

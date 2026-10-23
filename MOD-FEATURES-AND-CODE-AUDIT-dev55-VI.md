@@ -10,7 +10,7 @@ Danh sách đối chiếu source và DLL hiện tại, không lấy changelog c�
 | Diện tích | +50% area cho area skills; một nguồn untagged | OfflineBonuses.cs |
 | Regen | x2 phần base HP/MP regen tại SetInitialValues; gear/passive flat và increased/more vẫn tính tiếp. Không x2 max HP/MP. Base MP regen8→16; base HP regen6 và phần tăng theo level cũng được x2 | OfflineBaseRegeneration.cs |
 | LP tối thiểu | Native LP roll được chặn dưới tại1, giữ phân bố roll cao; không áp cho set/Weaver's Will | OfflineBonuses.cs |
-| Quái | Ngoài Monolith: mật độ placement x5. Trong Monolith: max(1, Corruption/100). Không nhân lại target lưu sau mỗi roll | OfflineDensity.cs, DensityRules.cs |
+| Quái | Ngoài Monolith (campaign/Dungeon): mật độ gốc, không override. Trong Monolith: max(1, Corruption/100). Không nhân lại target lưu sau mỗi roll | OfflineDensity.cs, DensityRules.cs |
 | Minion | Tầm acquisition/search x2 khi minion thuộc local player ở aggressive/Assassinate; không tăng damage hay range toàn cục | AggressiveMinionRange.cs |
 | Shade | Phần corruption kiếm được và Gaze x5; catch-up không x5, bám timeline cao nhất để tránh chạy vượt và tăng vô hạn | OfflineCorruption.cs, OfflineBonusRules.cs |
 | Corruption XP | Bỏ diminishing: +1% increased XP mỗi corruption | OfflineLinearCorruption.cs |
