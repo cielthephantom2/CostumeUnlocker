@@ -65,7 +65,6 @@ internal static class OfflineToolkit
     {try {action();}catch(Exception ex) {var error=ex.GetBaseException().Message;if(error!=Error) MelonLoader.MelonLogger.Warning("Offline tools: "+error);Error=error;}}
     internal static void Tick(bool panel)
     {
-        Safely(DeathHitchTrace.Frame);
         Safely(ProphecyRewards.Tick);
         Safely(ClassRespecialization.Tick);
         Safely(OfflineOnly.Tick);

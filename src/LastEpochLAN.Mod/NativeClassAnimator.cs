@@ -57,6 +57,8 @@ internal sealed class NativeClassAnimator : IDisposable
         catch { Dispose(); throw; }
     }
 
+#if LELAN_QA
+
     internal static object Smoke()
     {
         var reports = new List<object>();
@@ -118,6 +120,7 @@ internal sealed class NativeClassAnimator : IDisposable
         }
         return reports;
     }
+#endif
 
     internal static string DominantClip(Animator animator)
     {

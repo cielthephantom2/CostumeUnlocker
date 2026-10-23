@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <EnableQaTools Condition="'$(EnableQaTools)' == ''">false</EnableQaTools>
+    <DefineConstants Condition="'$(EnableQaTools)' == 'true'">$(DefineConstants);LELAN_QA</DefineConstants>
+  </PropertyGroup>
+</Project>

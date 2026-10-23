@@ -185,6 +185,7 @@ internal static class NativeHitVfxOwnerScopePatch
     { NativeSkillVisualCapture.ConstructionOwner = __state.Owner; NativeSkillVisualCapture.ConstructionAbility = __state.Ability; }
 }
 
+#if LELAN_QA
 [HarmonyPatch(typeof(Il2Cpp.GlobalVFXManager), nameof(Il2Cpp.GlobalVFXManager.HandleAutoPool))]
 internal static class NativeReplayRendererProbePatch
 {
@@ -194,6 +195,8 @@ internal static class NativeReplayRendererProbePatch
             NativeVisualEvents.ReplayRenderers += go.GetComponentsInChildren<Renderer>(true).Count(r => r != null && r.enabled && r.gameObject.activeInHierarchy);
     }
 }
+
+#endif
 
 // The native reference helper dereferences actorSync even when attachToCaster is
 // false. Remote presentation deliberately has no gameplay actor or ActorSync.

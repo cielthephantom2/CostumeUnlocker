@@ -1,0 +1,9 @@
+{
+  "passed": 259,
+  "checks": {
+    "EchoEnemyAggro": 25,
+    "Density": 21,
+    "ProphecyRewards": 198,
+    "AutomaticRoom": 15
+  }
+}

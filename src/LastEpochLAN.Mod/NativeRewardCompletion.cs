@@ -49,6 +49,8 @@ internal static class NativeRewardCompletion
         if (handle.Owner != IntPtr.Zero && pending.TryGetValue(handle.Owner,out var current) && ReferenceEquals(current,handle)) pending.TryRemove(handle.Owner,out _);
     }
 
+#if LELAN_QA
+
     internal static void NativeSmoke()
     {
         var root = new GameObject("LAN async reward completion smoke"); root.SetActive(false);
@@ -66,6 +68,7 @@ internal static class NativeRewardCompletion
         }
         finally { Release(tracked); UnityEngine.Object.Destroy(root); }
     }
+#endif
 }
 
 [HarmonyPatch(typeof(Il2Cpp.ItemDrop._DropItem_d__102), nameof(Il2Cpp.ItemDrop._DropItem_d__102.MoveNext))]

@@ -265,6 +265,8 @@ internal sealed class LanLootFilters
         return outcome;
     }
 
+#if LELAN_QA
+
     internal static object NativeSmoke()
     {
         if (!Environment.GetCommandLineArgs().Contains("--lelan-loot-filter-smoke") ||
@@ -348,4 +350,5 @@ internal sealed class LanLootFilters
             roomInstance = oldInstance; activeRoom = oldRoom; remote = oldRemote;
         }
     }
+#endif
 }

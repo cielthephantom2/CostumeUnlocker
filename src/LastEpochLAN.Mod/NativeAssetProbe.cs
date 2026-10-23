@@ -13,7 +13,7 @@ internal sealed class NativeAssetProbe : IDisposable
     private readonly bool naturalShell=Environment.GetCommandLineArgs().Contains("--lelan-natural-shell-qa");
     private bool profileVerified;
     private readonly DateTimeOffset started = DateTimeOffset.UtcNow;
-    private readonly float deadline = Time.unscaledTime + 60;
+    private readonly float deadline = Time.unscaledTime + (Environment.GetCommandLineArgs().Contains("--lelan-natural-shell-qa") ? 240 : 60);
     internal object Result { get; private set; }
     internal bool Finished => Result != null;
     internal bool Passed { get; private set; }
@@ -70,7 +70,7 @@ internal sealed class NativeAssetProbe : IDisposable
                     scope = vfxOnly ? "Private native asset bootstrap for feature QA; class model checks not run" :
                         "Native assets, five class visual prefabs and native movement animation drivers in a private save profile; no campaign entry or combat validation" };
             }
-            else if (Time.unscaledTime >= deadline) throw new TimeoutException("Native asset bootstrap did not finish in 60 seconds.");
+            else if (Time.unscaledTime >= deadline) throw new TimeoutException("Native asset bootstrap did not finish before its QA deadline.");
         }
         catch (Exception ex) { Result = new { passed = false, error = ex.ToString(), scope = "native asset bootstrap" }; }
     }

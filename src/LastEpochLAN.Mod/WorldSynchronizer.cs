@@ -659,6 +659,8 @@ internal sealed class WorldSynchronizer
         actor.transform.position = position; actor.transform.rotation = rotation;
     }
 
+#if LELAN_QA
+
     internal static void NativeOwnershipSmoke()
     {
         NativeSkillVisualCapture.NativeIndexSmoke();
@@ -685,6 +687,9 @@ internal sealed class WorldSynchronizer
             UnityEngine.Object.Destroy(root); UnityEngine.Object.Destroy(data);
         }
     }
+#endif
+
+#if LELAN_QA
 
     internal static bool NativeSmoke()
     {
@@ -723,6 +728,7 @@ internal sealed class WorldSynchronizer
         }
         finally { Active = previous; UnityEngine.Object.Destroy(root); }
     }
+#endif
 
     private void Restore()
     {

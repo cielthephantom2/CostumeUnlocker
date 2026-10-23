@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Reflection;
 using HarmonyLib;
 using Il2Cpp;
@@ -27,7 +26,6 @@ internal static class ProphecyRewards
     private static bool replaying;
     private static int lastFrame=-1;
     private static long queued,completed,failed,flushes;
-    private static double maxUnitMs;
     private static string error="";
 
     internal static bool Defer(ProphecySlotReward reward,Actor actor,Lens lens)
@@ -93,7 +91,6 @@ internal static class ProphecyRewards
             work.Player.characterDataTracker?.charData?.Id!=work.Character)
             throw new InvalidOperationException("Pending Prophecy reward belongs to a different/unloaded character");
         var global=ProphecySlotReward.rng;
-        var started=Stopwatch.GetTimestamp();
         // A callback can throw after dropping something. Consume this unit first
         // and never automatically replay an uncertain partial drop.
         work.Remaining--;
@@ -101,7 +98,6 @@ internal static class ProphecyRewards
         {
             replaying=true;
             if(work.LensRng!=null){work.LensRng.State=work.LensState;ProphecySlotReward.rng=work.LensRng;}
-            using var trace=new NativeSample();
             NativeProphecyRewardSpawn.Deliver(work.Reward,work.Player,work.Lens);
             completed++;
         }
@@ -114,15 +110,8 @@ internal static class ProphecyRewards
         finally
         {
             ProphecySlotReward.rng=global;replaying=false;
-            maxUnitMs=Math.Max(maxUnitMs,(Stopwatch.GetTimestamp()-started)*1000d/Stopwatch.Frequency);
             if(work.Remaining==0){pending.Dequeue();UnityEngine.Object.Destroy(work.Reward);}
         }
-    }
-    private readonly struct NativeSample:IDisposable
-    {
-        private readonly DeathHitchTrace.Sample sample;
-        public NativeSample(){sample=new("Prophecy deferred unit");}
-        public void Dispose()=>sample.End();
     }
     // Finish before native ground-item caching/unload or character save/exit.
     // This deliberate synchronous fallback can stall a transition, but prevents
@@ -134,7 +123,7 @@ internal static class ProphecyRewards
         while(pending.Count>0)RunOne();
     }
     internal static object Read()=>new{pendingJobs=pending.Count,pendingUnits=pending.Sum(w=>w.Remaining),
-        queuedUnits=queued,completedUnits=completed,failedUnits=failed,transitionFlushes=flushes,maxUnitMs,error,
+        queuedUnits=queued,completedUnits=completed,failedUnits=failed,transitionFlushes=flushes,error,
         nativeHookError=NativeProphecyRewardSpawn.Error,
         policy="one native equipment unit per frame; whole native non-equipment/boss reward per frame; charge processing unchanged"};
 }

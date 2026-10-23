@@ -61,11 +61,21 @@ internal sealed class NativeCampaignProbe
                 case -2:
                     if(Il2CppClientAppState.ClientStateManager._sceneManager?._isTransitioning==true)break;
                     user=ServiceProvider._UserService?.TryCast<OfflineUserService>();
-                    if(user?.CurrentUser==null)break;
+                    if(user==null)break;
+                    if(user.CurrentUser==null)
+                    {login=user.AutoLoginAsync(Il2CppSystem.Threading.CancellationToken.None).GetAwaiter();Advance(-3);break;}
                     if(Il2CppClientAppState.ClientStateManager.CurrentClientAppStateType==Il2CppClientAppState.ClientAppStateType.CharacterSelect)
                     {service=ServiceProvider.GameplayService.GetAwaiter();Advance(1);}
                     else if(Il2CppClientAppState.ClientStateManager.CurrentClientAppStateType==Il2CppClientAppState.ClientAppStateType.Login)
                     {characterSelect=Il2CppClientAppState.ClientStateManager.ChangeState(Il2CppClientAppState.ClientAppStateType.CharacterSelect).GetAwaiter();Advance(6);}
+                    break;
+                case -3:
+                    if(!login.IsCompleted)break;
+                    login.GetResult();
+                    if(user.CurrentUser==null)throw new InvalidOperationException("Natural private offline login did not return a user.");
+                    if(PlayerStore._instance==null)PlayerStore.Initialize();
+                    PlayerStore._instance.UserService_CurrentUserChanged(user,user.CurrentUser);
+                    characterSelect=Il2CppClientAppState.ClientStateManager.ChangeState(Il2CppClientAppState.ClientAppStateType.CharacterSelect).GetAwaiter();Advance(6);
                     break;
                 case -1:
                     if (initializeServices.IsCompleted)

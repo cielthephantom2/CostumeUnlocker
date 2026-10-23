@@ -12,8 +12,10 @@ namespace ItemNodeNativeQA;
 public partial class Audit:MelonMod
 {
  static readonly List<string> localizationKeys=new();
+ public static void ForceOfflineService(){Il2CppLE.Core.CommandLine.Options.OfflineMode=true;}
+ public static void UsePrivateOfflineUser(){Il2CppLE.Services.ServiceProvider._UserService=new Il2CppLE.Services.OfflineUserService().Cast<Il2CppLE.Services.IUserService>();}
  public static void ObserveKey(string key){if(key?.Contains("445")==true && !localizationKeys.Contains(key))localizationKeys.Add(key);}
- public override void OnInitializeMelon(){HarmonyInstance.Patch(typeof(Localization).GetMethod("GetText",new[]{typeof(string),typeof(string)}),prefix:new HarmonyMethod(typeof(Audit).GetMethod(nameof(ObserveKey))));}
+ public override void OnInitializeMelon(){var main=AppDomain.CurrentDomain.GetAssemblies().Single(a=>a.GetName().Name=="LastEpochLAN");releaseBootstrap=main.GetType("LastEpochLAN.Mod.NativeAssetProbe")==null;if(releaseBootstrap)HarmonyInstance.Patch(main.GetType("LastEpochLAN.Mod.LanMod").GetMethod("TickAutomaticRoom",BindingFlags.NonPublic|BindingFlags.Instance),prefix:new HarmonyMethod(typeof(Audit),nameof(BlockPrivateRoom)));HarmonyInstance.Patch(typeof(Il2CppLE.Services.ServiceProvider).GetMethod("InitializeUserService"),prefix:new HarmonyMethod(typeof(Audit),nameof(ForceOfflineService)),postfix:new HarmonyMethod(typeof(Audit),nameof(UsePrivateOfflineUser)));EchoLoadProfile.InstallBoot(HarmonyInstance);HarmonyInstance.Patch(typeof(Localization).GetMethod("GetText",new[]{typeof(string),typeof(string)}),prefix:new HarmonyMethod(typeof(Audit).GetMethod(nameof(ObserveKey))));}
  bool done,migrating;float mapStarted;int mapStage;Il2CppDMM.DMMapIcon removedMapIcon;string migrationId;int migrationClass;float migrationStarted,started;readonly List<object> checks=new();
  static Type T(string name)=>AppDomain.CurrentDomain.GetAssemblies().Single(a=>a.GetName().Name=="LastEpochLAN").GetType("LastEpochLAN.Mod.OfflineTools."+name,true);
  static object Call(string name,string method,params object[] args)=>T(name).GetMethod(method,BindingFlags.Static|BindingFlags.NonPublic|BindingFlags.Public).Invoke(null,args);
@@ -21,9 +23,20 @@ public partial class Audit:MelonMod
  static bool Near(float a,float b)=>Math.Abs(a-b)<.01f;
  public override void OnUpdate()
  {
-  if(done)return;if(started==0)started=Time.unscaledTime;
+  if(done)return;EchoLoadProfile.BootSample();if(started==0)started=Time.unscaledTime;
   try
   {
+   ReleaseBootstrapTick();
+   if(Environment.GetCommandLineArgs().Contains("--no-debug-startup-qa"))
+   {
+    if(Time.unscaledTime-started<10)return;
+    var assembly=AppDomain.CurrentDomain.GetAssemblies().Single(a=>a.GetName().Name=="LastEpochLAN");
+    var main=assembly.GetType("LastEpochLAN.Mod.LanMod",true);
+    Check(!(bool)main.GetField("DiagnosticsRequested",BindingFlags.NonPublic|BindingFlags.Static).GetValue(null),"Normal startup leaves runtime report capture disabled");
+    Check(assembly.GetType("LastEpochLAN.Mod.RuntimePerformance")==null && assembly.GetType("LastEpochLAN.Mod.OfflineTools.DeathHitchTrace")==null,"Normal binary contains no frame/death/allocation profiler");
+    Finish(null);return;
+   }
+   if(echo500Stage>0){EchoLoad500(PlayerFinder.getPlayerActor());return;}
    if(Environment.GetCommandLineArgs().Contains("--lelan-echo-aggro-qa")){EchoAggro();Finish(null);return;}
    if(Environment.GetCommandLineArgs().Contains("--lelan-forging-half-qa")){ForgingPotential();Finish(null);return;}
    if(migrating)
@@ -37,7 +50,8 @@ public partial class Audit:MelonMod
     Finish(null);return;
    }
    var actor=PlayerFinder.getPlayerActor();
-   if(actor?.HasMovedToPlayerSpawn!=true){if(Time.unscaledTime-started>150)Finish(new TimeoutException("Private actor bootstrap timed out"));return;}
+   if(actor?.HasMovedToPlayerSpawn!=true){if(Time.unscaledTime-started>420)Finish(new TimeoutException("Private actor bootstrap timed out"));return;}
+   if(Environment.GetCommandLineArgs().Contains("--lelan-echo-load-500-qa")){EchoLoad500(actor);return;}
    if(Environment.GetCommandLineArgs().Contains("--lelan-prophecy-stream-qa")){ProphecyStream(actor);return;}
    if(Environment.GetCommandLineArgs().Contains("--lelan-map-probe"))
    {
@@ -109,7 +123,7 @@ public partial class Audit:MelonMod
  }
  void Finish(Exception ex)
  {
-  done=true;File.WriteAllText(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),"UserData","item-node-native-qa.json"),JsonSerializer.Serialize(new{passed=ex==null,error=ex?.ToString(),gameAssembly=Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),"GameAssembly.dll")))),checks,localizationKeys,scope=Environment.GetCommandLineArgs().Contains("--lelan-prophecy-stream-qa") ? "Real IL2CPP hostile pooled actor acquisition across scenes, nullable reward detour, native item generation counts/lens outcomes and 80-frame scheduling; ground placement intercepted in private QA; no live pursuit/death-hitch measurement" : Environment.GetCommandLineArgs().Contains("--lelan-echo-aggro-qa") ? "Native IL2CPP acquisition-box detour and scope restoration; echo actor eligibility tested separately by actual-source fixture; no live enemy pursuit measurement" : Environment.GetCommandLineArgs().Contains("--lelan-forging-half-qa") ? "Real IL2CPP FP cost consumers on disposable items; no character/save or rendered UI test" : "Real IL2CPP stat, attribute, tooltip parser and Meteor temp-stat consumers on disposable private character; no rendered tooltip or monster-hit measurement"},new JsonSerializerOptions{WriteIndented=true}));Application.Quit();
+  done=true;EchoLoadProfile.Finish(ex);File.WriteAllText(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),"UserData","item-node-native-qa.json"),JsonSerializer.Serialize(new{passed=ex==null,error=ex?.ToString(),gameAssembly=Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),"GameAssembly.dll")))),checks,localizationKeys,scope=Environment.GetCommandLineArgs().Contains("--lelan-echo-load-500-qa") ? "Real detached native empowered echo at requested corruption, native scene loading and player placement; private helper timers, not a rendered multiplayer/loading regression for all maps" : Environment.GetCommandLineArgs().Contains("--lelan-prophecy-stream-qa") ? "Real IL2CPP hostile pooled actor acquisition across scenes, nullable reward detour, native item generation counts/lens outcomes and 80-frame scheduling; ground placement intercepted in private QA; no live pursuit/death-hitch measurement" : Environment.GetCommandLineArgs().Contains("--lelan-echo-aggro-qa") ? "Native IL2CPP acquisition-box detour and scope restoration; echo actor eligibility tested separately by actual-source fixture; no live enemy pursuit measurement" : Environment.GetCommandLineArgs().Contains("--lelan-forging-half-qa") ? "Real IL2CPP FP cost consumers on disposable items; no character/save or rendered UI test" : "Real IL2CPP stat, attribute, tooltip parser and Meteor temp-stat consumers on disposable private character; no rendered tooltip or monster-hit measurement"},new JsonSerializerOptions{WriteIndented=true}));Application.Quit();
  }
  ItemDataUnpacked Item(UniqueList.Entry entry,byte roll)
  {

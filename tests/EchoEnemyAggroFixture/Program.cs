@@ -31,5 +31,4 @@ enemy.stateController.autoCombatDisabled=true;Check(EchoEnemyAggro.Applies(enemy
 enemy.Dead=true;Check(!EchoEnemyAggro.Applies(enemy),"dead enemy excluded");enemy.Dead=false;
 OfflineToolkit.Enabled=false;Check(!EchoEnemyAggro.Applies(enemy),"online unchanged");OfflineToolkit.Enabled=true;
 foreach(float invalid in new[]{-1f,-2f,float.NaN,float.PositiveInfinity,float.MaxValue}){enemy.stateController.aggroRangeModifier=invalid;var lease=Begin(enemy);Check(!EchoEnemyAggro.Searching,"disabled/invalid range multiplier is not expanded: "+invalid);End(lease);}
-Check(EchoEnemyAggro.ExpandedAcquisitions>0 && EchoEnemyAggro.ScaledBoxChecks>0,"runtime diagnostics expose actual eligible calls and box checks");
 Directory.CreateDirectory("validation");File.WriteAllText("validation/echo-aggro-x3-fixture.json",JsonSerializer.Serialize(new{passed=checks.Count,checks,nativePursuitVerified=false},new JsonSerializerOptions{WriteIndented=true}));Console.WriteLine("PASS "+checks.Count+" x3 aggro checks");

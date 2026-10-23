@@ -14,6 +14,15 @@ var banned=new Regex("Nemesis|ObserverWindow|RageOfMorditas|RunePrison|TimeBeast
 var checks=new List<string>();
 void Check(bool good,string text){if(!good)throw new InvalidOperationException(text);checks.Add(text);Console.WriteLine("PASS: "+text);}
 var types=Walk(mod.MainModule.Types).ToArray();
+Check(!types.Any(t=>t.Name is "RuntimePerformance" or "DeathHitchTrace" or "OfflineDeathHitchTracePatch" or "OfflineEchoEnemyAggroActivationTracePatch"),
+ "temporary frame/allocation/death/loot and aggro-activation measuring code is absent from normal binary");
+var saveRuntime=types.Single(t=>t.Name=="LanMod").Methods.Single(m=>m.Name=="SaveRuntimeReport");
+Check(!saveRuntime.Body.Instructions.Any(i=>i.Operand is MethodReference),
+ "release runtime report has no capture/serialization/writer calls");
+Check(!types.Any(t=>t.Name.Contains("Smoke",StringComparison.Ordinal) || t.Name.Contains("Probe",StringComparison.Ordinal) || t.Name=="HostWorldAudit") &&
+ !types.SelectMany(t=>t.Methods).Any(m=>m.Name=="Smoke" || m.Name.EndsWith("Smoke",StringComparison.Ordinal)),
+ "release excludes QA probe/smoke classes and inline smoke entry points: "+string.Join(",",types.Where(t=>t.Name.Contains("Smoke") || t.Name.Contains("Probe") || t.Name=="HostWorldAudit").Select(t=>t.FullName).Concat(types.SelectMany(t=>t.Methods).Where(m=>m.Name=="Smoke" || m.Name.EndsWith("Smoke")).Select(m=>m.FullName))));
+Check(!Walk(core.MainModule.Types).Any(t=>t.Name=="LatestReportWriter"),"release Core excludes temporary runtime report writer");
 Check(!types.Any(t=>legacy.IsMatch(t.FullName)),"legacy encounter adapters and global Nemesis/Omen/shrine classes absent from binary");
 Check(!types.Any(t=>t.Name is "LanMapTriggers" or "NativeSceneEvents" or "NativeMapObjectReplica"),"generic callback/state-graph/object-state replay engines absent");
 Check(!types.Any(t=>t.Name.Contains("DefaultMeteor",StringComparison.Ordinal) || t.Name=="OfflineRemovedMeteorRepairPatch"),"retired Default Meteor and save-repair hook absent from release binary");
@@ -94,6 +103,11 @@ Check(enabled.Count==2 && enabled[0].OpCode.Code==Mono.Cecil.Cil.Code.Ldc_I4_0 &
  "compiled release shared-world policy is false with no configuration or command-line override");
 string ReflectionNamespace(TypeDefinition type)=>type.IsNested ? ReflectionNamespace(type.DeclaringType) : type.Namespace;
 var installed=patches.Where(t=>LastEpochLAN.Mod.RoomFeaturePolicy.AllowsPatch(ReflectionNamespace(t),t.Name,t.DeclaringType?.Name??"")).ToArray();
+Check(new[]{"OfflineEchoSpawnEnqueuePatch","OfflineEchoSpawnDrainPatch"}.All(n=>installed.Any(t=>t.Name==n)),
+ "dense echo native enqueue routing and post-load drain guard both install");
+Check(types.Single(t=>t.Name=="OfflineEchoSpawnEnqueuePatch").Methods.Any(m=>m.Name=="Finalizer") &&
+ !types.Single(t=>t.Name=="OfflineEchoSpawnQueue").Methods.SelectMany(m=>m.HasBody?m.Body.Instructions:Enumerable.Empty<Mono.Cecil.Cil.Instruction>()).Any(i=>i.Operand is MethodReference m && m.Name is "set_numberToSpawn" or "set_totalSpawnCount" or "set_spawnsRemaining"),
+ "echo queue routing restores pooled spawner flag and does not reduce generation counts");
 Check(!types.Any(t=>t.Name.Contains("Vilatria",StringComparison.Ordinal)) &&
  !types.Single(t=>t.Name=="ToolkitSettings").Properties.Any(p=>p.Name=="IgnoreVilatriaMeteorVisuals"),
  "Vilatria visual override hooks and setting are completely removed");

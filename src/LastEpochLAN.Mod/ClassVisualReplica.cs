@@ -15,6 +15,8 @@ internal static class ClassVisualReplica
     private static string lastBack = "";
     private static CosmeticPrefab lastFootprint, lastAura;
     private static float nextEquipmentCapture;
+
+#if LELAN_QA
     internal static object Smoke()
     {
         var reports = new List<object>();
@@ -42,6 +44,7 @@ internal static class ClassVisualReplica
         }
         return reports;
     }
+#endif
 
     internal static GameObject Create(int classId)
     {

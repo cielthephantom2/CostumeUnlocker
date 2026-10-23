@@ -5,7 +5,7 @@ using MelonLoader;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
-[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.61", "Local research")]
+[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.62", "Local research")]
 [assembly: HarmonyDontPatchAll]
 [assembly: MelonGame("Eleventh Hour Games", "Last Epoch")]
 
@@ -13,20 +13,27 @@ namespace LastEpochLAN.Mod;
 
 public sealed class LanMod : MelonMod
 {
+#if LELAN_QA
     private static readonly string[] StartupArguments=Environment.GetCommandLineArgs();
+    private static readonly bool DiagnosticsRequested=StartupArguments.Any(a=>a.StartsWith("--lelan-",StringComparison.Ordinal));
+
+#endif
     private static readonly string ModVersion = (System.Reflection.CustomAttributeExtensions.GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>(typeof(LanMod).Assembly)?.InformationalVersion?.Split('+')[0]) ?? typeof(LanMod).Assembly.GetName().Version?.ToString(3) ?? "unknown";
     private readonly WorldSynchronizer worldSync = new();
     private readonly NativeEncounterCatalogue encounterCatalogue=new();
     private readonly NativeSummonCapture summonCapture=new();
     private readonly NativeSummonReplicas summonReplicas=new();
+#if LELAN_QA
     private readonly LatestReportWriter reportWriter=new();
-    private readonly TimingWindow updateTiming=new(),lateTiming=new();
+#endif
     private readonly NativePartyReplica nativeParty = new();
     private readonly NativePeerHealthBars peerHealthBars = new();
     private readonly NativeGuestCombat guestCombat = new();
     private readonly LanGift gift = new();
     private LanSharedChest sharedChest;
+#if LELAN_QA
     private NativeChestUiProbe chestUiProbe;
+#endif
     private readonly LanPartyTravel partyTravel = new();
     private readonly LanMonolithParty monolithParty=new();
     private readonly LanLootFilters lootFilters = new();
@@ -44,16 +51,6 @@ public sealed class LanMod : MelonMod
     private PlayerState[] remoteStates = Array.Empty<PlayerState>();
     private float nextRemoteRead;
     private readonly Dictionary<string, long> appliedVisualSequence = new();
-    private double frameTotalMs, frameMaxMs;
-    private long frameSamples;
-    private double gameFrameSeconds;
-    private readonly double[] stageTotals = new double[4], stageMax = new double[4];
-    private long CostStage(int stage, long started)
-    {
-        long now = System.Diagnostics.Stopwatch.GetTimestamp();
-        double ms = (now - started) * 1000d / System.Diagnostics.Stopwatch.Frequency;
-        stageTotals[stage] += ms; stageMax[stage] = Math.Max(stageMax[stage], ms); return now;
-    }
     private bool panel = true;
     private bool supported;
     private string fingerprint = "";
@@ -66,33 +63,79 @@ public sealed class LanMod : MelonMod
     private string reportFile;
     private string configPath;
     private bool runtimeReported;
+#if LELAN_QA
     private bool adapterSmokeRequested;
+#endif
+#if LELAN_QA
     private bool adapterSmokePassed;
+#endif
+#if LELAN_QA
     private bool worldSmokePassed;
+#endif
+#if LELAN_QA
     private bool guiReported;
+#endif
     private readonly ReleaseUpdateChecker updateChecker=new();
     private LanSettings settings;
+#if LELAN_QA
     private float nextSmokeReport;
+#endif
+#if LELAN_QA
     private float nextRuntimeReport;
+#endif
     private long skillsReceived;
     private string lastRemoteSkill = "";
+#if LELAN_QA
     private bool worldAuditRequested;
+#endif
+#if LELAN_QA
     private float nextAudit;
+#endif
+#if LELAN_QA
     private bool characterProbeCompleted;
+#endif
+#if LELAN_QA
     private bool classSmokeRequested;
+#endif
+#if LELAN_QA
     private bool classSmokeCompleted;
+#endif
+#if LELAN_QA
     private bool classSmokePassed;
+#endif
+#if LELAN_QA
     private bool nativeServerProbeCompleted;
+#endif
+#if LELAN_QA
     private NativeSessionProbe nativeSessionProbe;
+#endif
+#if LELAN_QA
     private bool nativeSessionReported;
+#endif
+#if LELAN_QA
     private NativeAssetProbe nativeAssetProbe;
+#endif
+#if LELAN_QA
     private bool nativeAssetsReported;
+#endif
+#if LELAN_QA
     private NativeCampaignProbe nativeCampaignProbe;
+#endif
+#if LELAN_QA
     private bool nativeCampaignReported;
+#endif
+#if LELAN_QA
     private NativeVfxProbe vfxProbe;
+#endif
+#if LELAN_QA
     private bool vfxProbeReported;
+#endif
+#if LELAN_QA
     private NativeGiftProbe giftProbe;
+#endif
+#if LELAN_QA
     private bool giftProbeReported;
+#endif
 
     public override void OnInitializeMelon()
     {
@@ -107,9 +150,12 @@ public sealed class LanMod : MelonMod
         // passed new-interop compilation and installed all72 selected hooks.
         // This compatibility gate is not native gameplay acceptance.
         supported = IsSupportedGameAssembly(fingerprint);
+#if LELAN_QA
         adapterSmokeRequested = StartupArguments.Contains("--lelan-adapter-smoke");
         classSmokeRequested = StartupArguments.Contains("--lelan-class-visual-smoke");
         worldAuditRequested = StartupArguments.Contains("--lelan-world-audit");
+
+#endif
         reportFile = Path.Combine(runtime, "UserData", "LastEpochLAN.runtime-report.json");
         Directory.CreateDirectory(Path.GetDirectoryName(reportFile)!);
         configPath = Path.Combine(runtime, "UserData", "LastEpochLAN.config.json");
@@ -142,11 +188,10 @@ public sealed class LanMod : MelonMod
 
     public override void OnUpdate()
     {
-        RuntimePerformance.BeginFrame();
-        long updateStarted=System.Diagnostics.Stopwatch.GetTimestamp(),allocatedBefore=GC.GetAllocatedBytesForCurrentThread();
         try
         {
-            using (RuntimePerformance.Measure(PerformanceArea.Toolkit)) OfflineTools.OfflineToolkit.Tick(panel);
+            OfflineTools.OfflineToolkit.Tick(panel);
+#if LELAN_QA
             if (StartupArguments.Contains("--lelan-gift-smoke") && !giftProbeReported && nativeAssetProbe?.Passed == true)
             {
                 giftProbe ??= new NativeGiftProbe(); giftProbe.Tick();
@@ -210,6 +255,8 @@ public sealed class LanMod : MelonMod
                 File.WriteAllText(Path.Combine(Path.GetDirectoryName(reportFile), "LastEpochLAN.native-server-probe.json"),
                     JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true }));
             }
+
+#endif
             if (Input.GetKeyDown(KeyCode.F4)) panel = !panel;
             if (Time.unscaledTime >= nextGuard)
             {
@@ -228,6 +275,7 @@ public sealed class LanMod : MelonMod
                 if (session != null || pendingJoin != null) StopRoom();
                 return;
             }
+#if LELAN_QA
             var smokePlayer = classSmokeRequested && !classSmokeCompleted ? Il2Cpp.PlayerFinder.getPlayerActor() : null;
             if (classSmokeRequested && !classSmokeCompleted && smokePlayer != null && smokePlayer.HasMovedToPlayerSpawn)
             {
@@ -295,9 +343,11 @@ public sealed class LanMod : MelonMod
                 SaveRuntimeReport("marker-primitive-smoke-ok", offline);
                 LoggerInstance.Msg("Marker creation, transform, collider disabling and cleanup verified.");
             }
+
+#endif
             // Local Assist runs before room polling/teardown can throw.
             // UI panels do not participate in the Assist pause policy.
-            if(supported) using (RuntimePerformance.Measure(PerformanceArea.AutoAssist)) autoPlay.Tick(
+            if(supported) autoPlay.Tick(
                 RoomFeaturePolicy.SharedWorldEnabled && (partyTravel.Busy || monolithParty.Busy));
             TickAutomaticRoom();
             if (pendingJoin?.IsCompleted == true)
@@ -308,18 +358,40 @@ public sealed class LanMod : MelonMod
                 pendingCancellation?.Dispose();
                 pendingCancellation = null;
             }
+#if LELAN_QA
             if ((session!=null || gift.Busy) && !StartupArguments.Contains("--lelan-gift-smoke") && !StartupArguments.Contains("--lelan-shared-chest-smoke")) gift.Tick(session);
+#else
+            if ((session!=null || gift.Busy)) gift.Tick(session);
+#endif
+#if LELAN_QA
             if ((session!=null || sharedChest.Open || sharedChest.Busy) && !StartupArguments.Contains("--lelan-gift-smoke") && !StartupArguments.Contains("--lelan-shared-chest-smoke")) sharedChest.Tick(session);
+#else
+            if ((session!=null || sharedChest.Open || sharedChest.Busy)) sharedChest.Tick(session);
+#endif
             if(Input.GetKeyDown(KeyCode.F2))sharedChest.Toggle();
+#if LELAN_QA
             if (RoomFeaturePolicy.SharedWorldEnabled && !StartupArguments.Contains("--lelan-gift-smoke")) partyTravel.Tick(session);
+#else
+            if (RoomFeaturePolicy.SharedWorldEnabled) partyTravel.Tick(session);
+#endif
+#if LELAN_QA
             if (RoomFeaturePolicy.SharedWorldEnabled && !StartupArguments.Contains("--lelan-gift-smoke")) monolithParty.Tick(session);
+#else
+            if (RoomFeaturePolicy.SharedWorldEnabled) monolithParty.Tick(session);
+#endif
+#if LELAN_QA
             if (!StartupArguments.Contains("--lelan-hud-policy")) HudAuthority.Session = RoomFeaturePolicy.SharedWorldEnabled && (session?.IsHost==true || partyTravel.Participation.Enabled) ? session : null;
+#else
+            HudAuthority.Session = RoomFeaturePolicy.SharedWorldEnabled && (session?.IsHost==true || partyTravel.Participation.Enabled) ? session : null;
+#endif
             lootFilters.Tick(session);
             NativeRoomLadder.Tick(session);
             if (session == null)
             {
-                if((autoPlay.Open || autoPlay.Armed || OfflineTools.OfflineToolkit.Ready) && Time.unscaledTime>=nextRuntimeReport)
+#if LELAN_QA
+                if(DiagnosticsRequested && (autoPlay.Open || autoPlay.Armed || OfflineTools.OfflineToolkit.Ready) && Time.unscaledTime>=nextRuntimeReport)
                 {nextRuntimeReport=Time.unscaledTime+2;SaveRuntimeReport("offline-gameplay-diagnostics",offline);}
+#endif
                 return;
             }
             if (!session.Connected) { message = session.Status; StopRoom(); automaticRoom.Failed(Time.unscaledTimeAsDouble); return; }
@@ -332,36 +404,29 @@ public sealed class LanMod : MelonMod
                     nextPublish = Time.unscaledTime + 0.25f;
                     PublishInventoryPresence();
                 }
-                if (Time.unscaledTime >= nextRuntimeReport)
+    #if LELAN_QA
+            if (DiagnosticsRequested && Time.unscaledTime >= nextRuntimeReport)
                 { nextRuntimeReport = Time.unscaledTime + 2; SaveRuntimeReport("inventory-only-room", offline); }
+#endif
                 return;
             }
             bool coopReady=monolithParty.SharedWorldReady && (session.IsHost || partyTravel.Participation.CanShareWorld(false,currentScene,session.PlayerPositions.FirstOrDefault()?.Scene??"",monolithParty.Borrowing,partyTravel.Busy));
             encounterCatalogue.Tick(session,currentScene,coopReady);
             SkillCapture.Session = coopReady ? session : null;
-            long lanStarted = System.Diagnostics.Stopwatch.GetTimestamp();
-            long stageStarted = lanStarted;
             if (Time.unscaledTime >= nextPublish)
             {
                 nextPublish = Time.unscaledTime + 0.05f;
-                using (RuntimePerformance.Measure(PerformanceArea.PlayerPublish)) PublishPlayer();
+                PublishPlayer();
             }
             worldSync.NativeRewardsEnabled = settings.GuestPrivateRewards;
-            stageStarted = CostStage(0, stageStarted);
             // Retire scene targets before world capture invokes native AI range checks.
             if (settings.ExperimentalGuestCombat && coopReady) guestCombat.Tick(session, currentScene);
-            stageStarted = CostStage(2, stageStarted);
             worldSync.HostOwnedEnemies = settings.HostOwnedEnemies;
-            if(coopReady) { using var worldCost = RuntimePerformance.Measure(PerformanceArea.WorldSync); worldSync.Tick(session, currentScene); }
+            if(coopReady) { worldSync.Tick(session, currentScene); }
             else {worldSync.Reset();guestCombat.Reset();}
-            stageStarted = CostStage(1, stageStarted);
             UpdateMarkers();
             peerHealthBars.Tick(remoteStates, markers);
             nativeParty.Tick(session);
-            CostStage(3, stageStarted);
-            double elapsedMs = (System.Diagnostics.Stopwatch.GetTimestamp() - lanStarted) * 1000d / System.Diagnostics.Stopwatch.Frequency;
-            frameTotalMs += elapsedMs; frameMaxMs = Math.Max(frameMaxMs, elapsedMs); frameSamples++;
-            gameFrameSeconds += Time.unscaledDeltaTime;
             while (session.TryTakeSkill(out var skill))
             {
                 if (!coopReady || skill.Scene != currentScene) continue;
@@ -371,16 +436,20 @@ public sealed class LanMod : MelonMod
                 LoggerInstance.Msg($"Remote skill {skill.Ability}: animation={skill.AnimationNumber}, zone={skill.ZoneAbility}, native character animation={animated}; native VFX commands with projectile snapshot fallback; remote gameplay execution remains disabled.");
             }
             NativeVisualEvents.Tick(currentScene);
-            if (Time.unscaledTime >= nextRuntimeReport)
+#if LELAN_QA
+            if (DiagnosticsRequested && Time.unscaledTime >= nextRuntimeReport)
             {
                 nextRuntimeReport = Time.unscaledTime + 2f;
                 SaveRuntimeReport("active-lan-diagnostics", offline);
             }
+#endif
+#if LELAN_QA
             if (adapterSmokeRequested && Time.unscaledTime >= nextSmokeReport)
             {
                 nextSmokeReport = Time.unscaledTime + 1f;
                 SaveRuntimeReport("native-game-lan-smoke", offline);
             }
+#endif
         }
         catch (Exception ex)
         {
@@ -388,12 +457,10 @@ public sealed class LanMod : MelonMod
             LoggerInstance.Error(message + "\n" + ex);
             StopRoom();
         }
-        finally {updateTiming.Add(updateStarted,allocatedBefore);}
     }
 
     private void PublishInventoryPresence()
     {
-        using var performance = RuntimePerformance.Measure(PerformanceArea.PlayerPublish);
         var actor = Il2Cpp.PlayerFinder.getPlayerActor();
         bool ready = sharedChest.NativeReady && actor != null && gift.Character == actor.characterDataTracker?.charData?.Id;
         session.Publish(RoomFeaturePolicy.Presence(ready, gift.Identity, gift.Character, gift.Group) with {Ladder = NativeRoomLadder.Capture()});
@@ -441,20 +508,14 @@ public sealed class LanMod : MelonMod
     public override void OnLateUpdate()
     {
         if (!RoomFeaturePolicy.SharedWorldEnabled) return;
-        long started=System.Diagnostics.Stopwatch.GetTimestamp(),allocated=GC.GetAllocatedBytesForCurrentThread();
-        try
-        {
         try {NativePartyStatus.LateUpdate();} catch(Exception ex) {NativePartyStatus.Fail(ex.GetBaseException().Message);}
         NativeCosmeticReplica.TickAll();
         summonReplicas.Tick();
         if (session?.Connected == true && !session.IsHost && monolithParty.SharedWorldReady) worldSync.RenderGuestPoses();
-        }
-        finally {lateTiming.Add(started,allocated);}
     }
 
     private void UpdateMarkers()
     {
-        using var performance = RuntimePerformance.Measure(PerformanceArea.RemotePresentation);
         if (Time.unscaledTime >= nextRemoteRead)
         {
             nextRemoteRead = Time.unscaledTime + 0.05f;
@@ -552,13 +613,15 @@ public sealed class LanMod : MelonMod
 
     public override void OnGUI()
     {
-        using var performance = RuntimePerformance.Measure(PerformanceArea.Gui);
         try { DrawCoopUi(); }
         finally
         {
-            OfflineTools.Dps.DpsRuntime.Draw();sharedChest?.Draw();nativeCampaignProbe?.DrawChest();
+            OfflineTools.Dps.DpsRuntime.Draw();sharedChest?.Draw();
+#if LELAN_QA
+            nativeCampaignProbe?.DrawChest();
             if(StartupArguments.Contains("--lelan-chest-ui-smoke") && nativeAssetProbe?.Passed==true)
             {chestUiProbe??=new();chestUiProbe.Draw();}
+#endif
         }
     }
     private void DrawCoopUi()
@@ -602,12 +665,16 @@ public sealed class LanMod : MelonMod
         }
         GUI.Label(new Rect(30, 360, 420, 22), lootFilters.Status);
         GUI.Label(new Rect(30,335,420,22),"World, combat, VFX and map travel sync paused.");
+#if LELAN_QA
         if (!guiReported) { guiReported = true; SaveRuntimeReport("imgui-callback-ok", offline); }
+#endif
     }
     private void TickAutomaticRoom()
     {
         // Private engine QA must never contact the configured public endpoint.
+#if LELAN_QA
         if(StartupArguments.Any(a=>a.StartsWith("--lelan-",StringComparison.Ordinal)))return;
+#endif
         var state=Il2CppClientAppState.ClientStateManager.CurrentClientAppStateType;
         bool menu=state is Il2CppClientAppState.ClientAppStateType.CharacterSelect or Il2CppClientAppState.ClientAppStateType.Login;
         if(menu || !OfflineTools.OfflineToolkit.Enabled)
@@ -697,13 +764,15 @@ public sealed class LanMod : MelonMod
         remoteStates=Array.Empty<PlayerState>();nextRemoteRead=0;appliedVisualSequence.Clear();
         markers.Clear();equipmentReplicas.Clear();animationReplicas.Clear();skillVisualReplicas.Clear();
         equipmentRetryAt.Clear();markerClasses.Clear();classModels.Clear();
+#if LELAN_QA
         nextRuntimeReport=0;
+#endif
     }
 
     private void SaveRuntimeReport(string phase, bool? offlineMode)
     {
-        using var performance = RuntimePerformance.Measure(PerformanceArea.ReportCapture);
-        if (reportFile == null) return;
+#if LELAN_QA
+        if (!DiagnosticsRequested || reportFile == null) return;
         reportWriter.Publish(reportFile,new
         {
             phase, utc = DateTimeOffset.UtcNow, modVersion = ModVersion, protocolVersion = LanProtocol.Version, supported, gameAssemblySha256 = fingerprint, offlineMode,
@@ -722,13 +791,8 @@ public sealed class LanMod : MelonMod
             encounterDiagnostics=worldSync.EncounterDiagnostics,encounterDevelopment=encounterCatalogue.Diagnostics,sharedStatus=NativePartyStatus.Diagnostics,
             sourceOwnedStatus=new {NativeAilmentSynchronization.ReportsSent,NativeAilmentSynchronization.ReportsRejected,
                 NativeAilmentSynchronization.Error,damagePolicy=NativePartyStatus.Enabled?"shared native Host status/DoT; direct hits use source-calculated damage":"source-owned damage; shared visual experiment only"},
-            featurePerformance = RuntimePerformance.Read(),
-            deathHitchTrace = OfflineTools.DeathHitchTrace.Read(),
             prophecyRewards = OfflineTools.ProphecyRewards.Read(),
             automaticRoom = new {automaticRoom.Name,automaticRoom.IsHost,automaticRoom.Paused,automaticRoom.RetryAt,address=AutomaticRoom.Address,port=AutomaticRoom.Port},
-            echoEnemyAggro = OfflineTools.EchoEnemyAggro.Read(),
-            callbackPerformance=new {update=updateTiming.Read(),lateUpdate=lateTiming.Read(),reportWriterError=reportWriter.Error,
-                gc0=GC.CollectionCount(0),gc1=GC.CollectionCount(1),gc2=GC.CollectionCount(2)},
             cosmeticErrors = equipmentReplicas.Where(pair=>pair.Value.CosmeticError!="").Select(pair=>new {playerId=pair.Key,reason=pair.Value.CosmeticError}).ToArray(),
             nativeGiftMenu = new { NativeLanGiftMenuPatch.Added, NativeLanGiftMenuPatch.Error },
             autoPlay=autoPlay.Diagnostics,
@@ -783,15 +847,9 @@ public sealed class LanMod : MelonMod
             hudAuthority = new { hostCanEdit = HudAuthority.CanEdit, hostRevision = session?.HudRevision, HudAuthority.AppliedRevision, HudAuthority.Error },
             guestDamageSent = guestCombat.Sent, guestDamageApplied = guestCombat.Applied,
             guestCombatError = guestCombat.Error,
-            lanFrameAverageMs = frameSamples == 0 ? 0 : frameTotalMs / frameSamples, lanFrameMaxMs = frameMaxMs,
-            lanFrameSamples = frameSamples,
             nativeNullableEmptyFields = NativeNullable.EmptyFieldReads, nativeNullableValueFields = NativeNullable.ValueFieldReads,
             nativeNullableGetterFallbacks = NativeNullable.GetterFallbacks,
-            observedGameFps = gameFrameSeconds > 0 ? frameSamples / gameFrameSeconds : 0,
-            observedGameFrameAverageMs = frameSamples > 0 ? gameFrameSeconds * 1000 / frameSamples : 0,
             worldFramesSent = session?.WorldFramesSent ?? 0, worldFramesOmitted = session?.WorldFramesOmitted ?? 0,
-            lanStages = new[] { "publish", "world", "combat", "remoteRenderingAndParty" }.Select((name, i) =>
-                new { name, averageMs = frameSamples == 0 ? 0 : stageTotals[i] / frameSamples, maxMs = stageMax[i] }).ToArray(),
             experimentalGuestCombat = settings.ExperimentalGuestCombat,
             guestTargetScene = guestCombat.TargetScene, guestTargetRegistrationVerified = guestCombat.RegistrationVerified,
             nativeGlobalVisualsObserved = NativeSkillVisualCapture.GlobalObjectsObserved,
@@ -814,10 +872,20 @@ public sealed class LanMod : MelonMod
             nativeDeathsDispatched = worldSync.NativeDeathsDispatched, nativeRewardCallbacks = worldSync.NativeRewardCallbacks,
             guestExperienceGranted = worldSync.GuestExperienceGranted, nativeRewardCampaignVerified = false
         });
+
+#endif
     }
 
     public override void OnSceneWasLoaded(int buildIndex,string sceneName) => OfflineTools.OfflineToolkit.SceneChanged();
-    public override void OnDeinitializeMelon() { autoPlay.Dispose();updateChecker.Dispose();OfflineTools.OfflineToolkit.Dispose(); nativeSessionProbe?.Dispose(); nativeAssetProbe?.Dispose(); StopRoom();reportWriter.Dispose(); }
+    public override void OnDeinitializeMelon() { autoPlay.Dispose();updateChecker.Dispose();OfflineTools.OfflineToolkit.Dispose();
+#if LELAN_QA
+ nativeSessionProbe?.Dispose(); nativeAssetProbe?.Dispose();
+#endif
+  StopRoom();
+#if LELAN_QA
+reportWriter.Dispose();
+#endif
+ }
 }
 
 public sealed class LanSettings

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable>
-    <AssemblyName>LastEpochLAN</AssemblyName><Version>1.1.0-dev.61</Version><TreatWarningsAsErrors>true</TreatWarningsAsErrors><LangVersion>12</LangVersion><AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AssemblyName>LastEpochLAN</AssemblyName><Version>1.1.0-dev.62</Version><TreatWarningsAsErrors>true</TreatWarningsAsErrors><LangVersion>12</LangVersion><AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RuntimeRoot Condition="'$(RuntimeRoot)' == ''">../../runtime</RuntimeRoot>
   </PropertyGroup>
   <ItemGroup>
@@ -32,5 +32,8 @@
     <Reference Include="UnityEngine.IMGUIModule"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/UnityEngine.IMGUIModule.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine.InputLegacyModule"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/UnityEngine.InputLegacyModule.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine.PhysicsModule"><HintPath>$(RuntimeRoot)/MelonLoader/Il2CppAssemblies/UnityEngine.PhysicsModule.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(EnableQaTools)' != 'true'">
+    <Compile Remove="**/*Smoke.cs;**/*Probe.cs;HostWorldAudit.cs" />
   </ItemGroup>
 </Project>

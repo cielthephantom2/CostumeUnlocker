@@ -70,5 +70,4 @@ namespace LastEpochLAN.Mod.OfflineTools
 {
  public static class NativeProphecyRewardSpawn{public static string Error="";public static void Deliver(Il2CppLE.Factions.ProphecySlotReward r,Il2Cpp.Actor p,Il2CppSystem.Nullable<Il2CppLE.Factions.ProphecySlot.LensType> lens)=>r.SpawnRewardForPlayer(p,lens);}
  public static class OfflineToolkit{public static bool Ready=true;}
- public static class DeathHitchTrace{public readonly struct Sample{public Sample(string s){}public void End(){}}}
 }

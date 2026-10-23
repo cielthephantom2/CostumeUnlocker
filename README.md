@@ -1,4 +1,6 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.61
+# TM Last Epoch Co-op Mod — 1.1.0-dev.62
+
+**Dev.62:** Sửa đợt tạo quái đồng bộ khi vào echo mật độ cao bằng native queue; giữ mật độ và đủ quái. Tách debug/probe/smoke test khỏi DLL release. Đã kiểm tra native ở 1000 Corruption/x10. Protocol44. [Release notes](RELEASE-1.1.0-dev62-VI.md).
 
 **Dev.61:** Tự kết nối theo tên nhân vật: Doomsday tự host, nhân vật khác tự join 27.70.239.115:7777 và retry sau 30 giây nếu thất bại; bỏ cấu hình kết nối/room code khỏi UI. Sửa cổng aggro x3 trong echo; chia tạo thưởng Prophecy qua nhiều frame, giữ charge và lens. Protocol44. [Release notes](RELEASE-1.1.0-dev61-VI.md).
 

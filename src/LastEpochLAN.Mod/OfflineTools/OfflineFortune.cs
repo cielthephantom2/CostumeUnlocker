@@ -68,6 +68,8 @@ internal static class OfflineFortune
         if(faction==null) return;
         foreach(int rank in new[]{1,3,5,6,8,10,11}) if(EnabledAt(faction,rank)) ApplyRank(faction,rank,true);
     }
+
+#if LELAN_QA
     internal static object NativeSmoke()
     {
         var reward=ScriptableObject.CreateInstance<ProphecySlotReward>();
@@ -92,6 +94,7 @@ internal static class OfflineFortune
             UnityEngine.Object.Destroy(reward);UnityEngine.Object.Destroy(data);
         }
     }
+#endif
 }
 
 [HarmonyPatch(typeof(CircleOfFortune),nameof(CircleOfFortune.ToggleRank))]

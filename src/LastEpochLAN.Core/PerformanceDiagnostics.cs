@@ -64,6 +64,7 @@ public sealed class FrameTimingWindow
 
 // Latest-value coalescing: the Unity thread captures data, this worker alone
 // serializes and writes it. At most one pending report, not an unbounded backlog.
+#if LELAN_QA
 public sealed class LatestReportWriter : IDisposable
 {
     private readonly object gate=new();
@@ -111,3 +112,4 @@ public sealed class LatestReportWriter : IDisposable
     // disk from a gameplay callback.
     public void Dispose() {lock(gate) disposed=true;}
 }
+#endif

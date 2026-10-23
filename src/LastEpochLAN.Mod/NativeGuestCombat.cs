@@ -262,6 +262,8 @@ internal sealed class NativeGuestCombat
         session = null; scene = ""; if (Active == this) Active = null;
     }
     internal Il2Cpp.Actor FindTarget(string id) => peers.TryGetValue(id, out var peer) ? peer.Actor : null;
+
+#if LELAN_QA
     internal static void NativeSmoke()
     {
         var root = new GameObject("LAN destroyed travel target QA"); root.SetActive(false);
@@ -278,6 +280,7 @@ internal sealed class NativeGuestCombat
         if (combat.Count != 0 || owned.ContainsKey(actor.Pointer) || registry.Contains(actor) || Il2Cpp.BaseHealth.all.Contains(peer.Health))
             throw new InvalidOperationException($"Destroyed travel target retained: peers={combat.Count}; owned={owned.ContainsKey(actor.Pointer)}; actorList={registry.Contains(actor)}; healthList={Il2Cpp.BaseHealth.all.Contains(peer.Health)}.");
     }
+#endif
 }
 
 internal static class NativeGuestActorLifecyclePatch

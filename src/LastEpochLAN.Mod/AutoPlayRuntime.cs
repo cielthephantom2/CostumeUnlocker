@@ -268,7 +268,6 @@ internal sealed partial class AutoPlayRuntime
     }
     private void Scan()
     {
-        using var performance = RuntimePerformance.Measure(PerformanceArea.AutoTargets);
         enemies.Clear();var groups=ActorManager.instance?.visuals;if(groups==null)return;
         foreach(var group in groups)
         {
@@ -293,7 +292,6 @@ internal sealed partial class AutoPlayRuntime
     {
         if(needTargets && Time.unscaledTime>=nextTargets)
         {
-            using var performance = RuntimePerformance.Measure(PerformanceArea.AutoTargets);
             nextTargets=Time.unscaledTime+AutoPlayCadence.TargetInterval;nearest=rareBoss=null;enemyDistance=rareDistance=float.PositiveInfinity;
             var local=actor.GetActorSync()?.actorVisuals?.alignment;var origin=actor.position();var actorScene=actor.gameObject.scene;
             targetScanRadius=AutoPlayRules.TargetScanRadius(Settings);

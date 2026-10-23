@@ -213,6 +213,8 @@ internal static class NativeAilmentSynchronization
         }
         captures.Clear();presented.Clear();guestPoll.Clear();
     }
+
+#if LELAN_QA
     internal static void NativeSmoke()
     {
         var root=new UnityEngine.GameObject("LAN inactive native ailment capture QA");root.SetActive(false);
@@ -238,6 +240,7 @@ internal static class NativeAilmentSynchronization
         }
         finally {Reset();UnityEngine.Object.Destroy(root);UnityEngine.Object.Destroy(template);}
     }
+#endif
 }
 
 [HarmonyPatch(typeof(Il2Cpp.AilmentReceiver),nameof(Il2Cpp.AilmentReceiver.ApplyAilmentWithDamageStats))]

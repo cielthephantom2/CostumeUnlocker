@@ -1,0 +1,408 @@
+{
+  "error": null,
+  "elapsedMs": 13862.6778,
+  "hooks": [
+    "Void UpdateConnectedNavmeshTriangles(UnityEngine.Vector3)",
+    "Void CreateSmallTriangles()",
+    "Void CreatePoints()",
+    "Void DefineRooms()",
+    "Void ImproveRooms()",
+    "Void GetEligibleSpawners()",
+    "Void GetEligibleSpawners(Int32)",
+    "Void RollSpawners()",
+    "Void RollSpawners(SpawnerRuntimeConfig)",
+    "Void rollSpawners()",
+    "Void rollSpawners(SpawnerRuntimeConfig)",
+    "Il2Cpp.SpawnerInfo chooseSpawner()",
+    "Boolean pointValidForSpawner(UnityEngine.Vector3, Single, Single)",
+    "Void EnqueueSpawnSteps(Il2Cpp.ISteppedQueueable)",
+    "Void EntityGenerationOnStart()",
+    "Boolean SpawnOneImmediately()"
+  ],
+  "states": [
+    {
+      "atMs": 1164.8338,
+      "state": "1:Loading:True",
+      "frame": 2881
+    },
+    {
+      "atMs": 1354.7548,
+      "state": "1:Loading:False",
+      "frame": 2895
+    },
+    {
+      "atMs": 4407.8605,
+      "state": "1:Loaded:False",
+      "frame": 3043
+    },
+    {
+      "atMs": 4820.6354,
+      "state": "2:Loaded:False",
+      "frame": 3044
+    },
+    {
+      "atMs": 4936.7468,
+      "state": "3:Loaded:False",
+      "frame": 3045
+    }
+  ],
+  "slowFrames": [
+    {
+      "atMs": 3048.8585,
+      "ms": 831.2041999999997,
+      "stage": 1
+    },
+    {
+      "atMs": 3606.3844,
+      "ms": 140.28009999999995,
+      "stage": 1
+    },
+    {
+      "atMs": 4407.8605,
+      "ms": 741.6731,
+      "stage": 1
+    },
+    {
+      "atMs": 4820.6354,
+      "ms": 412.77490000000034,
+      "stage": 2
+    },
+    {
+      "atMs": 4936.7468,
+      "ms": 116.11139999999978,
+      "stage": 3
+    },
+    {
+      "atMs": 5056.6841,
+      "ms": 119.9373000000005,
+      "stage": 3
+    },
+    {
+      "atMs": 5181.1293,
+      "ms": 124.4451999999992,
+      "stage": 3
+    },
+    {
+      "atMs": 5297.1557,
+      "ms": 116.02640000000065,
+      "stage": 3
+    },
+    {
+      "atMs": 5414.1706,
+      "ms": 117.01490000000013,
+      "stage": 3
+    },
+    {
+      "atMs": 5524.163,
+      "ms": 109.99239999999918,
+      "stage": 3
+    },
+    {
+      "atMs": 5639.9522,
+      "ms": 115.78920000000016,
+      "stage": 3
+    },
+    {
+      "atMs": 5775.6241,
+      "ms": 135.67190000000028,
+      "stage": 3
+    },
+    {
+      "atMs": 5890.4211,
+      "ms": 114.79699999999957,
+      "stage": 3
+    },
+    {
+      "atMs": 6039.9159,
+      "ms": 149.4948000000004,
+      "stage": 3
+    },
+    {
+      "atMs": 6200.9878,
+      "ms": 161.0718999999999,
+      "stage": 3
+    },
+    {
+      "atMs": 6320.7256,
+      "ms": 119.73779999999988,
+      "stage": 3
+    },
+    {
+      "atMs": 6439.811,
+      "ms": 119.08539999999994,
+      "stage": 3
+    },
+    {
+      "atMs": 6559.6773,
+      "ms": 119.86630000000059,
+      "stage": 3
+    },
+    {
+      "atMs": 6684.0387,
+      "ms": 124.36139999999978,
+      "stage": 3
+    },
+    {
+      "atMs": 6803.714,
+      "ms": 119.67529999999988,
+      "stage": 3
+    },
+    {
+      "atMs": 6972.095,
+      "ms": 168.3810000000003,
+      "stage": 3
+    },
+    {
+      "atMs": 7104.1763,
+      "ms": 132.08129999999983,
+      "stage": 3
+    },
+    {
+      "atMs": 7236.4147,
+      "ms": 132.23840000000018,
+      "stage": 3
+    },
+    {
+      "atMs": 7369.6514,
+      "ms": 133.23669999999947,
+      "stage": 3
+    },
+    {
+      "atMs": 7496.6011,
+      "ms": 126.94970000000012,
+      "stage": 3
+    },
+    {
+      "atMs": 8572.4889,
+      "ms": 1075.8878000000004,
+      "stage": 3
+    },
+    {
+      "atMs": 8709.7634,
+      "ms": 137.27449999999953,
+      "stage": 3
+    },
+    {
+      "atMs": 8835.7169,
+      "ms": 125.95349999999962,
+      "stage": 3
+    },
+    {
+      "atMs": 8963.7741,
+      "ms": 128.0572000000011,
+      "stage": 3
+    },
+    {
+      "atMs": 9095.8212,
+      "ms": 132.04709999999977,
+      "stage": 3
+    },
+    {
+      "atMs": 9223.8763,
+      "ms": 128.05509999999958,
+      "stage": 3
+    },
+    {
+      "atMs": 9359.4876,
+      "ms": 135.61130000000048,
+      "stage": 3
+    },
+    {
+      "atMs": 9492.6883,
+      "ms": 133.20069999999942,
+      "stage": 3
+    },
+    {
+      "atMs": 9635.4003,
+      "ms": 142.71199999999953,
+      "stage": 3
+    },
+    {
+      "atMs": 9783.4019,
+      "ms": 148.00160000000142,
+      "stage": 3
+    },
+    {
+      "atMs": 9927.2921,
+      "ms": 143.89019999999982,
+      "stage": 3
+    },
+    {
+      "atMs": 10066.4407,
+      "ms": 139.14859999999862,
+      "stage": 3
+    },
+    {
+      "atMs": 10207.4208,
+      "ms": 140.98010000000068,
+      "stage": 3
+    },
+    {
+      "atMs": 10343.4349,
+      "ms": 136.01410000000033,
+      "stage": 3
+    },
+    {
+      "atMs": 10484.8843,
+      "ms": 141.4493999999995,
+      "stage": 3
+    },
+    {
+      "atMs": 10611.2949,
+      "ms": 126.41060000000107,
+      "stage": 3
+    },
+    {
+      "atMs": 10739.7322,
+      "ms": 128.4372999999996,
+      "stage": 3
+    },
+    {
+      "atMs": 10863.749,
+      "ms": 124.01679999999942,
+      "stage": 3
+    },
+    {
+      "atMs": 10999.197,
+      "ms": 135.44800000000032,
+      "stage": 3
+    },
+    {
+      "atMs": 11153.1589,
+      "ms": 153.96190000000024,
+      "stage": 3
+    },
+    {
+      "atMs": 11310.5562,
+      "ms": 157.39730000000054,
+      "stage": 3
+    },
+    {
+      "atMs": 11470.6131,
+      "ms": 160.0568999999996,
+      "stage": 3
+    },
+    {
+      "atMs": 11596.622,
+      "ms": 126.0088999999989,
+      "stage": 3
+    },
+    {
+      "atMs": 11752.8309,
+      "ms": 156.20890000000145,
+      "stage": 3
+    },
+    {
+      "atMs": 11879.5791,
+      "ms": 126.7482,
+      "stage": 3
+    },
+    {
+      "atMs": 12015.1818,
+      "ms": 135.60269999999946,
+      "stage": 3
+    },
+    {
+      "atMs": 12185.8255,
+      "ms": 170.64370000000054,
+      "stage": 3
+    },
+    {
+      "atMs": 12313.1347,
+      "ms": 127.30919999999969,
+      "stage": 3
+    },
+    {
+      "atMs": 12445.8884,
+      "ms": 132.7536999999993,
+      "stage": 3
+    },
+    {
+      "atMs": 12575.7096,
+      "ms": 129.82120000000032,
+      "stage": 3
+    },
+    {
+      "atMs": 12713.8331,
+      "ms": 138.1234999999997,
+      "stage": 3
+    },
+    {
+      "atMs": 12845.496,
+      "ms": 131.66289999999935,
+      "stage": 3
+    },
+    {
+      "atMs": 12980.38,
+      "ms": 134.88400000000001,
+      "stage": 3
+    },
+    {
+      "atMs": 13108.9867,
+      "ms": 128.60670000000027,
+      "stage": 3
+    },
+    {
+      "atMs": 13236.8092,
+      "ms": 127.82250000000022,
+      "stage": 3
+    },
+    {
+      "atMs": 13373.9809,
+      "ms": 137.17170000000078,
+      "stage": 3
+    },
+    {
+      "atMs": 13531.5155,
+      "ms": 157.53459999999905,
+      "stage": 3
+    },
+    {
+      "atMs": 13777.4699,
+      "ms": 245.95440000000053,
+      "stage": 3
+    }
+  ],
+  "metrics": {
+    "Spawner.EnqueueSpawnSteps/1": {
+      "calls": 2061,
+      "totalMs": 3.6471000000000022,
+      "maxMs": 0.2072
+    },
+    "SpawnerPlacementRoom.chooseSpawner/0": {
+      "calls": 2319,
+      "totalMs": 4.599999999999937,
+      "maxMs": 0.3709
+    },
+    "SpawnerPlacementRoom.pointValidForSpawner/3": {
+      "calls": 6754,
+      "totalMs": 145.63200000000043,
+      "maxMs": 1.6597
+    },
+    "SpawnerPlacementRoom.rollSpawners/1": {
+      "calls": 105,
+      "totalMs": 314.0956000000002,
+      "maxMs": 23.2869
+    },
+    "SpawnerPlacementManager.RollSpawners/1": {
+      "calls": 1,
+      "totalMs": 317.8874,
+      "maxMs": 317.8874
+    },
+    "SpawnerPlacementManager.RollSpawners/0": {
+      "calls": 1,
+      "totalMs": 318.4622,
+      "maxMs": 318.4622
+    },
+    "Spawner.EntityGenerationOnStart/0": {
+      "calls": 2022,
+      "totalMs": 36.53130000000025,
+      "maxMs": 0.4261
+    },
+    "Spawner.SpawnOneImmediately/0": {
+      "calls": 30,
+      "totalMs": 3.7173000000000003,
+      "maxMs": 0.437
+    }
+  }
+}

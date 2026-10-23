@@ -74,6 +74,8 @@ internal sealed class NativePeerHealthBars
         if ((bool)bar.Holder) UnityEngine.Object.Destroy(bar.Holder);
     }
     internal void Reset() { foreach (var id in bars.Keys.ToArray()) Remove(id); Error = ""; }
+
+#if LELAN_QA
     internal static bool NativeSmoke()
     {
         EnsureType();
@@ -93,6 +95,7 @@ internal sealed class NativePeerHealthBars
         }
         finally { UnityEngine.Object.Destroy(holder); }
     }
+#endif
 }
 
 // The native renderer roots this provider in barsToRender. No Actor lifecycle,

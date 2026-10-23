@@ -1,0 +1,114 @@
+{
+  "passed": true,
+  "error": null,
+  "gameAssembly": "323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464",
+  "checks": [
+    {
+      "passed": true,
+      "label": "Echo500 uses isolated disposable native character",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native empowered timeline assets available",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Real detached run has requested corruption and native ordinary echo scene",
+      "values": {
+        "echo500Scene": "M_M70",
+        "zoneIndex": 9,
+        "corruption": 1000
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native echo load completed with real Monolith manager at requested corruption",
+      "values": {
+        "echo500Scene": "M_M70",
+        "echo500PreparedMs": 27.6532,
+        "echo500LoadMs": 4134.2463
+      }
+    },
+    {
+      "passed": true,
+      "label": "Real native placement used expected density hook at requested corruption",
+      "values": {
+        "density": "Density: Monolith x10 (1000 corruption)"
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native player placed in echo, manager initialized and loading screen closed",
+      "values": {
+        "echo500Scene": "M_M70",
+        "corruption": 1000,
+        "firstVisibleMs": 4547.2389,
+        "amortized": false,
+        "pendingSteps": 0,
+        "prepareMs": 27.6532,
+        "loadMs": 4106.5931,
+        "movePlayerMs": 412.77670000000035,
+        "totalToVisibleMs": 13571.9676,
+        "frames": 224,
+        "targetFps": 30,
+        "scope": "Private cold-load ordinary empowered echo; not all Woven/Tombs maps; no profiler in normal DLL"
+      }
+    },
+    {
+      "passed": true,
+      "label": "Every expected native monster generated; no queue loss",
+      "values": {
+        "spawners": 2022,
+        "expected": 5102,
+        "generatedActors": 5142,
+        "failedActors": 0,
+        "remaining": 0,
+        "pending": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Pooled native spawner flag restored after enqueue scope",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Dense native echo enables queue routing",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Pooled native spawner flag restored after enqueue scope",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Online play excluded from echo queue override",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Pooled native spawner flag restored after enqueue scope",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native x1 density excluded from queue override",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Pooled native spawner flag restored after enqueue scope",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Missing native Monolith run leaves queue routing unchanged",
+      "values": null
+    }
+  ],
+  "localizationKeys": [],
+  "scope": "Real detached native empowered echo at requested corruption, native scene loading and player placement; private helper timers, not a rendered multiplayer/loading regression for all maps"
+}

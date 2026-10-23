@@ -8,44 +8,26 @@ internal static class EchoEnemyAggro
     internal const float Multiplier=3f;
     [ThreadStatic] internal static bool Searching;
     [ThreadStatic] internal static IntPtr CurrentController;
-    internal static long AcquisitionCalls,ExpandedAcquisitions,ScaledBoxChecks;
-    internal static long ActivationAttempts,NewActivations;
-    internal static long OutsideEcho,NonEnemy,MissingController,DeadActor,MissingPlayer;
     internal static bool Applies(Actor actor)
     {
         if(!OfflineToolkit.Enabled)return false;
-        if(actor==null || actor.stateController==null){MissingController++;return false;}
-        if(actor.isPlayerActor){NonEnemy++;return false;}
-        if(actor.isDying(false)){DeadActor++;return false;}
+        if(actor==null || actor.stateController==null)return false;
+        if(actor.isPlayerActor)return false;
+        if(actor.isDying(false))return false;
         var zone=MonolithZoneManager.instance;
-        if(zone==null || !zone.gameObject.scene.isLoaded){OutsideEcho++;return false;}
+        if(zone==null || !zone.gameObject.scene.isLoaded)return false;
         var player=PlayerFinder.getPlayerActor();
-        if(player==null){MissingPlayer++;return false;}
-        if(actor.Pointer==player.Pointer){NonEnemy++;return false;}
+        if(player==null)return false;
+        if(actor.Pointer==player.Pointer)return false;
         // Gameplay actors may live in separate pooled/persistent scenes.
         // Their native alignment and the live echo manager determine scope.
         var local=player.GetAlignment();
-        if(local==null || actor.GetAlignment()?.IsFoe(local)!=true){NonEnemy++;return false;}
+        if(local==null || actor.GetAlignment()?.IsFoe(local)!=true)return false;
         // Do not reject autoCombatDisabled here: native acquisition/activation
         // still owns that gate. We only change range if native calls this path.
         return true;
     }
-    internal static object Read()=>new {multiplier=Multiplier,AcquisitionCalls,ExpandedAcquisitions,ScaledBoxChecks,ActivationAttempts,NewActivations,
-        rejected=new {OutsideEcho,NonEnemy,MissingController,DeadActor,MissingPlayer},
-        scope="offline hostile native actors in a loaded echo; no scene-equality/minimap/autoCombatDisabled prefilter"};
 
-}
-
-[HarmonyPatch(typeof(UsingAbility),nameof(UsingAbility.Activate))]
-internal static class OfflineEchoEnemyAggroActivationTracePatch
-{
-    private static void Prefix(UsingAbility __instance,out bool __state)
-    {
-        __state=EchoEnemyAggro.Searching && __instance?.controller?.Pointer==EchoEnemyAggro.CurrentController && !__instance.activated;
-        if(__state)EchoEnemyAggro.ActivationAttempts++;
-    }
-    private static void Postfix(UsingAbility __instance,bool __state)
-    {if(__state && __instance.activated)EchoEnemyAggro.NewActivations++;}
 }
 
 [HarmonyPatch(typeof(UsingAbility),nameof(UsingAbility.activateIfEnemyInRange))]
@@ -55,7 +37,7 @@ internal static class OfflineEchoEnemyAggroScopePatch
     private static void Prefix(UsingAbility __instance,out Scope __state)
     {
         __state=new(EchoEnemyAggro.Searching,EchoEnemyAggro.CurrentController,null,0);
-        EchoEnemyAggro.Searching=false;EchoEnemyAggro.CurrentController=IntPtr.Zero;EchoEnemyAggro.AcquisitionCalls++;
+        EchoEnemyAggro.Searching=false;EchoEnemyAggro.CurrentController=IntPtr.Zero;
         var actor=__instance?.getActor();
         if(!EchoEnemyAggro.Applies(actor))return;
         var controller=actor.stateController;float old=controller.aggroRangeModifier;
@@ -66,7 +48,7 @@ internal static class OfflineEchoEnemyAggroScopePatch
         // Scale the caller's range too: its separate vertical-distance formula
         // uses this value after the horizontal box returns.
         controller.aggroRangeModifier=(1+old)*EchoEnemyAggro.Multiplier-1;
-        EchoEnemyAggro.Searching=true;EchoEnemyAggro.CurrentController=controller.Pointer;EchoEnemyAggro.ExpandedAcquisitions++;
+        EchoEnemyAggro.Searching=true;EchoEnemyAggro.CurrentController=controller.Pointer;
     }
     private static Exception Finalizer(Scope __state,Exception __exception)
     {
@@ -86,6 +68,6 @@ internal static class OfflineEchoEnemyAggroBoxPatch
         // so every horizontal edge expands x3. Undo the caller's multiplier
         // here to avoid x9 on the other edges; preserve its native modifiers.
         __0/=EchoEnemyAggro.Multiplier;__1/=EchoEnemyAggro.Multiplier;__2/=EchoEnemyAggro.Multiplier;
-        EchoEnemyAggro.ScaledBoxChecks++;
+
     }
 }

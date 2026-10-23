@@ -73,6 +73,8 @@ internal sealed partial class NativeSkillVisualReplica : IDisposable
         catch(Exception ex) {RecordFailure(ex);}
     }
 
+#if LELAN_QA
+
     internal static void NativeMotionSmoke()
     {
         var root = new GameObject("LAN projectile smoothing QA"); root.SetActive(false);
@@ -114,6 +116,7 @@ internal sealed partial class NativeSkillVisualReplica : IDisposable
         }
         finally { UObject.Destroy(root); }
     }
+#endif
 
     internal void Apply(SkillVisualState[] states)
     {

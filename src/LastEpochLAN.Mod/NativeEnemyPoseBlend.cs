@@ -89,6 +89,8 @@ internal sealed class NativeEnemyPoseBlend
     }
     internal void Remove(int id) => entries.Remove(id);
     internal void Clear() { entries.Clear(); removed.Clear(); clock.Clear(); sampleTime = 0; }
+
+#if LELAN_QA
     internal static void NativeSmoke()
     {
         var root = new GameObject("LAN buffered enemy pose QA"); root.SetActive(false);
@@ -107,4 +109,5 @@ internal sealed class NativeEnemyPoseBlend
         }
         finally { UnityEngine.Object.Destroy(root); }
     }
+#endif
 }

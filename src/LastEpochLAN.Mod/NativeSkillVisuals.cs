@@ -44,6 +44,8 @@ internal static class NativeSkillVisualCapture
         if(creatorObjects.TryGetValue(entry.Creator,out var owned))
         {owned.Remove(pointer);if(owned.Count==0)creatorObjects.Remove(entry.Creator);}
     }
+
+#if LELAN_QA
     internal static void NativeIndexSmoke()
     {
         var key=new IntPtr(-101);var child=new IntPtr(-102);var first=new IntPtr(-201);var second=new IntPtr(-202);
@@ -58,6 +60,7 @@ internal static class NativeSkillVisualCapture
         }
         finally {Remove(key);Remove(child);}
     }
+#endif
     private static readonly Dictionary<IntPtr, Il2CppLE.AssetBundles.SoftRef<GameObject>> pooledPrefabs = new();
     private static readonly Dictionary<IntPtr, VisualPoint> origins = new();
     internal static void RecordOrigin(GameObject root, Vector3 origin)
@@ -225,7 +228,6 @@ internal static class NativeSkillVisualCapture
     internal static SkillVisualState[] CaptureFor(Il2Cpp.Actor creator,int limit=32)
     {
         if (creator == null || limit<=0) return Array.Empty<SkillVisualState>();
-        using var performance = RuntimePerformance.Measure(PerformanceArea.VisualCapture);
         limit=Math.Min(32,limit);
         if (sampledFrame != Time.frameCount)
         {
@@ -303,7 +305,6 @@ internal static class NativeSkillVisualCapture
 
     private static SkillVisualState Read(Tracked entry)
     {
-        using var performance = RuntimePerformance.Measure(PerformanceArea.VisualRead);
         var source = entry.Source;
         if (source == null && entry.AbilityObject != null)
             source = entry.AbilityObject.GetComponent<Il2Cpp.AbilityObjectIndicator>()?.abilitySync;

@@ -27,7 +27,6 @@ internal static class EnemyMapDots
     internal static int Count=>entries.Count;
     internal static void Tick()
     {
-        using var performance = RuntimePerformance.Measure(PerformanceArea.EnemyDots);
         if(!OfflineToolkit.Settings.EnemyMapDots || !OfflineToolkit.Ready)
         {if(entries.Count>0 || registry!=null) Clear();return;}
         var native=IconManager.Instance;

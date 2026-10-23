@@ -19,7 +19,6 @@ internal static class DpsRuntime
     }
     internal static void Draw()
     {
-        using var performance = RuntimePerformance.Measure(PerformanceArea.DpsGui);
         if (!OfflineToolkit.Ready) return;
         var matrix = GUI.matrix;
         var color = GUI.color;
