@@ -1,6 +1,6 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.66
+# TM Last Epoch Co-op Mod — 1.1.0-dev.67
 
-**Dev.66:** Woven Enchanter không giới hạn lượt, dùng chế độ unlimited native; giữ phí Memory Amber và điều kiện enchant. Nhân vật offline đã qua phần mở đầu đăng nhập ở Traveler’s Rest. Giữ ẩn banner nhặt đồ của dev.65. Protocol44. [Release notes](RELEASE-1.1.0-dev66-VI.md).
+**Dev.67:** Sửa vị trí đăng nhập Traveler’s Rest: chọn đúng Waypoint gate0 như khi teleport, dùng transform của spawn marker native. Giữ Woven Enchanter vô hạn lượt và ẩn banner nhặt đồ. Protocol44. [Release notes](RELEASE-1.1.0-dev67-VI.md).
 
 **Dev.61:** Tự kết nối theo tên nhân vật: Doomsday tự host, nhân vật khác tự join 27.70.239.115:7777 và retry sau 30 giây nếu thất bại; bỏ cấu hình kết nối/room code khỏi UI. Sửa cổng aggro x3 trong echo; chia tạo thưởng Prophecy qua nhiều frame, giữ charge và lens. Protocol44. [Release notes](RELEASE-1.1.0-dev61-VI.md).
 

@@ -1,5 +1,5 @@
 {
-  "passed": 9,
+  "passed": 16,
   "checks": [
     "established offline login selects Rest from: Observatory",
     "established offline login selects Rest from: EoT",
@@ -9,7 +9,14 @@
     "fresh character keeps native introduction",
     "online character never redirected",
     "online environment retains native selection",
-    "missing character or failed native destination preserved"
+    "missing character or failed native destination preserved",
+    "Rest login rejects old default spawn marker",
+    "Rest login selects the same gate0 marker as native waypoint teleport",
+    "another waypoint gate is not selected",
+    "portal return marker is not used for login",
+    "other login destinations keep native spawn choice",
+    "online spawn selection remains native",
+    "missing transition preserves original result"
   ],
   "actualSource": true,
   "nativeGameplayValidated": false

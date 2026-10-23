@@ -10,6 +10,7 @@ internal static class OfflineChangelog
     private static GUIStyle bodyStyle;
     private static readonly string content=
         "<b>BONUS OFFLINE</b>\n"+
+        "• Dev.67: sửa tọa độ login Traveler’s Rest bằng đúng Waypoint gate0 của teleport; dùng spawn marker native.\n"+
         "• Dev.66: Woven Enchanter vô hạn lượt, giữ phí Memory Amber; nhân vật offline đã qua phần mở đầu đăng nhập ở Traveler’s Rest.\n"+
         "• Dev.65: ẩn banner sent to the Forge/Storage khi nhặt shard, rune/glyph, vật liệu, key và Woven Echo; giữ Woven Enchanter10 lượt.\n"+
         "• Spirit Xylem: +3–4 All Skills, +10–16 Attunement, +3–6 Health/Mana mỗi ATT, +1 Spell Damage mỗi25 Maximum Mana; giữ hai hiệu ứng boss/rare. Disintegrate di chuyển khi channel với80% tốc độ; Arcane Ascendance khóa di chuyển gốc.\n"+

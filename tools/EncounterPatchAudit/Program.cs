@@ -112,6 +112,12 @@ Check(installed.Contains(loginDestination) && loginDestination.Fields.Any(f=>f.N
  loginDestination.Methods.Single(m=>m.Name=="Postfix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().All(m=>
  m.DeclaringType.Name=="OfflineToolkit" && m.Name=="get_Enabled" || m.DeclaringType.Name=="CharacterData" && m.Name is "get_IsOffline" or "get_ReachedTown" || m.DeclaringType.FullName=="System.String" && m.Name=="IsNullOrEmpty"),
  "login destination selects Travelers Rest for established offline characters without save writes or extra transitions");
+var loginSpawn=types.Single(t=>t.Name=="OfflineLoginWaypointSpawnPatch");
+Check(installed.Contains(loginSpawn) && loginSpawn.Fields.Any(f=>f.Name=="WaypointGate" && Convert.ToInt32(f.Constant)==0) &&
+ loginSpawn.CustomAttributes.Any(a=>a.AttributeType.Name=="HarmonyPatch" && a.ConstructorArguments.Any(c=>c.Value is TypeReference t && t.Name=="EnterGameTransitionInfo")) &&
+ loginSpawn.Methods.Single(m=>m.Name=="Postfix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().All(m=>
+ m.DeclaringType.Name=="OfflineToolkit" && m.Name=="get_Enabled" || m.DeclaringType.Name=="EnterGameTransitionInfo" && m.Name=="get_TargetScene" || m.DeclaringType.FullName=="System.String" && m.Name=="op_Equality"),
+ "Rest login matches native waypoint gate0 using live spawn marker, without coordinate/save writes or extra teleport");
 var pickupNotifications=types.Single(t=>t.Name=="OfflinePickupNotificationPatch");
 Check(installed.Contains(pickupNotifications) &&
  pickupNotifications.Methods.Single(m=>m.Name=="Prefix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().All(m=>m.DeclaringType.Name=="OfflineToolkit" && m.Name=="get_Enabled") &&
