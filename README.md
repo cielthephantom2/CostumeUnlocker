@@ -1,4 +1,6 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.59
+# TM Last Epoch Co-op Mod — 1.1.0-dev.60
+
+**Dev.60:** Giảm chi phí Forging Potential 50%, làm tròn xuống, tối thiểu 1 FP; Rune of Shaping 1–25 → 1–12. Rune of Creation vẫn xóa toàn bộ FP của cả hai món. Giữ craft miễn phí và Weaver’s Will/Touch. Protocol44. [Release notes](RELEASE-1.1.0-dev60-VI.md).
 
 **Dev.59 (cập nhật tooltip, giữ version):** Mỗi Range nằm ngay dưới hiệu ứng tương ứng. Spirit Xylem: +3–4 All Skills, ATT bằng INT cuối, +10–20 INT, +3–6 HP/Mana mỗi ATT và +1 Spell Damage mỗi INT. Bỏ reduced health cost/hai điều kiệnIf; giữ hai hiệu ứng boss/rare theo mana. Protocol44. [Release notes](RELEASE-1.1.0-dev59-VI.md).
 

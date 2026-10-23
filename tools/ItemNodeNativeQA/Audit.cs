@@ -9,7 +9,7 @@ using NStats=Il2CppSystem.Collections.Generic.List<Il2Cpp.Stats.Stat>;
 [assembly:MelonInfo(typeof(ItemNodeNativeQA.Audit),"Private Item Node QA","0.1.0","Local QA")]
 [assembly:MelonGame("Eleventh Hour Games","Last Epoch")]
 namespace ItemNodeNativeQA;
-public class Audit:MelonMod
+public partial class Audit:MelonMod
 {
  static readonly List<string> localizationKeys=new();
  public static void ObserveKey(string key){if(key?.Contains("445")==true && !localizationKeys.Contains(key))localizationKeys.Add(key);}
@@ -24,6 +24,7 @@ public class Audit:MelonMod
   if(done)return;if(started==0)started=Time.unscaledTime;
   try
   {
+   if(Environment.GetCommandLineArgs().Contains("--lelan-forging-half-qa")){ForgingPotential();Finish(null);return;}
    if(migrating)
    {
     if(Time.unscaledTime-migrationStarted>90)throw new TimeoutException("Native class migration timed out: "+T("ClassRespecialization").GetField("Status",BindingFlags.Static|BindingFlags.NonPublic).GetValue(null));
@@ -106,7 +107,7 @@ public class Audit:MelonMod
  }
  void Finish(Exception ex)
  {
-  done=true;File.WriteAllText(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),"UserData","item-node-native-qa.json"),JsonSerializer.Serialize(new{passed=ex==null,error=ex?.ToString(),gameAssembly=Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),"GameAssembly.dll")))),checks,localizationKeys,scope="Real IL2CPP stat, attribute, tooltip parser and Meteor temp-stat consumers on disposable private character; no rendered tooltip or monster-hit measurement"},new JsonSerializerOptions{WriteIndented=true}));Application.Quit();
+  done=true;File.WriteAllText(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),"UserData","item-node-native-qa.json"),JsonSerializer.Serialize(new{passed=ex==null,error=ex?.ToString(),gameAssembly=Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),"GameAssembly.dll")))),checks,localizationKeys,scope=Environment.GetCommandLineArgs().Contains("--lelan-forging-half-qa") ? "Real IL2CPP FP cost consumers on disposable items; no character/save or rendered UI test" : "Real IL2CPP stat, attribute, tooltip parser and Meteor temp-stat consumers on disposable private character; no rendered tooltip or monster-hit measurement"},new JsonSerializerOptions{WriteIndented=true}));Application.Quit();
  }
  ItemDataUnpacked Item(UniqueList.Entry entry,byte roll)
  {

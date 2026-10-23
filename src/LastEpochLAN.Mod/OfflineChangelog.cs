@@ -38,6 +38,7 @@ internal static class OfflineChangelog
         "• Dev.34: sáu node Imprint x2: Commoner/Sealed/Echoing/Warlord và trọng số Woven/Loomed.\n"+
         "• Dev.33: cập nhật tỷ lệ Woven Potential cho1–4 LP; đồ0 LP không được phép đưa vào máy.\n"+
         "• Bloodrage (Rage of Morditas): mỗi nấc nhận2 charge, tổng2/4/6/8/10; giữ mốc kill và tiêu hao native.\n"+
+        "• Forge: chi phí Forging Potential giảm 50%, làm tròn xuống, tối thiểu 1 FP; craft miễn phí giữ 0. Rune of Shaping: 1–25 → 1–12 FP. Rune of Creation vẫn xóa toàn bộ FP; Weaver’s Will/Touch giữ nguyên.\n"+
         "• Glyph of Hope: 33% không tốn Forging Potential.\n"+
         "• Glyph of Despair: T1 100%, T2 70%, T3 50%, T4 33%; cùng tỷ lệ cho Rare và Exalted có T6/T7. Không mở seal T5 trở lên.\n"+
         $"• Tốc độ di chuyển +{OfflineBonusRules.MoveSpeed*100:0}%.\n"+

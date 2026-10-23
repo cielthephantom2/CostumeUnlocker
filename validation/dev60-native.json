@@ -1,0 +1,261 @@
+{
+  "passed": true,
+  "error": null,
+  "gameAssembly": "323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464",
+  "checks": [
+    {
+      "passed": true,
+      "label": "FP charge prefix is installed on native consumer",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Rune of Creation duplication remains entirely native",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Disposable native item allocated without character inventory",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native RNG, lucky roll and stored FP use reduced range",
+      "values": {
+        "min": 1,
+        "max": 25,
+        "expectedMin": 1,
+        "expectedMax": 12,
+        "observedMin": 1,
+        "observedMax": 11
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native RNG, lucky roll and stored FP use reduced range",
+      "values": {
+        "min": 1,
+        "max": 20,
+        "expectedMin": 1,
+        "expectedMax": 10,
+        "observedMin": 1,
+        "observedMax": 9
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native RNG, lucky roll and stored FP use reduced range",
+      "values": {
+        "min": 4,
+        "max": 8,
+        "expectedMin": 2,
+        "expectedMax": 4,
+        "observedMin": 2,
+        "observedMax": 3
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native RNG, lucky roll and stored FP use reduced range",
+      "values": {
+        "min": 25,
+        "max": 25,
+        "expectedMin": 12,
+        "expectedMax": 12,
+        "observedMin": 12,
+        "observedMax": 12
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native RNG, lucky roll and stored FP use reduced range",
+      "values": {
+        "min": 1,
+        "max": 1,
+        "expectedMin": 1,
+        "expectedMax": 1,
+        "observedMin": 1,
+        "observedMax": 1
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native RNG, lucky roll and stored FP use reduced range",
+      "values": {
+        "min": 0,
+        "max": 0,
+        "expectedMin": 0,
+        "expectedMax": 0,
+        "observedMin": 0,
+        "observedMax": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native rune uses reduced FP exactly once",
+      "values": {
+        "rune": "RuneOfRefinement",
+        "min": 1,
+        "max": 15,
+        "reducedMin": 1,
+        "reducedMax": 7
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native rune uses reduced FP exactly once",
+      "values": {
+        "rune": "RuneOfRemoval",
+        "min": 1,
+        "max": 25,
+        "reducedMin": 1,
+        "reducedMax": 12
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native rune uses reduced FP exactly once",
+      "values": {
+        "rune": "RuneOfDiscovery",
+        "min": 0,
+        "max": 0,
+        "reducedMin": 0,
+        "reducedMax": 0
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native rune uses reduced FP exactly once",
+      "values": {
+        "rune": "RuneOfShaping",
+        "min": 1,
+        "max": 25,
+        "reducedMin": 1,
+        "reducedMax": 12
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native rune uses reduced FP exactly once",
+      "values": {
+        "rune": "RuneOfAscendance",
+        "min": 60,
+        "max": 60,
+        "reducedMin": 30,
+        "reducedMax": 30
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native rune uses reduced FP exactly once",
+      "values": {
+        "rune": "RuneOfEterra",
+        "min": 60,
+        "max": 60,
+        "reducedMin": 30,
+        "reducedMax": 30
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native rune uses reduced FP exactly once",
+      "values": {
+        "rune": "RuneOfHavoc",
+        "min": 1,
+        "max": 20,
+        "reducedMin": 1,
+        "reducedMax": 10
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native rune uses reduced FP exactly once",
+      "values": {
+        "rune": "RuneOfRedemption",
+        "min": 1,
+        "max": 20,
+        "reducedMin": 1,
+        "reducedMax": 10
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native rune uses reduced FP exactly once",
+      "values": {
+        "rune": "RuneOfEvolution",
+        "min": 1,
+        "max": 15,
+        "reducedMin": 1,
+        "reducedMax": 7
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native rune uses reduced FP exactly once",
+      "values": {
+        "rune": "RuneOfCorruption",
+        "min": 60,
+        "max": 60,
+        "reducedMin": 30,
+        "reducedMax": 30
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native affix/glyph path reduces inlined cost range",
+      "values": {
+        "tier": 0,
+        "min": 1,
+        "max": 10
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native affix/glyph path reduces inlined cost range",
+      "values": {
+        "tier": 1,
+        "min": 1,
+        "max": 10
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native affix/glyph path reduces inlined cost range",
+      "values": {
+        "tier": 2,
+        "min": 1,
+        "max": 12
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native affix/glyph path reduces inlined cost range",
+      "values": {
+        "tier": 3,
+        "min": 1,
+        "max": 18
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native affix/glyph path reduces inlined cost range",
+      "values": {
+        "tier": 4,
+        "min": 1,
+        "max": 24
+      }
+    },
+    {
+      "passed": true,
+      "label": "Native no-cost/critical/Hope preservation remains free",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Native cap applies after range reduction, never refunds FP",
+      "values": null
+    }
+  ],
+  "localizationKeys": [],
+  "scope": "Real IL2CPP FP cost consumers on disposable items; no character/save or rendered UI test"
+}
