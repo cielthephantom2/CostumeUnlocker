@@ -1,0 +1,20 @@
+{
+  "version": "1.1.0-dev.61",
+  "protocol": 44,
+  "installedUtc": "2026-10-23T16:10:56.4020336Z",
+  "backup": "D:\\SteamLibrary\\steamapps\\common\\Last Epoch\\UserData\\LastEpochLAN\\backups\\before-dev61-20261023-231056-215",
+  "steamCopied": true,
+  "steamHashesMatch": true,
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "sha256": "7189B0460CE663DBDDA5F5B40815EB3F89D513AF537661C57AAE759906E2F183",
+      "size": 1213440
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "sha256": "838FC1F0A9721A653639230060EB365287198935AA2051AA5D991272ADCC5870",
+      "size": 436224
+    }
+  ]
+}
