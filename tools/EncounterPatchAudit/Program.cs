@@ -700,13 +700,14 @@ Check(ladder.Methods.Single(m=>m.Name=="Filter").Body.Instructions.Select(i=>i.O
 Check(ladderCalls.Any(m=>m.Name=="remove_LadderSelectionChanged") && ladderCalls.Any(m=>m.Name=="remove_LocaleChanged") &&
  ladderCalls.Any(m=>m.Name=="RemoveListener"),"offline ladder detaches its owned filter/locale/scroll subscriptions");
 var minion=types.Single(t=>t.Name=="AggressiveMinionRange");
+Check(Convert.ToSingle(minion.Fields.Single(f=>f.Name=="Multiplier").Constant)==5f,"aggressive minion range multiplier is x5");
 var minionCalls=minion.Methods.Single(m=>m.Name=="Applies").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().ToArray();
 Check(minionCalls.Any(m=>m.DeclaringType.Name=="OfflineToolkit" && m.Name=="get_Enabled") &&
  minionCalls.Any(m=>m.Name=="getPlayerActor") && minionCalls.Any(m=>m.Name=="GetPlayerMinionStance") && minionCalls.Any(m=>m.Name=="get_creator"),
  "aggressive minion gate checks offline environment, stance and bounded local ownership chain");
 Check(new[]{"AggressiveMinionAcquirePatch","AggressiveMinionTargetPatch"}.All(name=>installed.Any(t=>t.Name==name) &&
  types.Single(t=>t.Name==name).Methods.Any(m=>m.Name=="Finalizer")),
- "both x2 minion acquisition hooks install with finalizers restoring temporary native fields");
+ "both x5 minion acquisition hooks install with finalizers restoring temporary native fields");
 var acquisition=types.Single(t=>t.Name=="AggressiveMinionAcquirePatch");
 Check(acquisition.Methods.SelectMany(m=>m.HasBody?m.Body.Instructions:Enumerable.Empty<Mono.Cecil.Cil.Instruction>()).Select(i=>i.Operand).OfType<MethodReference>()
  .All(m=>m.Name is not "set_maximumAggroRange" and not "set_maxHorizontalOffsetForAggro" and not "UseAbility"),

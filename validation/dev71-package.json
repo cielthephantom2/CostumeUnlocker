@@ -1,0 +1,15 @@
+{
+  "archive": "D:\\New folder\\CostumeUnlocker-Publish\\local-releases\\TM-Coop-1.1.0-dev.71.zip",
+  "sha256": "afe60d5d485bf2cec911429eda2ad17aa42aac28a2145cbbaed836fe58d68246",
+  "size": 517890,
+  "files": [
+    "Mods/LastEpochLAN.dll",
+    "UserLibs/LastEpochLAN.Core.dll",
+    "latest.json",
+    "update.bat",
+    "README.md",
+    "RELEASE-1.1.0-dev71-VI.md"
+  ],
+  "debugToolsIncluded": false,
+  "nativeGameplayRetested": false
+}

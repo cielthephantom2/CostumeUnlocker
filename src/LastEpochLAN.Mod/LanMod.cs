@@ -5,7 +5,7 @@ using MelonLoader;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
-[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.70", "Local research")]
+[assembly: MelonInfo(typeof(LastEpochLAN.Mod.LanMod), "TM Last Epoch Co-op Mod", "1.1.0-dev.71", "Local research")]
 [assembly: HarmonyDontPatchAll]
 [assembly: MelonGame("Eleventh Hour Games", "Last Epoch")]
 
@@ -178,7 +178,7 @@ public sealed class LanMod : MelonMod
         try { File.WriteAllText(configPath, JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true })); }
         catch(Exception ex) { LoggerInstance.Warning("Save configuration: "+ex.Message); }
         SaveRuntimeReport("initialized", null);
-        LoggerInstance.Msg($"Internet room: F2 Shared Stash, Loot Filters and Room Ladder enabled; offline aggressive minion detection x2; shared world/combat/travel disabled. Patches installed={RoomPatches.Installed}, skipped={RoomPatches.Skipped}. F4 opens the panel.");
+        LoggerInstance.Msg($"Internet room: F2 Shared Stash, Loot Filters and Room Ladder enabled; offline aggressive minion detection x5; shared world/combat/travel disabled. Patches installed={RoomPatches.Installed}, skipped={RoomPatches.Skipped}. F4 opens the panel.");
         if (!supported) message = "Unsupported GameAssembly build. See README.";
     }
 

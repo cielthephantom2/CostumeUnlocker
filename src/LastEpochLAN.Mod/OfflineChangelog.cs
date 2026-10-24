@@ -10,6 +10,7 @@ internal static class OfflineChangelog
     private static GUIStyle bodyStyle;
     private static readonly string content=
         "<b>BONUS OFFLINE</b>\n"+
+        "• Dev.71: minion/companion Aggressive tăng phạm vi phát hiện và tìm mục tiêu từ x2 lên x5 native.\n"+
         "• Dev.70: Extension của Disintegrate tăng range30% mỗi điểm, tối đa90% ở3 điểm; đồng bộ tooltip.\n"+
         "• Dev.69: bỏ giảm20% tốc độ Disintegrate; channel di chuyển ở tốc độ bình thường, giữ cách điều khiển cũ.\n"+
         "• Dev.68: Disintegrate dùng cách điều khiển cũ: chuột chỉ ngắm, WASD/lệnh đi riêng điều khiển di chuyển; giữ80% tốc độ và root native.\n"+

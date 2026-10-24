@@ -5,6 +5,7 @@ namespace LastEpochLAN.Mod.OfflineTools;
 
 internal static class AggressiveMinionRange
 {
+    internal const float Multiplier = 5f;
     internal static long ExpandedAcquisitions, ExpandedTargetSearches;
     internal static bool Applies(Actor actor)
     {
@@ -23,7 +24,7 @@ internal static class AggressiveMinionRange
         }
         return false;
     }
-    internal static float DoubleRange(float value) => float.IsFinite(value) && value > 0 && value <= float.MaxValue / 2 ? value * 2 : value;
+    internal static float ExpandRange(float value) => float.IsFinite(value) && value > 0 && value <= float.MaxValue / Multiplier ? value * Multiplier : value;
 }
 
 // Change only this acquisition call, restoring even if native invocation throws.
@@ -41,7 +42,7 @@ internal static class AggressiveMinionAcquirePatch
         float old = controller.aggroRangeModifier;
         if (!float.IsFinite(old) || old <= -1 || old > 1000000) return;
         __state = new(controller, old);
-        controller.aggroRangeModifier = (1 + old) * 2 - 1;
+        controller.aggroRangeModifier = (1 + old) * AggressiveMinionRange.Multiplier - 1;
         AggressiveMinionRange.ExpandedAcquisitions++;
     }
     private static Exception Finalizer(Exception __exception, Scope __state)
@@ -61,7 +62,7 @@ internal static class AggressiveMinionTargetPatch
         if (targetAlly || onlyTargetSelf || !AggressiveMinionRange.Applies(__instance.thisActor)) return;
         var distance = __instance.MaxDistanceFromSummoner;
         if (!distance.HasValue) return;
-        float expanded = AggressiveMinionRange.DoubleRange(distance.Value);
+        float expanded = AggressiveMinionRange.ExpandRange(distance.Value);
         if (expanded == distance.Value) return;
         __state = new(__instance, distance);
         __instance.MaxDistanceFromSummoner = new Il2CppSystem.Nullable<float>(expanded);
