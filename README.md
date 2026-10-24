@@ -1,6 +1,6 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.69
+# TM Last Epoch Co-op Mod — 1.1.0-dev.70
 
-**Dev.69:** Bỏ giảm20% tốc độ của Disintegrate: di chuyển khi channel ở tốc độ bình thường. Giữ cách điều khiển dev.68: chuột ngắm tia, WASD/lệnh đi riêng điều khiển di chuyển; giữ root native. Protocol44. [Release notes](RELEASE-1.1.0-dev69-VI.md).
+**Dev.70:** Disintegrate Extension tăng range30% mỗi điểm (3 điểm =90%), đồng bộ tooltip legacy/V2. Giữ cách điều khiển cũ và tốc độ di chuyển bình thường khi channel. Protocol44. [Release notes](RELEASE-1.1.0-dev70-VI.md).
 
 **Dev.61:** Tự kết nối theo tên nhân vật: Doomsday tự host, nhân vật khác tự join 27.70.239.115:7777 và retry sau 30 giây nếu thất bại; bỏ cấu hình kết nối/room code khỏi UI. Sửa cổng aggro x3 trong echo; chia tạo thưởng Prophecy qua nhiều frame, giữ charge và lens. Protocol44. [Release notes](RELEASE-1.1.0-dev61-VI.md).
 

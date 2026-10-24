@@ -116,6 +116,12 @@ Check(steering.Fields.Where(f=>f.Name.EndsWith("Depth")).All(f=>f.CustomAttribut
  new[]{"DisintegrateAimUpdateScopePatch","DisintegrateSkillCommandScopePatch"}.All(n=>types.Single(t=>t.Name==n).Methods.Any(m=>m.Name=="Finalizer")) &&
  !Walk(new[]{steering}).SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Any(i=>i.Operand is MemberReference m && (m.DeclaringType?.Name.Contains("Probe")==true || m.Name is "set_position" or "set_rotation")),
  "Disintegrate input scopes clean up native exceptions and contain no probe bypass or transform writes");
+var extensionHooks=new[]{"OfflineDisintegrateExtensionTreePatch","OfflineDisintegrateExtensionCastPatch","OfflineDisintegrateExtensionValuePatch","OfflineDisintegrateExtensionLegacyValuePatch","OfflineDisintegrateExtensionDescriptionPatch","OfflineDisintegrateExtensionInfoPatch","OfflineDisintegrateExtensionLegacyInfoPatch"};
+Check(extensionHooks.All(n=>installed.Any(t=>t.Name==n)),"Disintegrate Extension allocation, cast repair and both tooltip renderers install");
+var extension=types.Single(t=>t.Name=="DisintegrateExtension");
+Check(extension.Fields.Any(f=>f.Name=="RangePerPoint" && Convert.ToSingle(f.Constant)==.30f) && extension.Fields.Any(f=>f.Name=="NodeId" && Convert.ToInt32(f.Constant)==25) &&
+ extension.Methods.Single(m=>m.Name=="Apply").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().Where(m=>m.Name.StartsWith("set_")).Select(m=>m.Name).SequenceEqual(new[]{"set_increasedRange"}),
+ "Extension30 percent per point writes only its native range field, preserving other skill stats and allocations");
 var loginDestination=types.Single(t=>t.Name=="OfflineLoginDestinationPatch");
 Check(installed.Contains(loginDestination) && loginDestination.Fields.Any(f=>f.Name=="Destination" && Equals(f.Constant,"M_Rest")) &&
  loginDestination.Methods.Single(m=>m.Name=="Postfix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().All(m=>

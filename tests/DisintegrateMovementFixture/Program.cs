@@ -44,4 +44,25 @@ Il2CppLE.UI.LoadingScreen.IsVisible=true;Check(!DisintegrateSteering.CanSteer(ac
 PlayerFinder.Containers.cursor.Content.Add(1);Check(!DisintegrateSteering.CanSteer(actor,false),"carried item blocks world movement commands");PlayerFinder.Containers.cursor.Content.Clear();
 UIMouseListener.Over=true;Check(!DisintegrateSteering.CanSteer(actor,true) && DisintegrateSteering.CanSteer(actor,false),"mouse movement respects UI hover while keyboard keeps its native policy");UIMouseListener.Over=false;
 OfflineToolkit.Enabled=false;Check(DisintegrateSteering.ChannelMovement(use)==null,"online channel does not receive custom input handling");OfflineToolkit.Enabled=true;
+// Extension: real-source allocation and both tooltip paths.
+var definition=new GlobalTreeData.TreeData();definition.Nodes[25]=new(){name="Disintegrate Range"};GlobalTreeData.Instance.Trees["dig5"]=definition;
+var allocation=new LocalTreeData.SkillTreeData{treeID="dig5"};allocation.nodes.Add(new(){id=25});
+actor.localTreeData=new(){Owner=actor,actor=actor,Skill=allocation};actor.Components[typeof(DisintegrateMutator)]=mutator;
+foreach(byte points in new byte[]{0,1,2,3}){
+ allocation.nodes[0].pointsAllocated=points;mutator.increasedRange=.12f*points;
+ Invoke(typeof(OfflineDisintegrateExtensionTreePatch),"Postfix",actor.localTreeData,allocation);
+ Check(Math.Abs(mutator.increasedRange-.30f*points)<.0001f,"Extension native refresh applies30 percent per point: "+points);
+ for(int n=0;n<100;n++)Invoke(typeof(OfflineDisintegrateExtensionCastPatch),"Prefix",mutator);
+ Check(Math.Abs(mutator.increasedRange-.30f*points)<.0001f,"repeated and twin-beam casts cannot accumulate Extension range: "+points);
+}
+allocation.nodes.Clear();Invoke(typeof(OfflineDisintegrateExtensionCastPatch),"Prefix",mutator);Check(mutator.increasedRange==0,"respec to zero clears prior Extension bonus");
+mutator.increasedRange=.77f;var wrong=new LocalTreeData.SkillTreeData{treeID="other"};Check(!DisintegrateExtension.Apply(mutator,wrong) && mutator.increasedRange==.77f,"another skill tree cannot change Disintegrate range");
+var remote=new DisintegrateMutator{actor=new(),increasedRange=.77f};Check(!DisintegrateExtension.Apply(remote,allocation) && remote.increasedRange==.77f,"other actor range is untouched");
+OfflineToolkit.Enabled=false;Check(!DisintegrateExtension.Apply(mutator,allocation) && mutator.increasedRange==.77f,"online range stays native");OfflineToolkit.Enabled=true;
+var node=new SkillTreeNode{tree=new DisintegrateTree{treeID="dig5"},id=25};Check(DisintegrateExtension.IsNode(node) && !DisintegrateExtension.IsNode(new(){tree=node.tree,id=11}),"tooltip identifies only Extension on Disintegrate");
+foreach(var pair in new[]{("12% per point","30% per point"),("36%","90%"),("<color=#abc>12%</color>","<color=#abc>30%</color>"),("12,0% par point","30% par point")})Check(DisintegrateExtension.Tooltip("12%",pair.Item1)==pair.Item2,"legacy tooltip preserves formatting: "+pair.Item1);
+Check(DisintegrateExtension.Tooltip("5%","5% per point")=="5% per point" && DisintegrateExtension.Tooltip("12","12")=="12","unrelated tooltip rows stay native");
+var stat=new SkillTreeNode.NodeTooltipStat{value="12%"};var info=new Il2CppLE.UI.Tooltips.NodeTooltipModifierInfo{Value=.36f};Invoke(typeof(OfflineDisintegrateExtensionValuePatch),"Postfix",stat,node,info);Check(Math.Abs(info.Value-.90f)<.0001f,"V2 tooltip total updates36 to90 percent");
+object[] legacy={stat,node,"12% per point"};Invoke(typeof(OfflineDisintegrateExtensionLegacyValuePatch),"Prefix",legacy);Check((string)legacy[2]=="30% per point","legacy patch displays30 percent per point");
+Check(DisintegrateExtension.Description("12% range; 112% other")=="30% range; 112% other","description replaces exact old12 percent token only");
 Directory.CreateDirectory("validation");File.WriteAllText("validation/disintegrate-movement-fixture.json",JsonSerializer.Serialize(new{passed=checks.Count,checks,actualSource=true,nativeGameplayValidated=false},new JsonSerializerOptions{WriteIndented=true}));Console.WriteLine("PASS "+checks.Count+" actual-source movement checks; native gameplay pending");

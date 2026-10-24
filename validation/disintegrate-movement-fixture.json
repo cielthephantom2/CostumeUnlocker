@@ -1,5 +1,5 @@
 {
-  "passed": 32,
+  "passed": 53,
   "checks": [
     "Disintegrate selects native mobile channel mode",
     "all four native flag targets resolve independently",
@@ -32,7 +32,28 @@
     "loading cannot accept channel movement",
     "carried item blocks world movement commands",
     "mouse movement respects UI hover while keyboard keeps its native policy",
-    "online channel does not receive custom input handling"
+    "online channel does not receive custom input handling",
+    "Extension native refresh applies30 percent per point: 0",
+    "repeated and twin-beam casts cannot accumulate Extension range: 0",
+    "Extension native refresh applies30 percent per point: 1",
+    "repeated and twin-beam casts cannot accumulate Extension range: 1",
+    "Extension native refresh applies30 percent per point: 2",
+    "repeated and twin-beam casts cannot accumulate Extension range: 2",
+    "Extension native refresh applies30 percent per point: 3",
+    "repeated and twin-beam casts cannot accumulate Extension range: 3",
+    "respec to zero clears prior Extension bonus",
+    "another skill tree cannot change Disintegrate range",
+    "other actor range is untouched",
+    "online range stays native",
+    "tooltip identifies only Extension on Disintegrate",
+    "legacy tooltip preserves formatting: 12% per point",
+    "legacy tooltip preserves formatting: 36%",
+    "legacy tooltip preserves formatting: \u003Ccolor=#abc\u003E12%\u003C/color\u003E",
+    "legacy tooltip preserves formatting: 12,0% par point",
+    "unrelated tooltip rows stay native",
+    "V2 tooltip total updates36 to90 percent",
+    "legacy patch displays30 percent per point",
+    "description replaces exact old12 percent token only"
   ],
   "actualSource": true,
   "nativeGameplayValidated": false

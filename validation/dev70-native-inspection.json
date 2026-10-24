@@ -1,0 +1,21 @@
+{
+  "treeID": "dig5",
+  "node": {
+    "name": "Disintegrate Range",
+    "id": 25,
+    "maxPoints": 3,
+    "requiredMastery": 0,
+    "masteryRequirement": 0,
+    "requirements": [
+      {
+        "nodeID": 0,
+        "requirement": 0
+      }
+    ]
+  },
+  "nativeRangePerPoint": 0.12,
+  "modRangePerPoint": 0.3,
+  "nativeField": "DisintegrateMutator.increasedRange",
+  "nodeNameFNVHash": "C6F4D123",
+  "nativeGameplayValidated": false
+}

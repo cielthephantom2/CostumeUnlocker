@@ -3,12 +3,12 @@ namespace HarmonyLib{public class HarmonyPatch:Attribute{public HarmonyPatch(par
 namespace Il2Cpp{
  public class Obj{static int next;public IntPtr Pointer=(IntPtr)(++next);public T TryCast<T>()where T:class=>this as T;}
  public class Component:Obj{public Actor Owner;public T GetComponent<T>()where T:class=>Owner?.GetComponent<T>();}
- public class Actor:Obj{public Dictionary<Type,object> Components=new();public Agent navMeshAgent=new();public StateController stateController=new();public UnityEngine.Vector3 Position;public bool Dead;public UnityEngine.Vector3 position()=>Position;public bool isDying(bool acceptFakeDying)=>Dead;public T GetComponent<T>()where T:class=>typeof(T)==typeof(Actor)?this as T:Components.TryGetValue(typeof(T),out var value)?value as T:null;}
+ public class Actor:Obj{public Dictionary<Type,object> Components=new();public LocalTreeData localTreeData;public Agent navMeshAgent=new();public StateController stateController=new();public UnityEngine.Vector3 Position;public bool Dead;public UnityEngine.Vector3 position()=>Position;public bool isDying(bool acceptFakeDying)=>Dead;public T GetComponent<T>()where T:class=>typeof(T)==typeof(Actor)?this as T:Components.TryGetValue(typeof(T),out var value)?value as T:null;}
  public class Agent{public float speed;}
  public enum AbilityMovement{None,Spin=4}public enum AbilityID{disintegrate,fireball}
  public class Ability:Obj{public static Dictionary<AbilityID,Ability> Registry=new(){{AbilityID.disintegrate,new()},{AbilityID.fireball,new()}};public static Ability getAbility(AbilityID id)=>Registry[id];}
  public class AbilityMutator:Component{public AbilityMovement getMovementDuringUse()=>AbilityMovement.None;public bool getStopMovementOnKeyRelease()=>false;public bool getChangeDestinationWhileMoving()=>false;public bool DontStopAtDestination()=>false;public bool getCanUpdateTargetWhileChannelling()=>false;public bool getIncreasedMovementSpeedAffectsMovement()=>false;public bool getUseSpeedAffectsMovement()=>true;public float getBaseMovementDuration()=>0;public float getMovementDurationPerUnitDistance()=>0;}
- public class DisintegrateMutator:AbilityMutator{public Actor actor;}
+ public class DisintegrateMutator:AbilityMutator{public Actor actor;public float increasedRange;public void Mutate(){}}
  public class SpeedManager:Component{public Actor actor;public int Calls;public float NormalSpeed=10;public void updateSpeed(){Calls++;actor.navMeshAgent.speed=NormalSpeed;}}
  public class MovementFromAbility:Component{public Actor actor;public bool moving=true,changeDestinationWithMousePosition=true,dontStopAtDestination;public AbilityMovement movementType=AbilityMovement.Spin;public Ability currentAbility;public UnityEngine.Vector3 Destination;public int DestinationCalls;public void UpdateDestination(UnityEngine.Vector3 newDestination){Destination=newDestination;DestinationCalls++;}public void MovementStep(float deltaTime){}public void startMoving(Ability _ability){}}
  public class UsingAbility:Component{public bool channelling;public Ability ability;public MovementFromAbility movementFromAbility;public bool TryUpdateTargetLocationIfChannelling(UnityEngine.Vector3 newTargetLocation)=>true;public void UpdateTargetLocation(UnityEngine.Vector3 newTargetLocation){}public void stopUsingAbility(bool canChangeState){}}
@@ -32,3 +32,13 @@ namespace UnityEngine{
  public static class Application{public static bool isFocused=true;}public static class Time{public static float timeScale=1;}
 }
 namespace Il2CppLE.UI{public static class LoadingScreen{public static bool IsVisible;}}
+
+namespace Il2Cpp{
+ public class LocalTreeData:Component{public Actor actor;public SkillTreeData Skill;public SkillTreeData getSkillTreeData(Ability ability)=>Skill;public class TreeData{public string treeID;public List<NodeData> nodes=new();}public class SkillTreeData:TreeData{}public class NodeData{public byte id,pointsAllocated;}}
+ public class GlobalTreeData{public static GlobalTreeData Instance=new();public Dictionary<string,TreeData> Trees=new();public static GlobalTreeData get()=>Instance;public TreeData getTreeData(string id)=>Trees.TryGetValue(id,out var tree)?tree:null;public class TreeData{public Dictionary<byte,NodeData> Nodes=new();public NodeData getNode(byte id)=>Nodes.TryGetValue(id,out var node)?node:null;}public class NodeData{public string name;}}
+ public class SkillTree:Obj{public string treeID;}public class DisintegrateTree:SkillTree{public static void updateMutator(LocalTreeData localTreeData,LocalTreeData.TreeData tree){}}
+ public class SkillTreeNode{public SkillTree tree;public byte id;public class NodeTooltipStat{public string value;}}
+ public class TooltipText{public string text;}public class NodeTooltipManager{public TooltipText description=new();public bool requireLayoutUpdate;public void BuildColoredValue(){}public void setInfoForNode(){}}
+}
+namespace Il2CppLE.UI.Tooltips{public class NodeTooltipModifierInfo{public float Value;}public class NodeTooltipInfo{public string Description;}public static class NodeTooltipContentBuilder{public static void GetModifierInfo(){}public static void GetNodeTooltipInfo(){}}}
+namespace Il2CppLocalizationSystem{public static class LocalizationSkills{public static void GetNodeDescription(){}}}
