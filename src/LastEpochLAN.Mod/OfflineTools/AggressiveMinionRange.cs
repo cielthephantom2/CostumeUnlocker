@@ -36,7 +36,7 @@ internal static class AggressiveMinionAcquirePatch
     private static void Prefix(UsingAbility __instance, out Scope __state)
     {
         __state = null;
-        var actor = __instance.getActor();
+        var actor = __instance?.getActor();
         if (!AggressiveMinionRange.Applies(actor) || actor.stateController == null) return;
         var controller = actor.stateController;
         float old = controller.aggroRangeModifier;
@@ -55,22 +55,25 @@ internal static class AggressiveMinionAcquirePatch
 [HarmonyPatch(typeof(TargetFinder), nameof(TargetFinder.updateTarget))]
 internal static class AggressiveMinionTargetPatch
 {
-    internal sealed record Scope(TargetFinder Finder, Il2CppSystem.Nullable<float> Original);
+    internal sealed record Scope(TargetFinder Finder, float Original);
     private static void Prefix(TargetFinder __instance, bool targetAlly, bool onlyTargetSelf, out Scope __state)
     {
         __state = null;
-        if (targetAlly || onlyTargetSelf || !AggressiveMinionRange.Applies(__instance.thisActor)) return;
-        var distance = __instance.MaxDistanceFromSummoner;
+        if (__instance == null || targetAlly || onlyTargetSelf || !AggressiveMinionRange.Applies(__instance.thisActor)) return;
+        // IL2CPP boxes an empty nullable as null, or a populated nullable as
+        // Single. The generated Nullable<float> getter/wrapper cannot read it.
+        var distance = NativeNullable.ReadField<float>(__instance, "<MaxDistanceFromSummoner>k__BackingField",
+            () => __instance.MaxDistanceFromSummoner);
         if (!distance.HasValue) return;
         float expanded = AggressiveMinionRange.ExpandRange(distance.Value);
         if (expanded == distance.Value) return;
-        __state = new(__instance, distance);
+        __state = new(__instance, distance.Value);
         __instance.MaxDistanceFromSummoner = new Il2CppSystem.Nullable<float>(expanded);
         AggressiveMinionRange.ExpandedTargetSearches++;
     }
     private static Exception Finalizer(Exception __exception, Scope __state)
     {
-        if (__state?.Finder != null) __state.Finder.MaxDistanceFromSummoner = __state.Original;
+        if (__state?.Finder != null) __state.Finder.MaxDistanceFromSummoner = new Il2CppSystem.Nullable<float>(__state.Original);
         return __exception;
     }
 }

@@ -1,6 +1,6 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.71
+# TM Last Epoch Co-op Mod — 1.1.0-dev.72
 
-**Dev.71:** Minion/companion ở stance Aggressive tăng phạm vi phát hiện và tìm mục tiêu từ x2 lên x5 so với native. Protocol44. [Release notes](RELEASE-1.1.0-dev71-VI.md).
+**Dev.72:** Sửa lỗi nullable khi minion Aggressive tìm mục tiêu, hết lỗi đỏ TargetFinder và áp dụng đúng phạm vi x5. Protocol44. [Release notes](RELEASE-1.1.0-dev72-VI.md).
 
 **Dev.61:** Tự kết nối theo tên nhân vật: Doomsday tự host, nhân vật khác tự join 27.70.239.115:7777 và retry sau 30 giây nếu thất bại; bỏ cấu hình kết nối/room code khỏi UI. Sửa cổng aggro x3 trong echo; chia tạo thưởng Prophecy qua nhiều frame, giữ charge và lens. Protocol44. [Release notes](RELEASE-1.1.0-dev61-VI.md).
 

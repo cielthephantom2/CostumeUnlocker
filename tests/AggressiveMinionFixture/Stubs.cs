@@ -15,5 +15,15 @@ namespace Il2Cpp {
  }
  public static class PlayerFinder {public static Actor Player;public static Actor getPlayerActor()=>Player;}
  public sealed class UsingAbility {public Actor Actor;public Actor getActor()=>Actor;public void activateIfEnemyInRange(){} }
- public sealed class TargetFinder {public Actor thisActor;public Il2CppSystem.Nullable<float> MaxDistanceFromSummoner;public void updateTarget(){} }
+ public sealed class TargetFinder {public Actor thisActor;public float? NativeDistance;public int GetterCalls;
+ public Il2CppSystem.Nullable<float> MaxDistanceFromSummoner {get {GetterCalls++;throw new NullReferenceException("Generated nullable getter cannot box empty native value");}set {NativeDistance=value.HasValue?value.Value:null;}}public void updateTarget(){} }
+}
+
+namespace LastEpochLAN.Mod.OfflineTools {
+ internal static class NativeNullable {
+  internal static T? ReadField<T>(Il2Cpp.TargetFinder owner,string name,Func<Il2CppSystem.Nullable<T>> fallback) where T:struct {
+   if(name!="<MaxDistanceFromSummoner>k__BackingField")throw new Exception("Unexpected native field");
+   return owner.NativeDistance.HasValue ? (T)(object)owner.NativeDistance.Value : null;
+  }
+ }
 }

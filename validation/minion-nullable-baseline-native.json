@@ -1,0 +1,46 @@
+{
+  "passed": false,
+  "error": "System.Exception: Exactly 100 finite native searches apply the range scope; unlimited searches do not: null\r\n   at ItemNodeNativeQA.Audit.Check(Boolean ok, String label, Object values)\r\n   at ItemNodeNativeQA.Audit.MinionTargetBridge()\r\n   at ItemNodeNativeQA.Audit.OnUpdate()",
+  "gameAssembly": "323E9183F3BEE600B6C9E1C469218B9DE926E9044F2CA3D44FAE8A0EC9A91464",
+  "checks": [
+    {
+      "passed": true,
+      "label": "Minion bridge QA uses isolated profile",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Record native target hook presence",
+      "values": {
+        "targetHook": true
+      }
+    },
+    {
+      "passed": true,
+      "label": "Empty native nullable field is read safely as unlimited",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "100 unlimited native searches keep nullable field empty",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Populated native nullable field unboxes to correct Single value",
+      "values": null
+    },
+    {
+      "passed": true,
+      "label": "Finite native target distance restores after 100 searches",
+      "values": null
+    },
+    {
+      "passed": false,
+      "label": "Exactly 100 finite native searches apply the range scope; unlimited searches do not",
+      "values": null
+    }
+  ],
+  "localizationKeys": [],
+  "scope": "Native IL2CPP nullable field reader and 200 target searches on disposable inactive object with forced minion eligibility; no live combat/pursuit test"
+}

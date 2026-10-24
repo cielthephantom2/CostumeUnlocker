@@ -1,0 +1,21 @@
+PASS: attack stance applies to local player's minion/companion
+PASS: player and wild enemy are excluded
+PASS: protect stance keeps native acquisition range
+PASS: summons belonging to another actor are excluded
+PASS: sub-minions inherit attack stance through bounded local ownership chain
+PASS: cyclic creator chain cannot hang target search
+PASS: online environment is unchanged
+PASS: existing +50% native range becomes x5 total range, while preserving the original modifier
+PASS: native exception is propagated and original modifier is restored
+PASS: 100 acquisition cycles cause no permanent range inflation
+PASS: target acquisition extends finite summoner search boundary x5
+PASS: target boundary restores after exception
+PASS: ally/self targeting does not expand hostile acquisition boundary
+PASS: ally/self targeting does not expand hostile acquisition boundary
+PASS: unlimited native boundary remains unlimited
+PASS: invalid, overflowing and zero ranges stay unchanged
+PASS: finite acquisition range scales by five
+PASS: nullable native field reader bypasses generated getter entirely
+PASS: native finite field remains correct despite broken generated getter
+PASS: missing finder is ignored
+All 20 actual-source minion stub checks passed; Unity gameplay not exercised.

@@ -1,0 +1,15 @@
+{
+  "archive": "D:\\New folder\\CostumeUnlocker-Publish\\local-releases\\TM-Coop-1.1.0-dev.72.zip",
+  "sha256": "946e82e73e803a4b33179ec625cf05c9be90e2fa5d493b83c7804406ff45b893",
+  "size": 518202,
+  "files": [
+    "Mods/LastEpochLAN.dll",
+    "UserLibs/LastEpochLAN.Core.dll",
+    "latest.json",
+    "update.bat",
+    "README.md",
+    "RELEASE-1.1.0-dev72-VI.md"
+  ],
+  "debugToolsIncluded": false,
+  "nativeFixRegression": "validation/minion-nullable-fixed-native.json"
+}

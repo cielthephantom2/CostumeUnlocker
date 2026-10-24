@@ -1,0 +1,14 @@
+{
+  "baselineTrampolineErrors": 100,
+  "fixedTrampolineErrors": 0,
+  "nativeSearches": 200,
+  "finiteRangeDuringSearch": 150,
+  "originalFiniteRangeRestored": 30,
+  "nativeChecks": 9,
+  "fixtureChecks": 20,
+  "compiledAudits": 206,
+  "candidateMatchesTestedDlls": true,
+  "steamInstalled": false,
+  "published": false,
+  "scope": "isolated native nullable regression, not live minion pursuit"
+}

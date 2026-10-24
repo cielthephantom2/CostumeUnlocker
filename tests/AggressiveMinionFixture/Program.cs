@@ -29,13 +29,18 @@ for(int i=0;i<100;i++){object[] p={ability,null};Call(typeof(AggressiveMinionAcq
 Check(minion.stateController.aggroRangeModifier==0.5f,"100 acquisition cycles cause no permanent range inflation");
 var finder=new TargetFinder{thisActor=minion,MaxDistanceFromSummoner=new(30)};
 object[] target={finder,false,false,null};Call(typeof(AggressiveMinionTargetPatch),"Prefix",target);
-Check(finder.MaxDistanceFromSummoner.Value==150,"target acquisition extends finite summoner search boundary x5");
+Check(finder.NativeDistance.Value==150,"target acquisition extends finite summoner search boundary x5");
 Call(typeof(AggressiveMinionTargetPatch),"Finalizer",failure,target[3]);
-Check(finder.MaxDistanceFromSummoner.Value==30,"target boundary restores after exception");
-foreach(var flags in new[]{(true,false),(false,true)}){object[] p={finder,flags.Item1,flags.Item2,null};Call(typeof(AggressiveMinionTargetPatch),"Prefix",p);Check(p[3]==null && finder.MaxDistanceFromSummoner.Value==30,"ally/self targeting does not expand hostile acquisition boundary");}
-finder.MaxDistanceFromSummoner=default;object[] unlimited={finder,false,false,null};Call(typeof(AggressiveMinionTargetPatch),"Prefix",unlimited);
-Check(unlimited[3]==null && !finder.MaxDistanceFromSummoner.HasValue,"unlimited native boundary remains unlimited");
+Check(finder.NativeDistance.Value==30,"target boundary restores after exception");
+foreach(var flags in new[]{(true,false),(false,true)}){object[] p={finder,flags.Item1,flags.Item2,null};Call(typeof(AggressiveMinionTargetPatch),"Prefix",p);Check(p[3]==null && finder.NativeDistance.Value==30,"ally/self targeting does not expand hostile acquisition boundary");}
+finder.NativeDistance=null;object[] unlimited={finder,false,false,null};Call(typeof(AggressiveMinionTargetPatch),"Prefix",unlimited);
+Check(unlimited[3]==null && !finder.NativeDistance.HasValue,"unlimited native boundary remains unlimited");
 Check(AggressiveMinionRange.ExpandRange(float.PositiveInfinity)==float.PositiveInfinity && AggressiveMinionRange.ExpandRange(float.MaxValue)==float.MaxValue && AggressiveMinionRange.ExpandRange(0)==0,"invalid, overflowing and zero ranges stay unchanged");
 Check(AggressiveMinionRange.ExpandRange(10)==50,"finite acquisition range scales by five");
+Check(finder.GetterCalls==0,"nullable native field reader bypasses generated getter entirely");
+Check(AggressiveMinionTargetPatchRead()==30,"native finite field remains correct despite broken generated getter");
+Check(missingFinderIgnored(),"missing finder is ignored");
+float AggressiveMinionTargetPatchRead(){finder.NativeDistance=30;return NativeNullable.ReadField<float>(finder,"<MaxDistanceFromSummoner>k__BackingField",()=>finder.MaxDistanceFromSummoner).Value;}
+bool missingFinderIgnored(){object[] p={null,false,false,null};Call(typeof(AggressiveMinionTargetPatch),"Prefix",p);return p[3]==null;}
 Console.WriteLine($"All {count} actual-source minion stub checks passed; Unity gameplay not exercised.");
 if(args.Length>0)File.WriteAllText(args[0],JsonSerializer.Serialize(new{passed=count,nativeGameplayVerified=false}));

@@ -708,6 +708,11 @@ Check(minionCalls.Any(m=>m.DeclaringType.Name=="OfflineToolkit" && m.Name=="get_
 Check(new[]{"AggressiveMinionAcquirePatch","AggressiveMinionTargetPatch"}.All(name=>installed.Any(t=>t.Name==name) &&
  types.Single(t=>t.Name==name).Methods.Any(m=>m.Name=="Finalizer")),
  "both x5 minion acquisition hooks install with finalizers restoring temporary native fields");
+var minionTargetPrefix=types.Single(t=>t.Name=="AggressiveMinionTargetPatch").Methods.Single(m=>m.Name=="Prefix");
+Check(minionTargetPrefix.Body.Instructions.Any(i=>i.Operand is MethodReference m && m.DeclaringType.Name=="NativeNullable" && m.Name=="ReadField") &&
+ minionTargetPrefix.Body.Instructions.Any(i=>i.Operand is string name && name=="<MaxDistanceFromSummoner>k__BackingField") &&
+ types.Single(t=>t.Name=="AggressiveMinionTargetPatch").NestedTypes.Single(t=>t.Name=="Scope").Fields.Any(f=>f.FieldType.FullName=="System.Single"),
+ "minion range reads boxed native nullable through safe field reader and restores a scalar float");
 var acquisition=types.Single(t=>t.Name=="AggressiveMinionAcquirePatch");
 Check(acquisition.Methods.SelectMany(m=>m.HasBody?m.Body.Instructions:Enumerable.Empty<Mono.Cecil.Cil.Instruction>()).Select(i=>i.Operand).OfType<MethodReference>()
  .All(m=>m.Name is not "set_maximumAggroRange" and not "set_maxHorizontalOffsetForAggro" and not "UseAbility"),
