@@ -87,7 +87,7 @@ Check(catalogue.Fields.Any(f=>f.Name=="Enabled" && f.IsStatic && f.IsInitOnly) &
  "native encounter discovery requires explicit development switch");
 Check(!types.Any(t=>t.Name is "OfflineArcaneMovementPatch" or "OfflineArcaneDescriptionPatch"),
  "Arcane Ascendance movement and description overrides are removed; native root retained");
-var disintegrateHooks=new[]{"OfflineDisintegrateMovementPatch","OfflineDisintegrateMobileFlagsPatch","OfflineDisintegrateCastSpeedPatch","OfflineDisintegrateDurationPatch","OfflineDisintegrateDistancePatch","OfflineDisintegrateSpeedPatch","OfflineDisintegrateStartPatch","OfflineDisintegrateStopPatch","OfflineDisintegrateDescriptionPatch"};
+var disintegrateHooks=new[]{"OfflineDisintegrateMovementPatch","OfflineDisintegrateMobileFlagsPatch","OfflineDisintegrateCastSpeedPatch","OfflineDisintegrateDurationPatch","OfflineDisintegrateDistancePatch","OfflineDisintegrateSpeedPatch","OfflineDisintegrateStartPatch","OfflineDisintegrateStopPatch","OfflineDisintegrateDescriptionPatch","OfflineDisintegrateMouseSteeringPatch"};
 Check(disintegrateHooks.All(n=>patches.Any(t=>t.Name==n)),"all local Disintegrate mobile-channel hooks are selected");
 var tranquilityHooks=new[]{"OfflineArcaneTranquilityTreePatch","OfflineArcaneTranquilityCastPatch","OfflineArcaneTranquilityDescriptionPatch","OfflineArcaneTranquilityLegacyTooltipPatch","OfflineArcaneTranquilityTooltipPatch"};
 Check(tranquilityHooks.All(n=>patches.Any(t=>t.Name==n)),"Tranquility actual-stat, description and both tooltip hooks are compiled");
@@ -107,6 +107,15 @@ Check(types.Single(t=>t.Name=="OfflineEchoSpawnEnqueuePatch").Methods.Any(m=>m.N
 Check(!types.Any(t=>t.Name.Contains("Vilatria",StringComparison.Ordinal)) &&
  !types.Single(t=>t.Name=="ToolkitSettings").Properties.Any(p=>p.Name=="IgnoreVilatriaMeteorVisuals"),
  "Vilatria visual override hooks and setting are completely removed");
+var steeringHooks=new[]{"DisintegrateKeyboardMovementPatch","DisintegrateAimUpdateScopePatch","DisintegrateAimIsNotMovementPatch","DisintegrateSkillCommandScopePatch","DisintegrateChannelExplicitMovePatch","DisintegrateRespectsRootsPatch"};
+Check(steeringHooks.All(n=>installed.Any(t=>t.Name==n)) &&
+ types.Single(t=>t.Name=="OfflineDisintegrateStartPatch").Methods.Any(m=>m.Name=="Prefix"),
+ "Disintegrate restores native keyboard/explicit movement, aim filtering, root guard and stationary cast start");
+var steering=types.Single(t=>t.Name=="DisintegrateSteering");
+Check(steering.Fields.Where(f=>f.Name.EndsWith("Depth")).All(f=>f.CustomAttributes.Any(a=>a.AttributeType.Name=="ThreadStaticAttribute")) &&
+ new[]{"DisintegrateAimUpdateScopePatch","DisintegrateSkillCommandScopePatch"}.All(n=>types.Single(t=>t.Name==n).Methods.Any(m=>m.Name=="Finalizer")) &&
+ !Walk(new[]{steering}).SelectMany(t=>t.Methods).Where(m=>m.HasBody).SelectMany(m=>m.Body.Instructions).Any(i=>i.Operand is MemberReference m && (m.DeclaringType?.Name.Contains("Probe")==true || m.Name is "set_position" or "set_rotation")),
+ "Disintegrate input scopes clean up native exceptions and contain no probe bypass or transform writes");
 var loginDestination=types.Single(t=>t.Name=="OfflineLoginDestinationPatch");
 Check(installed.Contains(loginDestination) && loginDestination.Fields.Any(f=>f.Name=="Destination" && Equals(f.Constant,"M_Rest")) &&
  loginDestination.Methods.Single(m=>m.Name=="Postfix").Body.Instructions.Select(i=>i.Operand).OfType<MethodReference>().All(m=>

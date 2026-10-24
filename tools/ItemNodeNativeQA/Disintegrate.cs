@@ -10,7 +10,7 @@ public partial class Audit
   if(created){mutator=actor.gameObject.AddComponent<DisintegrateMutator>();mutator.actor=actor;mutator.ability=ability;}
   try
   {
-   Check(mutator.getMovementDuringUse()==AbilityMovement.Spin && mutator.getChangeDestinationWhileMoving() && mutator.getCanUpdateTargetWhileChannelling() && mutator.getStopMovementOnKeyRelease(),"Native Disintegrate getters select mobile channel with live target updates");
+   Check(mutator.getMovementDuringUse()==AbilityMovement.Spin && !mutator.getChangeDestinationWhileMoving() && mutator.getCanUpdateTargetWhileChannelling() && mutator.getStopMovementOnKeyRelease(),"Native Disintegrate getters select mobile channel with live target updates");
    Check(!mutator.getUseSpeedAffectsMovement() && mutator.getIncreasedMovementSpeedAffectsMovement() && Near(mutator.getBaseMovementDuration(),.3f) && Near(mutator.getMovementDurationPerUnitDistance(),.05f),"Native mobile channel uses normal movement stats and native Focus timing");
    var use=actor.GetComponent<UsingAbility>();var speed=actor.GetComponent<SpeedManager>();
    Check(use!=null && speed!=null && actor.navMeshAgent!=null,"Native channel and speed components available");

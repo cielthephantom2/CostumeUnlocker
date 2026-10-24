@@ -1,6 +1,6 @@
-# TM Last Epoch Co-op Mod — 1.1.0-dev.67
+# TM Last Epoch Co-op Mod — 1.1.0-dev.68
 
-**Dev.67:** Sửa vị trí đăng nhập Traveler’s Rest: chọn đúng Waypoint gate0 như khi teleport, dùng transform của spawn marker native. Giữ Woven Enchanter vô hạn lượt và ẩn banner nhặt đồ. Protocol44. [Release notes](RELEASE-1.1.0-dev67-VI.md).
+**Dev.68:** Khôi phục cách điều khiển Disintegrate dev.20/21: chuột ngắm tia, WASD/lệnh đi riêng mới di chuyển; không tự lao theo chuột. Giữ80% tốc độ khi channel và root của Arcane Ascendance. Protocol44. [Release notes](RELEASE-1.1.0-dev68-VI.md).
 
 **Dev.61:** Tự kết nối theo tên nhân vật: Doomsday tự host, nhân vật khác tự join 27.70.239.115:7777 và retry sau 30 giây nếu thất bại; bỏ cấu hình kết nối/room code khỏi UI. Sửa cổng aggro x3 trong echo; chia tạo thưởng Prophecy qua nhiều frame, giữ charge và lens. Protocol44. [Release notes](RELEASE-1.1.0-dev61-VI.md).
 

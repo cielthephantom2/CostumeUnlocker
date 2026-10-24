@@ -27,11 +27,14 @@ internal static class OfflineDisintegrateMobileFlagsPatch
 {
     private static IEnumerable<System.Reflection.MethodBase> TargetMethods()
     {
-        foreach(string name in new[]{nameof(AbilityMutator.getStopMovementOnKeyRelease),nameof(AbilityMutator.getChangeDestinationWhileMoving),nameof(AbilityMutator.DontStopAtDestination),nameof(AbilityMutator.getCanUpdateTargetWhileChannelling),nameof(AbilityMutator.getIncreasedMovementSpeedAffectsMovement)})
+        foreach(string name in new[]{nameof(AbilityMutator.getStopMovementOnKeyRelease),nameof(AbilityMutator.DontStopAtDestination),nameof(AbilityMutator.getCanUpdateTargetWhileChannelling),nameof(AbilityMutator.getIncreasedMovementSpeedAffectsMovement)})
             yield return AccessTools.Method(typeof(AbilityMutator),name);
     }
     private static void Postfix(AbilityMutator __instance,ref bool __result){if(DisintegrateMovement.Applies(__instance))__result=true;}
 }
+[HarmonyPatch(typeof(AbilityMutator),nameof(AbilityMutator.getChangeDestinationWhileMoving))]
+internal static class OfflineDisintegrateMouseSteeringPatch
+{private static void Postfix(AbilityMutator __instance,ref bool __result){if(DisintegrateMovement.Applies(__instance))__result=false;}}
 [HarmonyPatch(typeof(AbilityMutator),nameof(AbilityMutator.getUseSpeedAffectsMovement))]
 internal static class OfflineDisintegrateCastSpeedPatch
 {private static void Postfix(AbilityMutator __instance,ref bool __result){if(DisintegrateMovement.Applies(__instance))__result=false;}}
@@ -53,8 +56,21 @@ internal static class OfflineDisintegrateSpeedPatch
 [HarmonyPatch(typeof(MovementFromAbility),nameof(MovementFromAbility.startMoving))]
 internal static class OfflineDisintegrateStartPatch
 {
-    private static void Postfix(MovementFromAbility __instance,Ability _ability)
-    {if(DisintegrateMovement.Local(__instance.actor) && DisintegrateMovement.IsAbility(_ability))__instance.actor.GetComponent<SpeedManager>()?.updateSpeed();}
+    private static void Prefix(MovementFromAbility __instance,ref UnityEngine.Vector3 _destination,UnityEngine.Vector3 _startPosition,
+        Ability _ability,AbilityMovement _movementType,ref bool _changeDestinationWithMousePosition,
+        ref bool shouldUsePlayerDestination,ref bool _dontStopAtDestination)
+    {
+        if(_movementType!=AbilityMovement.Spin || !DisintegrateSteering.IsLocalDisintegrate(__instance.actor,_ability))return;
+        _destination=_startPosition;
+        _changeDestinationWithMousePosition=false;shouldUsePlayerDestination=false;_dontStopAtDestination=true;
+    }
+    private static void Postfix(MovementFromAbility __instance,Ability _ability,AbilityMovement _movementType)
+    {
+        if(_movementType!=AbilityMovement.Spin || !DisintegrateSteering.IsLocalDisintegrate(__instance.actor,_ability))return;
+        __instance.changeDestinationWithMousePosition=false;__instance.dontStopAtDestination=true;
+        __instance.UpdateDestination(__instance.actor.position());
+        __instance.actor.GetComponent<SpeedManager>()?.updateSpeed();
+    }
 }
 [HarmonyPatch(typeof(UsingAbility),nameof(UsingAbility.stopUsingAbility))]
 internal static class OfflineDisintegrateStopPatch
@@ -67,5 +83,5 @@ internal static class OfflineDisintegrateStopPatch
 internal static class OfflineDisintegrateDescriptionPatch
 {
     private static void Postfix(Ability ability,ref string __result)
-    {if(OfflineToolkit.Enabled && DisintegrateMovement.IsAbility(ability))__result+="\nYou can move freely while channelling at 80% of your normal movement speed.";}
+    {if(OfflineToolkit.Enabled && DisintegrateMovement.IsAbility(ability))__result+="\nAim with the mouse and move with your movement controls while channelling at 80% of your normal movement speed.";}
 }

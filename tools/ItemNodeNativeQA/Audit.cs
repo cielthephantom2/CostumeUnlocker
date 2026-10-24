@@ -15,7 +15,13 @@ public partial class Audit:MelonMod
  public static void ForceOfflineService(){Il2CppLE.Core.CommandLine.Options.OfflineMode=true;}
  public static void UsePrivateOfflineUser(){Il2CppLE.Services.ServiceProvider._UserService=new Il2CppLE.Services.OfflineUserService().Cast<Il2CppLE.Services.IUserService>();}
  public static void ObserveKey(string key){if(key?.Contains("445")==true && !localizationKeys.Contains(key))localizationKeys.Add(key);}
- public override void OnInitializeMelon(){var main=AppDomain.CurrentDomain.GetAssemblies().Single(a=>a.GetName().Name=="LastEpochLAN");releaseBootstrap=main.GetType("LastEpochLAN.Mod.NativeAssetProbe")==null;if(releaseBootstrap)HarmonyInstance.Patch(main.GetType("LastEpochLAN.Mod.LanMod").GetMethod("TickAutomaticRoom",BindingFlags.NonPublic|BindingFlags.Instance),prefix:new HarmonyMethod(typeof(Audit),nameof(BlockPrivateRoom)));HarmonyInstance.Patch(typeof(Il2CppLE.Services.ServiceProvider).GetMethod("InitializeUserService"),prefix:new HarmonyMethod(typeof(Audit),nameof(ForceOfflineService)),postfix:new HarmonyMethod(typeof(Audit),nameof(UsePrivateOfflineUser)));EchoLoadProfile.InstallBoot(HarmonyInstance);HarmonyInstance.Patch(typeof(Localization).GetMethod("GetText",new[]{typeof(string),typeof(string)}),prefix:new HarmonyMethod(typeof(Audit).GetMethod(nameof(ObserveKey))));}
+ public override void OnInitializeMelon(){var main=AppDomain.CurrentDomain.GetAssemblies().Single(a=>a.GetName().Name=="LastEpochLAN");releaseBootstrap=main.GetType("LastEpochLAN.Mod.NativeAssetProbe")==null;if(releaseBootstrap)HarmonyInstance.Patch(main.GetType("LastEpochLAN.Mod.LanMod").GetMethod("TickAutomaticRoom",BindingFlags.NonPublic|BindingFlags.Instance),prefix:new HarmonyMethod(typeof(Audit),nameof(BlockPrivateRoom)));HarmonyInstance.Patch(typeof(Il2CppLE.Services.ServiceProvider).GetMethod("InitializeUserService"),prefix:new HarmonyMethod(typeof(Audit),nameof(ForceOfflineService)),postfix:new HarmonyMethod(typeof(Audit),nameof(UsePrivateOfflineUser)));if(Environment.GetCommandLineArgs().Contains("--lelan-disintegrate-steering-qa")){var toolkit=main.GetType("LastEpochLAN.Mod.OfflineTools.OfflineToolkit");var settings=toolkit.GetField("Settings",BindingFlags.Static|BindingFlags.NonPublic).GetValue(null);settings.GetType().GetProperty("AutoCompleteNewCharacter").SetValue(settings,false);HarmonyInstance.Patch(main.GetType("LastEpochLAN.Mod.OfflineTools.DisintegrateSteering").GetMethod("CanSteer",BindingFlags.Static|BindingFlags.NonPublic),prefix:new HarmonyMethod(typeof(Audit),nameof(PrivateCanSteer)));}EchoLoadProfile.InstallBoot(HarmonyInstance);HarmonyInstance.Patch(typeof(Localization).GetMethod("GetText",new[]{typeof(string),typeof(string)}),prefix:new HarmonyMethod(typeof(Audit).GetMethod(nameof(ObserveKey))));}
+ DisintegrateSteeringQA steeringProbe;
+ public static bool PrivateCanSteer(Actor actor,bool checkMouse,ref bool __result)
+ {
+  var input=EpochInputManager.instance;
+  __result=Time.timeScale>0 && !Il2CppLE.UI.LoadingScreen.IsVisible && input!=null && !input.forceDisableInput && !input.cinematicActive && !input.IsInputFieldActive && actor!=null && !actor.isDying(false) && actor.stateController.numberOfRoots==0 && !UIMouseListener.WorldActionsDisabled() && (!checkMouse || !UIMouseListener.MouseOverUI()) && !(PlayerFinder.getItemContainersManager()?.cursor?.GetContent()?.Count>0);return false;
+ }
  bool done,migrating;float mapStarted;int mapStage;Il2CppDMM.DMMapIcon removedMapIcon;string migrationId;int migrationClass;float migrationStarted,started;readonly List<object> checks=new();
  static Type T(string name)=>AppDomain.CurrentDomain.GetAssemblies().Single(a=>a.GetName().Name=="LastEpochLAN").GetType("LastEpochLAN.Mod.OfflineTools."+name,true);
  static object Call(string name,string method,params object[] args)=>T(name).GetMethod(method,BindingFlags.Static|BindingFlags.NonPublic|BindingFlags.Public).Invoke(null,args);
@@ -51,6 +57,11 @@ public partial class Audit:MelonMod
    }
    var actor=PlayerFinder.getPlayerActor();
    if(actor?.HasMovedToPlayerSpawn!=true){if(Time.unscaledTime-started>420)Finish(new TimeoutException("Private actor bootstrap timed out"));return;}
+   if(Environment.GetCommandLineArgs().Contains("--lelan-disintegrate-steering-qa"))
+   {
+    steeringProbe??=new DisintegrateSteeringQA();var result=steeringProbe.Tick(actor);
+    if(result!=null){Check(JsonSerializer.SerializeToElement(result).GetProperty("passed").GetBoolean(),"Native held beam aim, separate movement and keyboard release",result);Finish(null);}return;
+   }
    if(Environment.GetCommandLineArgs().Contains("--lelan-echo-load-500-qa")){EchoLoad500(actor);return;}
    if(Environment.GetCommandLineArgs().Contains("--lelan-prophecy-stream-qa")){ProphecyStream(actor);return;}
    if(Environment.GetCommandLineArgs().Contains("--lelan-map-probe"))

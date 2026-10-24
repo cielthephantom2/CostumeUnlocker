@@ -1,0 +1,17 @@
+{
+  "archive": "local-releases\\TM-Coop-1.1.0-dev.68.zip",
+  "sha256": "77AE222A0DA7A23765618594DBFA0B492E7649A9FCE7527B811C0DE55AF88C69",
+  "size": 517434,
+  "files": [
+    "Mods/LastEpochLAN.dll",
+    "UserLibs/LastEpochLAN.Core.dll",
+    "latest.json",
+    "update.bat",
+    "README.md",
+    "RELEASE-1.1.0-dev68-VI.md"
+  ],
+  "manifestVerified": true,
+  "debugToolsIncluded": false,
+  "nativeGameplayRetested": false,
+  "nativeRetestSkippedAtUserRequest": true
+}
