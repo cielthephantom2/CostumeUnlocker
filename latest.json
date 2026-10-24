@@ -1,0 +1,18 @@
+{
+  "schema": 2,
+  "product": "LastEpochLAN",
+  "version": "1.1.0-dev.56",
+  "protocol": 44,
+  "files": [
+    {
+      "path": "Mods/LastEpochLAN.dll",
+      "size": 1186304,
+      "sha256": "FD4E182E531C29B53B7A18B27E1A37C5DEBA362614B99684E2C9CD587610E367"
+    },
+    {
+      "path": "UserLibs/LastEpochLAN.Core.dll",
+      "size": 436224,
+      "sha256": "FBAC047E488B346776B148903FAAC2426AC57F66579B260906BF2942BC599895"
+    }
+  ]
+}
