@@ -1,0 +1,28 @@
+Checking offline Co-op updates...
+Updated to 1.1.0-dev.69. Backups: D:\New folder\CostumeUnlocker-Publish\research\public-updater-fixture-654d3a8c41c845458b1f7711021adeed\UserData\LastEpochLAN\backups\update-51d8594424524ed9b859bb4d55745192
+Use Play Offline. Update both PCs before connecting.
+PASS: verified paired install: Mods/LastEpochLAN.dll
+PASS: verified paired install: UserLibs/LastEpochLAN.Core.dll
+PASS: release lookup uses no GitHub REST API
+PASS: manifest and both DLLs use exactly one pinned commit
+Checking offline Co-op updates...
+Already current: 1.1.0-dev.69 (both SHA-256 hashes verified).
+Use Play Offline. Update both PCs before connecting.
+PASS: already-current install accepts text advertisement and skips both DLL downloads
+Checking offline Co-op updates...
+PASS: malformed, truncated, missing or duplicate branch advertisement rejected
+Checking offline Co-op updates...
+PASS: malformed, truncated, missing or duplicate branch advertisement rejected
+Checking offline Co-op updates...
+PASS: malformed, truncated, missing or duplicate branch advertisement rejected
+Checking offline Co-op updates...
+PASS: malformed, truncated, missing or duplicate branch advertisement rejected
+Checking offline Co-op updates...
+PASS: malformed, truncated, missing or duplicate branch advertisement rejected
+Checking offline Co-op updates...
+PASS: corrupt downloaded DLL rejected
+PASS: download failure preserves installed files
+PASS: running game rejected before network or writes
+PASS: running-game guard performs no network requests
+PASS: only inactive fixture paths were used; no game launched
+All 15 public updater checks passed.

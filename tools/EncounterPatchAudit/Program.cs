@@ -87,7 +87,7 @@ Check(catalogue.Fields.Any(f=>f.Name=="Enabled" && f.IsStatic && f.IsInitOnly) &
  "native encounter discovery requires explicit development switch");
 Check(!types.Any(t=>t.Name is "OfflineArcaneMovementPatch" or "OfflineArcaneDescriptionPatch"),
  "Arcane Ascendance movement and description overrides are removed; native root retained");
-var disintegrateHooks=new[]{"OfflineDisintegrateMovementPatch","OfflineDisintegrateMobileFlagsPatch","OfflineDisintegrateCastSpeedPatch","OfflineDisintegrateDurationPatch","OfflineDisintegrateDistancePatch","OfflineDisintegrateSpeedPatch","OfflineDisintegrateStartPatch","OfflineDisintegrateStopPatch","OfflineDisintegrateDescriptionPatch","OfflineDisintegrateMouseSteeringPatch"};
+var disintegrateHooks=new[]{"OfflineDisintegrateMovementPatch","OfflineDisintegrateMobileFlagsPatch","OfflineDisintegrateCastSpeedPatch","OfflineDisintegrateDurationPatch","OfflineDisintegrateDistancePatch","OfflineDisintegrateStartPatch","OfflineDisintegrateStopPatch","OfflineDisintegrateDescriptionPatch","OfflineDisintegrateMouseSteeringPatch"};
 Check(disintegrateHooks.All(n=>patches.Any(t=>t.Name==n)),"all local Disintegrate mobile-channel hooks are selected");
 var tranquilityHooks=new[]{"OfflineArcaneTranquilityTreePatch","OfflineArcaneTranquilityCastPatch","OfflineArcaneTranquilityDescriptionPatch","OfflineArcaneTranquilityLegacyTooltipPatch","OfflineArcaneTranquilityTooltipPatch"};
 Check(tranquilityHooks.All(n=>patches.Any(t=>t.Name==n)),"Tranquility actual-stat, description and both tooltip hooks are compiled");
@@ -589,9 +589,9 @@ var stabilityRefs=stabilityHooks.Select(n=>types.Single(t=>t.Name==n)).SelectMan
 Check(!stabilityRefs.Any(m=>m.Name is "AddStability" or "NextInt" or "Roll" or "TryGetKeyEntry"),
  "Stability corrections do not replay awards, replace native RNG or consume extra Keystones");
 var move=types.Single(t=>t.Name=="DisintegrateMovement");
-Check(move.Fields.Any(f=>f.Name=="SpeedMultiplier" && Convert.ToSingle(f.Constant)==.8f) &&
+Check(!types.Any(t=>t.Name=="OfflineDisintegrateSpeedPatch") && !move.Fields.Any(f=>f.Name=="SpeedMultiplier") &&
  types.Single(t=>t.Name=="OfflineDisintegrateStopPatch").Methods.Any(m=>m.Name=="Finalizer"),
- "Disintegrate uses80% speed with native channel-end restoration");
+ "Disintegrate speed penalty hook and multiplier are removed; native speed refresh remains");
 Check(installed.Any(t=>t.Name=="OfflineSpiritXylemMaximumManaPatch"),"Spirit Xylem refreshes damage after native maximum Mana calculation");
 Check(!types.Any(t=>t.Name.StartsWith("UiShortcut") || t.Name is "ShortcutAction" or "ShortcutBinding"),
  "removed Shortcut runtime, rules, actions and bindings are absent from the release assembly");

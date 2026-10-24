@@ -10,6 +10,7 @@ internal static class OfflineChangelog
     private static GUIStyle bodyStyle;
     private static readonly string content=
         "<b>BONUS OFFLINE</b>\n"+
+        "• Dev.69: bỏ giảm20% tốc độ Disintegrate; channel di chuyển ở tốc độ bình thường, giữ cách điều khiển cũ.\n"+
         "• Dev.68: Disintegrate dùng cách điều khiển cũ: chuột chỉ ngắm, WASD/lệnh đi riêng điều khiển di chuyển; giữ80% tốc độ và root native.\n"+
         "• Dev.67: sửa tọa độ login Traveler’s Rest bằng đúng Waypoint gate0 của teleport; dùng spawn marker native.\n"+
         "• Dev.66: Woven Enchanter vô hạn lượt, giữ phí Memory Amber; nhân vật offline đã qua phần mở đầu đăng nhập ở Traveler’s Rest.\n"+

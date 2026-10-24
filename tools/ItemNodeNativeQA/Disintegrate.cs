@@ -20,7 +20,7 @@ public partial class Audit
     use.channelling=false;speed.updateSpeed();float normal=actor.navMeshAgent.speed;
     use.ability=ability;use.channelling=true;
     for(int n=0;n<100;n++)speed.updateSpeed();
-    Check(normal>0 && Near(actor.navMeshAgent.speed,normal*.8f),"Native speed consumer is exactly80 percent after100 updates",new{normal,channel=actor.navMeshAgent.speed});
+    Check(normal>0 && Near(actor.navMeshAgent.speed,normal),"Native speed consumer keeps normal movement speed after100 updates",new{normal,channel=actor.navMeshAgent.speed});
     use.channelling=false;speed.updateSpeed();
     Check(Near(actor.navMeshAgent.speed,normal),"Native speed restored after channel flag clears");
    }

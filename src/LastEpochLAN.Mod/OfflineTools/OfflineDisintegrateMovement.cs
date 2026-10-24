@@ -5,16 +5,10 @@ namespace LastEpochLAN.Mod.OfflineTools;
 
 internal static class DisintegrateMovement
 {
-    internal const float SpeedMultiplier=.8f;
     internal static bool Local(Actor actor)=>OfflineToolkit.Enabled && actor!=null && actor.Pointer==PlayerFinder.getPlayerActor()?.Pointer;
     internal static bool Applies(AbilityMutator mutator)=>Local(mutator?.TryCast<DisintegrateMutator>()?.actor);
     internal static bool IsAbility(Ability ability)=>ability!=null && ability.Pointer==Ability.getAbility(AbilityID.disintegrate)?.Pointer;
-    internal static bool Channel(Actor actor)
-    {
-        if(!Local(actor))return false;
-        var use=actor.GetComponent<UsingAbility>();
-        return use!=null && use.channelling && IsAbility(use.ability);
-    }
+
 }
 
 // Use the native mobile-channel path (also used by mobile Focus). Keep native
@@ -45,14 +39,6 @@ internal static class OfflineDisintegrateDurationPatch
 internal static class OfflineDisintegrateDistancePatch
 {private static void Postfix(AbilityMutator __instance,ref float __result){if(DisintegrateMovement.Applies(__instance))__result=.05f;}}
 
-[HarmonyPatch(typeof(SpeedManager),nameof(SpeedManager.updateSpeed))]
-internal static class OfflineDisintegrateSpeedPatch
-{
-    // Original updateSpeed restores the normal stat-derived speed first, so
-    // repeated updates cannot multiply the penalty more than once.
-    private static void Postfix(SpeedManager __instance)
-    {if(DisintegrateMovement.Channel(__instance.actor) && __instance.actor.navMeshAgent!=null)__instance.actor.navMeshAgent.speed*=DisintegrateMovement.SpeedMultiplier;}
-}
 [HarmonyPatch(typeof(MovementFromAbility),nameof(MovementFromAbility.startMoving))]
 internal static class OfflineDisintegrateStartPatch
 {
@@ -83,5 +69,5 @@ internal static class OfflineDisintegrateStopPatch
 internal static class OfflineDisintegrateDescriptionPatch
 {
     private static void Postfix(Ability ability,ref string __result)
-    {if(OfflineToolkit.Enabled && DisintegrateMovement.IsAbility(ability))__result+="\nAim with the mouse and move with your movement controls while channelling at 80% of your normal movement speed.";}
+    {if(OfflineToolkit.Enabled && DisintegrateMovement.IsAbility(ability))__result+="\nAim with the mouse and move with your movement controls while channelling at your normal movement speed.";}
 }
