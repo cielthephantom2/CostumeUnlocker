@@ -1,15 +1,15 @@
 {
   "product": "LastEpochLAN",
-  "version": "1.1.0-dev.74",
+  "version": "1.1.0-dev.76",
   "files": [
     {
       "path": "Mods/LastEpochLAN.dll",
-      "sha256": "27F21B82FC50017A33B3C4165A3D9023A81673EFABDC4A538B2B64797B772A58",
-      "size": 898560
+      "sha256": "CB9DB7D5E6CF8C280EA3CF04F6B6626933F88B055ED8E0018C3BBC115D1B67FE",
+      "size": 909824
     },
     {
       "path": "UserLibs/LastEpochLAN.Core.dll",
-      "sha256": "326D9E94494507727C1D0FEFA713E030D667A8594C572A253C6470804768F960",
+      "sha256": "282A86F2EFEC67CDEAC9BB0DC857F7F7AC3EBF90CB8B8CD1834DDE8890C0BABF",
       "size": 434176
     }
   ],
